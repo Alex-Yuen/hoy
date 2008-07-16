@@ -137,6 +137,9 @@ public class Observable {
 	    if (!changed)
                 return;
             //arrLocal = obs.toArray();
+	    	/**
+	    	 * Edited by hoyzhang
+	    	 */
 	    	arrLocal = new Object[obs.size()];
 	    	obs.copyInto(arrLocal);
             clearChanged();
