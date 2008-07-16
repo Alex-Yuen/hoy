@@ -5,14 +5,6 @@ import javax.microedition.lcdui.Graphics;
 
 public abstract class XGame extends Canvas implements Runnable {
 
-	protected void paint(Graphics arg0) {
-		// TODO Auto-generated method stub
-
-	}
-
-	public void run() {
-		// TODO Auto-generated method stub
-
-	}
-
+	protected abstract void paint(Graphics arg0);
+	public abstract void run();
 }
