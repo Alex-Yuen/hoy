@@ -10,8 +10,8 @@ import mobi.samov.client.core.XGame;
 
 /**
  * The Platform of V2.0
- * It can load other Game which extends XGame by refelct.
- * @author hoyzhang
+ * It can load other Game which extends XGame by reflection.
+ * @author hoy zhang
  *
  */
 public class Platform extends XGame {
