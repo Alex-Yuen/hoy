@@ -28,10 +28,9 @@ public class XMIDlet extends MIDlet implements Observer, CommandListener{
 	protected void startApp() throws MIDletStateChangeException {
 		// TODO Auto-generated method stub
 		Platform platform = new Platform(this);
-		this.currentGame = platform;
+		this.turnTo(platform);
 		Thread t = new Thread(platform);
 		t.start();
-		Display.getDisplay(this).setCurrent(platform);
 	}
 
 	public void update(Observable o, Object arg) {
@@ -41,6 +40,11 @@ public class XMIDlet extends MIDlet implements Observer, CommandListener{
 
 	public void commandAction(Command arg0, Displayable arg1) {
 		// TODO Auto-generated method stub
-		
+		this.currentGame.commandAction(arg0, arg1);
+	}
+	
+	public void turnTo(XGame xGame){
+		this.currentGame = xGame;
+		Display.getDisplay(this).setCurrent(this.currentGame);
 	}
 }

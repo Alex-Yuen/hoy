@@ -1,5 +1,7 @@
 package mobi.samov.client.game;
 
+import javax.microedition.lcdui.Command;
+import javax.microedition.lcdui.Displayable;
 import javax.microedition.lcdui.Graphics;
 
 import mobi.samov.client.XMIDlet;
@@ -30,6 +32,11 @@ public class Platform extends XGame {
 	}
 
 	public void update(Observable o, Object arg) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void commandAction(Command arg0, Displayable arg1) {
 		// TODO Auto-generated method stub
 		
 	}
