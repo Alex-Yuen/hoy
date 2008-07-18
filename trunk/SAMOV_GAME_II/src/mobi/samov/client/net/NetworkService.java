@@ -34,6 +34,15 @@ public class NetworkService implements Runnable{
 
 	public void run() {
 		// TODO Auto-generated method stub
+		while(true){
+//			if(flag=true){
+//				send....;
+//			}
+		}
+		
+	}
+	
+	public void send(String content){
 		
 	}
 }
