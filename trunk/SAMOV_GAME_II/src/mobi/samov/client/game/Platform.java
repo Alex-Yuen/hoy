@@ -11,6 +11,7 @@ import mobi.samov.client.core.XGame;
 /**
  * The Platform of V2.0
  * It can load other Game which extends XGame by reflection.
+ * It will scan the game dir and found the other game.
  * @author hoy zhang
  *
  */
