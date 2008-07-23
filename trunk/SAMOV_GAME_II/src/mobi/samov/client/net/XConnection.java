@@ -41,6 +41,7 @@ public class XConnection extends Observable implements Runnable {
 	 * socket/bluetooth 是长连接
 	 * http 是短连接， 具体需要反映到run方法来
 	 * 如果建立线程池， 则socket/bluetooth可以重用， http呢？
+	 * 全部应该从线程池获取。
 	 */
 	public void run() {
 		// TODO Auto-generated method stub
