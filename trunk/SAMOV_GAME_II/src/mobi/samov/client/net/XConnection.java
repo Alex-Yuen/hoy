@@ -1,6 +1,9 @@
 package mobi.samov.client.net;
 
-public class NetworkService implements Runnable{
+import mobi.samov.client.core.Observable;
+import mobi.samov.client.core.Observer;
+
+public class XConnection extends Observable implements Runnable {
 	//Singleton Object
 	//Use this to connect to internet:
 	/**
@@ -17,7 +20,7 @@ public class NetworkService implements Runnable{
 	 * 暂不考虑线程池技术
 	 * 建立连接，发送数据，获取数据
 	 */
-	private NetworkService(){
+	private XConnection(String URL){
 		
 	}
 	
@@ -28,10 +31,17 @@ public class NetworkService implements Runnable{
 	 * @param URL
 	 * @return
 	 */
-	public NetworkService createService(String URL){
-		return null;
+	public static XConnection getConnection(Observer observer, String URL){
+		XConnection connection = new XConnection(URL);
+		connection.addObserver(observer);
+		return connection;
 	}
 
+	/**
+	 * socket/bluetooth 是长连接
+	 * http 是短连接， 具体需要反映到run方法来
+	 * 如果建立线程池， 则socket/bluetooth可以重用， http呢？
+	 */
 	public void run() {
 		// TODO Auto-generated method stub
 		while(true){
