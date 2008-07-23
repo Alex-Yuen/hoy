@@ -27,6 +27,7 @@ public class XMIDlet extends MIDlet implements Observer, CommandListener{
 
 	protected void startApp() throws MIDletStateChangeException {
 		// TODO Auto-generated method stub
+		//启动一个心跳包机制
 		Platform platform = new Platform(this);
 		this.turnTo(platform);
 	}

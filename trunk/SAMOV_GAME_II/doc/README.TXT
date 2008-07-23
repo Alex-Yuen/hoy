@@ -43,3 +43,8 @@ XGame ¿ÉÒÔÖ¸¶¨ÊÇ·ñ½ÓÊÕÏûÏ¢ NO. XMIDlet»áÏòµ±Ç°µÄXGame·¢ËÍÏûÏ¢.½ÓÊÕµ½Command»òÕßÏ
 
 ·þÎñÆ÷ÊÕµ½Ö®ºó£¬¼ìË÷·µ»Ø¡£È»ºó¿ªÒ»¸öÏß³Ì´¦ÀíÕâ¸öÇëÇó£¬Èç¹ûÐèÒª·µ»ØÔò¼ÓÈëxx¶ÓÁÐ¡£
 ·þÎñÆ÷¼Ü¹¹µÄÔËËã£¬¾ÍºÜÖØÒªÁË¡£
+
+Í¬²½Ä£Ê½£¬Òì²½Ä£Ê½
+µÀ¾ßµÈ×ÊÁÏ¿ÉÒÔ´Ó·þÎñÆ÷ÏÂÔØ
+
+µÀ¾ßÊôÐÔÔòÒªscriptÀ´Éú³É

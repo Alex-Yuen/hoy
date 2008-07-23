@@ -51,6 +51,7 @@ public class XConnection extends Observable implements Runnable {
 	}
 	
 	public void send(String content){
-		
+//		//心跳包是异步的， 手动可以是同步，也可以是异步
+		//if (同步 并且 尚未返回） Thread.sleep
 	}
 }
