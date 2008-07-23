@@ -6,13 +6,11 @@ import mobi.samov.client.core.Observer;
 public class XConnection extends Observable implements Runnable {
 	//Singleton Object
 	//Use this to connect to internet:
-	/**
-	 * 1. CMWAP-SOCKET
-	 * 2. CMWAP-HTTP
-	 * 3. CMNET-SOCKET
-	 * 4. CMNET-HTTP
-	 * 5. BLUETOOTH
-	 */
+	public static String CMWAP_SOCKET = "cmwap-s";
+	public static String CMWAP_HTTP = "cmwap-h";
+	public static String CMNET_SOCKET = "cmnet-s";
+	public static String CMNET_HTTP = "cmnet-h";
+	public static String BLUETOOTH = "bluetooth";
 	
 	/**
 	 * above use ssl connetion.
