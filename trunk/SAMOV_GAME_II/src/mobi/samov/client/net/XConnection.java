@@ -11,8 +11,7 @@ public class XConnection extends Observable implements Runnable {
 	 * 2. CMWAP-HTTP
 	 * 3. CMNET-SOCKET
 	 * 4. CMNET-HTTP
-	 * 5. BLUETOOTH-SOCKETSERVER
-	 * 6. BLUETOOTH-SOCKETCLIENT
+	 * 5. BLUETOOTH
 	 */
 	
 	/**
@@ -25,8 +24,8 @@ public class XConnection extends Observable implements Runnable {
 	}
 	
 	/**
-	 * cmwap://
-	 * cmnet://
+	 * cmwap-s://
+	 * cmnet-h://
 	 * bluetooth://
 	 * @param URL
 	 * @return

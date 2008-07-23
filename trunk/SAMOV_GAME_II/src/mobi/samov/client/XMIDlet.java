@@ -29,8 +29,6 @@ public class XMIDlet extends MIDlet implements Observer, CommandListener{
 		// TODO Auto-generated method stub
 		Platform platform = new Platform(this);
 		this.turnTo(platform);
-		Thread t = new Thread(platform);
-		t.start();
 	}
 
 	public void update(Observable o, Object arg) {

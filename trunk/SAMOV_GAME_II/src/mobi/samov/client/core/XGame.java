@@ -12,8 +12,10 @@ public abstract class XGame extends Canvas implements Runnable {
 	
 	public XGame(XMIDlet midlet){
 		this.midlet = midlet;
+		Thread t = new Thread(this);
+		t.start();
 	}
-	
+
 	protected abstract void paint(Graphics arg0);	
 	public abstract void run();
 	public abstract void update(Observable o, Object arg);
