@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<eclipsemeMetadata jad="ddz.jad" version="1.7.9">
+   <device group="Sony Ericsson SDK 2.5.0.2 for the Java(TM) ME Platform(Emulator)" name="SonyEricsson_W800_Emu"/>
+   <signing signProject="false"/>
+</eclipsemeMetadata>
