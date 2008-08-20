@@ -37,4 +37,8 @@ public class Room {
 	public void joinRoom(User user){
 		this.userCount++;
 	}
+	
+	public int maxUserCount(){
+		return this.deskCount()*USERS_PER_DESK;
+	}
 }
