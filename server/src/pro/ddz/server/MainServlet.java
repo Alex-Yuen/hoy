@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 import pro.ddz.server.dao.DataAccessObject;
 import pro.ddz.server.message.Message;
 import pro.ddz.server.model.Room;
+import pro.ddz.server.model.User;
 import pro.ddz.server.request.RequestExecutor;
 import pro.ddz.server.request.RequestHandler;
 import pro.ddz.server.request.RequestQueue;
@@ -27,6 +28,7 @@ public class MainServlet extends HttpServlet {
 	private HashMap<String, Message> messageMap;
 	private DataAccessObject dao;
 	private ArrayList<Room> rooms;
+	private ArrayList<User> onlineList;
 	
 	private static int ROOM_SIZE = 25;
 	private static int DESK_PER_ROOM = 10;
@@ -36,6 +38,7 @@ public class MainServlet extends HttpServlet {
 		this.requestQueue = new RequestQueue();
 		this.messageMap = new HashMap<String, Message>();//after user login, add a Message Object.
 		this.dao = new DataAccessObject();
+		this.onlineList = new ArrayList<User>();
 		
 		rooms = new ArrayList<Room>();
 		Room room = null;
@@ -48,7 +51,7 @@ public class MainServlet extends HttpServlet {
 		new Thread(new RequestExecutor(requestQueue)).start();
 		
 		//start watcher thread
-		new Thread(new Watcher()).start();
+		new Thread(new Watcher(onlineList)).start();
 	}
 
 	@Override
@@ -59,7 +62,7 @@ public class MainServlet extends HttpServlet {
 		resp.setHeader("content", content);
 		
 		// a handler to deal with the request
-		new RequestHandler(req, requestQueue, messageMap, dao);
+		new RequestHandler(req, requestQueue, messageMap, dao, onlineList);
 	}
 	
 	/**
