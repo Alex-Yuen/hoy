@@ -7,12 +7,18 @@ public class User {
 	private boolean login;
 	private Date creatTime;
 	private Date loginTime;
+	private Date lastRequestTime;
+	private int[] position;
 	private boolean bind;
 	private String userName;
 	private String password;
 	private short question;
 	private String answer;
 	private int score;
+	
+	public User(){
+		this.position = new int[2];
+	}
 	
 	public int getId() {
 		return id;
@@ -74,4 +80,21 @@ public class User {
 	public void setScore(int score) {
 		this.score = score;
 	}
+
+	public Date getLastRequestTime() {
+		return lastRequestTime;
+	}
+
+	public void setLastRequestTime(Date lastRequestTime) {
+		this.lastRequestTime = lastRequestTime;
+	}
+
+	public int[] getPosition() {
+		return position;
+	}
+
+	public void setPosition(int[] position) {
+		this.position = position;
+	}
+	
 }
