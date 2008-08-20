@@ -1,5 +1,11 @@
 package pro.ddz.server;
 
-public class Watcher {
+public class Watcher implements Runnable {
+
+	@Override
+	public void run() {
+		// TODO Auto-generated method stub
+		
+	}
 
 }
