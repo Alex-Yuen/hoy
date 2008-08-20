@@ -1,37 +1,35 @@
 package pro.ddz.server.message;
 
-import java.util.Date;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
 
 public class Message {
-	private int from;
-	private int to;
-	private String data;
-	private Date receiveTime;
+	private ArrayList<String> datum;
 	
-	public static int FROM_SYSTEM = 0;
-	public static int TO_ALL_USER = 0;
-	public int getFrom() {
-		return from;
+	private static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	private static Calendar cal = Calendar.getInstance();
+	
+	public Message(){
+		this.datum = new ArrayList<String>();
 	}
-	public void setFrom(int from) {
-		this.from = from;
+	
+	public synchronized void add(String data){
+		StringBuffer sb = new StringBuffer();
+		sb.append(data);
+		sb.append('@');
+		sb.append(sdf.format(cal.getTime()));
+		this.datum.add(sb.toString());
 	}
-	public int getTo() {
-		return to;
-	}
-	public void setTo(int to) {
-		this.to = to;
-	}
-	public String getData() {
-		return data;
-	}
-	public void setData(String data) {
-		this.data = data;
-	}
-	public Date getReceiveTime() {
-		return receiveTime;
-	}
-	public void setReceiveTime(Date receiveTime) {
-		this.receiveTime = receiveTime;
+	
+	public synchronized String getDatum(){
+		StringBuffer sb = new StringBuffer();
+		for(String s:datum){
+			sb.append(s);
+			sb.append('\n');
+		}
+		
+		datum.clear();
+		return sb.toString();
 	}
 }

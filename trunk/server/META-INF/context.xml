@@ -1,0 +1,13 @@
+<Context>
+	<Resource 
+		name="jdbc/ddzsource" 
+		auth="Container" 
+		type="javax.sql.DataSource"
+		maxActive="100" 
+		maxIdle="30" 
+		maxWait="10000" 
+		username="ddz"
+		password="ddz20080819)x.;" 
+		driverClassName="com.mysql.jdbc.Driver"
+		url="jdbc:mysql://218.93.127.238:3306/ddz?autoReconnect=true&useUnicode=true&noAccessToProcedureBodies=true"/>
+</Context>
