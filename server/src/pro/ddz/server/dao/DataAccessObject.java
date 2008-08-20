@@ -1,16 +1,21 @@
 package pro.ddz.server.dao;
 
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.sql.DataSource;
+
 public class DataAccessObject {
-	/**
-	Context   initCtx   =   new   InitialContext();  
-	  Context   ctx   =   (Context)   initCtx.lookup("java:comp/env");  
-	  DataSource   ds   =   (DataSource)ctx.lookup("jdbc/ddzsource");    
-	  Connection   conn   =   ds.getConnection();  
-	  Statement   stmt   =   conn.createStatement();  
-	  String   query   =   "select   UserName,   password   from   UserInfo";  
-	  ResultSet   rs   =   stmt.executeQuery(query);
-	  **/   
-	/**
-	 * java bdb
-	 */
+	private static DataSource datasource;
+
+	public DataAccessObject() {
+		if (datasource == null) {
+			try {
+				Context initCtx = new InitialContext();
+				Context ctx = (Context) initCtx.lookup("java:comp/env");
+				datasource = (DataSource) ctx.lookup("jdbc/ddzsource");
+			} catch (Exception e) {
+				datasource = null;
+			}
+		}
+	}
 }
