@@ -15,6 +15,11 @@ public class RequestHandler implements Runnable {
 	private HashMap<String, Message> messageMap;
 	private DataAccessObject dao;
 	private ArrayList<User> onlineList;
+	private static HashMap<String, String> types;
+	
+	static{
+		types.put("QUICK_REGISTER", "pro.ddz.server.request.QuickRegisterRequest");
+	}
 	
 	public RequestHandler(HttpServletRequest req, RequestQueue queue, HashMap<String, Message> messageMap, DataAccessObject dao, ArrayList<User> onlineList){
 		this.req = req;
@@ -33,9 +38,22 @@ public class RequestHandler implements Runnable {
 		System.out.println(messageMap);
 		System.out.println(dao);
 		System.out.println(onlineList);
-
-		synchronized(queue){
-			//放到RequestQueue
+		String type = this.req.getHeader("TYPE");
+		
+		try {
+			Request request = null;
+			if("QUICK_REGISTER".equals(type)){
+				request = new QuickRegisterRequest(queue, messageMap, dao, onlineList);
+			}
+			
+			synchronized(this.queue){
+				//放到RequestQueue
+				if(request!=null){
+					this.queue.add(request);
+				}
+			}
+		}catch(Exception e){
+			e.printStackTrace();
 		}
 	}
 }
