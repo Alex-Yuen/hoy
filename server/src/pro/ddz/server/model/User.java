@@ -11,9 +11,11 @@ public class User {
 	private int[] position;
 	private boolean bind;
 	private String userName;
+	private String nickName;
 	private String password;
 	private short question;
 	private String answer;
+	private boolean sexual;
 	private int score;
 	
 	public User(){
@@ -96,5 +98,20 @@ public class User {
 	public void setPosition(int[] position) {
 		this.position = position;
 	}
-	
+
+	public String getNickName() {
+		return nickName;
+	}
+
+	public void setNickName(String nickName) {
+		this.nickName = nickName;
+	}
+
+	public boolean isSexual() {
+		return sexual;
+	}
+
+	public void setSexual(boolean sexual) {
+		this.sexual = sexual;
+	}
 }

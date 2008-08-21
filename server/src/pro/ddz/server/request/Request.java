@@ -8,6 +8,7 @@ import pro.ddz.server.message.Message;
 import pro.ddz.server.model.User;
 
 public abstract class Request {
+	protected int userId;
 	protected RequestQueue queue;
 	protected HashMap<String, Message> messageMap;
 	protected DataAccessObject dao;
@@ -18,6 +19,18 @@ public abstract class Request {
 		this.messageMap = messageMap;
 		this.dao = dao;
 		this.onlineList = onlineList;
+	}
+	protected Message getMessage(){
+		if(this.userId==0){
+			return null;
+		}else{
+			Message message = messageMap.get(String.valueOf(this.userId));
+			if(message==null){
+				message = new Message();
+				messageMap.put(String.valueOf(this.userId), message);
+			}
+			return message;
+		}
 	}
 	public abstract boolean isExecutable();
 	public abstract void execute();

@@ -13,11 +13,11 @@ public class RequestExecutor implements Runnable {
 		while(true){
 			synchronized(requestQueue){
 				//lookup the RequestQueue, and deal with them.
-	
-				this.currentRequest = null;
-
-				//合法性验证, 执行的时候，先执行if(Request.isExecutable()){
-				System.out.println(currentRequest);
+				this.currentRequest = requestQueue.poll();
+				//合法性验证
+				if(this.currentRequest.isExecutable()){
+					this.currentRequest.execute();
+				}
 			}
 		}
 	}
