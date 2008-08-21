@@ -4,6 +4,8 @@ import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.sql.DataSource;
 
+import pro.ddz.server.model.User;
+
 public class DataAccessObject {
 	private static DataSource datasource;
 
@@ -17,5 +19,10 @@ public class DataAccessObject {
 				datasource = null;
 			}
 		}
+	}
+	
+	public User quickRegister(){
+		User user = new User();
+		return user;
 	}
 }

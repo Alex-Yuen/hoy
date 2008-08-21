@@ -1,6 +1,7 @@
 package pro.ddz.server.request;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 
 import javax.servlet.http.HttpServletRequest;
@@ -15,11 +16,7 @@ public class RequestHandler implements Runnable {
 	private HashMap<String, Message> messageMap;
 	private DataAccessObject dao;
 	private ArrayList<User> onlineList;
-	private static HashMap<String, String> types;
-	
-	static{
-		types.put("QUICK_REGISTER", "pro.ddz.server.request.QuickRegisterRequest");
-	}
+	private static Calendar cal = Calendar.getInstance();
 	
 	public RequestHandler(HttpServletRequest req, RequestQueue queue, HashMap<String, Message> messageMap, DataAccessObject dao, ArrayList<User> onlineList){
 		this.req = req;
@@ -39,6 +36,15 @@ public class RequestHandler implements Runnable {
 		System.out.println(dao);
 		System.out.println(onlineList);
 		String type = this.req.getHeader("TYPE");
+		//refresh onlineList
+		synchronized(this.onlineList){
+			for(User user:onlineList){
+				if(user.getId()==Integer.parseInt(this.req.getHeader("USER-ID"))){
+					user.setLastRequestTime(cal.getTime());
+					break;
+				}
+			}
+		}
 		
 		try {
 			Request request = null;

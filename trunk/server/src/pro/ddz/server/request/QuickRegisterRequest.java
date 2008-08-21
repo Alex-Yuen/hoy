@@ -15,8 +15,28 @@ public class QuickRegisterRequest extends Request {
 	
 	@Override
 	public void execute() {
-		// TODO Auto-generated method stub
-
+		//实现快速注册功能
+		//QUICK_REGISTER_OK|USERID|USERNAME|NICKNAME|PASSWORD|SEXUAL@time
+		User user = dao.quickRegister();
+		this.userId = user.getId();
+		StringBuffer data = new StringBuffer();
+		data.append("QUICK_REGISTER_OK");
+		data.append('|');
+		data.append(this.userId);
+		data.append('|');
+		data.append(user.getUserName());
+		data.append('|');
+		data.append(user.getNickName());
+		data.append('|');
+		data.append(user.getPassword());
+		data.append('|');
+		data.append(user.isSexual());
+		
+		synchronized(this.onlineList){
+			this.onlineList.add(user);
+		}
+		
+		getMessage().add(data.toString());
 	}
 
 	@Override
