@@ -15,7 +15,7 @@ public class RequestExecutor implements Runnable {
 				//lookup the RequestQueue, and deal with them.
 				this.currentRequest = requestQueue.poll();
 				//合法性验证
-				if(this.currentRequest.isExecutable()){
+				if(this.currentRequest!=null&&this.currentRequest.isExecutable()){
 					this.currentRequest.execute();
 				}
 			}

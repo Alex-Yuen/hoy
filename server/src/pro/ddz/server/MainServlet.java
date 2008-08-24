@@ -58,8 +58,20 @@ public class MainServlet extends HttpServlet {
 	public void doPost(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
 		String userId = req.getHeader("USER-ID");
-		String content = ((Message)this.messageMap.get(userId)).getDatum(); 
-		resp.setHeader("content", content);
+		
+		String content = null;
+		if(userId!=null){
+			Message message = this.messageMap.get(userId);
+			if(message!=null){
+				content = message.getDatum();
+			}else{
+				content = "Invalid User-ID";
+			}
+		}else{
+			content = "Test Successfully";
+		}
+		
+		resp.setHeader("Content", content);
 		
 		// a handler to deal with the request
 		new RequestHandler(req, requestQueue, messageMap, dao, onlineList);
