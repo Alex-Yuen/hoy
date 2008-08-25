@@ -1,5 +1,6 @@
 package pro.ddz.server;
 
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -57,7 +58,9 @@ public class MainServlet extends HttpServlet {
 	@Override
 	public void doPost(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
-		String userId = req.getHeader("USER-ID");
+		System.out.println(req);
+		//System.out.println(req.getHeader("Type"));
+		String userId = req.getHeader("User-ID");
 		
 		String content = null;
 		if(userId!=null){
@@ -71,8 +74,17 @@ public class MainServlet extends HttpServlet {
 			content = "Test Successfully";
 		}
 		
-		resp.setHeader("Content", content);
+		resp.setContentType("text/html");
+		//resp.setContentLength(content.length());
 		
+		DataOutputStream dos = new DataOutputStream(resp.getOutputStream());
+		
+		dos.writeUTF(content);
+		dos.flush();
+		dos.close();
+
+		//resp.setHeader("Content", content);
+			
 		// a handler to deal with the request
 		new RequestHandler(req, requestQueue, messageMap, dao, onlineList);
 	}
