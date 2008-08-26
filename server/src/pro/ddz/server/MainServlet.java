@@ -58,10 +58,11 @@ public class MainServlet extends HttpServlet {
 	@Override
 	public void doPost(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
-		System.out.println(req);
-		//System.out.println(req.getHeader("Type"));
-		String userId = req.getHeader("User-ID");
+		System.out.print(req.getHeader("Type")+":");
+		System.out.println(req.getHeader("User-ID"));
 		
+		String userId = req.getHeader("User-ID");
+				
 		String content = null;
 		if(userId!=null){
 			Message message = this.messageMap.get(userId);
@@ -75,16 +76,11 @@ public class MainServlet extends HttpServlet {
 		}
 		
 		resp.setContentType("text/html");
-		//resp.setContentLength(content.length());
-		
 		DataOutputStream dos = new DataOutputStream(resp.getOutputStream());
-		
 		dos.writeUTF(content);
 		dos.flush();
 		dos.close();
 
-		//resp.setHeader("Content", content);
-			
 		// a handler to deal with the request
 		new RequestHandler(req, requestQueue, messageMap, dao, onlineList);
 	}
