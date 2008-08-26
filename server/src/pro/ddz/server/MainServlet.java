@@ -62,9 +62,10 @@ public class MainServlet extends HttpServlet {
 		System.out.println(req.getHeader("User-ID"));
 		
 		String userId = req.getHeader("User-ID");
-				
+		String type = req.getHeader("Type");
+		
 		String content = null;
-		if(userId!=null){
+		if(userId!=null&&type!=null&&!userId.equals("0")){
 			Message message = this.messageMap.get(userId);
 			if(message!=null){
 				content = message.getDatum();
