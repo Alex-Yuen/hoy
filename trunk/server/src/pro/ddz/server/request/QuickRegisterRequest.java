@@ -45,7 +45,7 @@ public class QuickRegisterRequest extends Request {
 		synchronized(this.onlineList){
 			this.onlineList.add(user);
 		}
-		
+		this.result = data.toString();
 		getMessage().add(data.toString());
 	}
 

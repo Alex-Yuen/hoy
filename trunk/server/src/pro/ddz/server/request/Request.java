@@ -13,6 +13,7 @@ public abstract class Request {
 	protected HashMap<String, Message> messageMap;
 	protected DataAccessObject dao;
 	protected ArrayList<User> onlineList;
+	protected String result;
 	
 	public Request(RequestQueue queue, HashMap<String, Message> messageMap, DataAccessObject dao, ArrayList<User> onlineList){
 		this.queue = queue;
@@ -34,4 +35,8 @@ public abstract class Request {
 	}
 	public abstract boolean isExecutable();
 	public abstract void execute();
+	
+	public String getResult(){
+		return this.result;
+	}
 }
