@@ -29,17 +29,13 @@ public class RequestHandler implements Runnable {
 	
 	@Override
 	public void run() {
-		// TODO Auto-generated method stub
 		//构造一个Request抽象类的具体对象
-		System.out.println(req);
-		System.out.println(messageMap);
-		System.out.println(dao);
-		System.out.println(onlineList);
-		String type = this.req.getHeader("TYPE");
+		String type = this.req.getHeader("Type");
+		
 		//refresh onlineList
 		synchronized(this.onlineList){
 			for(User user:onlineList){
-				if(user.getId()==Integer.parseInt(this.req.getHeader("USER-ID"))){
+				if(user.getId()==Integer.parseInt(this.req.getHeader("User-ID"))){
 					user.setLastRequestTime(cal.getTime());
 					break;
 				}
@@ -48,7 +44,7 @@ public class RequestHandler implements Runnable {
 		
 		try {
 			Request request = null;
-			if("QUICK_REGISTER".equals(type)){
+			if("QUICK".equals(type)){
 				request = new QuickRegisterRequest(queue, messageMap, dao, onlineList);
 			}
 			
