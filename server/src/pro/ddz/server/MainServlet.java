@@ -58,32 +58,38 @@ public class MainServlet extends HttpServlet {
 	@Override
 	public void doPost(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
-		System.out.print(req.getHeader("Type")+":");
-		System.out.println(req.getHeader("User-ID"));
-		
-		String userId = req.getHeader("User-ID");
 		String type = req.getHeader("Type");
-		
+
 		String content = null;
-		if(userId!=null&&type!=null&&!userId.equals("0")){
-			Message message = this.messageMap.get(userId);
-			if(message!=null){
-				content = message.getDatum();
+		
+		if("SYNC".equals(type)){
+			//Õ¨≤Ω
+			RequestHandler handler = new RequestHandler(req, requestQueue, messageMap, dao, onlineList);
+			content = handler.getContent();
+		}else if("ASYNC".equals(type)){
+			//“Ï≤Ω
+			String userId = req.getHeader("UID");
+			if(userId!=null){
+				Message message = this.messageMap.get(userId);
+				if(message!=null){
+					content = message.getDatum();
+				}else{
+					content = "Invalid UID";
+				}
 			}else{
-				content = "Invalid User-ID";
+				content = "Invalid UID";
 			}
+
+			// a handler to deal with the request
+			new RequestHandler(req, requestQueue, messageMap, dao, onlineList);
 		}else{
-			content = "Test Successfully";
+			content = "Invalid Type";
 		}
 		
-		resp.setContentType("text/html");
 		DataOutputStream dos = new DataOutputStream(resp.getOutputStream());
 		dos.writeUTF(content);
 		dos.flush();
 		dos.close();
-
-		// a handler to deal with the request
-		new RequestHandler(req, requestQueue, messageMap, dao, onlineList);
 	}
 	
 	/**
