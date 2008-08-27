@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Context path="/server" docBase="server" reloadable="true" crossContext="true">
+	<WatchedResource>WEB-INF/web.xml</WatchedResource>
+	<Resource 
+		name="jdbc/ddzsource" 
+		auth="Container" 
+		type="javax.sql.DataSource"
+		maxActive="100" 
+		maxIdle="30" 
+		maxWait="10000" 
+		username="ddz"
+		password="ddz20080819)x.;" 
+		driverClassName="com.mysql.jdbc.Driver"
+		url="jdbc:mysql://218.93.127.238:3306/ddz?autoReconnect=true&amp;useUnicode=true&amp;noAccessToProcedureBodies=true"/>
+</Context>
