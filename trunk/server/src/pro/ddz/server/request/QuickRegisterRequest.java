@@ -46,7 +46,10 @@ public class QuickRegisterRequest extends Request {
 			this.onlineList.add(user);
 		}
 		this.result = data.toString();
-		getMessage().add(data.toString());
+		
+		if(this.userId!=0){
+			getMessage().add(data.toString());
+		}
 	}
 
 	@Override
