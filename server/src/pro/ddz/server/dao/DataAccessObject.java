@@ -33,6 +33,7 @@ public class DataAccessObject {
 			user = new User();
 			String dig = Utility.getRndDigitals(Utility.LENGTH);
 			String pwd = Utility.getRndDigitals(Utility.LENGTH);
+			System.out.println(dig+pwd);
 			user.setUserName(dig);
 			user.setNickName(dig);
 			user.setPassword(pwd);
@@ -41,15 +42,16 @@ public class DataAccessObject {
 			user.setCreatTime(Calendar.getInstance().getTime());
 			
 			Connection conn = datasource.getConnection();
-			CallableStatement cStmt = conn.prepareCall("{? = call pro_quick_register[?, ?, ?]}");
-			cStmt.registerOutParameter(1, java.sql.Types.VARCHAR);
+			CallableStatement cStmt = conn.prepareCall("{call pro_quick_register(?, ?, ?, ?)}");
 			cStmt.setString(1, user.getUserName());
 			cStmt.setString(2, user.getPassword());
 			cStmt.setBoolean(3, user.isSexual());
+			cStmt.registerOutParameter(4, java.sql.Types.VARCHAR);
 			
 			cStmt.executeUpdate();
-			user.setId(cStmt.getInt(1));
+			user.setId(cStmt.getInt(4));
 		}catch(Exception e){
+			e.printStackTrace();
 			user = null;
 		}
 		return user;

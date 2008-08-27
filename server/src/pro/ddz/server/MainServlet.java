@@ -3,6 +3,8 @@ package pro.ddz.server;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Enumeration;
 import java.util.HashMap;
 
 import javax.servlet.ServletException;
@@ -60,6 +62,13 @@ public class MainServlet extends HttpServlet {
 			throws ServletException, IOException {
 		String type = req.getHeader("Type");
 
+		System.out.println(">>>>>>>>>>>>>>>>>"+new Date());
+		Enumeration<?> en = req.getHeaderNames();
+		while(en.hasMoreElements()){
+			String name = (String)en.nextElement();
+			System.out.println(name+":"+req.getHeader(name));
+		}
+		
 		String content = null;
 		
 		if("SYNC".equals(type)){

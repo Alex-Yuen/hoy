@@ -1,4 +1,6 @@
-<Context>
+<?xml version="1.0" encoding="UTF-8"?>
+<Context path="/server" docBase="D:\Backup\我的文档\workspace\Server" reloadable="true" crossContext="true">
+	<WatchedResource>WEB-INF/web.xml</WatchedResource>
 	<Resource 
 		name="jdbc/ddzsource" 
 		auth="Container" 
@@ -9,5 +11,5 @@
 		username="ddz"
 		password="ddz20080819)x.;" 
 		driverClassName="com.mysql.jdbc.Driver"
-		url="jdbc:mysql://218.93.127.238:3306/ddz?autoReconnect=true&useUnicode=true&noAccessToProcedureBodies=true"/>
+		url="jdbc:mysql://218.93.127.238:3306/ddz?autoReconnect=true&amp;useUnicode=true&amp;noAccessToProcedureBodies=true"/>
 </Context>

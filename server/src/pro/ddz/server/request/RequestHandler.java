@@ -39,7 +39,7 @@ public class RequestHandler implements Runnable {
 		//refresh onlineList
 		synchronized(this.onlineList){
 			for(User user:onlineList){
-				if(user.getId()==Integer.parseInt(this.req.getHeader("UID"))){
+				if(req.getHeader("UID")!=null&&user.getId()==Integer.parseInt(this.req.getHeader("UID"))){
 					user.setLastRequestTime(cal.getTime());
 					break;
 				}
