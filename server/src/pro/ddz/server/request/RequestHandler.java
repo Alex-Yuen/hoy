@@ -46,9 +46,11 @@ public class RequestHandler implements Runnable {
 			}
 		}
 		
-		try {
+		try {						
 			if("QUICK".equals(cmd)){
-				request = new QuickRegisterRequest(queue, messageMap, dao, onlineList);
+				request = new QuickRegisterRequest(req, messageMap, dao, onlineList);
+			}else if("LOGIN".equals(cmd)){
+				request = new LoginRequest(req, messageMap, dao, onlineList);
 			}
 			
 			if("ASYNC".equals(type)){

@@ -61,8 +61,9 @@ public class MainServlet extends HttpServlet {
 	public void doPost(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
 		String type = req.getHeader("Type");
-
-		System.out.println(">>>>>>>>>>>>>>>>>"+new Date());
+		String cmd = req.getHeader("Cmd");
+		
+		System.out.println(">>>>>>>>>>>>>>>>>["+new Date()+"]");
 		Enumeration<?> en = req.getHeaderNames();
 		while(en.hasMoreElements()){
 			String name = (String)en.nextElement();
@@ -95,6 +96,12 @@ public class MainServlet extends HttpServlet {
 			content = "Invalid Type";
 		}
 		
+		if(cmd==null){
+			content = "Invalid Cmd";
+		}
+		
+		System.out.println("<<<<<<<<<<<<<<<<<");
+		System.out.println(content);
 		DataOutputStream dos = new DataOutputStream(resp.getOutputStream());
 		dos.writeUTF(content);
 		dos.flush();
