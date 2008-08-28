@@ -27,8 +27,11 @@ public class DataAccessObject {
 		}
 	}
 	
+	//¿ìËÙ×¢²á
 	public User quickRegister(){
 		User user = null;
+		Connection conn = null;
+		CallableStatement cStmt = null;
 		try{
 			user = new User();
 			String dig = Utility.getRndDigitals(Utility.LENGTH);
@@ -41,18 +44,56 @@ public class DataAccessObject {
 			user.setSexual((new Random().nextInt(2)==1)?true:false);
 			user.setCreatTime(Calendar.getInstance().getTime());
 			
-			Connection conn = datasource.getConnection();
-			CallableStatement cStmt = conn.prepareCall("{call pro_quick_register(?, ?, ?, ?)}");
+			conn = datasource.getConnection();
+			cStmt = conn.prepareCall("{call pro_quick_register(?, ?, ?, ?)}");
 			cStmt.setString(1, user.getUserName());
 			cStmt.setString(2, user.getPassword());
 			cStmt.setBoolean(3, user.isSexual());
 			cStmt.registerOutParameter(4, java.sql.Types.VARCHAR);
 			
-			cStmt.executeUpdate();
+			cStmt.execute();
 			user.setId(cStmt.getInt(4));
 		}catch(Exception e){
 			e.printStackTrace();
 			user = null;
+		}finally{
+			try{
+				cStmt.close();
+				conn.close();
+			}catch(Exception e){
+				e.printStackTrace();
+			}
+		}
+		return user;
+	}
+	
+	//µÇÂ¼
+	public User login(String userName, String password){
+		User user = null;
+		Connection conn = null;
+		CallableStatement cStmt = null;
+		try{
+			user = new User();
+			user.setUserName(userName);
+			user.setPassword("*"+password);
+			conn = datasource.getConnection();
+			cStmt = conn.prepareCall("{call pro_login(?, ?, ?)}");
+			cStmt.setString(1, userName);
+			cStmt.setString(2, password);
+			cStmt.registerOutParameter(3, java.sql.Types.VARCHAR);
+			
+			cStmt.execute();
+			user.setId(cStmt.getInt(3));
+		}catch(Exception e){
+			e.printStackTrace();
+			user = null;
+		}finally{
+			try{
+				cStmt.close();
+				conn.close();
+			}catch(Exception e){
+				e.printStackTrace();
+			}
 		}
 		return user;
 	}

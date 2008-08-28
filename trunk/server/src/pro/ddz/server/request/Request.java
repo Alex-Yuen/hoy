@@ -3,23 +3,31 @@ package pro.ddz.server.request;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import javax.servlet.http.HttpServletRequest;
+
 import pro.ddz.server.dao.DataAccessObject;
 import pro.ddz.server.message.Message;
 import pro.ddz.server.model.User;
 
 public abstract class Request {
 	protected int userId;
-	protected RequestQueue queue;
+	protected HttpServletRequest req;
+	protected boolean isAsync;	// «∑Ò“Ï≤Ω«Î«Û
 	protected HashMap<String, Message> messageMap;
 	protected DataAccessObject dao;
 	protected ArrayList<User> onlineList;
 	protected String result;
 	
-	public Request(RequestQueue queue, HashMap<String, Message> messageMap, DataAccessObject dao, ArrayList<User> onlineList){
-		this.queue = queue;
+	public Request(HttpServletRequest req, HashMap<String, Message> messageMap, DataAccessObject dao, ArrayList<User> onlineList){
+		this.req = req;
 		this.messageMap = messageMap;
 		this.dao = dao;
 		this.onlineList = onlineList;
+		if("ASYNC".equals(req.getHeader("Type"))){
+			this.isAsync = true;
+		}else{
+			this.isAsync = false;
+		}
 	}
 	protected Message getMessage(){
 		if(this.userId==0){
