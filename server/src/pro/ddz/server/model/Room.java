@@ -11,7 +11,7 @@ public class Room {
 	
 	public static int USERS_PER_DESK = 3;
 	public static int NOMAL_ROOM_SCORE = 10;
-	public static int WAITING_USER_COUNT = 14;//最大等待用户数
+	public static int WAITING_USER_COUNT = 4;//最大等待用户数
 	
 	public Room(int id, int deskPerRoom){
 		this.id = id;
@@ -59,12 +59,19 @@ public class Room {
 	}
 	
 	public boolean jionRoom(User user){
-		boolean result = false;
-		return result;
+		if(this.users.size()<this.maxUserSize){
+			synchronized(this.users){
+				this.users.add(user);
+			}
+			return true;
+		}
+		return false;
 	}
 	
 	public boolean leftRoom(User user){
-		boolean result = false;
-		return result;
+		synchronized(this.users){
+			this.users.remove(user);
+		}
+		return true;
 	}
 }

@@ -12,6 +12,7 @@ import pro.ddz.server.model.Scene;
 import pro.ddz.server.model.User;
 import pro.ddz.server.request.LoginRequest;
 import pro.ddz.server.request.QuickRegisterRequest;
+import pro.ddz.server.request.RoomRequest;
 import pro.ddz.server.request.SceneRequest;
 
 public class RequestHandler implements Runnable {
@@ -59,6 +60,8 @@ public class RequestHandler implements Runnable {
 				request = new LoginRequest(req, messageMap, dao, onlineList, scenes);
 			}else if("SCENE".equals(cmd)){
 				request = new SceneRequest(req, messageMap, dao, onlineList, scenes);
+			}else if("ROOM".equals(cmd)){
+				request = new RoomRequest(req, messageMap, dao, onlineList, scenes);
 			}
 			
 			if(request!=null){
