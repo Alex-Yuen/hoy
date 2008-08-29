@@ -50,12 +50,19 @@ public class SceneRequest extends Request {
 			}
 			
 			data.deleteCharAt(data.length()-1);
+			//更新用户在线信息之位置
+			for(User u:onlineList){
+				if(this.userId==u.getId()){
+					u.setSceneId(reqScene.getId());
+					break;
+				}
+			}
 		}else{
 			data.append("SCENE");
 			data.append('|');
 			data.append("2");
 		}
-						
+
 		if(this.isAsync){
 			getMessage().add(data.toString());
 		}else{

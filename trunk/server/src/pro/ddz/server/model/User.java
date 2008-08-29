@@ -11,7 +11,6 @@ public class User {
 	private Date creatTime;
 	private Date loginTime;
 	private Date lastRequestTime;
-	private int[] position;
 	private boolean bind;
 	private String userName;
 	private String nickName;
@@ -20,9 +19,9 @@ public class User {
 	private String answer;
 	private boolean sexual;
 	private int score;
+	private boolean start;
 	
 	public User(){
-		this.position = new int[2];
 	}
 	
 	public int getId() {
@@ -94,14 +93,6 @@ public class User {
 		this.lastRequestTime = lastRequestTime;
 	}
 
-	public int[] getPosition() {
-		return position;
-	}
-
-	public void setPosition(int[] position) {
-		this.position = position;
-	}
-
 	public String getNickName() {
 		return nickName;
 	}
@@ -140,5 +131,13 @@ public class User {
 
 	public void setDeskId(int deskId) {
 		this.deskId = deskId;
+	}
+
+	public boolean isStart() {
+		return start;
+	}
+
+	public void setStart(boolean start) {
+		this.start = start;
 	}
 }
