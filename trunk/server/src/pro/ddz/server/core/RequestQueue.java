@@ -1,4 +1,4 @@
-package pro.ddz.server.request;
+package pro.ddz.server.core;
 
 import java.util.Collection;
 import java.util.Iterator;

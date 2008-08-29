@@ -13,12 +13,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import pro.ddz.server.dao.DataAccessObject;
-import pro.ddz.server.message.Message;
+import pro.ddz.server.core.Message;
 import pro.ddz.server.model.Scene;
 import pro.ddz.server.model.User;
-import pro.ddz.server.request.RequestExecutor;
-import pro.ddz.server.request.RequestHandler;
-import pro.ddz.server.request.RequestQueue;
+import pro.ddz.server.core.RequestExecutor;
+import pro.ddz.server.core.RequestHandler;
+import pro.ddz.server.core.RequestQueue;
 
 public class MainServlet extends HttpServlet {
 

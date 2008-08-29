@@ -1,4 +1,4 @@
-package pro.ddz.server.request;
+package pro.ddz.server.core;
 
 public class RequestExecutor implements Runnable {
 	private Request currentRequest;
