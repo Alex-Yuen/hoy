@@ -46,7 +46,7 @@ public class MainServlet extends HttpServlet {
 		scenes = new ArrayList<Scene>();
 		Scene scene = null;
 		for(int i=0; i<SCENE_SIZE; i++){
-			scene = new Scene(i, ROOM_PER_SCENE);
+			scene = new Scene(i+1, ROOM_PER_SCENE);
 			scenes.add(scene);
 		}
 		
