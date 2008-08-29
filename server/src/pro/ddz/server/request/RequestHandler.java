@@ -58,22 +58,21 @@ public class RequestHandler implements Runnable {
 				request = new SceneRequest(req, messageMap, dao, onlineList, scenes);
 			}
 			
-			if("ASYNC".equals(type)){
-				//异步情况下，放入队列
-				synchronized(this.queue){
-					//放到RequestQueue
-					if(request!=null){
+			if(request!=null){
+				if("ASYNC".equals(type)){
+					//异步情况下，放入队列
+					synchronized(this.queue){
+						//放到RequestQueue
 						this.queue.add(request);
 					}
-				}
-			}else{
-				//同步情况下，直接执行
-				if(request.isExecutable()){
-					request.execute();
-					this.finish = true;
+				}else{
+					//同步情况下，直接执行
+					if(request.isExecutable()){
+						request.execute();
+						this.finish = true;
+					}
 				}
 			}
-			
 		}catch(Exception e){
 			e.printStackTrace();
 		}
