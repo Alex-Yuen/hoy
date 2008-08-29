@@ -4,22 +4,28 @@ import java.util.ArrayList;
 
 public class Room {
 	private int id;
-	private int userCount;
 	private int score;//房间积分
+	private int maxUserSize;
 	private ArrayList<Desk> desks;
+	private ArrayList<User> users;	//进入房间的用户列表
 	
 	public static int USERS_PER_DESK = 3;
+	public static int NOMAL_ROOM_SCORE = 10;
+	public static int WAITING_USER_COUNT = 14;//最大等待用户数
 	
 	public Room(int id, int deskPerRoom){
 		this.id = id;
-		this.userCount = 0;
-		this.score = 10;
+		this.score = NOMAL_ROOM_SCORE;
 		this.desks = new ArrayList<Desk>();
+		this.users = new ArrayList<User>();
+		
+		this.maxUserSize = deskPerRoom*USERS_PER_DESK+WAITING_USER_COUNT;
+		
 		Desk desk = null;
 		
 		//initialize desks
 		for(int i=0; i<deskPerRoom; i++){
-			desk = new Desk(this.id*1000+i, USERS_PER_DESK); // desk id
+			desk = new Desk(this.id*100+i, USERS_PER_DESK); // desk id
 			desks.add(desk);
 		}
 	}
@@ -28,20 +34,20 @@ public class Room {
 		return this.id;
 	}
 	
-	public int userCount(){
-		return this.userCount;
-	}
-	
-	public int deskCount(){
+	public int size(){
 		return this.desks.size();
 	}
 	
-	public void joinRoom(User user){
-		this.userCount++;
+	public ArrayList<User> getUsers(){
+		return this.users;
 	}
 	
-	public int maxUserCount(){
-		return this.deskCount()*USERS_PER_DESK;
+	public ArrayList<Desk> getDesks(){
+		return this.desks;
+	}
+	
+	public int getMaxUserSize(){
+		return this.maxUserSize;
 	}
 
 	public int getScore() {
@@ -52,4 +58,13 @@ public class Room {
 		this.score = score;
 	}
 	
+	public boolean jionRoom(User user){
+		boolean result = false;
+		return result;
+	}
+	
+	public boolean leftRoom(User user){
+		boolean result = false;
+		return result;
+	}
 }

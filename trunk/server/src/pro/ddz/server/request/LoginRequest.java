@@ -7,12 +7,13 @@ import javax.servlet.http.HttpServletRequest;
 
 import pro.ddz.server.dao.DataAccessObject;
 import pro.ddz.server.message.Message;
+import pro.ddz.server.model.Scene;
 import pro.ddz.server.model.User;
 
 public class LoginRequest extends Request {
 
-	public LoginRequest(HttpServletRequest req, HashMap<String, Message> messageMap, DataAccessObject dao, ArrayList<User> onlineList){
-		super(req, messageMap, dao, onlineList);
+	public LoginRequest(HttpServletRequest req, HashMap<String, Message> messageMap, DataAccessObject dao, ArrayList<User> onlineList, ArrayList<Scene> scenes){
+		super(req, messageMap, dao, onlineList, scenes);
 	}
 	
 	@Override
@@ -21,6 +22,11 @@ public class LoginRequest extends Request {
 		//LOGIN|0~9|USERID@time
 		User user = dao.login(req.getHeader("Username"), req.getHeader("Password"));
 		StringBuffer data = new StringBuffer();
+		
+		//TODO
+		/**
+		 * 检查是否已经在线
+		 */
 		
 		if(user!=null){
 			this.userId = user.getId();

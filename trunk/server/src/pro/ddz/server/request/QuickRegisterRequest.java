@@ -7,12 +7,13 @@ import javax.servlet.http.HttpServletRequest;
 
 import pro.ddz.server.dao.DataAccessObject;
 import pro.ddz.server.message.Message;
+import pro.ddz.server.model.Scene;
 import pro.ddz.server.model.User;
 
 public class QuickRegisterRequest extends Request {
 
-	public QuickRegisterRequest(HttpServletRequest req, HashMap<String, Message> messageMap, DataAccessObject dao, ArrayList<User> onlineList){
-		super(req, messageMap, dao, onlineList);
+	public QuickRegisterRequest(HttpServletRequest req, HashMap<String, Message> messageMap, DataAccessObject dao, ArrayList<User> onlineList, ArrayList<Scene> scenes){
+		super(req, messageMap, dao, onlineList, scenes);
 	}
 	
 	@Override
@@ -42,12 +43,7 @@ public class QuickRegisterRequest extends Request {
 			data.append('|');
 			data.append("2");
 		}
-		
-//		//添加到在线用户列表
-//		synchronized(this.onlineList){
-//			this.onlineList.add(user);
-//		}
-		
+				
 		if(this.isAsync){
 			getMessage().add(data.toString());
 		}else{

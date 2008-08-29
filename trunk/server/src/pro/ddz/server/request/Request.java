@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import pro.ddz.server.dao.DataAccessObject;
 import pro.ddz.server.message.Message;
+import pro.ddz.server.model.Scene;
 import pro.ddz.server.model.User;
 
 public abstract class Request {
@@ -16,13 +17,15 @@ public abstract class Request {
 	protected HashMap<String, Message> messageMap;
 	protected DataAccessObject dao;
 	protected ArrayList<User> onlineList;
+	protected ArrayList<Scene> scenes;
 	protected String result;
 	
-	public Request(HttpServletRequest req, HashMap<String, Message> messageMap, DataAccessObject dao, ArrayList<User> onlineList){
+	public Request(HttpServletRequest req, HashMap<String, Message> messageMap, DataAccessObject dao, ArrayList<User> onlineList, ArrayList<Scene> scenes){
 		this.req = req;
 		this.messageMap = messageMap;
 		this.dao = dao;
 		this.onlineList = onlineList;
+		this.scenes = scenes;
 		if("ASYNC".equals(req.getHeader("Type"))){
 			this.isAsync = true;
 		}else{
