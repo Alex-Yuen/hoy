@@ -1,4 +1,4 @@
-package pro.ddz.server.message;
+package pro.ddz.server.core;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;

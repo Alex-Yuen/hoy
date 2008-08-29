@@ -1,4 +1,4 @@
-package pro.ddz.server.request;
+package pro.ddz.server.core;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -6,7 +6,7 @@ import java.util.HashMap;
 import javax.servlet.http.HttpServletRequest;
 
 import pro.ddz.server.dao.DataAccessObject;
-import pro.ddz.server.message.Message;
+import pro.ddz.server.core.Message;
 import pro.ddz.server.model.Scene;
 import pro.ddz.server.model.User;
 
