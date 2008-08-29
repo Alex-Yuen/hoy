@@ -4,6 +4,9 @@ import java.util.Date;
 
 public class User {
 	private int id;
+	private int sceneId;
+	private int roomId;
+	private int deskId;
 	private boolean login;
 	private Date creatTime;
 	private Date loginTime;
@@ -113,5 +116,29 @@ public class User {
 
 	public void setSexual(boolean sexual) {
 		this.sexual = sexual;
+	}
+
+	public int getSceneId() {
+		return sceneId;
+	}
+
+	public void setSceneId(int sceneId) {
+		this.sceneId = sceneId;
+	}
+
+	public int getRoomId() {
+		return roomId;
+	}
+
+	public void setRoomId(int roomId) {
+		this.roomId = roomId;
+	}
+
+	public int getDeskId() {
+		return deskId;
+	}
+
+	public void setDeskId(int deskId) {
+		this.deskId = deskId;
 	}
 }
