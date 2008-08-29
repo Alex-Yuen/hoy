@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import pro.ddz.server.dao.DataAccessObject;
 import pro.ddz.server.message.Message;
+import pro.ddz.server.model.Scene;
 import pro.ddz.server.model.User;
 
 public class RequestHandler implements Runnable {
@@ -16,16 +17,18 @@ public class RequestHandler implements Runnable {
 	private HashMap<String, Message> messageMap;
 	private DataAccessObject dao;
 	private ArrayList<User> onlineList;
+	private ArrayList<Scene> scenes;
 	private Request request;
 	private boolean finish;
 	private static Calendar cal = Calendar.getInstance();
 	
-	public RequestHandler(HttpServletRequest req, RequestQueue queue, HashMap<String, Message> messageMap, DataAccessObject dao, ArrayList<User> onlineList){
+	public RequestHandler(HttpServletRequest req, RequestQueue queue, HashMap<String, Message> messageMap, DataAccessObject dao, ArrayList<User> onlineList, ArrayList<Scene> scenes){
 		this.req = req;
 		this.queue = queue;
 		this.messageMap = messageMap;
 		this.dao = dao;
 		this.onlineList = onlineList;
+		this.scenes = scenes;
 		this.finish = false;
 		new Thread(this).start();
 	}
@@ -48,9 +51,11 @@ public class RequestHandler implements Runnable {
 		
 		try {						
 			if("QUICK".equals(cmd)){
-				request = new QuickRegisterRequest(req, messageMap, dao, onlineList);
+				request = new QuickRegisterRequest(req, messageMap, dao, onlineList, scenes);
 			}else if("LOGIN".equals(cmd)){
-				request = new LoginRequest(req, messageMap, dao, onlineList);
+				request = new LoginRequest(req, messageMap, dao, onlineList, scenes);
+			}else if("SCENE".equals(cmd)){
+				request = new SceneRequest(req, messageMap, dao, onlineList, scenes);
 			}
 			
 			if("ASYNC".equals(type)){

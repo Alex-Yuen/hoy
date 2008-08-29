@@ -1,29 +1,39 @@
 package pro.ddz.server.model;
 
+import java.util.ArrayList;
+
 public class Desk {
 	private int id;
-	private User[] users;
+	private int size;
+	private ArrayList<User> users;
 	
 	public Desk(int id, int size){
 		this.id = id;
-		this.users = new User[size];
+		this.size = size;
+		this.users = new ArrayList<User>();
 	}
 	
-	public int deskSize(){
-		return this.users.length;
+	public int size(){
+		return this.size;
 	}
 	
-	public int userCount(){
-		int count = 0;
-		for(int i=0; i<this.users.length; i++){
-			if(users[i]!=null){
-				count++;
-			}
-		}
-		return count;
+	public int currentCount(){
+		return this.users.size();
 	}
 	
 	public int getId(){
 		return this.id;
+	}
+	
+	public ArrayList<User> getUsers(){
+		return this.users;
+	}
+	
+	public boolean sitDown(User user){
+		return false;
+	}
+	
+	public boolean leftUp(User user){
+		return false;
 	}
 }

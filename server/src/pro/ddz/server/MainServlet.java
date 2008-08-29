@@ -14,7 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import pro.ddz.server.dao.DataAccessObject;
 import pro.ddz.server.message.Message;
-import pro.ddz.server.model.Room;
+import pro.ddz.server.model.Scene;
 import pro.ddz.server.model.User;
 import pro.ddz.server.request.RequestExecutor;
 import pro.ddz.server.request.RequestHandler;
@@ -30,11 +30,11 @@ public class MainServlet extends HttpServlet {
 	private RequestQueue requestQueue;
 	private HashMap<String, Message> messageMap;
 	private DataAccessObject dao;
-	private ArrayList<Room> rooms;
+	private ArrayList<Scene> scenes;
 	private ArrayList<User> onlineList;
 	
-	private static int ROOM_SIZE = 25;
-	private static int DESK_PER_ROOM = 10;
+	private static int SCENE_SIZE = 1;
+	private static int ROOM_PER_SCENE = 5;
 	
 	public MainServlet() {
 		//initialize
@@ -43,11 +43,11 @@ public class MainServlet extends HttpServlet {
 		this.dao = new DataAccessObject();
 		this.onlineList = new ArrayList<User>();
 		
-		rooms = new ArrayList<Room>();
-		Room room = null;
-		for(int i=0; i<ROOM_SIZE; i++){
-			room = new Room(i, DESK_PER_ROOM);
-			rooms.add(room);
+		scenes = new ArrayList<Scene>();
+		Scene scene = null;
+		for(int i=0; i<SCENE_SIZE; i++){
+			scene = new Scene(i, ROOM_PER_SCENE);
+			scenes.add(scene);
 		}
 		
 		//start request executor thread
@@ -74,7 +74,7 @@ public class MainServlet extends HttpServlet {
 		
 		if("SYNC".equals(type)){
 			//Í¬²½
-			RequestHandler handler = new RequestHandler(req, requestQueue, messageMap, dao, onlineList);
+			RequestHandler handler = new RequestHandler(req, requestQueue, messageMap, dao, onlineList, scenes);
 			content = handler.getContent();
 		}else if("ASYNC".equals(type)){
 			//Òì²½
@@ -91,7 +91,7 @@ public class MainServlet extends HttpServlet {
 			}
 
 			// a handler to deal with the request
-			new RequestHandler(req, requestQueue, messageMap, dao, onlineList);
+			new RequestHandler(req, requestQueue, messageMap, dao, onlineList, scenes);
 		}else{
 			content = "Invalid Type";
 		}
