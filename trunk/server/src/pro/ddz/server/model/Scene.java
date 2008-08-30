@@ -13,7 +13,7 @@ public class Scene {
 		this.rooms = new ArrayList<Room>();
 		Room room = null;
 		for(int i=0; i<size; i++){
-			room = new Room(id*10+i, DESK_PER_ROOM);
+			room = new Room(id*10+i+1, DESK_PER_ROOM);
 			this.rooms.add(room);
 		}
 	}
