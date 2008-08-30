@@ -29,11 +29,15 @@ public class Desk {
 		return this.users;
 	}
 	
-	public boolean sitDown(User user){
-		return false;
+	public void sitDown(User user){
+		if(this.users.size()<this.size&&!this.users.contains(user)){
+			this.users.add(user);
+		}
 	}
 	
-	public boolean leftUp(User user){
-		return false;
+	public void leftUp(User user){
+		if(this.users.contains(user)){
+			this.users.remove(user);
+		}
 	}
 }

@@ -2,6 +2,7 @@ package pro.ddz.server.request;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -25,7 +26,18 @@ public class SceneRequest extends Request {
 		String sceneId = req.getHeader("Scene-ID");
 		this.userId = req.getHeader("UID")!=null?Integer.parseInt(req.getHeader("UID")):0;
 		
+		User currentUser = null;
 		Scene reqScene = null;
+		//当前用户
+		if(this.userId!=0){
+			for(User u:this.onlineList){
+				if(u.getId()==this.userId){
+					currentUser = u;
+					break;
+				}
+			}
+		}
+		
 		if(sceneId!=null){
 			for(Scene scene:scenes){
 				if(scene.getId()==Integer.parseInt(sceneId)){
@@ -38,18 +50,7 @@ public class SceneRequest extends Request {
 		StringBuffer data = new StringBuffer();
 		
 		if(reqScene!=null){
-			data.append("SCENE");
-			data.append('|');
-			data.append("1");
-			data.append('|');
-			data.append(reqScene.size());
-			data.append('|');
-			for(Room room:reqScene.getRooms()){
-				data.append(room.getUsers().size());
-				data.append('|');
-			}
-			
-			data.deleteCharAt(data.length()-1);
+
 			//更新用户在线信息之位置
 			for(User u:onlineList){
 				if(this.userId==u.getId()){
@@ -57,6 +58,32 @@ public class SceneRequest extends Request {
 					break;
 				}
 			}
+			
+			//处理用户离开房间
+			Room room = null;
+			if(currentUser.getDeskId()!=0){
+				Iterator<Room> it = reqScene.getRooms().iterator();
+				int i = 0;
+				if(it.hasNext()&&i<currentUser.getDeskId()){
+					room = (Room)it.next();
+					i++;
+				}
+				room.leftRoom(currentUser);
+				currentUser.setRoomId(0);
+			}
+			
+			data.append("SCENE");
+			data.append('|');
+			data.append("1");
+			data.append('|');
+			data.append(reqScene.size());
+			data.append('|');
+			for(Room r:reqScene.getRooms()){
+				data.append(r.getUsers().size());
+				data.append('|');
+			}
+			
+			data.deleteCharAt(data.length()-1);
 		}else{
 			data.append("SCENE");
 			data.append('|');

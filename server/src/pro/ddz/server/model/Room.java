@@ -25,7 +25,7 @@ public class Room {
 		
 		//initialize desks
 		for(int i=0; i<deskPerRoom; i++){
-			desk = new Desk(this.id*100+i, USERS_PER_DESK); // desk id
+			desk = new Desk(this.id*100+i+1, USERS_PER_DESK); // desk id
 			desks.add(desk);
 		}
 	}
