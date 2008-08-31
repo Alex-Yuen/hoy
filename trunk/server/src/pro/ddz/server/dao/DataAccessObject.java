@@ -73,9 +73,6 @@ public class DataAccessObject {
 		Connection conn = null;
 		CallableStatement cStmt = null;
 		try{
-			user = new User();
-			user.setUserName(userName);
-			user.setPassword("*"+password);
 			conn = datasource.getConnection();
 			cStmt = conn.prepareCall("{call pro_login(?, ?, ?)}");
 			cStmt.setString(1, userName);
@@ -83,7 +80,12 @@ public class DataAccessObject {
 			cStmt.registerOutParameter(3, java.sql.Types.VARCHAR);
 			
 			cStmt.execute();
-			user.setId(cStmt.getInt(3));
+			if(cStmt.getInt(3)!=0){
+				user = new User();
+				user.setUserName(userName);
+				user.setPassword("*"+password);
+				user.setId(cStmt.getInt(3));
+			}
 		}catch(Exception e){
 			e.printStackTrace();
 			user = null;
