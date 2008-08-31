@@ -87,6 +87,8 @@ public class RoomRequest extends Request {
 			data.append('|');
 			data.append("1");
 			data.append('|');
+			data.append(reqRoom.getDesks().size());
+			data.append('|');
 			data.append(reqRoom.getUsers().size());
 			data.append('|');
 			data.append('#');
