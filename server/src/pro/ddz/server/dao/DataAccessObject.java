@@ -76,14 +76,14 @@ public class DataAccessObject {
 			conn = datasource.getConnection();
 			cStmt = conn.prepareCall("{call pro_login(?, ?, ?)}");
 			cStmt.setString(1, userName);
-			cStmt.setString(2, password);
+			cStmt.setString(2, password.toLowerCase());
 			cStmt.registerOutParameter(3, java.sql.Types.VARCHAR);
 			
 			cStmt.execute();
 			if(cStmt.getInt(3)!=0){
 				user = new User();
 				user.setUserName(userName);
-				user.setPassword("*"+password);
+				user.setPassword("*"+password.toLowerCase());
 				user.setId(cStmt.getInt(3));
 			}
 		}catch(Exception e){

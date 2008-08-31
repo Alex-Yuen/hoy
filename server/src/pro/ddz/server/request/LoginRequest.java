@@ -43,8 +43,18 @@ public class LoginRequest extends Request {
 		}
 		
 		//添加到在线用户列表
+		boolean contain = false;
 		synchronized(this.onlineList){
-			this.onlineList.add(user);
+			for(User u:this.onlineList){
+				if(u.getId()==user.getId()){
+					contain = true;
+					break;
+				}
+			}
+			//没有在线
+			if(!contain){
+				this.onlineList.add(user);
+			}
 		}
 				
 		if(this.isAsync){
