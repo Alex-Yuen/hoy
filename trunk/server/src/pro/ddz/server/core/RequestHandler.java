@@ -15,6 +15,7 @@ import pro.ddz.server.request.LoginRequest;
 import pro.ddz.server.request.QuickRegisterRequest;
 import pro.ddz.server.request.RoomRequest;
 import pro.ddz.server.request.SceneRequest;
+import pro.ddz.server.request.ScenesRequest;
 
 public class RequestHandler implements Runnable {
 	private HttpServletRequest req;
@@ -47,6 +48,7 @@ public class RequestHandler implements Runnable {
 		//refresh onlineList
 		synchronized(this.onlineList){
 			for(User user:onlineList){
+				System.out.println(user.getId());
 				if(req.getHeader("UID")!=null&&user.getId()==Integer.parseInt(this.req.getHeader("UID"))){
 					user.setLastRequestTime(cal.getTime());
 					break;
@@ -65,6 +67,8 @@ public class RequestHandler implements Runnable {
 				request = new RoomRequest(req, messageMap, dao, onlineList, scenes);
 			}else if("DESK".equals(cmd)){
 				request = new DeskRequest(req, messageMap, dao, onlineList, scenes);
+			}else if("SCENES".equals(cmd)){
+				request = new ScenesRequest(req, messageMap, dao, onlineList, scenes);
 			}
 			
 			if(request!=null){
