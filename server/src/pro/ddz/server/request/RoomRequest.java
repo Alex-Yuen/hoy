@@ -63,7 +63,7 @@ public class RoomRequest extends Request {
 		int count = 0;
 		StringBuffer data = new StringBuffer();
 		
-		if(reqRoom!=null){
+		if(currentUser!=null&&reqRoom!=null){
 
 			//更新用户在线信息之位置
 			currentUser.setRoomId(Integer.parseInt(roomId));
@@ -98,9 +98,9 @@ public class RoomRequest extends Request {
 //				data.append('|');
 				if(u2.getDeskId()!=0){
 					count++;
-					data.append(u2.isSexual());
-					data.append('|');
 					data.append(u2.getDeskId());
+					data.append('|');
+					data.append(u2.isSexual());
 					data.append('|');
 					data.append(u2.isStart());
 					data.append('|');

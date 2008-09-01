@@ -38,6 +38,7 @@ public class SceneRequest extends Request {
 			}
 		}
 		
+		//当前场景
 		if(sceneId!=null){
 			for(Scene scene:scenes){
 				if(scene.getId()==Integer.parseInt(sceneId)){
@@ -49,7 +50,7 @@ public class SceneRequest extends Request {
 		
 		StringBuffer data = new StringBuffer();
 		
-		if(reqScene!=null){
+		if(currentUser!=null&&reqScene!=null){
 
 			//更新用户在线信息之位置
 			for(User u:onlineList){

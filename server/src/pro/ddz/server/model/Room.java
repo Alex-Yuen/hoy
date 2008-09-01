@@ -59,11 +59,20 @@ public class Room {
 	}
 	
 	public boolean jionRoom(User user){
+		boolean contain = false;
 		if(this.users.size()<this.maxUserSize){
 			synchronized(this.users){
-				this.users.add(user);
+				for(User u:this.users){
+					if(user.getId()==u.getId()){
+						contain = true;
+						break;
+					}
+				}
+				if(!contain){
+					this.users.add(user);
+					return true;
+				}
 			}
-			return true;
 		}
 		return false;
 	}
