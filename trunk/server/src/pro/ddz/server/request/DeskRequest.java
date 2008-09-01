@@ -54,11 +54,11 @@ public class DeskRequest extends Request {
 		
 		//获取当前房间
 		if(currentScene!=null){
-			for(Room r:currentScene.getRooms()){
-				if(r.getId()==currentUser.getRoomId()){//获取当前用户位置
-					currentRoom = r;
-					break;
-				}
+			Iterator<Room> it = currentScene.getRooms().iterator();
+			int i = 0;
+			if(it.hasNext()&&i<currentUser.getRoomId()){
+				currentRoom = (Room)it.next();
+				i++;
 			}
 		}
 		
@@ -75,7 +75,7 @@ public class DeskRequest extends Request {
 		int count = 0;
 		StringBuffer data = new StringBuffer();
 		
-		if(reqDesk!=null){
+		if(currentUser!=null&&reqDesk!=null){
 
 			//更新用户在线信息之位置
 			currentUser.setDeskId(Integer.parseInt(deskId));
@@ -94,9 +94,9 @@ public class DeskRequest extends Request {
 //				data.append('|');
 				//if(u2.getDeskId()!=0){
 					count++;
-					data.append(u2.isSexual());
-					data.append('|');
 					data.append(u2.getDeskId());
+					data.append('|');
+					data.append(u2.isSexual());
 					data.append('|');
 					data.append(u2.isStart());
 					data.append('|');
