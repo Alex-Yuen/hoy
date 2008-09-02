@@ -1,16 +1,16 @@
 package pro.ddz.server.model;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Desk {
 	private int id;
 	private int size;
-	private ArrayList<User> users;
+	private HashMap<String, User> users;
 	
 	public Desk(int id, int size){
 		this.id = id;
 		this.size = size;
-		this.users = new ArrayList<User>();
+		this.users = new HashMap<String, User>();
 	}
 	
 	public int size(){
@@ -25,19 +25,38 @@ public class Desk {
 		return this.id;
 	}
 	
-	public ArrayList<User> getUsers(){
+	public HashMap<String, User> getUsers(){
 		return this.users;
 	}
 	
 	public void sitDown(User user){
-		if(this.users.size()<this.size&&!this.users.contains(user)){
-			this.users.add(user);
+		boolean contain = false;
+		for(int i=0;i<this.size;i++){
+			User u = (User)this.users.get(String.valueOf(i));
+			if(u!=null&&u.getId()==user.getId()){
+				contain = true;
+				break;
+			}
+		}
+		
+		if(!contain&&this.users.size()<this.size){
+			for(int i=0;i<this.size;i++){
+				User u = (User)this.users.get(String.valueOf(i));
+				if(u==null){
+					this.users.put(String.valueOf(i), user);
+					break;
+				}
+			}	
 		}
 	}
 	
 	public void leftUp(User user){
-		if(this.users.contains(user)){
-			this.users.remove(user);
+		for(String key:this.users.keySet()){
+			User u = (User)this.users.get(key);
+			if(u.getId()==user.getId()){
+				this.users.remove(key);
+				break;
+			}
 		}
 	}
 }

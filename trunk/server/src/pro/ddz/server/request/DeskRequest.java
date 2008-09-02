@@ -72,7 +72,6 @@ public class DeskRequest extends Request {
 			}
 		}
 		
-		int count = 0;
 		StringBuffer data = new StringBuffer();
 		
 		if(currentUser!=null&&reqDesk!=null){
@@ -89,18 +88,15 @@ public class DeskRequest extends Request {
 			data.append('|');
 			data.append(reqDesk.getUsers().size());
 			data.append('|');
-			for(User u2:reqDesk.getUsers()){
-//				data.append(u2.getId());
-//				data.append('|');
-				//if(u2.getDeskId()!=0){
-					count++;
-					data.append(u2.getDeskId());
-					data.append('|');
-					data.append(u2.isSexual());
-					data.append('|');
-					data.append(u2.isStart());
-					data.append('|');
-				//}
+			for(String pos:reqDesk.getUsers().keySet()){
+				User u = (User)reqDesk.getUsers().get(pos);
+				data.append('|');
+				data.append(pos);
+				data.append('|');
+				data.append(u.isSexual()?1:0);
+				data.append('|');
+				data.append(u.isStart()?1:0);
+				data.append('|');
 			}
 			
 			data.deleteCharAt(data.length()-1);
