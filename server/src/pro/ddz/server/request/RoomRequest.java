@@ -60,7 +60,6 @@ public class RoomRequest extends Request {
 			}
 		}
 		
-		int count = 0;
 		StringBuffer data = new StringBuffer();
 		
 		if(currentUser!=null&&reqRoom!=null){
@@ -91,19 +90,21 @@ public class RoomRequest extends Request {
 			data.append('|');
 			data.append(reqRoom.getUsers().size());
 			data.append('|');
-			data.append('#');
-			data.append('|');
-			for(User u2:reqRoom.getUsers()){
+			for(Desk d:reqRoom.getDesks()){
 //				data.append(u2.getId());
 //				data.append('|');
-				if(u2.getDeskId()!=0){
-					count++;
-					data.append(u2.getDeskId());
-					data.append('|');
-					data.append(u2.isSexual());
-					data.append('|');
-					data.append(u2.isStart());
-					data.append('|');
+				if(d.currentCount()>0){
+					data.append(d.getId());
+					for(String pos:d.getUsers().keySet()){
+						User u = (User)d.getUsers().get(pos);
+						data.append('|');
+						data.append(pos);
+						data.append('|');
+						data.append(u.isSexual()?1:0);
+						data.append('|');
+						data.append(u.isStart()?1:0);
+						data.append('|');
+					}
 				}
 			}
 			
@@ -115,9 +116,9 @@ public class RoomRequest extends Request {
 		}
 
 		if(this.isAsync){
-			getMessage().add(data.toString().replaceFirst("#", String.valueOf(count)));
+			getMessage().add(data.toString());
 		}else{
-			this.result = data.toString().replaceFirst("#", String.valueOf(count));
+			this.result = data.toString();
 		}
 	}
 
