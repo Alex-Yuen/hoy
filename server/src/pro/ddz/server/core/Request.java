@@ -2,8 +2,7 @@ package pro.ddz.server.core;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-
-import javax.servlet.http.HttpServletRequest;
+import java.util.Map;
 
 import pro.ddz.server.dao.DataAccessObject;
 import pro.ddz.server.core.Message;
@@ -12,7 +11,7 @@ import pro.ddz.server.model.User;
 
 public abstract class Request {
 	protected int userId;
-	protected HttpServletRequest req;
+	protected Map<String, String[]> parameters;
 	protected boolean isAsync;	// «∑Ò“Ï≤Ω«Î«Û
 	protected HashMap<String, Message> messageMap;
 	protected DataAccessObject dao;
@@ -20,13 +19,13 @@ public abstract class Request {
 	protected ArrayList<Scene> scenes;
 	protected String result;
 	
-	public Request(HttpServletRequest req, HashMap<String, Message> messageMap, DataAccessObject dao, ArrayList<User> onlineList, ArrayList<Scene> scenes){
-		this.req = req;
+	public Request(Map<String, String[]> parameters, HashMap<String, Message> messageMap, DataAccessObject dao, ArrayList<User> onlineList, ArrayList<Scene> scenes){
+		this.parameters = parameters;
 		this.messageMap = messageMap;
 		this.dao = dao;
 		this.onlineList = onlineList;
 		this.scenes = scenes;
-		if("ASYNC".equals(req.getHeader("Type"))){
+		if("ASYNC".equals(parameters.get("Type")[0])){
 			this.isAsync = true;
 		}else{
 			this.isAsync = false;

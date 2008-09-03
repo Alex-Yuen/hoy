@@ -3,8 +3,7 @@ package pro.ddz.server.request;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-
-import javax.servlet.http.HttpServletRequest;
+import java.util.Map;
 
 import pro.ddz.server.dao.DataAccessObject;
 import pro.ddz.server.core.Message;
@@ -16,16 +15,16 @@ import pro.ddz.server.model.User;
 
 public class RoomRequest extends Request {
 
-	public RoomRequest(HttpServletRequest req, HashMap<String, Message> messageMap, DataAccessObject dao, ArrayList<User> onlineList, ArrayList<Scene> scenes){
-		super(req, messageMap, dao, onlineList, scenes);
+	public RoomRequest(Map<String, String[]> parameters, HashMap<String, Message> messageMap, DataAccessObject dao, ArrayList<User> onlineList, ArrayList<Scene> scenes){
+		super(parameters, messageMap, dao, onlineList, scenes);
 	}
 	
 	@Override
 	public void execute() {
 		//实现房间资料功能
 		//ROOM|0~9|CURRENTCOUNT|ROOM1COUNT|...@time
-		String roomId = req.getHeader("Room-ID");
-		this.userId = req.getHeader("UID")!=null?Integer.parseInt(req.getHeader("UID")):0;
+		String roomId = parameters.get("Room-ID")[0];
+		this.userId = parameters.get("UID")!=null?Integer.parseInt(parameters.get("UID")[0]):0;
 		
 		Room reqRoom = null;
 		User currentUser = null;

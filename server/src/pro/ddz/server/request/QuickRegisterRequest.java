@@ -2,8 +2,7 @@ package pro.ddz.server.request;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-
-import javax.servlet.http.HttpServletRequest;
+import java.util.Map;
 
 import pro.ddz.server.core.Request;
 import pro.ddz.server.dao.DataAccessObject;
@@ -13,8 +12,8 @@ import pro.ddz.server.model.User;
 
 public class QuickRegisterRequest extends Request {
 
-	public QuickRegisterRequest(HttpServletRequest req, HashMap<String, Message> messageMap, DataAccessObject dao, ArrayList<User> onlineList, ArrayList<Scene> scenes){
-		super(req, messageMap, dao, onlineList, scenes);
+	public QuickRegisterRequest(Map<String, String[]> parameters, HashMap<String, Message> messageMap, DataAccessObject dao, ArrayList<User> onlineList, ArrayList<Scene> scenes){
+		super(parameters, messageMap, dao, onlineList, scenes);
 	}
 	
 	@Override
