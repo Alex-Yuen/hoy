@@ -22,8 +22,8 @@ public class DeskRequest extends Request {
 	public void execute() {
 		//实现房间资料功能
 		//DESK|0~9|CURRENTCOUNT|ROOM1COUNT|...@time
-		String deskId = parameters.get("Desk-ID");
-		this.userId = parameters.get("UID")!=null?Integer.parseInt(parameters.get("UID")):0;
+		String deskId = parameters.get("desk-id");
+		this.userId = parameters.get("uid")!=null?Integer.parseInt(parameters.get("uid")):0;
 		
 		Desk reqDesk = null;
 		User currentUser = null;

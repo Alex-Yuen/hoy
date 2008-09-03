@@ -19,7 +19,7 @@ public class LoginRequest extends Request {
 	public void execute() {
 		//实现快速注册功能
 		//LOGIN|0~9|USERID@time
-		User user = dao.login(parameters.get("Username"), parameters.get("Password"));
+		User user = dao.login(parameters.get("username"), parameters.get("password"));
 		StringBuffer data = new StringBuffer();
 		
 		//TODO

@@ -24,7 +24,7 @@ public abstract class Request {
 		this.dao = dao;
 		this.onlineList = onlineList;
 		this.scenes = scenes;
-		if("ASYNC".equals(parameters.get("Type"))){
+		if("ASYNC".equals(parameters.get("type"))){
 			this.isAsync = true;
 		}else{
 			this.isAsync = false;

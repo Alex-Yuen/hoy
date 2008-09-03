@@ -22,8 +22,8 @@ public class RoomRequest extends Request {
 	public void execute() {
 		//实现房间资料功能
 		//ROOM|0~9|CURRENTCOUNT|ROOM1COUNT|...@time
-		String roomId = parameters.get("Room-ID");
-		this.userId = parameters.get("UID")!=null?Integer.parseInt(parameters.get("UID")):0;
+		String roomId = parameters.get("room-id");
+		this.userId = parameters.get("uid")!=null?Integer.parseInt(parameters.get("uid")):0;
 		
 		Room reqRoom = null;
 		User currentUser = null;

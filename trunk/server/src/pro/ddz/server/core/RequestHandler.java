@@ -41,14 +41,14 @@ public class RequestHandler implements Runnable {
 	@Override
 	public void run() {
 		//构造一个Request抽象类的具体对象
-		String cmd = this.parameters.get("Cmd");
-		String type = this.parameters.get("Type");
+		String cmd = this.parameters.get("cmd");
+		String type = this.parameters.get("type");
 		
 		//refresh onlineList
 		synchronized(this.onlineList){
 			for(User user:onlineList){
 				//System.out.println(user.getId());
-				if(this.parameters.get("UID")!=null&&user.getId()==Integer.parseInt(this.parameters.get("UID"))){
+				if(this.parameters.get("uid")!=null&&user.getId()==Integer.parseInt(this.parameters.get("uid"))){
 					user.setLastRequestTime(cal.getTime());
 					break;
 				}
@@ -71,9 +71,11 @@ public class RequestHandler implements Runnable {
 			}
 			
 			if(request!=null){
+				
 				if("ASYNC".equals(type)){
 					//异步情况下，放入队列
 					//System.out.println("ADD TO QUEUE");
+					
 					synchronized(this.queue){
 						//放到RequestQueue
 						this.queue.offer(request);
