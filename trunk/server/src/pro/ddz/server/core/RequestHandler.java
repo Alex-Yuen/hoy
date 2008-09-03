@@ -3,7 +3,6 @@ package pro.ddz.server.core;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.Queue;
 
 import pro.ddz.server.dao.DataAccessObject;
@@ -18,7 +17,7 @@ import pro.ddz.server.request.SceneRequest;
 import pro.ddz.server.request.ScenesRequest;
 
 public class RequestHandler implements Runnable {
-	private Map<String, String[]> parameters;
+	private HashMap<String, String> parameters;
 	private Queue<Request> queue;
 	private HashMap<String, Message> messageMap;
 	private DataAccessObject dao;
@@ -28,7 +27,7 @@ public class RequestHandler implements Runnable {
 	private boolean finish;
 	private static Calendar cal = Calendar.getInstance();
 	
-	public RequestHandler(Map<String, String[]> parameters, Queue<Request> queue, HashMap<String, Message> messageMap, DataAccessObject dao, ArrayList<User> onlineList, ArrayList<Scene> scenes){
+	public RequestHandler(HashMap<String, String> parameters, Queue<Request> queue, HashMap<String, Message> messageMap, DataAccessObject dao, ArrayList<User> onlineList, ArrayList<Scene> scenes){
 		this.parameters = parameters;
 		this.queue = queue;
 		this.messageMap = messageMap;
@@ -42,14 +41,14 @@ public class RequestHandler implements Runnable {
 	@Override
 	public void run() {
 		//构造一个Request抽象类的具体对象
-		String cmd = this.parameters.get("Cmd")[0];
-		String type = this.parameters.get("Type")[0];
+		String cmd = this.parameters.get("Cmd");
+		String type = this.parameters.get("Type");
 		
 		//refresh onlineList
 		synchronized(this.onlineList){
 			for(User user:onlineList){
 				//System.out.println(user.getId());
-				if(this.parameters.get("UID")!=null&&user.getId()==Integer.parseInt(this.parameters.get("UID")[0])){
+				if(this.parameters.get("UID")!=null&&user.getId()==Integer.parseInt(this.parameters.get("UID"))){
 					user.setLastRequestTime(cal.getTime());
 					break;
 				}

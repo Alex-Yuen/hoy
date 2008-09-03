@@ -3,7 +3,6 @@ package pro.ddz.server.request;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Map;
 
 import pro.ddz.server.dao.DataAccessObject;
 import pro.ddz.server.core.Message;
@@ -15,7 +14,7 @@ import pro.ddz.server.model.User;
 
 public class DeskRequest extends Request {
 
-	public DeskRequest(Map<String, String[]> parameters, HashMap<String, Message> messageMap, DataAccessObject dao, ArrayList<User> onlineList, ArrayList<Scene> scenes){
+	public DeskRequest(HashMap<String, String> parameters, HashMap<String, Message> messageMap, DataAccessObject dao, ArrayList<User> onlineList, ArrayList<Scene> scenes){
 		super(parameters, messageMap, dao, onlineList, scenes);
 	}
 	
@@ -23,8 +22,8 @@ public class DeskRequest extends Request {
 	public void execute() {
 		//实现房间资料功能
 		//DESK|0~9|CURRENTCOUNT|ROOM1COUNT|...@time
-		String deskId = parameters.get("Desk-ID")[0];
-		this.userId = parameters.get("UID")!=null?Integer.parseInt(parameters.get("UID")[0]):0;
+		String deskId = parameters.get("Desk-ID");
+		this.userId = parameters.get("UID")!=null?Integer.parseInt(parameters.get("UID")):0;
 		
 		Desk reqDesk = null;
 		User currentUser = null;

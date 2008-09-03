@@ -2,7 +2,6 @@ package pro.ddz.server.request;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
 
 import pro.ddz.server.dao.DataAccessObject;
 import pro.ddz.server.core.Message;
@@ -12,7 +11,7 @@ import pro.ddz.server.model.User;
 
 public class LoginRequest extends Request {
 	private static String VERSION = "1.0"; 
-	public LoginRequest(Map<String, String[]> parameters, HashMap<String, Message> messageMap, DataAccessObject dao, ArrayList<User> onlineList, ArrayList<Scene> scenes){
+	public LoginRequest(HashMap<String, String> parameters, HashMap<String, Message> messageMap, DataAccessObject dao, ArrayList<User> onlineList, ArrayList<Scene> scenes){
 		super(parameters, messageMap, dao, onlineList, scenes);
 	}
 	
@@ -20,7 +19,7 @@ public class LoginRequest extends Request {
 	public void execute() {
 		//实现快速注册功能
 		//LOGIN|0~9|USERID@time
-		User user = dao.login(parameters.get("Username")[0], parameters.get("Password")[0]);
+		User user = dao.login(parameters.get("Username"), parameters.get("Password"));
 		StringBuffer data = new StringBuffer();
 		
 		//TODO

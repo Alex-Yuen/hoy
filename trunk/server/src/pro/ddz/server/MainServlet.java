@@ -7,7 +7,6 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.Map;
 import java.util.Queue;
 
 import javax.servlet.ServletException;
@@ -64,11 +63,10 @@ public class MainServlet extends HttpServlet {
 		watcher.start();
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public void doPost(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
-		Map<String, String[]> parameters = req.getParameterMap();
+		HashMap<String, String> parameters = new HashMap<String, String>();
 		String type = req.getHeader("Type");
 		String cmd = req.getHeader("Cmd");
 		
@@ -76,6 +74,7 @@ public class MainServlet extends HttpServlet {
 		Enumeration<?> en = req.getHeaderNames();
 		while(en.hasMoreElements()){
 			String name = (String)en.nextElement();
+			parameters.put(name, req.getHeader(name));
 			System.out.println(name+":"+req.getHeader(name));
 		}
 		
