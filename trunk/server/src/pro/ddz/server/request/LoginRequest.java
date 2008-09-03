@@ -2,8 +2,7 @@ package pro.ddz.server.request;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-
-import javax.servlet.http.HttpServletRequest;
+import java.util.Map;
 
 import pro.ddz.server.dao.DataAccessObject;
 import pro.ddz.server.core.Message;
@@ -12,16 +11,16 @@ import pro.ddz.server.model.Scene;
 import pro.ddz.server.model.User;
 
 public class LoginRequest extends Request {
-
-	public LoginRequest(HttpServletRequest req, HashMap<String, Message> messageMap, DataAccessObject dao, ArrayList<User> onlineList, ArrayList<Scene> scenes){
-		super(req, messageMap, dao, onlineList, scenes);
+	private static String VERSION = "1.0"; 
+	public LoginRequest(Map<String, String[]> parameters, HashMap<String, Message> messageMap, DataAccessObject dao, ArrayList<User> onlineList, ArrayList<Scene> scenes){
+		super(parameters, messageMap, dao, onlineList, scenes);
 	}
 	
 	@Override
 	public void execute() {
 		//实现快速注册功能
 		//LOGIN|0~9|USERID@time
-		User user = dao.login(req.getHeader("Username"), req.getHeader("Password"));
+		User user = dao.login(parameters.get("Username")[0], parameters.get("Password")[0]);
 		StringBuffer data = new StringBuffer();
 		
 		//TODO
@@ -36,6 +35,8 @@ public class LoginRequest extends Request {
 			data.append("1");
 			data.append('|');
 			data.append(this.userId);
+			data.append('|');
+			data.append(VERSION);
 		}else{
 			data.append("LOGIN");
 			data.append('|');

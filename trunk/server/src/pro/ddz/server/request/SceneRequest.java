@@ -3,8 +3,7 @@ package pro.ddz.server.request;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-
-import javax.servlet.http.HttpServletRequest;
+import java.util.Map;
 
 import pro.ddz.server.dao.DataAccessObject;
 import pro.ddz.server.core.Message;
@@ -15,16 +14,17 @@ import pro.ddz.server.model.User;
 
 public class SceneRequest extends Request {
 
-	public SceneRequest(HttpServletRequest req, HashMap<String, Message> messageMap, DataAccessObject dao, ArrayList<User> onlineList, ArrayList<Scene> scenes){
-		super(req, messageMap, dao, onlineList, scenes);
+	public SceneRequest(Map<String, String[]> parameters, HashMap<String, Message> messageMap, DataAccessObject dao, ArrayList<User> onlineList, ArrayList<Scene> scenes){
+		super(parameters, messageMap, dao, onlineList, scenes);
 	}
 	
 	@Override
 	public void execute() {
+		System.out.println("[TEST]");
 		//实现场景主要人数资料功能
 		//SCENE|0~9|ROOMCOUNT|ROOM1COUNT|...@time
-		String sceneId = req.getHeader("Scene-ID");
-		this.userId = req.getHeader("UID")!=null?Integer.parseInt(req.getHeader("UID")):0;
+		String sceneId = parameters.get("Scene-ID")[0];
+		this.userId = parameters.get("UID")!=null?Integer.parseInt(parameters.get("UID")[0]):0;
 		
 		User currentUser = null;
 		Scene reqScene = null;
@@ -92,6 +92,7 @@ public class SceneRequest extends Request {
 		}
 
 		if(this.isAsync){
+			System.out.println("[COME TO HERE]");
 			getMessage().add(data.toString());
 		}else{
 			this.result = data.toString();

@@ -6,6 +6,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.Queue;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -16,9 +19,9 @@ import pro.ddz.server.dao.DataAccessObject;
 import pro.ddz.server.core.Message;
 import pro.ddz.server.model.Scene;
 import pro.ddz.server.model.User;
+import pro.ddz.server.core.Request;
 import pro.ddz.server.core.RequestExecutor;
 import pro.ddz.server.core.RequestHandler;
-import pro.ddz.server.core.RequestQueue;
 
 public class MainServlet extends HttpServlet {
 
@@ -27,7 +30,7 @@ public class MainServlet extends HttpServlet {
 	 */
 	private static final long serialVersionUID = 3423154401523644881L;
 
-	private RequestQueue requestQueue;
+	private Queue<Request> requestQueue;
 	private HashMap<String, Message> messageMap;
 	private DataAccessObject dao;
 	private ArrayList<Scene> scenes;
@@ -38,7 +41,7 @@ public class MainServlet extends HttpServlet {
 	
 	public MainServlet() {
 		//initialize
-		this.requestQueue = new RequestQueue();
+		this.requestQueue = new LinkedList<Request>();
 		this.messageMap = new HashMap<String, Message>();//after user login, add a Message Object.
 		this.dao = new DataAccessObject();
 		this.onlineList = new ArrayList<User>();
@@ -51,15 +54,21 @@ public class MainServlet extends HttpServlet {
 		}
 		
 		//start request executor thread
-		new Thread(new RequestExecutor(requestQueue)).start();
+		Thread executor = new Thread(new RequestExecutor(requestQueue));
+		executor.setName("RequestExecutor");
+		executor.start();
 		
 		//start watcher thread
-		new Thread(new Watcher(onlineList)).start();
+		Thread watcher = new Thread(new Watcher(onlineList));
+		watcher.setName("Watcher");
+		watcher.start();
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void doPost(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
+		Map<String, String[]> parameters = req.getParameterMap();
 		String type = req.getHeader("Type");
 		String cmd = req.getHeader("Cmd");
 		
@@ -74,13 +83,13 @@ public class MainServlet extends HttpServlet {
 		
 		if("SYNC".equals(type)){
 			//Õ¨≤Ω
-			RequestHandler handler = new RequestHandler(req, requestQueue, messageMap, dao, onlineList, scenes);
+			RequestHandler handler = new RequestHandler(parameters, requestQueue, messageMap, dao, onlineList, scenes);
 			content = handler.getContent();
 		}else if("ASYNC".equals(type)){
 			//“Ï≤Ω
 			String userId = req.getHeader("UID");
 			if(userId!=null){
-				Message message = this.messageMap.get(userId);
+				Message message = getMessage(userId);
 				if(message!=null){
 					content = message.getDatum();
 				}else{
@@ -90,8 +99,11 @@ public class MainServlet extends HttpServlet {
 				content = "Invalid UID";
 			}
 
+			if("".equals(content)){
+				content = "No new messages";
+			}
 			// a handler to deal with the request
-			new RequestHandler(req, requestQueue, messageMap, dao, onlineList, scenes);
+			new RequestHandler(parameters, requestQueue, messageMap, dao, onlineList, scenes);
 		}else{
 			content = "Invalid Type";
 		}
@@ -108,6 +120,18 @@ public class MainServlet extends HttpServlet {
 		dos.close();
 	}
 	
+	private Message getMessage(String userId){
+		if(userId==null){
+			return null;
+		}else{
+			Message message = messageMap.get(userId);
+			if(message==null){
+				message = new Message();
+				messageMap.put(userId, message);
+			}
+			return message;
+		}
+	}
 	/**
 	 * remain for test from browser
 	 */

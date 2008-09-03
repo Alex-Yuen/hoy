@@ -2,8 +2,7 @@ package pro.ddz.server.request;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-
-import javax.servlet.http.HttpServletRequest;
+import java.util.Map;
 
 import pro.ddz.server.dao.DataAccessObject;
 import pro.ddz.server.core.Message;
@@ -13,15 +12,15 @@ import pro.ddz.server.model.User;
 
 public class ScenesRequest extends Request {
 
-	public ScenesRequest(HttpServletRequest req, HashMap<String, Message> messageMap, DataAccessObject dao, ArrayList<User> onlineList, ArrayList<Scene> scenes){
-		super(req, messageMap, dao, onlineList, scenes);
+	public ScenesRequest(Map<String, String[]> parameters, HashMap<String, Message> messageMap, DataAccessObject dao, ArrayList<User> onlineList, ArrayList<Scene> scenes){
+		super(parameters, messageMap, dao, onlineList, scenes);
 	}
 	
 	@Override
 	public void execute() {
 		//实现所有场资料
 		//SCENES|0~9|SCENECOUNT|ROOM1TYPE|...@time
-		this.userId = req.getHeader("UID")!=null?Integer.parseInt(req.getHeader("UID")):0;
+		this.userId = parameters.get("UID")!=null?Integer.parseInt(parameters.get("UID")[0]):0;
 		
 		User currentUser = null;
 		//当前用户
