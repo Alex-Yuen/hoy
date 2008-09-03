@@ -2,10 +2,10 @@ package pro.ddz.server.core;
 
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.Queue;
 
 public class RequestQueue implements Queue<Request>{
-
 	@Override
 	public boolean add(Request e) {
 		// TODO Auto-generated method stub
