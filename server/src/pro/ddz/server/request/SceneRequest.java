@@ -19,11 +19,10 @@ public class SceneRequest extends Request {
 	
 	@Override
 	public void execute() {
-		System.out.println("[TEST]");
 		//实现场景主要人数资料功能
 		//SCENE|0~9|ROOMCOUNT|ROOM1COUNT|...@time
-		String sceneId = parameters.get("Scene-ID");
-		this.userId = parameters.get("UID")!=null?Integer.parseInt(parameters.get("UID")):0;
+		String sceneId = parameters.get("scene-id");
+		this.userId = parameters.get("uid")!=null?Integer.parseInt(parameters.get("uid")):0;
 		
 		User currentUser = null;
 		Scene reqScene = null;
@@ -91,7 +90,7 @@ public class SceneRequest extends Request {
 		}
 
 		if(this.isAsync){
-			System.out.println("[COME TO HERE]");
+			//System.out.println("[COME TO HERE]");
 			getMessage().add(data.toString());
 		}else{
 			this.result = data.toString();

@@ -19,7 +19,7 @@ public class ScenesRequest extends Request {
 	public void execute() {
 		//实现所有场资料
 		//SCENES|0~9|SCENECOUNT|ROOM1TYPE|...@time
-		this.userId = parameters.get("UID")!=null?Integer.parseInt(parameters.get("UID")):0;
+		this.userId = parameters.get("uid")!=null?Integer.parseInt(parameters.get("uid")):0;
 		
 		User currentUser = null;
 		//当前用户
