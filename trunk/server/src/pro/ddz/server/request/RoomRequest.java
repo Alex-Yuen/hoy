@@ -78,37 +78,45 @@ public class RoomRequest extends Request {
 			}
 			
 			//用户加入reqRoom
-			reqRoom.jionRoom(currentUser);
-			
-			data.append("ROOM");
-			data.append('|');
-			data.append("1");
-			data.append('|');
-			data.append(reqRoom.getDesks().size());
-			data.append('|');
-			data.append(reqRoom.getUsers().size());
-			data.append('|');
-			for(Desk d:reqRoom.getDesks()){
-//				data.append(u2.getId());
-//				data.append('|');
-				if(d.currentCount()>0){
-					data.append(d.getId());
-					data.append('|');
-					for(int i=0;i<3;i++){
-						User u = (User)d.getUsers().get(String.valueOf(i));
-						if(u!=null){
-							data.append(i);
-							data.append('|');
-							data.append(u.isSexual()?1:0);
-							data.append('|');
-							data.append(u.isStart()?1:0);
-							data.append('|');
+			boolean join = reqRoom.joinRoom(currentUser);
+			//debug
+			join = true;
+			if(join){
+				data.append("ROOM");
+				data.append('|');
+				data.append("1");
+				data.append('|');
+				data.append(reqRoom.getDesks().size());
+				data.append('|');
+				data.append(reqRoom.getUsers().size());
+				data.append('|');
+				for(Desk d:reqRoom.getDesks()){
+	//				data.append(u2.getId());
+	//				data.append('|');
+					if(d.currentCount()>0){
+						data.append(d.getId());
+						data.append('|');
+						for(int i=0;i<3;i++){
+							User u = (User)d.getUsers().get(String.valueOf(i));
+							if(u!=null){
+								data.append(i);
+								data.append('|');
+								data.append(u.isSexual()?1:0);
+								data.append('|');
+								data.append(u.isStart()?1:0);
+								data.append('|');
+							}
 						}
 					}
 				}
+				
+				data.deleteCharAt(data.length()-1);
+			}else{
+				//人满
+				data.append("ROOM");
+				data.append('|');
+				data.append("3");
 			}
-			
-			data.deleteCharAt(data.length()-1);
 		}else{
 			data.append("ROOM");
 			data.append('|');

@@ -36,7 +36,7 @@ public class DataAccessObject {
 			user = new User();
 			String dig = Utility.getRndDigitals(Utility.LENGTH);
 			String pwd = Utility.getRndDigitals(Utility.LENGTH);
-			System.out.println(dig+pwd);
+			//System.out.println(dig+pwd);
 			user.setUserName(dig);
 			user.setNickName(dig);
 			user.setPassword(pwd);

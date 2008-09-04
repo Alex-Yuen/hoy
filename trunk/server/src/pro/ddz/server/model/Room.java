@@ -58,20 +58,21 @@ public class Room {
 		this.score = score;
 	}
 	
-	public boolean jionRoom(User user){
+	public boolean joinRoom(User user){
 		boolean contain = false;
-		if(this.users.size()<this.maxUserSize){
-			synchronized(this.users){
-				for(User u:this.users){
-					if(user.getId()==u.getId()){
-						contain = true;
-						break;
+		System.out.println("[JOIN USER]");
+		synchronized(this.users){
+			if(this.users.size()<this.maxUserSize){
+					for(User u:this.users){
+						if(user.getId()==u.getId()){
+							contain = true;
+							break;
+						}
 					}
-				}
-				if(!contain){
-					this.users.add(user);
-					return true;
-				}
+					if(!contain){
+						this.users.add(user);
+						return true;
+					}
 			}
 		}
 		return false;
