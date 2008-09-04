@@ -86,15 +86,16 @@ public class DeskRequest extends Request {
 			data.append('|');
 			data.append(reqDesk.getUsers().size());
 			data.append('|');
-			for(String pos:reqDesk.getUsers().keySet()){
-				User u = (User)reqDesk.getUsers().get(pos);
-				data.append('|');
-				data.append(pos);
-				data.append('|');
-				data.append(u.isSexual()?1:0);
-				data.append('|');
-				data.append(u.isStart()?1:0);
-				data.append('|');
+			for(int i=0;i<3;i++){
+				User u = (User)reqDesk.getUsers().get(String.valueOf(i));
+				if(u!=null){
+					data.append(i);
+					data.append('|');
+					data.append(u.isSexual()?1:0);
+					data.append('|');
+					data.append(u.isStart()?1:0);
+					data.append('|');
+				}
 			}
 			
 			data.deleteCharAt(data.length()-1);

@@ -93,15 +93,17 @@ public class RoomRequest extends Request {
 //				data.append('|');
 				if(d.currentCount()>0){
 					data.append(d.getId());
-					for(String pos:d.getUsers().keySet()){
-						User u = (User)d.getUsers().get(pos);
-						data.append('|');
-						data.append(pos);
-						data.append('|');
-						data.append(u.isSexual()?1:0);
-						data.append('|');
-						data.append(u.isStart()?1:0);
-						data.append('|');
+					data.append('|');
+					for(int i=0;i<3;i++){
+						User u = (User)d.getUsers().get(String.valueOf(i));
+						if(u!=null){
+							data.append(i);
+							data.append('|');
+							data.append(u.isSexual()?1:0);
+							data.append('|');
+							data.append(u.isStart()?1:0);
+							data.append('|');
+						}
 					}
 				}
 			}
