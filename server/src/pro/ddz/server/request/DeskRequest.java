@@ -62,11 +62,11 @@ public class DeskRequest extends Request {
 		
 		//获取进入的桌子
 		if(currentRoom!=null&&deskId!=null){
-			Iterator<Desk> it = currentRoom.getDesks().iterator();
-			int i = 0;
-			if(it.hasNext()&&i<Integer.parseInt(deskId)){
-				reqDesk = (Desk)it.next();
-				i++;
+			for(Desk d:currentRoom.getDesks()){
+				if(d.getId()==Integer.parseInt(deskId)){
+					reqDesk = d;
+					break;
+				}
 			}
 		}
 		
@@ -78,27 +78,35 @@ public class DeskRequest extends Request {
 			currentUser.setDeskId(Integer.parseInt(deskId));
 			
 			//用户加入reqDesk
-			reqDesk.sitDown(currentUser);
-			
-			data.append("DESK");
-			data.append('|');
-			data.append("1");
-			data.append('|');
-			data.append(reqDesk.getUsers().size());
-			data.append('|');
-			for(int i=0;i<3;i++){
-				User u = (User)reqDesk.getUsers().get(String.valueOf(i));
-				if(u!=null){
-					data.append(i);
-					data.append('|');
-					data.append(u.isSexual()?1:0);
-					data.append('|');
-					data.append(u.isStart()?1:0);
-					data.append('|');
+			boolean sitDown = reqDesk.sitDown(currentUser);
+			//debug
+			sitDown = true;
+			if(sitDown){
+				data.append("DESK");
+				data.append('|');
+				data.append("1");
+				data.append('|');
+				data.append(reqDesk.getUsers().size());
+				data.append('|');
+				for(int i=0;i<3;i++){
+					User u = (User)reqDesk.getUsers().get(String.valueOf(i));
+					if(u!=null){
+						data.append(i);
+						data.append('|');
+						data.append(u.isSexual()?1:0);
+						data.append('|');
+						data.append(u.isStart()?1:0);
+						data.append('|');
+					}
 				}
+				
+				data.deleteCharAt(data.length()-1);
+			}else{
+				//人满
+				data.append("DESK");
+				data.append('|');
+				data.append("3");
 			}
-			
-			data.deleteCharAt(data.length()-1);
 		}else{
 			data.append("DESK");
 			data.append('|');
