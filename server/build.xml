@@ -26,8 +26,8 @@
     -outjars etc/ddz-server-obf.jar
 
     -libraryjars ${java.home}/lib/rt.jar
-  	-libraryjars WEB-INF/lib/mysql-connector-java-5.1.6-bin.jar
-  	-libraryjars ${proguard.home}/lib/servlet-api.jar
+  	-libraryjars etc/lib/mysql-connector-java-5.1.6-bin.jar
+  	-libraryjars etc/lib/servlet-api.jar
     <!-- -libraryjars junit.jar    -->
 			<!-- -libraryjars servlet.jar  -->
 			<!-- -libraryjars jai_core.jar -->
