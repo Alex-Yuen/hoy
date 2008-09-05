@@ -74,10 +74,13 @@ public class DataAccessObject {
 		CallableStatement cStmt = null;
 		try{
 			conn = datasource.getConnection();
-			cStmt = conn.prepareCall("{call pro_login(?, ?, ?)}");
+			cStmt = conn.prepareCall("{call pro_login(?, ?, ?, ?, ?, ?)}");
 			cStmt.setString(1, userName);
 			cStmt.setString(2, password.toLowerCase());
 			cStmt.registerOutParameter(3, java.sql.Types.VARCHAR);
+			cStmt.registerOutParameter(4, java.sql.Types.VARCHAR);
+			cStmt.registerOutParameter(5, java.sql.Types.INTEGER);
+			cStmt.registerOutParameter(6, java.sql.Types.BIT);
 			
 			cStmt.execute();
 			if(cStmt.getInt(3)!=0){
@@ -85,6 +88,9 @@ public class DataAccessObject {
 				user.setUserName(userName);
 				user.setPassword("*"+password.toLowerCase());
 				user.setId(cStmt.getInt(3));
+				user.setNickName(cStmt.getString(4));
+				user.setScore(cStmt.getInt(5));
+				user.setSexual(cStmt.getBoolean(6));
 			}
 		}catch(Exception e){
 			e.printStackTrace();

@@ -68,6 +68,9 @@ public class RequestHandler implements Runnable {
 				request = new DeskRequest(parameters, messageMap, dao, onlineList, scenes);
 			}else if("SCENES".equals(cmd)){
 				request = new ScenesRequest(parameters, messageMap, dao, onlineList, scenes);
+			}else if("BEAT".equals(cmd)){
+				request = null;
+				this.finish = true;
 			}
 			
 			if(request!=null){
@@ -104,7 +107,7 @@ public class RequestHandler implements Runnable {
 				e.printStackTrace();
 			}
 		}
-		result = request.getResult();
+		result = request!=null?request.getResult():"Beats received no messages by SYNC.";
 		return result;
 	}
 }
