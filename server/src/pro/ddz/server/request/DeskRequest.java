@@ -39,7 +39,7 @@ public class DeskRequest extends Request {
 				}
 			}
 		}
-		
+				
 		//获取当前场景
 		if(currentUser!=null){
 			for(Scene s:this.scenes){
@@ -72,16 +72,63 @@ public class DeskRequest extends Request {
 		
 		StringBuffer data = new StringBuffer();
 		
-		if(currentUser!=null&&reqDesk!=null){
-
+		if(reqDesk!=null&&currentUser!=null){
 			//更新用户在线信息之位置
 			currentUser.setDeskId(Integer.parseInt(deskId));
-			
+				
 			//用户加入reqDesk
-			boolean sitDown = reqDesk.sitDown(currentUser);
+			int sitDown = reqDesk.sitDown(currentUser);
+								
 			//debug
-			sitDown = true;
-			if(sitDown){
+			//sitDown = true;
+			if(sitDown>-1){
+
+				//当前桌子用户数>1，发送通知
+				if(reqDesk.currentCount()>1){
+					for(User u:reqDesk.getUsers().values()){
+						if(u.getId()!=currentUser.getId()){
+							Message m = getMessage(String.valueOf(u.getId()));
+							StringBuffer bs = new StringBuffer();
+							bs.append("SIT");
+							bs.append("|");
+							bs.append("1");
+							bs.append("|");
+							bs.append(reqDesk.getId());
+							bs.append("|");
+							bs.append(sitDown);
+							bs.append('|');
+							bs.append(currentUser.getNickName());
+							bs.append('|');
+							bs.append(currentUser.getScore());
+							bs.append('|');
+							bs.append(currentUser.isSexual()?1:0);
+							bs.append('|');
+							bs.append(currentUser.isStart()?1:0);
+							m.add(bs.toString());
+						}
+					}
+				}
+					
+				//通知房间里的其他玩家，我坐上去了
+				for(User ux:currentRoom.getUsers()){
+					if(ux.getDeskId()==0){
+						Message m = getMessage(String.valueOf(ux.getId()));
+						StringBuffer bs = new StringBuffer();
+						bs.append("SIT");
+						bs.append("|");
+						bs.append("1");
+						bs.append("|");
+						bs.append(reqDesk.getId());
+						bs.append("|");
+						bs.append(sitDown);
+						bs.append('|');
+						bs.append(currentUser.isSexual()?1:0);
+						bs.append('|');
+						bs.append(currentUser.isStart()?1:0);
+						m.add(bs.toString());
+					}
+				}
+					
 				data.append("DESK");
 				data.append('|');
 				data.append("1");
@@ -93,13 +140,17 @@ public class DeskRequest extends Request {
 					if(u!=null){
 						data.append(i);
 						data.append('|');
+						data.append(u.getNickName());
+						data.append('|');
+						data.append(u.getScore());
+						data.append('|');
 						data.append(u.isSexual()?1:0);
 						data.append('|');
 						data.append(u.isStart()?1:0);
 						data.append('|');
 					}
 				}
-				
+					
 				data.deleteCharAt(data.length()-1);
 			}else{
 				//人满
@@ -112,7 +163,7 @@ public class DeskRequest extends Request {
 			data.append('|');
 			data.append("2");
 		}
-
+		
 		if(this.isAsync){
 			getMessage().add(data.toString());
 		}else{

@@ -60,23 +60,35 @@ public class RoomRequest extends Request {
 		
 		StringBuffer data = new StringBuffer();
 		
-		if(currentUser!=null&&reqRoom!=null){
-
+		if(reqRoom!=null&&currentUser!=null){
 			//更新用户在线信息之位置
 			currentUser.setRoomId(Integer.parseInt(roomId));
 			//处理用户离开桌子
-			Desk desk = null;
+			Desk currentDesk = null;
 			if(currentUser.getDeskId()!=0){
-				Iterator<Desk> it = reqRoom.getDesks().iterator();
-				int i = 0;
-				if(it.hasNext()&&i<currentUser.getDeskId()){
-					desk = (Desk)it.next();
-					i++;
+				for(Desk desk:reqRoom.getDesks()){
+					if(desk.getId()==currentUser.getDeskId()){
+						currentDesk = desk;
+						break;
+					}
 				}
-				desk.leftUp(currentUser);
+				currentDesk.leftUp(currentUser);
 				currentUser.setDeskId(0);
+				//如果还有人，则通知其他人，你离开桌子了
+				if(currentDesk.currentCount()>0){
+					for(User u:currentDesk.getUsers().values()){
+						Message m = getMessage(String.valueOf(u.getId()));
+						StringBuffer bs = new StringBuffer();
+						bs.append("LEFT");
+						bs.append("|");
+						bs.append("1");
+						bs.append("|");
+						bs.append(this.userId);
+						m.add(bs.toString());
+					}
+				}
 			}
-			
+				
 			//用户加入reqRoom
 			boolean join = reqRoom.joinRoom(currentUser);
 			//debug
@@ -91,8 +103,6 @@ public class RoomRequest extends Request {
 				data.append(reqRoom.getUsers().size());
 				data.append('|');
 				for(Desk d:reqRoom.getDesks()){
-	//				data.append(u2.getId());
-	//				data.append('|');
 					if(d.currentCount()>0){
 						data.append(d.getId());
 						data.append('|');
@@ -109,7 +119,7 @@ public class RoomRequest extends Request {
 						}
 					}
 				}
-				
+					
 				data.deleteCharAt(data.length()-1);
 			}else{
 				//人满
@@ -122,7 +132,7 @@ public class RoomRequest extends Request {
 			data.append('|');
 			data.append("2");
 		}
-
+		
 		if(this.isAsync){
 			getMessage().add(data.toString());
 		}else{

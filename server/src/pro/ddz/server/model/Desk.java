@@ -29,7 +29,7 @@ public class Desk {
 		return this.users;
 	}
 	
-	public boolean sitDown(User user){
+	public int sitDown(User user){
 		boolean contain = false;
 		synchronized(this){
 			for(int i=0;i<this.size;i++){
@@ -45,12 +45,12 @@ public class Desk {
 					User u = (User)this.users.get(String.valueOf(i));
 					if(u==null){
 						this.users.put(String.valueOf(i), user);
-						return true;
+						return i;
 					}
 				}	
 			}
 		}
-		return false;
+		return -1;
 	}
 	
 	public void leftUp(User user){

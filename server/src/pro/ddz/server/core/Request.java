@@ -36,8 +36,20 @@ public abstract class Request {
 		}else{
 			Message message = messageMap.get(String.valueOf(this.userId));
 			if(message==null){
-				message = new Message();
+				message = new Message(String.valueOf(this.userId));
 				messageMap.put(String.valueOf(this.userId), message);
+			}
+			return message;
+		}
+	}
+	protected Message getMessage(String uid){
+		if(uid==null){
+			return null;
+		}else{
+			Message message = messageMap.get(uid);
+			if(message==null){
+				message = new Message(uid);
+				messageMap.put(uid, message);
 			}
 			return message;
 		}
