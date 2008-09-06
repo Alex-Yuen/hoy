@@ -31,7 +31,8 @@ public class Message {
 			/**
 			 * 原理是，根据服务器和用户当前状态，有些消息是没有用的，是过时的，在datum数组中。
 			 */
-			System.out.println(userId);
+			//debug
+			userId.length();
 			if(true){
 				sb.append(s);
 				sb.append('\n');

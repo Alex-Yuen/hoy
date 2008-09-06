@@ -12,6 +12,7 @@ import pro.ddz.server.model.User;
 import pro.ddz.server.request.DeskRequest;
 import pro.ddz.server.request.LoginRequest;
 import pro.ddz.server.request.QuickRegisterRequest;
+import pro.ddz.server.request.ReadyRequest;
 import pro.ddz.server.request.RoomRequest;
 import pro.ddz.server.request.SceneRequest;
 import pro.ddz.server.request.ScenesRequest;
@@ -68,6 +69,10 @@ public class RequestHandler implements Runnable {
 				request = new DeskRequest(parameters, messageMap, dao, onlineList, scenes);
 			}else if("SCENES".equals(cmd)){
 				request = new ScenesRequest(parameters, messageMap, dao, onlineList, scenes);
+			}else if("READY".equals(cmd)){
+				request = new ReadyRequest(parameters, messageMap, dao, onlineList, scenes);
+			}else if("UNREADY".equals(cmd)){
+				request = new ReadyRequest(parameters, messageMap, dao, onlineList, scenes);
 			}else if("BEAT".equals(cmd)){
 				request = null;
 				this.finish = true;
