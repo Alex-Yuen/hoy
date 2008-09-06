@@ -53,13 +53,14 @@ public class Desk {
 		return -1;
 	}
 	
-	public void leftUp(User user){
+	public int leftUp(User user){
 		for(String key:this.users.keySet()){
 			User u = (User)this.users.get(key);
 			if(u.getId()==user.getId()){
 				this.users.remove(key);
-				break;
+				return Integer.parseInt(key);
 			}
 		}
+		return -1;
 	}
 }

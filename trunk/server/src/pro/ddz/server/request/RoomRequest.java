@@ -72,13 +72,27 @@ public class RoomRequest extends Request {
 						break;
 					}
 				}
-				currentDesk.leftUp(currentUser);
+				int pos = currentDesk.leftUp(currentUser);
+				//System.out.println("[LEFTUP]"+currentUser.getId());
 				currentUser.setDeskId(0);
 				//如果还有人，则通知其他人，你离开桌子了
 				if(currentDesk.currentCount()>0){
-					for(String pos:currentDesk.getUsers().keySet()){
-						User u = currentDesk.getUsers().get(pos);
+					for(User u:currentDesk.getUsers().values()){
 						Message m = getMessage(String.valueOf(u.getId()));
+						StringBuffer bs = new StringBuffer();
+						bs.append("LEFT");
+						bs.append("|");
+						bs.append("1");
+						bs.append("|");
+						bs.append(pos);
+						m.add(bs.toString());
+					}
+				}
+				
+				//告诉房间其他人，你离开桌子了
+				for(User ux:reqRoom.getUsers()){
+					if(ux.getId()!=this.userId){
+						Message m = getMessage(String.valueOf(ux.getId()));
 						StringBuffer bs = new StringBuffer();
 						bs.append("LEFT");
 						bs.append("|");

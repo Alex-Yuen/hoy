@@ -78,7 +78,7 @@ public class DeskRequest extends Request {
 				
 			//用户加入reqDesk
 			int sitDown = reqDesk.sitDown(currentUser);
-								
+			//System.out.println("[SITDOWN]"+currentUser.getId()+":"+sitDown);
 			//debug
 			//sitDown = true;
 			if(sitDown>-1){
