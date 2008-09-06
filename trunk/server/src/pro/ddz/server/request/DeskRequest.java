@@ -97,6 +97,8 @@ public class DeskRequest extends Request {
 							bs.append("|");
 							bs.append(sitDown);
 							bs.append('|');
+							bs.append(currentUser.getUserName());
+							bs.append('|');
 							bs.append(currentUser.getNickName());
 							bs.append('|');
 							bs.append(currentUser.getScore());
@@ -139,6 +141,8 @@ public class DeskRequest extends Request {
 					User u = (User)reqDesk.getUsers().get(String.valueOf(i));
 					if(u!=null){
 						data.append(i);
+						data.append('|');
+						data.append(u.getUserName());
 						data.append('|');
 						data.append(u.getNickName());
 						data.append('|');
