@@ -76,14 +76,15 @@ public class RoomRequest extends Request {
 				currentUser.setDeskId(0);
 				//如果还有人，则通知其他人，你离开桌子了
 				if(currentDesk.currentCount()>0){
-					for(User u:currentDesk.getUsers().values()){
+					for(String pos:currentDesk.getUsers().keySet()){
+						User u = currentDesk.getUsers().get(pos);
 						Message m = getMessage(String.valueOf(u.getId()));
 						StringBuffer bs = new StringBuffer();
 						bs.append("LEFT");
 						bs.append("|");
 						bs.append("1");
 						bs.append("|");
-						bs.append(this.userId);
+						bs.append(pos);
 						m.add(bs.toString());
 					}
 				}
