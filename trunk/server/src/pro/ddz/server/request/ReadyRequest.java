@@ -2,7 +2,6 @@ package pro.ddz.server.request;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 
 import pro.ddz.server.dao.DataAccessObject;
 import pro.ddz.server.core.Message;
@@ -51,11 +50,11 @@ public class ReadyRequest extends Request {
 		
 		//获取当前房间
 		if(currentScene!=null){
-			Iterator<Room> it = currentScene.getRooms().iterator();
-			int i = 0;
-			if(it.hasNext()&&i<currentUser.getRoomId()){
-				currentRoom = (Room)it.next();
-				i++;
+			for(Room room:currentScene.getRooms()){
+				if(room.getId()==currentUser.getRoomId()){
+					currentRoom = room;
+					break;
+				}
 			}
 		}
 		
@@ -70,11 +69,26 @@ public class ReadyRequest extends Request {
 		}
 		
 		StringBuffer data = new StringBuffer();
+
+		int start = 0;
 		
-		if(currentDesk!=null&&currentUser!=null){
+		//如果开始了，则不做处理
+		if(currentDesk!=null&&currentUser!=null&&!currentDesk.isStart()){
 			//更新用户在线信息之位置
 			if("READY".equals(ready)){
 				currentUser.setStart(true);
+				for(User u:currentDesk.getUsers().values()){
+					if(u.isStart()){
+						start++;
+					}
+				}
+				
+				if(start==currentDesk.size()){
+					//桌子发牌
+					currentDesk.deal();
+					currentDesk.setStart(true);
+				}
+				
 			}else{
 				currentUser.setStart(false);
 			}
@@ -93,14 +107,36 @@ public class ReadyRequest extends Request {
 			if(currentDesk.currentCount()>1){
 				for(String pos:currentDesk.getUsers().keySet()){
 					User u = currentDesk.getUsers().get(pos);
+					Message m = getMessage(String.valueOf(u.getId()));
+					
 					if(u.getId()!=currentUser.getId()){
-						Message m = getMessage(String.valueOf(u.getId()));
 						StringBuffer bs = new StringBuffer();
-						bs.append(ready);
+						if(currentDesk.isStart()){
+							bs.append("START");
+							bs.append("|");
+							bs.append("1");
+						}else{
+							bs.append(ready);
+							bs.append("|");
+							bs.append("3");
+							bs.append("|");
+							bs.append(position);
+						}
+						m.add(bs.toString());
+					}
+					
+					//发牌, 通知桌子所有人
+					if(currentDesk.isStart()){
+						StringBuffer bs = new StringBuffer();
+						bs.append("DEAL");
 						bs.append("|");
-						bs.append("3");
+						bs.append("1");
 						bs.append("|");
-						bs.append(position);
+						for(String card:currentDesk.getCards().get(pos)){
+							bs.append(card);
+							bs.append("|");
+						}
+						bs.deleteCharAt(data.length()-1);
 						m.add(bs.toString());
 					}
 				}
@@ -110,14 +146,42 @@ public class ReadyRequest extends Request {
 			for(User u:currentRoom.getUsers()){
 				Message m = getMessage(String.valueOf(u.getId()));
 				StringBuffer bs = new StringBuffer();
-				bs.append(ready);
-				bs.append("|");
-				bs.append("3");
-				bs.append("|");
-				bs.append(currentDesk.getId());
-				bs.append("|");
-				bs.append(position);
+				if(currentDesk.isStart()){
+					bs.append("START");
+					bs.append("|");
+					bs.append("1");
+					bs.append("|");
+					bs.append(currentDesk.getId());
+				}else{
+					bs.append(ready);
+					bs.append("|");
+					bs.append("3");
+					bs.append("|");
+					bs.append(currentDesk.getId());
+					bs.append("|");
+					bs.append(position);
+				}
 				m.add(bs.toString());
+			}
+			
+			if(currentDesk.isStart()){
+				data.append("START");
+				data.append("|");
+				data.append("1");
+			}else{
+				data.append(ready);
+				data.append("|");
+				data.append("1");
+			}
+		}else{
+			if(currentDesk.isStart()){
+				data.append(ready);
+				data.append("|");
+				data.append("4");
+			}else{
+				data.append(ready);
+				data.append("|");
+				data.append("2");
 			}
 		}
 		

@@ -36,7 +36,7 @@ public abstract class Request {
 		}else{
 			Message message = messageMap.get(String.valueOf(this.userId));
 			if(message==null){
-				message = new Message(String.valueOf(this.userId));
+				message = new Message(String.valueOf(this.userId), this.onlineList);
 				messageMap.put(String.valueOf(this.userId), message);
 			}
 			return message;
@@ -48,7 +48,7 @@ public abstract class Request {
 		}else{
 			Message message = messageMap.get(uid);
 			if(message==null){
-				message = new Message(uid);
+				message = new Message(uid, this.onlineList);
 				messageMap.put(uid, message);
 			}
 			return message;

@@ -2,7 +2,6 @@ package pro.ddz.server.request;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 
 import pro.ddz.server.dao.DataAccessObject;
 import pro.ddz.server.core.Message;
@@ -50,11 +49,11 @@ public class RoomRequest extends Request {
 		
 		//获取进入房间
 		if(currentScene!=null&&roomId!=null){
-			Iterator<Room> it = currentScene.getRooms().iterator();
-			int i = 0;
-			if(it.hasNext()&&i<Integer.parseInt(roomId)){
-				reqRoom = (Room)it.next();
-				i++;
+			for(Room room:currentScene.getRooms()){
+				if(room.getId()==currentUser.getRoomId()){
+					reqRoom = room;
+					break;
+				}
 			}
 		}
 		
@@ -97,6 +96,8 @@ public class RoomRequest extends Request {
 						bs.append("LEFT");
 						bs.append("|");
 						bs.append("1");
+						bs.append("|");
+						bs.append(currentDesk.getId());
 						bs.append("|");
 						bs.append(pos);
 						m.add(bs.toString());
