@@ -125,7 +125,7 @@ public class MainServlet extends HttpServlet {
 		}else{
 			Message message = messageMap.get(userId);
 			if(message==null){
-				message = new Message(userId);
+				message = new Message(userId, this.onlineList);
 				messageMap.put(userId, message);
 			}
 			return message;

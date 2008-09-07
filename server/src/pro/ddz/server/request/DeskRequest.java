@@ -2,7 +2,6 @@ package pro.ddz.server.request;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 
 import pro.ddz.server.dao.DataAccessObject;
 import pro.ddz.server.core.Message;
@@ -52,11 +51,11 @@ public class DeskRequest extends Request {
 		
 		//获取当前房间
 		if(currentScene!=null){
-			Iterator<Room> it = currentScene.getRooms().iterator();
-			int i = 0;
-			if(it.hasNext()&&i<currentUser.getRoomId()){
-				currentRoom = (Room)it.next();
-				i++;
+			for(Room room:currentScene.getRooms()){
+				if(room.getId()==currentUser.getRoomId()){
+					currentRoom = room;
+					break;
+				}
 			}
 		}
 		

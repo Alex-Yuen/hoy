@@ -9,6 +9,7 @@ import pro.ddz.server.dao.DataAccessObject;
 import pro.ddz.server.core.Message;
 import pro.ddz.server.model.Scene;
 import pro.ddz.server.model.User;
+import pro.ddz.server.request.BetRequest;
 import pro.ddz.server.request.DeskRequest;
 import pro.ddz.server.request.LoginRequest;
 import pro.ddz.server.request.QuickRegisterRequest;
@@ -73,6 +74,8 @@ public class RequestHandler implements Runnable {
 				request = new ReadyRequest(parameters, messageMap, dao, onlineList, scenes);
 			}else if("UNREADY".equals(cmd)){
 				request = new ReadyRequest(parameters, messageMap, dao, onlineList, scenes);
+			}else if("BET".equals(cmd)){
+				request = new BetRequest(parameters, messageMap, dao, onlineList, scenes);
 			}else if("BEAT".equals(cmd)){
 				request = null;
 				this.finish = true;
