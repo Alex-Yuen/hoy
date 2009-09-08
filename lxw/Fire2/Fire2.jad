@@ -1,0 +1,7 @@
+MIDlet-1: Tester,,gr.fire.test.Tester
+MIDlet-Jar-URL: Fire2.jar
+MIDlet-Name: Fire2 Midlet Suite
+MIDlet-Vendor: Midlet Suite Vendor
+MIDlet-Version: 1.0.4
+MicroEdition-Configuration: CLDC-1.0
+MicroEdition-Profile: MIDP-2.0
