@@ -311,7 +311,7 @@ public class Browser implements CommandListener, PageListener
 			//System.out.println(s);
 //			String sx = "<html><body>你好</body></html>";
 			//System.out.println(s);
-			System.out.println(new String(s.getBytes("UTF-8"), "GBK"));
+			//System.out.println(new String(s.getBytes("UTF-8"), "GBK"));
 			InputStream is = new ByteArrayInputStream(s.getBytes("UTF-8"));
 			currentRequest.setInputStream(is);
 //			
