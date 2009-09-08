@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <eclipsemeMetadata version="1.8.0">
-   <device group="Sony Ericsson SDK 2.5.0.2 for the Java(TM) ME Platform(Emulator)" name="SonyEricsson_China_JP8_240x320_Emu"/>
+   <device group="Sun Java(TM) Wireless Toolkit 2.5.2_01 for CLDC" name="DefaultColorPhone"/>
    <signing signProject="false"/>
 </eclipsemeMetadata>
