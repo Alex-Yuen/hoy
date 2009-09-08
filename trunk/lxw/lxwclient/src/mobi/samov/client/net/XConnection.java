@@ -112,7 +112,8 @@ public class XConnection extends Observable implements Runnable {
 
 					Connector.READ_WRITE, true);
 			httpConn.setRequestMethod(HttpConnection.POST);
-	//		httpConn.setRequestProperty("X-Online-Host", s_urlAddr);
+			httpConn.setRequestProperty("X-Online-Host", s_urlAddr);
+//			System.out.println(s_urlAddr);
 //				
 //				   while( keys.hasMoreElements()) 
 //				   {
