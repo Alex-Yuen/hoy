@@ -61,6 +61,7 @@ public class Platform extends XGame implements Const, CommandListener, PageListe
 	private Command closeMenuCmd = new Command(Lang.get("Close"),Command.OK,1);
 	private Command cancelCmd = new Command(Lang.get("Cancel"),Command.OK,1);
 		
+	private Display disp;
 	XMIDlet MID;
 	private RecordStore rms;
 	private MusicPlayer music;
@@ -353,6 +354,7 @@ public class Platform extends XGame implements Const, CommandListener, PageListe
 	{
 		super(midlet);
 		MID = midlet;
+		disp = Display.getDisplay(MID);
 		Version = MID.getAppProperty("MIDlet-Version");
 		ft=Font.getFont(Font.FACE_SYSTEM, Font.STYLE_PLAIN, Font.SIZE_SMALL);
 		FontH = ft.getHeight();
@@ -2482,7 +2484,7 @@ public class Platform extends XGame implements Const, CommandListener, PageListe
 								// Displaying a slash screen apart from been a good practice to notify the user 
 								// that the application is loading, also helps to avoid an annoing bug on some phones 
 								// that cannot switch to fullscreen canvas if there not a canvas already on the screen
-								Display disp = Display.getDisplay(MID);
+								
 
 								SplashScreen splash = new SplashScreen();
 								splash.setBgColor(0x00FFFFFF);
@@ -5104,8 +5106,9 @@ public class Platform extends XGame implements Const, CommandListener, PageListe
 	{
 		if(cmd==exitCmd)
 		{
-			fireScreen.removeComponent(2); 
-			MID.notifyDestroyed();
+			disp.setCurrent(this);
+//			fireScreen.removeComponent(2); 
+//			MID.notifyDestroyed();
 			return;
 		}
 		if(cmd==mainCmd)
