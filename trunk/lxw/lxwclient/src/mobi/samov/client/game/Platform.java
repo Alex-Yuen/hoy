@@ -800,7 +800,7 @@ public class Platform extends XGame implements Const, CommandListener, PageListe
 	}
 	private void DrawMenuCover(Graphics g)
 	{
-		g.drawImage(img_Cover, 0, 0, 0);
+	//	g.drawImage(img_Cover, 0, 0, 0);
 		drawBeautyString(g, "按任意键进入", (SW-ft.stringWidth("按任意键进入"))/2, SH/5*4,0xffffff,0x000000);
 	}
 	private void DrawBG(Graphics g)
@@ -1076,7 +1076,7 @@ public class Platform extends XGame implements Const, CommandListener, PageListe
 		int arrX = (SW-arrW)/2;
 		DrawBG(g);
 		g.drawImage(img_MenuStr, (SW-img_MenuStr.getWidth())/2, MenuStrY, 0);
-		g.drawImage(img_MenuStr2, (SW-img_MenuStr2.getWidth())/2, 0, 0);
+	//	g.drawImage(img_MenuStr2, (SW-img_MenuStr2.getWidth())/2, 0, 0);
 		
 		for (int i = 0; i < 2; i++) 
 		{
