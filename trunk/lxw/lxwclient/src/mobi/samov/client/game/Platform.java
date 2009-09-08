@@ -380,7 +380,7 @@ public class Platform extends XGame implements Const, CommandListener, PageListe
 	//	LoadState = PIAZZA;
 		LoadState = MenuOption;
 		Init();		
-		WAP_NET = true;
+		WAP_NET = false;
 	}
 
 	private void Init()
@@ -2486,18 +2486,18 @@ public class Platform extends XGame implements Const, CommandListener, PageListe
 								// that cannot switch to fullscreen canvas if there not a canvas already on the screen
 								
 
-								SplashScreen splash = new SplashScreen();
-								splash.setBgColor(0x00FFFFFF);
-								splash.setFgColor(0x00395f79);
-								try
-								{
-									Image logo = Image.createImage(this.getClass().getResourceAsStream("/icon.png"));
-									splash.setLogo(logo);
-								} catch (Exception e)
-								{ // failed to set image as logo, set text.
-									splash.setTitle("Fire Browser");
-								}
-								disp.setCurrent(splash);
+//								SplashScreen splash = new SplashScreen();
+//								splash.setBgColor(0x00FFFFFF);
+//								splash.setFgColor(0x00395f79);
+//								try
+//								{
+//									Image logo = Image.createImage(this.getClass().getResourceAsStream("/icon.png"));
+//									splash.setLogo(logo);
+//								} catch (Exception e)
+//								{ // failed to set image as logo, set text.
+//									splash.setTitle("Fire Browser");
+//								}
+//								disp.setCurrent(splash);
 								
 								// now continue with the application initialization.
 								fireScreen = FireScreen.getScreen(Display.getDisplay(MID));
@@ -2519,17 +2519,17 @@ public class Platform extends XGame implements Const, CommandListener, PageListe
 								// For this examples I will use the SpriteAnimation class, created to demonstrate how to create custom animations.
 								// Check the SpriteAnimation javadoc and in source comments for more details
 								// The SpriteAnimation loads a png sprite and is actually a wrapper for the Sprite class inside FireScreen.
-								SpriteAnimation anim = new SpriteAnimation(new Sprite(Image.createImage(this.getClass().getResourceAsStream("/sheep-anim.png")),40,29));
-								anim.setPosition(fireScreen.getWidth()-140,fireScreen.getHeight()-29-30);
-								anim.setAutoMoveData(-4,0,10,10,200,200,false,true);
-								anim.setAutoMove(true);
-								fireScreen.addComponent(anim,-1); // ZINDEX -1 will make FireScreen display the animation below the panel. 
+//								SpriteAnimation anim = new SpriteAnimation(new Sprite(Image.createImage(this.getClass().getResourceAsStream("/sheep-anim.png")),40,29));
+//								anim.setPosition(fireScreen.getWidth()-140,fireScreen.getHeight()-29-30);
+//								anim.setAutoMoveData(-4,0,10,10,200,200,false,true);
+//								anim.setAutoMove(true);
+//								fireScreen.addComponent(anim,-1); // ZINDEX -1 will make FireScreen display the animation below the panel. 
 								// This will cause the animation to apear behing the html page. You can change this value to move it above or below a component.
 								// By default all components set to the FireScreen using the setCurrent method get ZINDEX=0.
 								// NOTE: Adding a component on the same ZINDEX as another will remove the oldest one from the FireScreen.
 								
 								// Ok Display an alert. FireScreen.showAlert is a utility method for displaying alerts fast and easy.  
-								fireScreen.showAlert(Lang.get("Welcome to the BrowserTest middlet. Demonstrating the capabilities of the Fire2.2 Browser component."),Alert.TYPE_INFO,Alert.USER_SELECTED_OK,null,null);
+//								fireScreen.showAlert(Lang.get("Welcome to the BrowserTest middlet. Demonstrating the capabilities of the Fire2.2 Browser component."),Alert.TYPE_INFO,Alert.USER_SELECTED_OK,null,null);
 
 								Log.logInfo("Phones supported keyRepeated events: "+fireScreen.hasRepeatEvents());
 								
