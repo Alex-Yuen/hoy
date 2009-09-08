@@ -380,7 +380,7 @@ public class Platform extends XGame implements Const, CommandListener, PageListe
 	//	LoadState = PIAZZA;
 		LoadState = MenuOption;
 		Init();		
-		WAP_NET = false;
+		WAP_NET = true;
 	}
 
 	private void Init()
