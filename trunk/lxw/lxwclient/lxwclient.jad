@@ -1,0 +1,7 @@
+MIDlet-Version: 1.0
+MIDlet-Vendor: Midlet Suite Vendor
+MIDlet-Jar-URL: lwclient.jar
+MicroEdition-Configuration: CLDC-1.1
+MicroEdition-Profile: MIDP-2.0
+MIDlet-1: MainMidlet,,mobi.samov.client.XMIDlet
+MIDlet-Name: lwclient Midlet Suite
