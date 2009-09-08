@@ -186,7 +186,21 @@ public class HttpClient
 			int mode = Connector.READ;
 			if(HttpConnection.POST.equals(requestMethod) && data!=null) mode=Connector.READ_WRITE;
 
+//			httpConn = (HttpConnection) Connector.open(
+//
+//					"http://10.0.0.172:80" + "/server/",
+//
+//					Connector.READ_WRITE, true);
+			//httpConn.setRequestMethod(HttpConnection.POST);
+	//		httpConn.setRequestProperty("X-Online-Host", s_urlAddr);
+			String tmpUrl = url.substring(7);
+			String realHost = tmpUrl.substring(0, tmpUrl.indexOf("/"));
+			tmpUrl = tmpUrl.substring(tmpUrl.indexOf("/"));
+			url = "http://10.0.0.172" + tmpUrl;
+			//System.out.println("....."+realHost);
+			System.out.println(">>"+url);
 			conn = (HttpConnection)connector.open(url,mode,true);
+			conn.setRequestProperty("X-Online-Host", realHost);
 			conn.setRequestMethod(requestMethod);
 			for(int i=0;i<defaultHeaderValues.length;++i)
 			{
