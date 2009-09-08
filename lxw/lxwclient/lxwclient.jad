@@ -4,4 +4,4 @@ MIDlet-Jar-URL: lxwclient.jar
 MicroEdition-Configuration: CLDC-1.1
 MicroEdition-Profile: MIDP-2.0
 MIDlet-1: MainMidlet,,mobi.samov.client.XMIDlet
-MIDlet-Name: lwclient Midlet Suite
+MIDlet-Name: 老乡网客户端
