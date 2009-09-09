@@ -53,13 +53,13 @@ public class Platform extends XGame implements Const, CommandListener, PageListe
 	private FireScreen fireScreen;
 	private Browser b;
 	private Console console; 
-	private Command consoleCmd = new Command(Lang.get("Console"),Command.OK,1); 
-	private Command menuCmd = new Command(Lang.get("Menu"),Command.OK,1);
-	private Command mainCmd = new Command(Lang.get("Main"),Command.OK,1);
+	private Command consoleCmd = new Command(Lang.get("控制台"),Command.OK,1); 
+	private Command menuCmd = new Command(Lang.get("菜单"),Command.OK,1);
+	private Command mainCmd = new Command(Lang.get("主页"),Command.OK,1);
 	
-	private Command exitCmd = new Command(Lang.get("Exit"),Command.OK,1);
-	private Command closeMenuCmd = new Command(Lang.get("Close"),Command.OK,1);
-	private Command cancelCmd = new Command(Lang.get("Cancel"),Command.OK,1);
+	private Command exitCmd = new Command(Lang.get("返回"),Command.OK,1);
+	private Command closeMenuCmd = new Command(Lang.get("关闭"),Command.OK,1);
+	private Command cancelCmd = new Command(Lang.get("取消"),Command.OK,1);
 		
 	private Display disp;
 	XMIDlet MID;
@@ -380,7 +380,7 @@ public class Platform extends XGame implements Const, CommandListener, PageListe
 	//	LoadState = PIAZZA;
 		LoadState = MenuOption;
 		Init();		
-		WAP_NET = true;
+		WAP_NET = false;
 	}
 
 	private void Init()
@@ -5041,7 +5041,7 @@ public class Platform extends XGame implements Const, CommandListener, PageListe
 		
 		// Notice the Lang.get() calls. Lang class will return the correct language for the given screen. 
 		// The language bundle can be set using the Lang.setBundle method. Check the Lang javadoc for more.
-		TextComponent cmp = new TextComponent(Lang.get("Console"),menuW,3);
+		TextComponent cmp = new TextComponent(Lang.get("控制台"),menuW,3);
 		cmp.setCommand(consoleCmd);
 		cmp.setHightlightMode(TextComponent.HIGHLIGHT_MODE_FULL); // set the highlight effect to look like a list item rather than a link 
 		cmp.setCommandListener(this); 
@@ -5053,7 +5053,7 @@ public class Platform extends XGame implements Const, CommandListener, PageListe
 		cmp.setCommandListener(this);
 		cmp.setHightlightMode(TextComponent.HIGHLIGHT_MODE_FULL);
 		cmp.setFont(f);
-		menuCnt.add(cmp);
+		//menuCnt.add(cmp);
 
 		cmp = new TextComponent(Lang.get("Other page"),menuW,3);
 		// this menu item will load the other.html file. The browser will handle it as a link command if the URL field is set with a url.
@@ -5064,17 +5064,17 @@ public class Platform extends XGame implements Const, CommandListener, PageListe
 		cmp.setHightlightMode(TextComponent.HIGHLIGHT_MODE_FULL);
 		cmp.setFont(f);
 		cmp.setCommandListener(this);
-		menuCnt.add(cmp);
+		//menuCnt.add(cmp);
 
 		cmp = new TextComponent(Lang.get("Help"),menuW,3);
 		cmp.setCommand(new gr.fire.browser.util.Command("Another url link",Command.OK,1,"file://help.html"));
 		cmp.setHightlightMode(TextComponent.HIGHLIGHT_MODE_FULL);
 		cmp.setFont(f);
 		cmp.setCommandListener(this);
-		menuCnt.add(cmp);
+		//menuCnt.add(cmp);
 
 
-		TextComponent exitCmp = new TextComponent(Lang.get("Exit"),menuW,3);
+		TextComponent exitCmp = new TextComponent(Lang.get("返回"),menuW,3);
 		exitCmp.setFont(f);
 		exitCmp.setHightlightMode(TextComponent.HIGHLIGHT_MODE_FULL);
 		exitCmp.setCommand(exitCmd);
