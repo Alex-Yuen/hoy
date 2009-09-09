@@ -56,8 +56,8 @@ public class Console extends Panel implements CommandListener,Logger
 		
 		// In order to make this class easily resusable it will handle its own commands
 		// one to clear the logs and one to return to the previous screen
-		clear = new Command("Clear",Command.OK,1);
-		back = new Command("Back",Command.BACK,1);
+		clear = new Command("Çå³ý",Command.OK,1);
+		back = new Command("·µ»Ø",Command.BACK,1);
 		
 		setLeftSoftKeyCommand(back);setRightSoftKeyCommand(clear);
 		setCommandListener(this);
