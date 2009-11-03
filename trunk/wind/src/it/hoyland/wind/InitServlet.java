@@ -17,6 +17,7 @@ public class InitServlet extends HttpServlet {
 
 	public InitServlet() {
 		// TODO Auto-generated constructor stub
+		
 	}
 
 	@Override

@@ -22,15 +22,17 @@
 	version="2.5">
 
 	<display-name>The Wind's Platform</display-name>
+	
 	<description>
-     Welcome to the Wind's Platform
+     	Welcome to the Wind's Platform
 	</description>
 
 	<servlet>
-		　　<servlet-name>Init Servlet</servlet-name>
-		　　<display-name>Init Servlet</display-name>
-		　　<description>Init Servlet</description>
-		　　<servlet-class>it.hoyland.wind.InitServlet</servlet-class>
+		<servlet-name>Init Servlet</servlet-name>
+		<display-name>Init Servlet</display-name>
+		<description>Init Servlet</description>
+		<servlet-class>it.hoyland.wind.InitServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
 　　</servlet>
 
 </web-app>
