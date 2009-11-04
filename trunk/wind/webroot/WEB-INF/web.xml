@@ -35,4 +35,16 @@
 		<load-on-startup>1</load-on-startup>
 　　</servlet>
 
+	<servlet>
+		<servlet-name>Dispatch Servlet</servlet-name>
+		<display-name>Dispatch Servlet</display-name>
+		<description>Dispatch Servlet</description>
+		<servlet-class>it.hoyland.wind.DispatchServlet</servlet-class>
+　　</servlet>
+
+	<servlet-mapping>
+		<servlet-name>Dispatch Servlet</servlet-name>
+		<url-pattern>/</url-pattern>
+	</servlet-mapping>
+
 </web-app>
