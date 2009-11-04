@@ -5,6 +5,6 @@ package it.hoyland.wind.core;
  * @author Administrator
  *
  */
-public interface Library {
+public interface Component {
 
 }
