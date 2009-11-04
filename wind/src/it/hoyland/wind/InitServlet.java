@@ -17,7 +17,7 @@ public class InitServlet extends HttpServlet {
 	 */
 	private static final long serialVersionUID = -1801226144419611409L;
 
-	private Object pf;
+	private Object pf; // Platform object
 	
 	public InitServlet() {
 		// TODO Auto-generated constructor stub

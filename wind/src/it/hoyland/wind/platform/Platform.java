@@ -6,6 +6,7 @@ public class Platform implements Component {
 
 	public Platform() {
 		// TODO Auto-generated constructor stub
+		
 	}
 
 	@Override
