@@ -6,5 +6,6 @@ package it.hoyland.wind.core;
  *
  */
 public interface Component {
-
+	public void onLoad();
+	public void onUnload();
 }

@@ -8,4 +8,16 @@ public class Platform implements Component {
 		// TODO Auto-generated constructor stub
 	}
 
+	@Override
+	public void onLoad() {
+		// TODO Auto-generated method stub
+		System.out.println("load...");
+	}
+
+	@Override
+	public void onUnload() {
+		// TODO Auto-generated method stub
+		System.out.println("unload...");
+	}
+
 }
