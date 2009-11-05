@@ -10,13 +10,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import it.hoyland.wind.core.Component;
-import it.hoyland.wind.core.ServletStore;
+//import it.hoyland.wind.core.ServletStore;
 
 public class Platform implements Component {
 
 	public Platform() {
 		// TODO Auto-generated constructor stub
-		ServletStore.getInstance().put("/index", new TestServlet());
+		// ServletStore.getInstance().put("/index", new TestServlet());
 	}
 
 	@Override
@@ -59,6 +59,7 @@ class TestServlet extends HttpServlet{
 			throws ServletException, IOException {
 		// TODO Auto-generated method stub
 		super.service(arg0, arg1);
+		// System.out.println("here");
 	}
 
 	@Override
@@ -66,6 +67,7 @@ class TestServlet extends HttpServlet{
 			throws ServletException, IOException {
 		// TODO Auto-generated method stub
 		super.service(arg0, arg1);
+		// System.out.println("here2");
 	}
 	
 	
