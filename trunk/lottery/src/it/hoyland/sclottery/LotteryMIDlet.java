@@ -16,6 +16,9 @@ public class LotteryMIDlet extends MIDlet {
 	private char status;
 	private char subStatus;
 	
+	private int bint;
+	private int aint;
+	
 	////////////////////////////////////////////////////////
 	private DefaultImageCanvas dicOfLogin;	// login
 	private DefaultImageCanvas dicOfPlaceBet; // place bet
@@ -25,6 +28,19 @@ public class LotteryMIDlet extends MIDlet {
 	private LoginForm loginForm;
 	private MainList mainList;
 	private MessageForm messageForm;
+	private BetForm betForm;
+	private BetHistoryForm betHistoryForm;
+	private ReprintForm reprintForm;
+	private BalanceForm balanceForm;
+	private NumMeaningForm numMeaningForm;
+	private ResultForm resultForm;
+	private PasswordForm passwordForm;
+	private PaymentForm paymentForm;
+	private TStakesForm tStakesForm;
+	private WinningForm winningForm;
+	private NameInputForm nameInputForm;
+	private AddPrinterForm addPrinterForm;
+	
 
 	public LotteryMIDlet() {
 		// TODO Auto-generated constructor stub
@@ -79,9 +95,24 @@ public class LotteryMIDlet extends MIDlet {
 			this.dicOfPlaceBet.setImage(image);
 			this.dicOfPlaceBet.setExecutor(te);
 			
+			// 初始化窗口
 			this.loginForm = new LoginForm(this);
 			this.mainList = new MainList(this, prop("L0"), List.IMPLICIT);
 			this.messageForm = new MessageForm(this, "");
+			
+			this.betForm = new BetForm(this, "");
+			this.betHistoryForm = new BetHistoryForm(this, "");
+			this.reprintForm = new ReprintForm(this, "");
+			this.balanceForm = new BalanceForm(this, "");
+			this.numMeaningForm = new NumMeaningForm(this, "");
+			this.resultForm = new ResultForm(this, "");
+			this.passwordForm = new PasswordForm(this, "");
+			this.paymentForm = new PaymentForm(this, "");
+			this.tStakesForm = new TStakesForm(this, "");
+			this.winningForm = new WinningForm(this, "");
+			this.nameInputForm = new NameInputForm(this, "");
+			this.addPrinterForm = new AddPrinterForm(this, "");
+			
 		}catch(Exception e){
 			e.printStackTrace();
 		}
@@ -117,7 +148,23 @@ public class LotteryMIDlet extends MIDlet {
 	public char getSubStatus() {
 		return this.subStatus;
 	}
+	
+	public int getBint() {
+		return bint;
+	}
 
+	public int getAint() {
+		return aint;
+	}
+
+	public void setStatus(char status) {
+		this.status = status;
+	}
+	
+	public void setBint(int bint){
+		this.bint = bint;
+	}
+	
 	public DefaultImageCanvas getDicOfLogin() {
 		return this.dicOfLogin;
 	}
@@ -137,4 +184,53 @@ public class LotteryMIDlet extends MIDlet {
 	public MessageForm getMessageForm(){
 		return this.messageForm;
 	}
+
+	public BetForm getBetForm() {
+		return betForm;
+	}
+
+	public BetHistoryForm getBetHistoryForm() {
+		return betHistoryForm;
+	}
+
+	public ReprintForm getReprintForm() {
+		return reprintForm;
+	}
+
+	public BalanceForm getBalanceForm() {
+		return balanceForm;
+	}
+
+	public NumMeaningForm getNumMeaningForm() {
+		return numMeaningForm;
+	}
+
+	public ResultForm getResultForm() {
+		return resultForm;
+	}
+
+	public PasswordForm getPasswordForm() {
+		return passwordForm;
+	}
+
+	public PaymentForm getPaymentForm() {
+		return paymentForm;
+	}
+
+	public TStakesForm gettStakesForm() {
+		return tStakesForm;
+	}
+
+	public WinningForm getWinningForm() {
+		return winningForm;
+	}
+
+	public NameInputForm getNameInputForm() {
+		return nameInputForm;
+	}
+
+	public AddPrinterForm getAddPrinterForm() {
+		return addPrinterForm;
+	}
+
 }

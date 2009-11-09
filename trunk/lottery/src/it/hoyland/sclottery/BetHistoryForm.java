@@ -5,7 +5,7 @@ import javax.microedition.lcdui.Item;
 
 public class BetHistoryForm extends Form {
 
-	public BetHistoryForm(String title) {
+	public BetHistoryForm(LotteryMIDlet lotteryMIDlet, String title) {
 		super(title);
 		// TODO Auto-generated constructor stub
 	}

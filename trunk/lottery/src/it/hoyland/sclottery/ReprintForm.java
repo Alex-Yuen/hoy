@@ -5,7 +5,7 @@ import javax.microedition.lcdui.Item;
 
 public class ReprintForm extends Form {
 
-	public ReprintForm(String title) {
+	public ReprintForm(LotteryMIDlet lotteryMIDlet, String title) {
 		super(title);
 		// TODO Auto-generated constructor stub
 	}

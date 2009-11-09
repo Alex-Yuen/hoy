@@ -5,7 +5,7 @@ import javax.microedition.lcdui.Item;
 
 public class TStakesForm extends Form {
 
-	public TStakesForm(String title) {
+	public TStakesForm(LotteryMIDlet lotteryMIDlet, String title) {
 		super(title);
 		// TODO Auto-generated constructor stub
 	}
