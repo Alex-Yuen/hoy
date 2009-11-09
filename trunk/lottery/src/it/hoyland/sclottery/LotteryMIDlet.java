@@ -41,7 +41,7 @@ public class LotteryMIDlet extends MIDlet {
 
 	protected void startApp() throws MIDletStateChangeException {
 		// TODO Auto-generated method stub
-		if (!this.inited) {
+		if (!this.inited) { // 初始化操作
 			try {
 				this.display = Display.getDisplay(this);
 
