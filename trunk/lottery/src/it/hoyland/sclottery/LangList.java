@@ -35,7 +35,8 @@ public class LangList extends List implements CommandListener {
 					break;
 			}
 		}
-		Display.getDisplay(this.midlet).setCurrent(new LoginForm(this.midlet));
+		this.midlet.init();
+		Display.getDisplay(this.midlet).setCurrent(this.midlet.getLoginForm());
 	}
 
 	public LotteryMIDlet getMidlet() {
