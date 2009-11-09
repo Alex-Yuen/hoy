@@ -12,12 +12,17 @@ public class LotteryMIDlet extends MIDlet {
 
 	private boolean inited;
 	private Properties prop;
+	private Display display;
 	private char status;
 	private char subStatus;
+	
+	////////////////////////////////////////////////////////
 	private DefaultImageCanvas dicOfLogin;	// login
 	private DefaultImageCanvas dicOfPlaceBet; // place bet
-	private Display display;
+	
+	////////////////////////////////////////////////////////
 	private LangList langList;
+	private LoginForm loginForm;
 	private MainList mainList;
 	private MessageForm messageForm;
 
@@ -44,28 +49,7 @@ public class LotteryMIDlet extends MIDlet {
 		if (!this.inited) { // 初始化操作
 			try {
 				this.display = Display.getDisplay(this);
-
-				Image image = Image.createImage("/sandglass.png");
-				TaskExecutor te = new TaskExecutor();
-				te.setTask(new LoginTask(this));
-
-				this.dicOfLogin = new DefaultImageCanvas(this.display);
-				this.dicOfLogin.setTitle(prop("L30"));
-				this.dicOfLogin.setContent(prop("L53"));
-				this.dicOfLogin.setImage(image);
-				this.dicOfLogin.setExecutor(te);
-
-				te = new TaskExecutor();
-				te.setTask(new PlaceBetTask(this));
-				this.dicOfPlaceBet = new DefaultImageCanvas(this.display);
-				this.dicOfPlaceBet.setTitle(prop("L30"));
-				this.dicOfPlaceBet.setContent(prop("L73"));
-				this.dicOfPlaceBet.setImage(image);
-				this.dicOfPlaceBet.setExecutor(te);
-								
-				this.mainList = new MainList(this, prop("L0"), List.IMPLICIT);
-				this.messageForm = new MessageForm(this, "");
-				
+	
 				this.langList = new LangList(this, "Y!", List.IMPLICIT);
 				this.display.setCurrent(this.langList);
 				this.inited = true;
@@ -75,6 +59,34 @@ public class LotteryMIDlet extends MIDlet {
 		}
 	}
 
+	public void init(){
+		try{
+			Image image = Image.createImage("/sandglass.png");
+			TaskExecutor te = new TaskExecutor();
+			te.setTask(new LoginTask(this));
+	
+			this.dicOfLogin = new DefaultImageCanvas(this.display);
+			this.dicOfLogin.setTitle(prop("L30"));
+			this.dicOfLogin.setContent(prop("L53"));
+			this.dicOfLogin.setImage(image);
+			this.dicOfLogin.setExecutor(te);
+	
+			te = new TaskExecutor();
+			te.setTask(new PlaceBetTask(this));
+			this.dicOfPlaceBet = new DefaultImageCanvas(this.display);
+			this.dicOfPlaceBet.setTitle(prop("L30"));
+			this.dicOfPlaceBet.setContent(prop("L73"));
+			this.dicOfPlaceBet.setImage(image);
+			this.dicOfPlaceBet.setExecutor(te);
+			
+			this.loginForm = new LoginForm(this);
+			this.mainList = new MainList(this, prop("L0"), List.IMPLICIT);
+			this.messageForm = new MessageForm(this, "");
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+	}
+	                   
 	public void setProp(Properties prop) {
 		this.prop = prop;
 	}
@@ -112,6 +124,10 @@ public class LotteryMIDlet extends MIDlet {
 	
 	public DefaultImageCanvas getDicOfPlaceBet() {
 		return this.dicOfPlaceBet;
+	}
+	
+	public LoginForm getLoginForm(){
+		return this.loginForm;
 	}
 	
 	public MainList getMainList(){
