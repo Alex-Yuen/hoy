@@ -44,6 +44,7 @@ public class LoginTask implements Task {
             break;
 
         case 90: // 'Z'
+        	this.midlet.getDisplay().setCurrent(this.midlet.getMainList());
            // D88.a(a);
             return;
 
