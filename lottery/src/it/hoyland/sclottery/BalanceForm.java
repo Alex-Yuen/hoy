@@ -5,7 +5,7 @@ import javax.microedition.lcdui.Item;
 
 public class BalanceForm extends Form {
 
-	public BalanceForm(String title) {
+	public BalanceForm(LotteryMIDlet lotteryMIDlet, String title) {
 		super(title);
 		// TODO Auto-generated constructor stub
 	}

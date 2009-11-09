@@ -5,7 +5,7 @@ import javax.microedition.lcdui.Item;
 
 public class NumMeaningForm extends Form {
 
-	public NumMeaningForm(String title) {
+	public NumMeaningForm(LotteryMIDlet lotteryMIDlet, String title) {
 		super(title);
 		// TODO Auto-generated constructor stub
 	}

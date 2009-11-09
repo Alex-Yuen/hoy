@@ -5,7 +5,7 @@ import javax.microedition.lcdui.Item;
 
 public class NameInputForm extends Form {
 
-	public NameInputForm(String title) {
+	public NameInputForm(LotteryMIDlet lotteryMIDlet, String title) {
 		super(title);
 		// TODO Auto-generated constructor stub
 	}

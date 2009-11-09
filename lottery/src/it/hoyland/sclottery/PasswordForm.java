@@ -5,7 +5,7 @@ import javax.microedition.lcdui.Item;
 
 public class PasswordForm extends Form {
 
-	public PasswordForm(String title) {
+	public PasswordForm(LotteryMIDlet lotteryMIDlet, String title) {
 		super(title);
 		// TODO Auto-generated constructor stub
 	}
