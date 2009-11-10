@@ -108,6 +108,8 @@ public class BetForm extends Form implements CommandListener {
 			default:
 				break;
 			}
+			
+			append(this.texts[i]);
 		}
 
 		this.cmdBack = new Command(this.midlet.prop("L24"), 2, 1);

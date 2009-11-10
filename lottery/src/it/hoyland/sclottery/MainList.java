@@ -18,8 +18,8 @@ public class MainList extends List implements CommandListener {
 		for(int i=0; i<12; i++){
 			this.append(this.midlet.prop("L"+String.valueOf(i+1)), null);
 		}
-		setSelectedFlags(new boolean[] {false, false, false, false, false, false
-				, false, false, false, false, false, false});
+		setSelectedFlags(new boolean[] {false, false, false, false, false, false,
+				false, false, false, false, false, false});
 		setFitPolicy(1);
 		
 		this.cmdExit = new Command(this.midlet.prop("L17"), 7, 1);

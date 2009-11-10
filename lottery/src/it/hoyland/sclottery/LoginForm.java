@@ -20,20 +20,18 @@ public class LoginForm extends Form implements CommandListener {
 	private Command cmdLogin;
 	private Command cmdExit;
 
-	public LoginForm(LotteryMIDlet midlet) {
-		super("");
+	public LoginForm(LotteryMIDlet midlet, String title) {
+		super(title);
 		this.midlet = midlet;
-		String title = this.midlet.prop("L13");
-		this.setTitle(title);
 		this.imie = new TextField("IMEI", "", 120, 0xc0000);
 		this.loginId = new TextField(this.midlet.prop("L14"), "", 120, 0xc0000);
 		this.loginPass = new TextField(this.midlet.prop("L10"), "", 50, 0xd0000);
 		this.address = new TextField(this.midlet.prop("L15"), "", 120, 0xc0004);
 
-		this.append(this.imie);
-		this.append(this.loginId);
-		this.append(this.loginPass);
-		this.append(this.address);
+		append(this.imie);
+		append(this.loginId);
+		append(this.loginPass);
+		append(this.address);
 
 		this.cmdLogin = new Command(this.midlet.prop("L16"), 1, 1);
 		this.cmdExit = new Command(this.midlet.prop("L17"), 7, 1);
