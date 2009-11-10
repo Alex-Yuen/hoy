@@ -87,7 +87,7 @@ public abstract class ImageCanvas extends Canvas {
 			g1.drawImage(this.image, i, j, 3);
 		}
 		if (this.content != null) {
-			g1.drawString(this.content, i, j, 65);
+			g1.drawString(this.content+"...", i, j+this.image.getHeight()/2 + 20, 65);
 		}
 
 	}
