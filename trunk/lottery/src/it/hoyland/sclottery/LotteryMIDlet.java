@@ -101,11 +101,11 @@ public class LotteryMIDlet extends MIDlet {
 			this.messageForm = new MessageForm(this, "");
 			
 			this.betForm = new BetForm(this, "");
-			this.betHistoryForm = new BetHistoryForm(this, "");
-			this.reprintForm = new ReprintForm(this, "");
-			this.balanceForm = new BalanceForm(this, "");
-			this.numMeaningForm = new NumMeaningForm(this, "");
-			this.resultForm = new ResultForm(this, "");
+			this.betHistoryForm = new BetHistoryForm(this, prop("L5"));
+			this.reprintForm = new ReprintForm(this, prop("L3"));
+			this.balanceForm = new BalanceForm(this, prop("L4"));
+			this.numMeaningForm = new NumMeaningForm(this, prop("L11"));
+			this.resultForm = new ResultForm(this, prop("L7"));
 			this.passwordForm = new PasswordForm(this, "");
 			this.paymentForm = new PaymentForm(this, "");
 			this.tStakesForm = new TStakesForm(this, "");

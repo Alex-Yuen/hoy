@@ -25,6 +25,7 @@ public class MainList extends List implements CommandListener {
 		this.cmdExit = new Command(this.midlet.prop("L17"), 7, 1);
 		addCommand(cmdExit);
 		setCommandListener(this);
+		
 	}
 
 	public void commandAction(Command cmd, Displayable dsp) {
