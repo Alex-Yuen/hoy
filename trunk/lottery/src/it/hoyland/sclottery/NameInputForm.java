@@ -16,6 +16,9 @@ public class NameInputForm extends Form implements ItemCommandListener, CommandL
 	private TextField agentSearch;
 	private ChoiceGroup cgAgents;
 	
+	private String agentSearchString;
+	private String indexString;
+	
 	private Command cmdAgentClick;
 	
 	private Command cmdNameInputBack;
@@ -62,5 +65,33 @@ public class NameInputForm extends Form implements ItemCommandListener, CommandL
 		// TODO Auto-generated method stub
 		
 	}
+	
+	public TextField getAgentSearch(){
+		return this.agentSearch;
+	}
 
+	public String getAgentSearchString() {
+		return agentSearchString;
+	}
+
+	public void setAgentSearchString(String agentSearchString) {
+		this.agentSearchString = agentSearchString;
+	}
+
+	public String getIndexString() {
+		return indexString;
+	}
+
+	public void setIndexString(String indexString) {
+		this.indexString = indexString;
+	}
+
+	public ChoiceGroup getCgAgents() {
+		return cgAgents;
+	}
+
+	public void setCgAgents(ChoiceGroup cgAgents) {
+		this.cgAgents = cgAgents;
+	}
+		
 }

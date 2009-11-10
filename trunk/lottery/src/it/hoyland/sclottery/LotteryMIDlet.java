@@ -217,7 +217,7 @@ public class LotteryMIDlet extends MIDlet {
 		return paymentForm;
 	}
 
-	public TStakesForm gettStakesForm() {
+	public TStakesForm getTStakesForm() {
 		return tStakesForm;
 	}
 
