@@ -19,7 +19,7 @@ public class TaskExecutor implements Runnable {
 	}
 
 	public void run() {
-		System.out.println("f2");
+		// System.out.println("f2");
 		this.exception = null;
 		if (this.task != null) {
 			try {
