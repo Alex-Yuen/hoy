@@ -44,6 +44,11 @@ public class LoginTask implements Task {
             break;
 
         case 90: // 'Z'
+        	try{
+        		Thread.sleep(2000);
+        	}catch(Exception e){
+        		e.printStackTrace();
+        	}
         	this.midlet.getDisplay().setCurrent(this.midlet.getMainList());
            // D88.a(a);
             return;
