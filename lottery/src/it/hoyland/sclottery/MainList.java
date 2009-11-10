@@ -29,112 +29,113 @@ public class MainList extends List implements CommandListener {
 	}
 
 	public void commandAction(Command cmd, Displayable dsp) {
-		// TODO Auto-generated method stub
 		if(cmd==List.SELECT_COMMAND){
-//			switch(getSelectedIndex()){ // 根据选择进入不同窗口
-//            case 0: // '\0'
-//                this.midlet.setStatus('1');
-//                switch(this.midlet.getBint())
-//                {
-//                case 4: // '\004'
-//                    this.midlet.getDisplay().setCurrent(this.midlet.getNameInputForm());
-//                    G_javax_microedition_lcdui_TextField_fld.setString("");
-//                    f_java_lang_String_fld = "";
-//                    e_java_lang_String_fld = "";
-//                    if(a_javax_microedition_lcdui_ChoiceGroup_fld.size() > 0)
-//                    {
-//                        a_javax_microedition_lcdui_ChoiceGroup_fld.setSelectedIndex(0, true);
-//                    }
-//                    break;
-//                }
-//                break;
-//											
-//			case 1: // '\001'
-//                switch(this.midlet.getBint())
-//                {
-//                default:
-//                    break label0;
-//
-//                case 4: // '\004'
-//                    b_char_fld = '1';
-//                    getDisplay().setCurrent(get_frmNameInput());
-//                    G_javax_microedition_lcdui_TextField_fld.setString("");
-//                    f_java_lang_String_fld = "";
-//                    e_java_lang_String_fld = "";
-//                    if(a_javax_microedition_lcdui_ChoiceGroup_fld.size() > 0)
-//                    {
-//                        a_javax_microedition_lcdui_ChoiceGroup_fld.setSelectedIndex(0, true);
-//                    }
-//                    break;
-//
-//                case 5: // '\005'
-//                    b_char_fld = '2';
-//                    getDisplay().setCurrent(get_frmBet());
-//                    break label0;
-//                }
-//                break;
-//
-//            case 2: // '\002'
-//                b_char_fld = '3';
-//                getDisplay().setCurrent(get_frmReprint());
-//                break label0;
-//
-//            case 3: // '\003'
-//                b_char_fld = '4';
-//                getDisplay().setCurrent(get_frmBalance());
-//                break label0;
-//
-//            case 4: // '\004'
-//                b_char_fld = '5';
-//                getDisplay().setCurrent(get_frmBetHist());
-//                break label0;
-//                
-//
-//            case 5: // '\005'
-//                b_char_fld = '6';
-//                getDisplay().setCurrent(get_frmTStakes());
-//                break label0;
-//
-//
-//            case 6: // '\006'
-//                b_char_fld = '7';
-//                getDisplay().setCurrent(get_frmResult());
-//                break label0;
-//
-//            case 7: // '\007'
-//                b_char_fld = '8';
-//                getDisplay().setCurrent(get_frmWinning());
-//                break label0;
-//
-//            case 8: // '\b'
-//                b_char_fld = '9';
-//                switch(b_int_fld)
-//                {
-//                case 4: // '\004'
-//                    getDisplay().setCurrent(get_frmPayment());
-//                    break;
-//                }
-//                break label0;
-//
-//            case 9: // '\t'
-//                b_char_fld = 'A';
-//                getDisplay().setCurrent(get_frmPassword());
-//                break label0;
-//
-//
-//            case 10: // '\n'
-//                b_char_fld = 'B';
-//                getDisplay().setCurrent(get_frmNumMeaning());
-//                break label0;
-//                
-//            case 11: // '\013'
-//                b_char_fld = 'C';
-//                getDisplay().setCurrent(get_frmAddPrinter());
-//                break label0;
-//
-//			default:
-//				break;
-//			}
+			switch(getSelectedIndex()){ // 根据选择进入不同窗口
+            case 0: // '\0'
+                this.midlet.setStatus('1');
+                switch(this.midlet.getBint())
+                {
+                case 4: // '\004'
+                	NameInputForm nameInputForm = this.midlet.getNameInputForm();
+                    this.midlet.getDisplay().setCurrent(nameInputForm);
+                    nameInputForm.getAgentSearch().setString("");
+                    nameInputForm.setAgentSearchString("");
+                    nameInputForm.setIndexString("");
+                    if(nameInputForm.getCgAgents().size() > 0)
+                    {
+                    	nameInputForm.getCgAgents().setSelectedIndex(0, true);
+                    }
+                    break;
+                }
+                break;
+											
+			case 1: // '\001'
+                switch(this.midlet.getBint())
+                {
+                default:
+                    break;
+
+                case 4: // '\004'
+                	this.midlet.setStatus('1');
+                	NameInputForm nameInputForm = this.midlet.getNameInputForm();
+                    this.midlet.getDisplay().setCurrent(nameInputForm);
+                    nameInputForm.getAgentSearch().setString("");
+                    nameInputForm.setAgentSearchString("");
+                    nameInputForm.setIndexString("");
+                    if(nameInputForm.getCgAgents().size() > 0)
+                    {
+                    	nameInputForm.getCgAgents().setSelectedIndex(0, true);
+                    }
+                    break;
+
+                case 5: // '\005'
+                	this.midlet.setStatus('2');
+                	this.midlet.getDisplay().setCurrent(this.midlet.getBetForm());
+                    break;
+                }
+                break;
+
+            case 2: // '\002'
+            	this.midlet.setStatus('3');
+            	this.midlet.getDisplay().setCurrent(this.midlet.getReprintForm());
+                break;
+
+            case 3: // '\003'
+            	this.midlet.setStatus('4');
+            	this.midlet.getDisplay().setCurrent(this.midlet.getBalanceForm());
+                break;
+
+            case 4: // '\004'
+            	this.midlet.setStatus('5');
+            	this.midlet.getDisplay().setCurrent(this.midlet.getBetHistoryForm());
+                break;
+                
+
+            case 5: // '\005'
+            	this.midlet.setStatus('6');
+            	this.midlet.getDisplay().setCurrent(this.midlet.getTStakesForm());
+                break;
+
+
+            case 6: // '\006'
+            	this.midlet.setStatus('7');
+            	this.midlet.getDisplay().setCurrent(this.midlet.getResultForm());
+                break;
+
+            case 7: // '\007'
+            	this.midlet.setStatus('8');
+            	this.midlet.getDisplay().setCurrent(this.midlet.getWinningForm());
+                break;
+
+            case 8: // '\b'
+            	this.midlet.setStatus('9');
+                switch(this.midlet.getBint())
+                {
+                case 4: // '\004'
+                	this.midlet.getDisplay().setCurrent(this.midlet.getPaymentForm());
+                    break;
+                }
+                break;
+
+            case 9: // '\t'
+            	this.midlet.setStatus('A');
+            	this.midlet.getDisplay().setCurrent(this.midlet.getPasswordForm());
+                break;
+
+
+            case 10: // '\n'
+            	this.midlet.setStatus('B');
+            	this.midlet.getDisplay().setCurrent(this.midlet.getNumMeaningForm());
+                break;
+                
+            case 11: // '\013'
+            	this.midlet.setStatus('C');
+            	this.midlet.getDisplay().setCurrent(this.midlet.getAddPrinterForm());
+                break;
+
+			default:
+				break;
+			}
 		}
 		else if(cmd==cmdExit){
 			this.midlet.exit();

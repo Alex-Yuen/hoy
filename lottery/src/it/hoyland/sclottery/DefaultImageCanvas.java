@@ -34,7 +34,7 @@ public class DefaultImageCanvas extends ImageCanvas {
 			if (this.thd == null) {
 				this.thd = new Thread(new TaskExecutorAdapter(this, this.executor));
 				//this.thd.start();
-				getDisplay().callSerially(thd);
+				getDisplay().callSerially(this.thd);
 			}
 		} else {
 			getDisplay().callSerially(new TaskActionFirer(this));
