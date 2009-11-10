@@ -24,8 +24,8 @@ public class NumMeaningForm extends Form implements CommandListener {
 		this.number = new TextField(this.midlet.prop("L56"), null, 6, 2);
 		this.words = new TextField(this.midlet.prop("L64"), null, 120, 0);
 		
-		this.append(this.number);
-		this.append(this.words);
+		append(this.number);
+		append(this.words);
 		
 		this.meaningNumber = new Command(this.midlet.prop("L56"), 1, 0);
 		this.meaningWord = new Command(this.midlet.prop("L64"), 1, 1);
