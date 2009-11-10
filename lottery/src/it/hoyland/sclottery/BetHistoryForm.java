@@ -29,9 +29,9 @@ public class BetHistoryForm extends Form implements CommandListener {
 		this.draw = new DateField(this.midlet.prop("L57"), 1);
 		this.draw.setDate(new Date());
 		
-		this.append(this.historyName);
-		this.append(this.historyNum);
-		this.append(this.draw);
+		append(this.historyName);
+		append(this.historyNum);
+		append(this.draw);
 		
 		this.historyNumber = new Command(this.midlet.prop("L56"), 1, 0);
 		this.historyDate = new Command(this.midlet.prop("L57"), 1, 1);

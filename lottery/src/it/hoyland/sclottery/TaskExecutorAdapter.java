@@ -15,13 +15,15 @@ public class TaskExecutorAdapter implements Runnable {
 	}
 
 	public void run() {
-        te.run();
-        dic.getDisplay().callSerially(new TaskCleanner(this));
+		this.te.run();
+		new TaskCleanner(this).run();
+		// dic.getDisplay().callSerially(this.te);
+        // dic.getDisplay().callSerially(new TaskCleanner(this));
         
 	}
 
-    static DefaultImageCanvas getDefaultImageCanvas(TaskExecutorAdapter tet){
-        return tet.dic;
+    public DefaultImageCanvas getDefaultImageCanvas(){
+        return this.dic;
         
     }
 }

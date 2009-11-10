@@ -9,10 +9,11 @@ public class TaskCleanner implements Runnable {
 	}
 
 	public final void run() {
+		System.out.println("f3");
 		// 终止线程运行
-		DefaultImageCanvas dic = TaskExecutorAdapter.getDefaultImageCanvas(this.tet);
-		dic.stop();
+		DefaultImageCanvas dic = this.tet.getDefaultImageCanvas();
 		new TaskActionFirer(dic).run();
+		dic.stop();
 		
 //		CommandListener commandListener = null;
 //		if ((commandListener = dic.getListener()) != null) {

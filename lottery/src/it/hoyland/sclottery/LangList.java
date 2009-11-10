@@ -4,7 +4,6 @@ import it.hoyland.sclottery.util.Properties;
 
 import javax.microedition.lcdui.Command;
 import javax.microedition.lcdui.CommandListener;
-import javax.microedition.lcdui.Display;
 import javax.microedition.lcdui.Displayable;
 import javax.microedition.lcdui.List;
 
@@ -36,11 +35,8 @@ public class LangList extends List implements CommandListener {
 			}
 		}
 		this.midlet.init();
-		Display.getDisplay(this.midlet).setCurrent(this.midlet.getLoginForm());
-	}
-
-	public LotteryMIDlet getMidlet() {
-		return midlet;
+		this.midlet.getDisplay().setCurrent(this.midlet.getLoginForm());
+		//Display.getDisplay(this.midlet).setCurrent(this.midlet.getLoginForm());
 	}
 	
 }

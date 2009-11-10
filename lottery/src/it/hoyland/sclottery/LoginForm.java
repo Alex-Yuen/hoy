@@ -63,6 +63,9 @@ public class LoginForm extends Form implements CommandListener {
 					Alert alert = new Alert(this.midlet.prop("L18"), "", image, AlertType.WARNING);
 					this.midlet.getDisplay().setCurrent(alert, this);
 				} // 成功此处不做处理？
+//				else{
+//					this.midlet.getDisplay().setCurrent(new ReprintForm(this.midlet, "EF"));
+//				}
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
