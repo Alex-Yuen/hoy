@@ -276,5 +276,15 @@ public class MessageForm extends Form implements CommandListener {
 		}
 		
 	}
+	
+//    public Alert get_alertSMS()
+//    {
+//        if(b_javax_microedition_lcdui_Alert_fld == null)
+//        {
+//            b_javax_microedition_lcdui_Alert_fld = new Alert(D88.b.a("L19"), D88.b.a("L19"), get_imgAlert(), null);
+//            b_javax_microedition_lcdui_Alert_fld.setTimeout(-2);
+//        }
+//        return b_javax_microedition_lcdui_Alert_fld;
+//    }
 
 }
