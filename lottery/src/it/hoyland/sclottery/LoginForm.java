@@ -36,7 +36,7 @@ public class LoginForm extends Form implements CommandListener {
 		this.append(this.address);
 
 		this.cmdLogin = new Command(this.midlet.prop("L16"), 1, 1);
-		this.cmdExit = new Command(this.midlet.prop("L17"), 1, 1);
+		this.cmdExit = new Command(this.midlet.prop("L17"), 7, 1);
 
 		addCommand(cmdExit);
 		addCommand(cmdLogin);

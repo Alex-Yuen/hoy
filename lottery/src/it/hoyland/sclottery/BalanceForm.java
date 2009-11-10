@@ -1,18 +1,47 @@
 package it.hoyland.sclottery;
 
+import it.hoyland.sclottery.util.CalendarUtil;
+
+import javax.microedition.lcdui.Command;
+import javax.microedition.lcdui.CommandListener;
+import javax.microedition.lcdui.Displayable;
 import javax.microedition.lcdui.Form;
-import javax.microedition.lcdui.Item;
+import javax.microedition.lcdui.TextField;
 
-public class BalanceForm extends Form {
+public class BalanceForm extends Form implements CommandListener {
 
+	private LotteryMIDlet midlet;
+	private TextField dateBalance;
+	
+	private Command cmdBalance;
+	private Command cmdBalanceBack;
+	private Command cmdBalanceExit;
+	
 	public BalanceForm(LotteryMIDlet lotteryMIDlet, String title) {
 		super(title);
-		// TODO Auto-generated constructor stub
+		this.midlet = lotteryMIDlet;
+		
+		this.dateBalance = new TextField(this.midlet.prop("L54"), CalendarUtil.getMonthAndDate(), 100, 3);
+		this.dateBalance.setInitialInputMode("");
+		
+		this.append(this.dateBalance);
+		
+		this.cmdBalance = new Command(this.midlet.prop("L4"), 1, 0);
+		this.cmdBalanceBack = new Command(this.midlet.prop("L24"), 2, 1);
+		this.cmdBalanceExit = new Command(this.midlet.prop("L17"), 7, 1);
+		
+		this.addCommand(this.cmdBalance);
+		this.addCommand(this.cmdBalanceBack);
+		this.addCommand(this.cmdBalanceExit);
+		
+		setCommandListener(this);
+		
 	}
 
-	public BalanceForm(String arg0, Item[] arg1) {
-		super(arg0, arg1);
-		// TODO Auto-generated constructor stub
+	public void commandAction(Command cmd, Displayable dsp) {
+		// TODO Auto-generated method stub
+		
 	}
+
 
 }
