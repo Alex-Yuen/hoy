@@ -21,7 +21,7 @@ public class TStakesForm extends Form implements CommandListener {
 		super(title);
 		this.midlet = lotteryMIDlet;
 		
-		this.dtTStake = new DateField(this.midlet.prop("L57"), 1);
+		this.dtTStake = new DateField(this.midlet.prop("L57"), DateField.DATE);
 		this.dtTStake.setDate(new Date());
 		append(this.dtTStake);
 		
