@@ -96,7 +96,7 @@ public class LotteryMIDlet extends MIDlet {
 			this.dicOfPlaceBet.setExecutor(te);
 			
 			// 初始化窗口
-			this.loginForm = new LoginForm(this);
+			this.loginForm = new LoginForm(this, prop("L13"));
 			this.mainList = new MainList(this, prop("L0"), List.IMPLICIT);
 			this.messageForm = new MessageForm(this, "");
 			
