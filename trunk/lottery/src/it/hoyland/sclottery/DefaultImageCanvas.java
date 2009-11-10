@@ -5,14 +5,16 @@ import javax.microedition.lcdui.Display;
 
 public class DefaultImageCanvas extends ImageCanvas {
 
+	protected LotteryMIDlet midlet;
 	private TaskExecutor executor;
 	private Thread thd;
 
 	public static final Command cmdSuccess = new Command("Success", 4, 0);
 	public static final Command cmdFailure = new Command("Failure", 4, 0);
 
-	public DefaultImageCanvas(Display display) {
+	public DefaultImageCanvas(LotteryMIDlet lotteryMIDlet, Display display) {
 		super(display);
+		this.midlet = lotteryMIDlet;
 
 	}
 
@@ -31,7 +33,8 @@ public class DefaultImageCanvas extends ImageCanvas {
 		if (this.executor != null) {
 			if (this.thd == null) {
 				this.thd = new Thread(new TaskExecutorAdapter(this, this.executor));
-				this.thd.start();
+				//this.thd.start();
+				getDisplay().callSerially(thd);
 			}
 		} else {
 			getDisplay().callSerially(new TaskActionFirer(this));
