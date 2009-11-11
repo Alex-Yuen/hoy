@@ -287,4 +287,7 @@ public class MessageForm extends Form implements CommandListener {
 //        return b_javax_microedition_lcdui_Alert_fld;
 //    }
 
+	public StringItem getItem(){
+		return this.item;
+	}
 }

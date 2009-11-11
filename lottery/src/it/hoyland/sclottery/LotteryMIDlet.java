@@ -1,6 +1,7 @@
 package it.hoyland.sclottery;
 
 import it.hoyland.sclottery.util.Properties;
+import it.hoyland.sclottery.util.RMSUtil;
 
 import javax.microedition.lcdui.Display;
 import javax.microedition.lcdui.Image;
@@ -18,6 +19,8 @@ public class LotteryMIDlet extends MIDlet {
 	
 	private int bint;
 	private int aint;
+	private RMSUtil rmsUtil;
+	private String btUrl;
 	
 	////////////////////////////////////////////////////////
 	private DefaultImageCanvas dicOfLogin;	// login
@@ -28,6 +31,7 @@ public class LotteryMIDlet extends MIDlet {
 	private LoginForm loginForm;
 	private MainList mainList;
 	private MessageForm messageForm;
+	
 	private BetForm betForm;
 	private BetHistoryForm betHistoryForm;
 	private ReprintForm reprintForm;
@@ -47,6 +51,13 @@ public class LotteryMIDlet extends MIDlet {
 		this.inited = false;
 		this.status = 'Z';
 		this.subStatus = '\0';
+		try{
+			this.rmsUtil = new RMSUtil("preferences");
+			setBtUrl("btspp://" + this.rmsUtil.getString("BT") + ":1;authenticate=false;encrypt=false;master=false");
+		}catch(Exception e){
+			e.printStackTrace();
+			this.exit();
+		}
 
 	}
 
@@ -233,4 +244,16 @@ public class LotteryMIDlet extends MIDlet {
 		return addPrinterForm;
 	}
 
+	public RMSUtil getRmsUtil() {
+		return rmsUtil;
+	}
+
+	public String getBtUrl() {
+		return btUrl;
+	}
+
+	public void setBtUrl(String btUrl) {
+		this.btUrl = btUrl;
+	}
+	
 }
