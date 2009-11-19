@@ -27,7 +27,7 @@ public class GetaJavaSpider extends Spider {
 	public void run() {
 		System.out.println(this.getClass().getName()+": start");
 		String url = "http://www.getafreelancer.com/projects/by-job/Java.html";
-		this.message.delete(0, this.message.length());
+		this.message = new StringBuffer();
 		
 		HttpClient httpclient = new DefaultHttpClient();
 		HttpContext localContext = new BasicHttpContext();

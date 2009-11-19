@@ -22,7 +22,8 @@ public class Tester {
 			public void update(Observable o, Object arg) {
 				for(Spider spider : counts.keySet()){
 					if(o.getClass().getName().equals(spider.getClass().getName()) && counts.get(spider).intValue()!=Integer.parseInt((String)arg)){
-						System.out.println(o.getClass().getName()+" count update:"+arg);
+						System.out.println(o.getClass().getName()+" count updated:"+arg);
+						counts.put(spider, Integer.parseInt((String)arg));
 					}
 				}
 			}
