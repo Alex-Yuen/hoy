@@ -40,7 +40,7 @@ public class Tester {
 				(new Thread(spiders[i])).start();
 			}
 			try{
-				Thread.sleep(60*1000*2); // 2 min 
+				Thread.sleep(60*1000*5); // 2 min 
 			}catch(Exception e){
 				e.printStackTrace();
 			}
