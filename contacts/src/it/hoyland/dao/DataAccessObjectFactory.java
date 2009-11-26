@@ -10,8 +10,11 @@ public class DataAccessObjectFactory {
 
 	}
 	
-	public void register(DataAccessObject dao){
+	public void register(String id, String clazz, DataAccessObject dao){
 		
 	}
 
+	public DataAccessObject get(String id){
+		return null;
+	}
 }
