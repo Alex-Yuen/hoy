@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="gb2312"?>
+<web-app>
+    <servlet>
+        <servlet-name>ServiceServlet</servlet-name>
+        <servlet-class>it.hoyland.hessian.server.ServiceServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <url-pattern>/service</url-pattern>
+        <servlet-name>ServiceServlet</servlet-name>
+    </servlet-mapping>
+</web-app>
