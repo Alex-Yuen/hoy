@@ -7,14 +7,14 @@ public class Utils {
 
 	// object to xml
 	public static String objToXml(Object obj) {
-		return "";
+		return ""; //这里只能省略，再引用的话，需要使用Reflect
 	}
 
 	// xml to object
 	public static Object xmlToObj(String xml) {
 		if (isNullString(xml))
 			return null;
-		return "";
+		return "";//这里只能省略，再引用的话，需要使用Reflect
 
 	}
 
