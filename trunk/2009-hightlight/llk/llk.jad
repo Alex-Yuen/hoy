@@ -1,6 +1,7 @@
-MIDlet-Jar-URL: llk.jar
-MIDlet-Name: llk Midlet Suite
-MIDlet-Vendor: Midlet Suite Vendor
 MIDlet-Version: 1.0.0
+MIDlet-Vendor: Midlet Suite Vendor
+MIDlet-Jar-URL: llk.jar
 MicroEdition-Configuration: CLDC-1.1
 MicroEdition-Profile: MIDP-2.0
+MIDlet-1: LLKMidlet,,it.hoyland.me.llk.LLKMIDlet
+MIDlet-Name: llk Midlet Suite
