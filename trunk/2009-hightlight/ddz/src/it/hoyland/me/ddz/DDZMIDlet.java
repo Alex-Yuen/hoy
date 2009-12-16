@@ -16,12 +16,13 @@ public class DDZMIDlet extends MIDlet {
 
 	protected void pauseApp() {
 		// TODO Auto-generated method stub
-
+		// do not need to process
 	}
 
 	protected void startApp() throws MIDletStateChangeException {
 		// TODO Auto-generated method stub
-
+		// Welcome Canvas
+		// Then go to the Desk
 	}
 
 }
