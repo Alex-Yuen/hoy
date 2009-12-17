@@ -53,6 +53,11 @@ public class DeskCanvas extends HLCanvas {
 		case 4:// 结束叫分，设定地主，进入拿底牌，放底牌环节
 			lord(g);
 			break;
+		case 5:// 扣牌
+			putDown(g);
+		case 6:// 开始打牌
+			play(g);
+			break;
 		default:
 			break;
 		}
@@ -194,5 +199,53 @@ public class DeskCanvas extends HLCanvas {
 		hands[lord][17] = hidden[0];
 		hands[lord][18] = hidden[1];
 		hands[lord][19] = hidden[2];
+		
+		setState((byte) 5);
+	}
+	
+	private void putDown(Graphics g) {
+		switch(turnIndex){
+			case 0:
+			case 2:
+				AI.putDown(hands[turnIndex]);
+				try{
+					Thread.sleep(1000);
+				}catch(Exception e){
+					e.printStackTrace();
+				}
+				setState((byte) 6);
+				break;
+			case 1:
+				// TODO
+				// 显示手指，提示putdown
+				// 点击之后
+				// setState((byte) 6);
+				break;
+			default:
+				break;
+		}
+	}
+	
+	private void play(Graphics g) {
+		switch(turnIndex){
+		case 0:
+		case 2:
+			AI.play(hands[turnIndex]);
+			try{
+				Thread.sleep(1000);
+			}catch(Exception e){
+				e.printStackTrace();
+			}
+			setState((byte) 7);
+			break;
+		case 1:
+			// TODO
+			// 显示手指，提示play
+			// 点击之后
+			// setState((byte) 7);
+			break;
+		default:
+			break;
+		}
 	}
 }
