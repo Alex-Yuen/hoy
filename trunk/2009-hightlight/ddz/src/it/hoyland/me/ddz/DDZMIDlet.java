@@ -57,4 +57,11 @@ public class DDZMIDlet extends MIDlet {
 		System.gc();
 	}
 
+	public void goMain() {
+		this.mainCanvas.show();
+		this.deskCanvas = null;
+		System.gc();
+		
+	}
+
 }
