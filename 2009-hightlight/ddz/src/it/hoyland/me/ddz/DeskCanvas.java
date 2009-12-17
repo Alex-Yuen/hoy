@@ -6,20 +6,50 @@ import javax.microedition.midlet.MIDlet;
 import it.hoyland.me.core.HLCanvas;
 
 public class DeskCanvas extends HLCanvas {
+	
+	private byte state;
+	private boolean run;
 
 	public DeskCanvas(MIDlet midlet) {
 		super(midlet);
-		// TODO Auto-generated constructor stub
-	}
-
-	public void run() {
-		// TODO Auto-generated method stub
-
-	}
-
-	protected void paint(Graphics arg0) {
-		// TODO Auto-generated method stub
+		setFullScreenMode(true);
+		this.run = true;
+		this.state = 0;
 		
 	}
 
+	public void run() {
+		while(run){
+			switch(this.state){
+				case 0:
+					break;
+				case 1:
+					init();
+					break;
+				default:
+					break;
+			}
+			
+			try{
+				Thread.sleep(100);
+			}catch(Exception e){
+				e.printStackTrace();
+			}
+			repaint();
+		}
+	}
+
+	protected void paint(Graphics g) {
+		// TODO Auto-generated method stub
+		g.setColor(31, 176, 31);
+		g.fillRect(0, 0, getWidth(), getHeight());
+	}
+
+	protected void keyPressed(int keyCode) {
+		
+	}
+	
+	private void init(){ // 开始新的牌局
+		
+	}
 }
