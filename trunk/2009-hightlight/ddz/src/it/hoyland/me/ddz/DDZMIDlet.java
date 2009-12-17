@@ -9,7 +9,7 @@ public class DDZMIDlet extends MIDlet {
 	protected Display display;
 	private WelcomeCanvas canvas;
 	private MainCanvas mainCanvas;
-	private DeskCanvas deskCanvas;
+	protected DeskCanvas deskCanvas;
 	public Object locker;
 
 	public DDZMIDlet() {
