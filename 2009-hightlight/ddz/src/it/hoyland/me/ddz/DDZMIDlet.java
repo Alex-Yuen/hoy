@@ -8,6 +8,8 @@ public class DDZMIDlet extends MIDlet {
 
 	protected Display display;
 	private WelcomeCanvas canvas;
+	private MainCanvas mainCanvas;
+	private DeskCanvas deskCanvas;
 	public Object locker;
 
 	public DDZMIDlet() {
@@ -29,7 +31,7 @@ public class DDZMIDlet extends MIDlet {
 
 	protected void startApp() throws MIDletStateChangeException {
 		// init
-		canvas.show();
+		this.canvas.show();
 		
 		try {
 			synchronized (locker) {
@@ -40,6 +42,10 @@ public class DDZMIDlet extends MIDlet {
 			e.printStackTrace();
 		}
 		
+		this.mainCanvas = new MainCanvas(this);
+		this.mainCanvas.show();
+		this.canvas = null;
+		System.gc();
 		System.out.println("FINISH!");
 
 	}
