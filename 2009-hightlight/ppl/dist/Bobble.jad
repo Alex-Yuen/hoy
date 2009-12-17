@@ -1,0 +1,8 @@
+MIDlet-1: Paopao,,Paopao
+MIDlet-Jar-Size: 295436
+MIDlet-Jar-URL: Bobble.jar
+MIDlet-Name: Bobble
+MIDlet-Vendor: Vendor
+MIDlet-Version: 1.0
+MicroEdition-Configuration: CLDC-1.1
+MicroEdition-Profile: MIDP-2.1
