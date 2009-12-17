@@ -72,11 +72,18 @@ public class WelcomeCanvas extends HLCanvas {
 				int alpha = (shadowImageRGB[i] & 0xff000000) >>> 24;
 				// 原始图片的对应像素的alpha值
 				int oldAlpha = (srcImageRGB[i] & 0xff000000) >>> 24;
+//				if(oldAlpha==255&&i==1880){
+//					info(i+":"+alpha);
+//				}
 				//info(oldAlpha+":"+alpha);
 				if (alpha < oldAlpha) {
 					// alpha值++
-					shadowImageRGB[i] = ((alpha + 2) << 24)
-							| (shadowImageRGB[i] & 0x00ffffff);
+					if(alpha==0xfe){
+						shadowImageRGB[i] = (shadowImageRGB[i] | 0xff000000);
+					}else{
+						shadowImageRGB[i] = ((alpha + 2) << 24)
+								| (shadowImageRGB[i] & 0x00ffffff);
+					}
 					changed = true;
 				}
 			}
