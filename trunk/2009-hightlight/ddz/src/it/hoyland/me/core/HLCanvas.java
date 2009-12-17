@@ -1,14 +1,14 @@
 package it.hoyland.me.core;
 
+import javax.microedition.lcdui.Canvas;
 import javax.microedition.lcdui.Display;
-import javax.microedition.lcdui.game.GameCanvas;
 import javax.microedition.midlet.MIDlet;
 
-public abstract class HLCanvas extends GameCanvas implements Runnable {
+public abstract class HLCanvas extends Canvas implements Runnable {
 	protected final MIDlet midlet;
 	
 	public HLCanvas(MIDlet midlet) {
-		super(true);
+		super();
 		this.midlet = midlet;
 	}
 
