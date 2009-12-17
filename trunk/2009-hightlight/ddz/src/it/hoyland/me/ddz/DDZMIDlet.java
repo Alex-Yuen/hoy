@@ -18,7 +18,7 @@ public class DDZMIDlet extends MIDlet {
 		this.canvas = new WelcomeCanvas(this);
 
 	}
-
+	
 	protected void destroyApp(boolean arg0) throws MIDletStateChangeException {
 		// TODO Auto-generated method stub
 
@@ -46,8 +46,15 @@ public class DDZMIDlet extends MIDlet {
 		this.mainCanvas.show();
 		this.canvas = null;
 		System.gc();
-		System.out.println("FINISH!");
+		// System.out.println("FINISH!");
 
+	}
+	
+
+	public void goDesk(){
+		this.deskCanvas = new DeskCanvas(this);
+		this.deskCanvas.show();
+		System.gc();
 	}
 
 }
