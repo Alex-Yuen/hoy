@@ -61,6 +61,20 @@ public class AI {
 		array[indexB] = temp;
 	}
 
+	/**
+	 * ³öÅÆÑéÖ¤
+	 * @param array
+	 * @return
+	 */
+	protected boolean check(byte[] array){
+		return false;
+	}
+	
+	
+	
+	
+	
+	
 	
 
 }
