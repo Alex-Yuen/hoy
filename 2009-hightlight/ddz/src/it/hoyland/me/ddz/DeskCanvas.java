@@ -15,12 +15,19 @@ public class DeskCanvas extends HLCanvas {
 	private byte lastWinner = 1; // 上一局赢家
 	private byte[] bet = new byte[3]; // 押注
 	private byte turnIndex = 1; // 表示当前玩家
+	private byte[] score = new byte[3];//分数
+	private byte[] played = new byte[54]; // 存放已经打的牌
+	private byte lastPlayCount; // 上一轮打出的牌(无打的不计)
+	private byte lastPlayIndex = 1; // 最后一个打牌的人的位置
 
 	public DeskCanvas(MIDlet midlet) {
 		super(midlet);
 		setFullScreenMode(true);
 		run = true;
 		state = 0;
+		for(byte i=0; i<score.length; i++){
+			score[i] = 100;
+		}
 
 	}
 
@@ -58,6 +65,9 @@ public class DeskCanvas extends HLCanvas {
 		case 6:// 开始打牌
 			play(g);
 			break;
+		case 7:// win
+			win(g);
+			break;
 		default:
 			break;
 		}
@@ -69,7 +79,7 @@ public class DeskCanvas extends HLCanvas {
 	}
 
 	protected void keyPressed(int keyCode) {
-		if(state==3){ //draw, again or not?
+		if(state==3||state==7){ //draw, again or not?
 			boolean flag = true;
 			if(flag){
 				setState((byte)1);
@@ -90,47 +100,15 @@ public class DeskCanvas extends HLCanvas {
 	private void newGame(Graphics g) { // 新的牌局
 		// 洗牌
 		byte[] cards = new byte[54];
-		for (byte i = 0; i < cards.length; i++) {
-			cards[i] = i;
-		}
-		permute(cards);
+		AI.permute(cards, hands, hidden);
 
-		// 发牌
-		byte m = 0;
-		for (byte i = 0; i < hands.length; i++) {
-			for (byte j = 0; j < hands[i].length-3; j++) {
-				hands[i][j] = cards[m++];
-			}
-		}
-
-		// 底牌
-		for (byte i = 0; i < hidden.length; i++) {
-			hidden[i] = cards[m++];
-		}
-
-		// TODO 显示牌，排序
+		// TODO 排序, 显示牌
 		for(byte i = 0; i < hands.length; i++){
-			sort(hands[i]);
+			AI.sort(hands[i]);
 		}
 		
 		turnIndex = lastWinner; //设置当前玩家
 		setState((byte) 2);
-	}
-
-	private void permute(byte[] array) {
-		for (byte i = 1; i < array.length; i++) {
-			swap(array, i, AI.random.nextInt(i));
-		}
-	}
-
-	private void swap(byte[] array, int indexA, int indexB) {
-		byte temp = array[indexA];
-		array[indexA] = array[indexB];
-		array[indexB] = temp;
-	}
-	
-	private void sort(byte[] array){
-		
 	}
 
 	private void bet(Graphics g) { // 叫分
@@ -227,25 +205,50 @@ public class DeskCanvas extends HLCanvas {
 	}
 	
 	private void play(Graphics g) {
+		int r = 0;
 		switch(turnIndex){
 		case 0:
 		case 2:
-			AI.play(hands[turnIndex]);
+			r = AI.play(played, hands[turnIndex], lastPlayCount, lastPlayIndex==turnIndex);
+			// 显示新打的牌
 			try{
 				Thread.sleep(1000);
 			}catch(Exception e){
 				e.printStackTrace();
 			}
-			setState((byte) 7);
+			checkPlay(r);
 			break;
 		case 1:
 			// TODO
 			// 显示手指，提示play
 			// 点击之后
-			// setState((byte) 7);
+			// 显示新打的牌
+			// checkPlay(r);
 			break;
 		default:
 			break;
 		}
+	}
+	
+	private void checkPlay(int r){
+		switch(r){
+		case 0:// pass
+		case 1:// play
+			nextTurn();
+			break;
+		case 2:// win
+			setState((byte) 7);
+			break;
+		default:
+			break;
+		}
+	}
+	
+	private void win(Graphics g) {
+		// 提示turnIndex win
+		// 计分
+		// 显示一个动态加分的过程
+		// 提示是否继续
+		// 转keypress进行判断
 	}
 }
