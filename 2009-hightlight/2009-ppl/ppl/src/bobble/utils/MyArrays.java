@@ -3,13 +3,13 @@
  * and open the template in the editor.
  */
 
-package com.phoenix.utils;
+package bobble.utils;
 
 import java.util.Vector;
 
 /**
  *
- * @author javaeye上由looker原创,本人就是looker
+ * 
  */
 public class MyArrays
 {//排序采用了sun jdk java.util.Arrays sort的源码
