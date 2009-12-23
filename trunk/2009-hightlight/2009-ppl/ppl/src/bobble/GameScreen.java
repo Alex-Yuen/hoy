@@ -19,7 +19,7 @@ import javax.microedition.lcdui.Image;
 public class GameScreen implements Painter
 {
     public static Image balls = null;
-    public static byte ballSize = 16, count, firstCount;
+    public static byte ballSize = 22, count, firstCount;
     public static Vector runnings = new Vector(), stays = new Vector();
     public static short minX , maxX, minY, maxY;
     private Image bg = null, menu = null, cloud0, cloud1;
