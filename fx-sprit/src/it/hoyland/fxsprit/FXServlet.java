@@ -51,14 +51,15 @@ public class FXServlet extends HttpServlet {
 			while (true) {
 				//复制数组
 				if(Message.UPDATED_FLAG.get(req).booleanValue() && Message.INFOMATION.size()>0){					
-					list = Arrays.asList(Message.INFOMATION.toArray().clone());			
+					list = Arrays.asList(Message.INFOMATION.toArray().clone());
+					Message.UPDATED_FLAG.put(req, new Boolean(false));// 已读
 				}
 				
 				Iterator<Object> it = list.iterator();
 				while(it.hasNext()){
 					out.println((String)it.next());
 				}
-				Thread.sleep(1000);
+				Thread.sleep(5000);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
