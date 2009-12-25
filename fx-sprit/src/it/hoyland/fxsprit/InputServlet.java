@@ -35,7 +35,7 @@ public class InputServlet extends HttpServlet {
 		out.println("<body>");
 		out.println("<form action=\"post\" method=\"post\">");
 		out.println("<textarea name=\"message\" rows=\"10\" cols=\"50\"></textarea><br/>");
-		out.println("<input name=\"really\" type=\"checkbox\" value=\"yes\"> I am sure.<br/><br/>");
+		out.println("<input name=\"really\" type=\"checkbox\" value=\"yes\"> <a href=\"#\" onClick=\"javascript: document.all('really').checked = !document.all('really').checked;\">I am sure.</a><br/><br/>");
 		out.println("<input name=\"submit\" type=\"submit\" value=\"submit\"/>");
 		out.println("</form>");
 		out.println("</body>");
