@@ -40,7 +40,9 @@ public class FXServlet extends HttpServlet {
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
 		resp.setContentType("text/html;charset=UTF-8");
-
+		if(!Message.UPDATED_FLAG.containsKey(req)){
+			Message.UPDATED_FLAG.put(req, new Boolean(true)); // 默认需要更新
+		}
 		PrintWriter out = null;
 		List<Object> list = null;
 		try {
@@ -48,7 +50,7 @@ public class FXServlet extends HttpServlet {
 			//监视消息池
 			while (true) {
 				//复制数组
-				if(Message.INFOMATION.size()>0){					
+				if(Message.UPDATED_FLAG.get(req).booleanValue() && Message.INFOMATION.size()>0){					
 					list = Arrays.asList(Message.INFOMATION.toArray().clone());			
 				}
 				
