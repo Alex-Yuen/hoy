@@ -39,8 +39,10 @@ public class FXServlet extends HttpServlet {
 		resp.setContentType("text/html;charset=UTF-8");
 
 		PrintWriter out = null;
-		try {			out = new PrintWriter(resp.getOutputStream());
-			while (true) {
+		try {
+			out = new PrintWriter(resp.getOutputStream());
+			int i = 0;
+			while (i++<50) {
 				out.println("hello");
 				Thread.sleep(200);
 			}
