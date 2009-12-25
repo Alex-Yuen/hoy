@@ -103,7 +103,7 @@ public class Client {
 			// 从服务端读取数据并打印
 			while ((n = in.read(b)) != -1) {
 				String s = new String(b, 0, n, "UTF-8");
-				System.out.println(s);
+				System.out.print(s);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

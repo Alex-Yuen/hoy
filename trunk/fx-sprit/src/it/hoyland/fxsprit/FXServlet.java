@@ -47,6 +47,8 @@ public class FXServlet extends HttpServlet {
 		List<Object> list = null;
 		try {
 			out = resp.getWriter();
+			out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+			out.flush();
 			//监视消息池
 			while (true) {
 				//复制数组
@@ -59,11 +61,12 @@ public class FXServlet extends HttpServlet {
 					Iterator<Object> it = list.iterator();
 					while(it.hasNext()){
 						out.println((String)it.next());
+						out.flush();
 					}
 				}
-				out.flush();
+				//out.flush();
 				list = null;
-				Thread.sleep(5000);
+				Thread.sleep(500);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
