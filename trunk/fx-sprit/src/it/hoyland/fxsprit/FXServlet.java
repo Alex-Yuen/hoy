@@ -61,6 +61,8 @@ public class FXServlet extends HttpServlet {
 						out.println((String)it.next());
 					}
 				}
+				out.flush();
+				list = null;
 				Thread.sleep(5000);
 			}
 		} catch (Exception e) {
