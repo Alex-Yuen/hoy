@@ -55,9 +55,11 @@ public class FXServlet extends HttpServlet {
 					Message.UPDATED_FLAG.put(req, new Boolean(false));// 已读
 				}
 				
-				Iterator<Object> it = list.iterator();
-				while(it.hasNext()){
-					out.println((String)it.next());
+				if(list!=null){
+					Iterator<Object> it = list.iterator();
+					while(it.hasNext()){
+						out.println((String)it.next());
+					}
 				}
 				Thread.sleep(5000);
 			}
