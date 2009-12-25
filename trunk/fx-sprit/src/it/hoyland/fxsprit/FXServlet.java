@@ -15,6 +15,8 @@ public class FXServlet extends HttpServlet {
 	 */
 	private static final long serialVersionUID = 9011758636253668237L;
 
+	private boolean flag = true;
+
 	public FXServlet() {
 		// TODO Auto-generated constructor stub
 	}
@@ -22,21 +24,33 @@ public class FXServlet extends HttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
-		PrintWriter out = new PrintWriter(resp.getOutputStream());
-		out.println("The SNS Photo Service requires POST method.");
-		out.close();
+		if (flag) {
+			this.doPost(req, resp);
+		} else {
+			PrintWriter out = new PrintWriter(resp.getOutputStream());
+			out.println("The SNS Photo Service requires POST method.");
+			out.close();
+		}
 	}
 
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
 		resp.setContentType("text/html;charset=UTF-8");
-		
-		PrintWriter out = new PrintWriter(resp.getOutputStream());
-		
-		out.close();
+
+		PrintWriter out = null;
+		try {			out = new PrintWriter(resp.getOutputStream());
+			while (true) {
+				out.println("hello");
+				Thread.sleep(200);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			if (out != null) {
+				out.close();
+			}
+		}
 	}
 
-	
-	
 }
