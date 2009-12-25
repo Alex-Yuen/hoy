@@ -41,10 +41,14 @@ public class FXServlet extends HttpServlet {
 		PrintWriter out = null;
 		try {
 			out = new PrintWriter(resp.getOutputStream());
+			//监视消息池
+//			while{
+//				
+//			}
 			int i = 0;
 			while (i++<50) {
-				out.println("hello");
-				Thread.sleep(200);
+				out.print(".");
+				Thread.sleep(100);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
