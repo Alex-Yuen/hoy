@@ -2,6 +2,9 @@ package it.hoyland.fxsprit;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -14,9 +17,9 @@ public class FXServlet extends HttpServlet {
 	 * 
 	 */
 	private static final long serialVersionUID = 9011758636253668237L;
-
+	
 	private boolean flag = true;
-
+	
 	public FXServlet() {
 		// TODO Auto-generated constructor stub
 	}
@@ -28,7 +31,7 @@ public class FXServlet extends HttpServlet {
 			this.doPost(req, resp);
 		} else {
 			PrintWriter out = new PrintWriter(resp.getOutputStream());
-			out.println("The SNS Photo Service requires POST method.");
+			out.println("This service requires POST method.");
 			out.close();
 		}
 	}
@@ -39,16 +42,21 @@ public class FXServlet extends HttpServlet {
 		resp.setContentType("text/html;charset=UTF-8");
 
 		PrintWriter out = null;
+		List<Object> list = null;
 		try {
-			out = new PrintWriter(resp.getOutputStream());
+			out = resp.getWriter();
 			//监视消息池
-//			while{
-//				
-//			}
-			int i = 0;
-			while (i++<50) {
-				out.print(".");
-				Thread.sleep(100);
+			while (true) {
+				//复制数组
+				if(Message.INFOMATION.size()>0){					
+					list = Arrays.asList(Message.INFOMATION.toArray().clone());			
+				}
+				
+				Iterator<Object> it = list.iterator();
+				while(it.hasNext()){
+					out.println((String)it.next());
+				}
+				Thread.sleep(1000);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
