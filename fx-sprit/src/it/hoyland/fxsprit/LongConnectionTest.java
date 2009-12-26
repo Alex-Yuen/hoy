@@ -23,20 +23,27 @@ public class LongConnectionTest extends javax.servlet.http.HttpServlet
 	protected void doPost(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 
+//		System.out.println(response.getBufferSize());
 		response.setCharacterEncoding("UTF-8");
 		response.setContentType("text/html");
-
 		PrintWriter pr = response.getWriter();
-
+		//PrintWriter pr = new PrintWriter(response.getOutputStream(), true);
+		
 		try {
 			int i = 0;
 			while (true) {
-				pr.print("有时候你不得不相信");
+				if(i==0){
+				pr.println("有时候你不得不相信有时候你不得不相信有时候你不得不相信有时候你不得不相信有时候你不得不相信有时候你不得不相信有时候你不得不相信有时候你不得不相信有时候你不得不相信有时候你不得不相信");
+				
 				// flush的作用很重要，当你任务写给客户端的数据总够多的时候
 				// 调用之，客户端方能读取到。
 				// 否则，在数据长度达到上限或者连接关闭之前，客户端读不到数据
-				System.out.println(i++);
+				//System.out.println(i++);
+				i = 1;
 				pr.flush();
+				System.out.println(response.getBufferSize());
+				System.out.println(pr.checkError());
+				}
 				Thread.sleep(500);
 			}
 		} catch (Exception e) {

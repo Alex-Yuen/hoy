@@ -25,7 +25,7 @@ public class Client {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		String url = "http://localhost/fx/service";
+		String url = "http://localhost/fx/test";
 		// HttpClient httpclient = new DefaultHttpClient();
 		// HttpContext localContext = new BasicHttpContext();
 		// CookieStore cookieStore = new BasicCookieStore();
@@ -99,8 +99,12 @@ public class Client {
 			URL u = new URL(url);
 			InputStream in = u.openStream();
 			int n = -1;
-			byte[] b = new byte[1024];
+			byte[] b = new byte[8192];
 			// 从服务端读取数据并打印
+//			while((n=in.read())!=-1){
+//				System.out.print(n);
+//			}
+			
 			while ((n = in.read(b)) != -1) {
 				String s = new String(b, 0, n, "UTF-8");
 				System.out.print(s);
