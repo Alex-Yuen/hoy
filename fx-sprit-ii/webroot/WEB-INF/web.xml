@@ -23,9 +23,32 @@
 	<description>
 	Welcome to FX Server
 	</description>
+
+	<welcome-file-list>
+		<welcome-file>index</welcome-file>
+	</welcome-file-list>
+
 	<servlet>
 		<servlet-name>FX Servlet</servlet-name>
 		<servlet-class>net.fxsprit.servlet.FXServlet</servlet-class>
 		<load-on-startup>1</load-on-startup>
 	</servlet>
+
+	<servlet>
+		<servlet-name>FX Index Servlet</servlet-name>
+		<servlet-class>net.fxsprit.servlet.IndexServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>FX Index Servlet</servlet-name>
+		<url-pattern>/admin/index</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
+		<servlet-name>FX Post Servlet</servlet-name>
+		<servlet-class>net.fxsprit.servlet.PostServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>FX Post Servlet</servlet-name>
+		<url-pattern>/admin/post</url-pattern>
+	</servlet-mapping>
 </web-app>
