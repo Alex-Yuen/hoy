@@ -25,37 +25,7 @@
 	</description>
 	<servlet>
 		<servlet-name>FX Servlet</servlet-name>
-		<servlet-class>it.hoyland.fxsprit.FXServlet</servlet-class>
+		<servlet-class>net.fxsprit.servlet.FXServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
 	</servlet>
-	<servlet-mapping>
-		<servlet-name>FX Servlet</servlet-name>
-		<url-pattern>/service</url-pattern>
-	</servlet-mapping>
-
-	<servlet>
-		<servlet-name>FX Input Servlet</servlet-name>
-		<servlet-class>it.hoyland.fxsprit.InputServlet</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>FX Input Servlet</servlet-name>
-		<url-pattern>/input</url-pattern>
-	</servlet-mapping>
-
-	<servlet>
-		<servlet-name>FX Post Servlet</servlet-name>
-		<servlet-class>it.hoyland.fxsprit.PostServlet</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>FX Post Servlet</servlet-name>
-		<url-pattern>/post</url-pattern>
-	</servlet-mapping>
-	
-		<servlet>
-		<servlet-name>Test Servlet</servlet-name>
-		<servlet-class>it.hoyland.fxsprit.LongConnectionTest</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>Test Servlet</servlet-name>
-		<url-pattern>/test</url-pattern>
-	</servlet-mapping>
 </web-app>
