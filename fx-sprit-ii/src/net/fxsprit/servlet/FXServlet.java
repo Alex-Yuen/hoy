@@ -1,7 +1,6 @@
 package net.fxsprit.servlet;
 
 import java.io.IOException;
-import java.net.ServerSocket;
 
 import javax.servlet.Servlet;
 import javax.servlet.ServletConfig;
@@ -35,25 +34,25 @@ public class FXServlet implements Servlet {
 
 	@Override
 	public void init(ServletConfig arg0) throws ServletException {
-		try {
-			boolean listening = true; // ÊÇ·ñ¶Ô¿Í»§¶Ë½øĞĞ¼àÌı
-			ServerSocket server = null; // ·şÎñÆ÷¶ËSocket¶ÔÏó
-
-			try {
-				// ´´½¨Ò»¸öServerSocketÔÚ¶Ë¿Ú2121¼àÌı¿Í»§ÇëÇó
-				server = new ServerSocket(8012);
-				System.out.println("Server starts...");
-			} catch (Exception e) {
-				System.out.println("Can not listen to. " + e);
-			}
-
-			while (listening) {
-				// ¼àÌıµ½¿Í»§ÇëÇó,¸ù¾İµÃµ½µÄSocket¶ÔÏóºÍ¿Í»§¼ÆÊı´´½¨·şÎñÏß³Ì,²¢Æô¶¯Ö®
-				new Thread(new ServiceThread(server.accept())).start();
-			}
-		} catch (Exception e) {
-			System.out.println("Error. " + e);
-		}
+//		try {
+//			boolean listening = true; // æ˜¯å¦å¯¹å®¢æˆ·ç«¯è¿›è¡Œç›‘å¬
+//			ServerSocket server = null; // æœåŠ¡å™¨ç«¯Socketå¯¹è±¡
+//
+//			try {
+//				// åˆ›å»ºä¸€ä¸ªServerSocketåœ¨ç«¯å£2121ç›‘å¬å®¢æˆ·è¯·æ±‚
+//				server = new ServerSocket(8012);
+//				System.out.println("Server starts...");
+//			} catch (Exception e) {
+//				System.out.println("Can not listen to. " + e);
+//			}
+//
+//			while (listening) {
+//				// ç›‘å¬åˆ°å®¢æˆ·è¯·æ±‚,æ ¹æ®å¾—åˆ°çš„Socketå¯¹è±¡å’Œå®¢æˆ·è®¡æ•°åˆ›å»ºæœåŠ¡çº¿ç¨‹,å¹¶å¯åŠ¨ä¹‹
+//				new Thread(new ServiceThread(server.accept())).start();
+//			}
+//		} catch (Exception e) {
+//			System.out.println("Error. " + e);
+//		}
 	}
 
 	@Override
