@@ -31,8 +31,20 @@
 	<servlet>
 		<servlet-name>FX Servlet</servlet-name>
 		<servlet-class>net.fxsprit.servlet.FXServlet</servlet-class>
-		<load-on-startup>1</load-on-startup>
 	</servlet>
+	<servlet-mapping>
+		<servlet-name>FX Servlet</servlet-name>
+		<url-pattern>/service</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
+		<servlet-name>FX Login Servlet</servlet-name>
+		<servlet-class>net.fxsprit.servlet.LoginServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>FX Login Servlet</servlet-name>
+		<url-pattern>/login</url-pattern>
+	</servlet-mapping>
 
 	<servlet>
 		<servlet-name>FX Index Servlet</servlet-name>
@@ -43,6 +55,7 @@
 		<url-pattern>/adminx/index</url-pattern>
 	</servlet-mapping>
 
+	<!-- API FOR CRAWL -->
 	<servlet>
 		<servlet-name>FX Post Servlet</servlet-name>
 		<servlet-class>net.fxsprit.servlet.PostServlet</servlet-class>

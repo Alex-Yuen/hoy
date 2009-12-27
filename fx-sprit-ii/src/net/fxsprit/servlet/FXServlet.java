@@ -17,54 +17,50 @@ public class FXServlet extends HttpServlet {
 	 * 
 	 */
 	private static final long serialVersionUID = 9011758636253668237L;
-	
-	private boolean flag = true;
-	
+
 	public FXServlet() {
-		// TODO Auto-generated constructor stub
+
 	}
 
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
-		if (flag) {
-			this.doPost(req, resp);
-		} else {
-			PrintWriter out = new PrintWriter(resp.getOutputStream());
-			out.println("This service requires POST method.");
-			out.close();
-		}
+		PrintWriter out = new PrintWriter(resp.getOutputStream());
+		out.println("This service requires POST method.");
+		out.close();
 	}
 
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
 		resp.setContentType("text/html;charset=UTF-8");
-		if(!Messages.UPDATED_FLAG.containsKey(req)){
+		if (!Messages.UPDATED_FLAG.containsKey(req)) {
 			Messages.UPDATED_FLAG.put(req, new Boolean(true)); // 默认需要更新
 		}
 		PrintWriter out = null;
 		List<Object> list = null;
 		try {
 			out = resp.getWriter();
-			out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+			out
+					.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
 			out.flush();
-			//监视消息池
+			// 监视消息池
 			while (true) {
-				//复制数组
-				if(Messages.UPDATED_FLAG.get(req).booleanValue() && Messages.INFOMATION.size()>0){					
+				// 复制数组
+				if (Messages.UPDATED_FLAG.get(req).booleanValue()
+						&& Messages.INFOMATION.size() > 0) {
 					list = Arrays.asList(Messages.INFOMATION.toArray().clone());
 					Messages.UPDATED_FLAG.put(req, new Boolean(false));// 已读
 				}
-				
-				if(list!=null){
+
+				if (list != null) {
 					Iterator<Object> it = list.iterator();
-					while(it.hasNext()){
-						out.println((String)it.next());
+					while (it.hasNext()) {
+						out.println((String) it.next());
 						out.flush();
 					}
 				}
-				//out.flush();
+				// out.flush();
 				list = null;
 				Thread.sleep(500);
 			}
