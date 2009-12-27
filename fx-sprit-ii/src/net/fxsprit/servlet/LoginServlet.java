@@ -8,6 +8,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.json.JSONObject;
+
 import net.fxsprit.util.IdGenerator;
 
 public class LoginServlet extends HttpServlet {
@@ -33,6 +35,7 @@ public class LoginServlet extends HttpServlet {
 		resp.setContentType("text/html;charset=UTF-8");
 		PrintWriter out = resp.getWriter();
 		
+		JSONObject jo = new JSONObject();
 		try{
 			// 没有必要做验证
 			String sessionId = IDGENERATOR.generateId(16);
@@ -40,7 +43,8 @@ public class LoginServlet extends HttpServlet {
 				sessionId = IDGENERATOR.generateId(16);
 			}
 			Messages.SESSIONS.put(sessionId, null);
-			out.print(IDGENERATOR.generateId(16));
+			jo.put("sessionid", sessionId);
+			out.print(jo.toString());
 			out.flush();			
 		}catch(Exception e){
 			e.printStackTrace();
