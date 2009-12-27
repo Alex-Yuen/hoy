@@ -40,7 +40,7 @@
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>FX Index Servlet</servlet-name>
-		<url-pattern>/admin/index</url-pattern>
+		<url-pattern>/adminx/index</url-pattern>
 	</servlet-mapping>
 
 	<servlet>
@@ -49,6 +49,6 @@
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>FX Post Servlet</servlet-name>
-		<url-pattern>/admin/post</url-pattern>
+		<url-pattern>/adminx/post</url-pattern>
 	</servlet-mapping>
 </web-app>
