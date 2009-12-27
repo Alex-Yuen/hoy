@@ -30,6 +30,7 @@ public class PostServlet extends HttpServlet {
 			throws ServletException, IOException {
 		PrintWriter out = resp.getWriter();
 		out.println("This service requires POST method.");
+		out.flush();
 		out.close();
 	}
 
@@ -41,7 +42,7 @@ public class PostServlet extends HttpServlet {
 		JSONObject jo = new JSONObject();
 		
 		try{
-			if(req.getParameter("really")!=null){
+			if(req.getParameter("really")!=null&&"yes".equals(req.getParameter("really"))){
 				// 把消息加入消息池
 				String content = req.getParameter("message")!=null?(String)req.getParameter("message"):"";
 				String fnId = IDGENERATOR.generateId(16);	
