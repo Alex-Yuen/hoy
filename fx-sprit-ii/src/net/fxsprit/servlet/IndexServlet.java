@@ -2,6 +2,8 @@ package net.fxsprit.servlet;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -14,6 +16,8 @@ public class IndexServlet extends HttpServlet {
 	 * 
 	 */
 	private static final long serialVersionUID = 7195225526662457905L;
+	
+	private static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
 	public IndexServlet() {
 
@@ -45,11 +49,20 @@ public class IndexServlet extends HttpServlet {
 		out.println("						<td width=\"75%\"><b>Content</b></td>");
 		out.println("						<td width=\"10%\" align=\"center\"><b>Provider</b></td>");
 		out.println("					</tr>");
-		out.println("					<tr>");
-		out.println("						<td><input type=\"checkbox\" name=\"ck\"/> 2009-11-23 12:43:34</td>");
-		out.println("						<td>美元飚升美元飚升美元飚升美元飚升美元飚升美元飚升美元飚升美元飚升美元飚升美元飚升美元飚升美元飚升美元飚升美元飚升美元飚升美元飚升美元飚升</td>");
-		out.println("						<td align=\"center\">和讯</td>");
-		out.println("					</tr>");
+		
+		for(ForexNews fn: Messages.INFOMATION){
+			out.println("					<tr>");
+			out.println("						<td><input type=\"checkbox\" name=\"ck\" value=\""+fn.getId()+"\"/> "+sdf.format(new Date(fn.getTime()))+"</td>");
+			out.println("						<td>"+fn.getContent()+"</td>");
+			out.println("						<td align=\"center\">"+fn.getProvider()+"</td>");
+			out.println("					</tr>");
+		}
+		
+//		out.println("					<tr>");
+//		out.println("						<td><input type=\"checkbox\" name=\"ck\"/> 2009-11-23 12:43:34</td>");
+//		out.println("						<td>美元飚升美元飚升美元飚升美元飚升美元飚升美元飚升美元飚升美元飚升美元飚升美元飚升美元飚升美元飚升美元飚升美元飚升美元飚升美元飚升美元飚升</td>");
+//		out.println("						<td align=\"center\">和讯</td>");
+//		out.println("					</tr>");		
 		out.println("				</table>");
 		out.println("			</div>");
 		out.println("			<br/>");
