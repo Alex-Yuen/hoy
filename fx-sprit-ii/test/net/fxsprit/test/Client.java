@@ -3,16 +3,21 @@ package net.fxsprit.test;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
 //import java.net.URL;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
 import org.apache.http.client.CookieStore;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.protocol.ClientContext;
 import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
 
@@ -26,7 +31,7 @@ public class Client {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		String url = "http://www.fxsprit.net/login";
+		String url = "http://localhost/fx/service";
 		HttpClient httpclient = new DefaultHttpClient();
 		HttpContext localContext = new BasicHttpContext();
 		CookieStore cookieStore = new BasicCookieStore();
@@ -39,7 +44,7 @@ public class Client {
 		HttpEntity entity = null;
 		HttpPost httpPost = null;
 
-		// List<NameValuePair> nameValuePairs = null;
+		List<NameValuePair> nameValuePairs = null;
 
 		try {
 			// httpGet = new HttpGet(url1);
@@ -63,13 +68,12 @@ public class Client {
 			// }
 
 			httpPost = new HttpPost(url);
-			// nameValuePairs = new ArrayList<NameValuePair>(3);
-			// nameValuePairs.add(new BasicNameValuePair("recherche",
-			// "Avancee"));
+			nameValuePairs = new ArrayList<NameValuePair>(1);
+			 nameValuePairs.add(new BasicNameValuePair("SESSIONID", "CA6B5DDDAB51CF7298B45FF84DA6162F"));
 			// nameValuePairs.add(new BasicNameValuePair("lieuDeTravail",
 			// "sel"));
 			// nameValuePairs.add(new BasicNameValuePair("distance", "10"));
-			// httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+			httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
 
 			response = httpclient.execute(httpPost, localContext);
 			entity = response.getEntity();
