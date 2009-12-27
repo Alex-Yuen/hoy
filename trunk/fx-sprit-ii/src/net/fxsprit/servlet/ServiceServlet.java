@@ -52,12 +52,22 @@ public class ServiceServlet extends HttpServlet {
 				// 根据获取新闻列表
 				if(lastRequestTime==null){ //返回全部消息
 					for(ForexNews fn : Messages.INFOMATION){
-						ja.put(fn);
+						JSONObject tjo = new JSONObject();
+						tjo.put("id", fn.getId());
+						tjo.put("time", fn.getTime());
+						tjo.put("content", fn.getContent());
+						tjo.put("provider", fn.getProvider());
+						ja.put(tjo);
 					}
 				}else{ //返回>lastRequestTime 并 <=currentTime的所有消息
 					list = getForexNewsList(lastRequestTime.longValue(), currentTime);
 					for(ForexNews fn : list){
-						ja.put(fn);
+						JSONObject tjo = new JSONObject();
+						tjo.put("id", fn.getId());
+						tjo.put("time", fn.getTime());
+						tjo.put("content", fn.getContent());
+						tjo.put("provider", fn.getProvider());
+						ja.put(tjo);
 					}
 				}
 				// 更新最后请求时间
