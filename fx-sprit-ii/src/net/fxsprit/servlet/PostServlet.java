@@ -41,10 +41,10 @@ public class PostServlet extends HttpServlet {
 				// 把消息加入消息池
 				Date now = Calendar.getInstance().getTime();
 				String message = req.getParameter("message")!=null?(String)req.getParameter("message"):"";
-				Message.INFOMATION.add(SDF.format(now) + ">>" + message);
+				Messages.INFOMATION.add(SDF.format(now) + ">>" + message);
 				// 更新状态
-				for(HttpServletRequest obj : Message.UPDATED_FLAG.keySet()){
-					Message.UPDATED_FLAG.put(obj, new Boolean(true));
+				for(HttpServletRequest obj : Messages.UPDATED_FLAG.keySet()){
+					Messages.UPDATED_FLAG.put(obj, new Boolean(true));
 				}
 				//System.out.println(req.getParameter("message"));
 			}
