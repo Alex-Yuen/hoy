@@ -69,7 +69,7 @@ public class IndexServlet extends HttpServlet {
 		out.println("			<input type=\"button\" name=\"delete\" value=\"Delete\"/>");
 		out.println("		</td>");
 		out.println("		<td align=\"center\" valign=\"top\">");
-		out.println("			<form action=\"../fx-api/post\" method=\"post\">");
+		out.println("			<form action=\"fx-api/post\" method=\"post\">");
 		out.println("			<textarea name=\"message\" rows=\"10\" cols=\"50\"></textarea><br/>");
 		out.println("			<input name=\"really\" type=\"checkbox\" value=\"yes\"> <a href=\"#\" onClick=\"javascript: document.all('really').checked = !document.all('really').checked;\">I am sure.</a><br/><br/>");
 		out.println("			<input name=\"submit\" type=\"Submit\" value=\"Submit\"/>");
