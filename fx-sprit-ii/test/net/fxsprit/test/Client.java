@@ -26,7 +26,7 @@ public class Client {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		String url = "http://localhost/fx/login";
+		String url = "http://www.fxsprit.net/login";
 		HttpClient httpclient = new DefaultHttpClient();
 		HttpContext localContext = new BasicHttpContext();
 		CookieStore cookieStore = new BasicCookieStore();

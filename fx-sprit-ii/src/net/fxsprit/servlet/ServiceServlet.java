@@ -28,6 +28,7 @@ public class ServiceServlet extends HttpServlet {
 			throws ServletException, IOException {
 		PrintWriter out = new PrintWriter(resp.getOutputStream());
 		out.println("This service requires POST method.");
+		out.flush();
 		out.close();
 	}
 
