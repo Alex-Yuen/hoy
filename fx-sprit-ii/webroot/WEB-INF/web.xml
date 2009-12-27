@@ -24,9 +24,9 @@
 	Welcome to FX Server
 	</description>
 
-	<welcome-file-list>
+	<!--welcome-file-list>
 		<welcome-file>index</welcome-file>
-	</welcome-file-list>
+	</welcome-file-list-->
 
 	<servlet>
 		<servlet-name>FX Servlet</servlet-name>
@@ -56,9 +56,13 @@
 		<servlet-name>FX Index Servlet</servlet-name>
 		<servlet-class>net.fxsprit.servlet.IndexServlet</servlet-class>
 	</servlet>
-	<servlet-mapping>
+	<!--servlet-mapping>
 		<servlet-name>FX Index Servlet</servlet-name>
 		<url-pattern>/fx-admin/index</url-pattern>
+	</servlet-mapping-->
+	<servlet-mapping>
+		<servlet-name>FX Index Servlet</servlet-name>
+		<url-pattern>/fx-admin</url-pattern>
 	</servlet-mapping>
 
 	<!-- API FOR CRAWL -->
