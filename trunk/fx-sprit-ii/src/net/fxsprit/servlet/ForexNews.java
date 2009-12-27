@@ -6,15 +6,15 @@ package net.fxsprit.servlet;
  *
  */
 public class ForexNews {
-	private long id;
+	private String id;
 	private long time;
 	private String provider;
 	private String content;
 	
-	public long getId() {
+	public String getId() {
 		return id;
 	}
-	public void setId(long id) {
+	public void setId(String id) {
 		this.id = id;
 	}
 	public long getTime() {

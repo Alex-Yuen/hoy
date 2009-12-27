@@ -8,6 +8,10 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.json.JSONObject;
+
+import net.fxsprit.util.IdGenerator;
+
 public class PostServlet extends HttpServlet {
 
 	/**
@@ -15,6 +19,7 @@ public class PostServlet extends HttpServlet {
 	 */
 	private static final long serialVersionUID = 2122367685846192293L;
 	
+	private static final IdGenerator IDGENERATOR = new IdGenerator();
 	
 	public PostServlet() {
 		// TODO Auto-generated constructor stub
@@ -32,34 +37,39 @@ public class PostServlet extends HttpServlet {
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
 		req.setCharacterEncoding("UTF-8");
+		PrintWriter out = resp.getWriter();		
+		JSONObject jo = new JSONObject();
+		
 		try{
 			if(req.getParameter("really")!=null){
 				// 把消息加入消息池
-//				Date now = Calendar.getInstance().getTime();
-//				String message = req.getParameter("message")!=null?(String)req.getParameter("message"):"";
-//				Messages.INFOMATION.add(SDF.format(now) + ">>" + message);
-//				// 更新状态
-//				for(HttpServletRequest obj : Messages.UPDATED_FLAG.keySet()){
-//					Messages.UPDATED_FLAG.put(obj, new Boolean(true));
-//				}
-				//System.out.println(req.getParameter("message"));
+				String content = req.getParameter("message")!=null?(String)req.getParameter("message"):"";
+				String fnId = IDGENERATOR.generateId(16);	
+				
+				ForexNews fn = new ForexNews();			
+				fn.setId(fnId);
+				fn.setContent(content);
+				fn.setProvider("FXSPRIT");
+				fn.setTime(System.currentTimeMillis());
+				
+				Messages.INFOMATION.add(fn);
+				jo.put("status", "success");
+			}else{
+				jo.put("status", "failure");
 			}
 		}catch(Exception e){
+			try{
+				jo.put("status", "failure");
+			}catch(Exception ex){
+				ex.printStackTrace();
+			}
 			e.printStackTrace();
+		}finally{
+			out.print(jo.toString());
+			out.flush();
+			out.close();
 		}
 		
-		PrintWriter out = resp.getWriter();
-		out.println("<html>");
-		out.println("<head>");
-		out.println("<title>");
-		out.println("Post Message");
-		out.println("</title>");
-		out.println("</head>");
-		out.println("<body>");
-		out.println("Scucess. <a href=\"input\">Back</a>");
-		out.println("</body>");
-		out.println("</html>");
-		out.close();
 	}
 	
 	
