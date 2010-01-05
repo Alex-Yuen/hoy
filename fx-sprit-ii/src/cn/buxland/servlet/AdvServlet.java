@@ -2,7 +2,7 @@ package cn.buxland.servlet;
 
 import java.io.IOException;
 
-import javax.servlet.RequestDispatcher;
+//import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -31,8 +31,9 @@ public class AdvServlet extends HttpServlet {
 		String id = req.getParameter("id");
 		try{
 			if(id!=null&&"B9600E707A32CCE6".equals(id)){
-				RequestDispatcher rd = getServletContext().getRequestDispatcher("/neobux");  
-				rd.forward(req, resp);   
+//				RequestDispatcher rd = getServletContext().getRequestDispatcher("/neobux/index.html");  
+//				rd.forward(req, resp);
+				resp.sendRedirect("/neobux/index.html");
 //				out.print("");
 //				out.flush();
 			}
