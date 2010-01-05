@@ -27,7 +27,7 @@
 	<!--welcome-file-list>
 		<welcome-file>index</welcome-file>
 	</welcome-file-list-->
-
+<!-- 
 	<servlet>
 		<servlet-name>FX Servlet</servlet-name>
 		<servlet-class>net.fxsprit.servlet.FXServlet</servlet-class>
@@ -55,17 +55,20 @@
 	<servlet>
 		<servlet-name>FX Index Servlet</servlet-name>
 		<servlet-class>net.fxsprit.servlet.IndexServlet</servlet-class>
-	</servlet>
+	</servlet>.
+	 -->
 	<!--servlet-mapping>
 		<servlet-name>FX Index Servlet</servlet-name>
 		<url-pattern>/fx-admin/index</url-pattern>
 	</servlet-mapping-->
+	<!-- 
 	<servlet-mapping>
 		<servlet-name>FX Index Servlet</servlet-name>
 		<url-pattern>/fx-admin</url-pattern>
 	</servlet-mapping>
-
+ -->
 	<!-- API FOR CRAWL -->
+	<!-- 
 	<servlet>
 		<servlet-name>FX Post Servlet</servlet-name>
 		<servlet-class>net.fxsprit.servlet.PostServlet</servlet-class>
@@ -73,5 +76,25 @@
 	<servlet-mapping>
 		<servlet-name>FX Post Servlet</servlet-name>
 		<url-pattern>/fx-api/post</url-pattern>
+	</servlet-mapping> 
+	-->
+	
+	<servlet>
+		<servlet-name>Adv Servlet</servlet-name>
+		<servlet-class>cn.buxland.servlet.AdvServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>Adv Servlet</servlet-name>
+		<url-pattern>/adv</url-pattern>
 	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>Img Servlet</servlet-name>
+		<servlet-class>cn.buxland.servlet.ImgServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>Img Servlet</servlet-name>
+		<url-pattern>/img</url-pattern>
+	</servlet-mapping>
+	
 </web-app>
