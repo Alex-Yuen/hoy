@@ -128,7 +128,7 @@ class ClickSaver implements Runnable {
 			Properties prop = new Properties();
 			prop.setProperty("useUnicode", "true");
 			prop.setProperty("characterEncoding", "utf-8");
-			String url = "jdbc:mysql://221.238.194.40:3306/c079446?user=c079446&password=VpPlEdS";
+			String url = "jdbc:mysql://127.0.0.1:3306/x?user=x&password=x";
 			//out.println("2");
 			con = DriverManager.getConnection(url, prop);
 			//out.println("3");
