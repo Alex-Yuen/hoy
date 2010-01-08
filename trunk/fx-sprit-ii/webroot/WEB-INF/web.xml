@@ -81,7 +81,7 @@
 	
 	<servlet>
 		<servlet-name>Adv Servlet</servlet-name>
-		<servlet-class>cn.buxland.servlet.AdvServlet</servlet-class>
+		<servlet-class>net.buxland.servlet.AdvServlet</servlet-class>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>Adv Servlet</servlet-name>
@@ -90,7 +90,7 @@
 	
 	<servlet>
 		<servlet-name>Img Servlet</servlet-name>
-		<servlet-class>cn.buxland.servlet.ImgServlet</servlet-class>
+		<servlet-class>net.buxland.servlet.ImgServlet</servlet-class>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>Img Servlet</servlet-name>
