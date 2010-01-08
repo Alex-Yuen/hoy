@@ -9,5 +9,6 @@
 	<classpathentry kind="lib" path="lib/httpcore-4.0.1.jar"/>
 	<classpathentry kind="lib" path="lib/httpcore-nio-4.0.1.jar"/>
 	<classpathentry kind="lib" path="lib/httpmime-4.0.jar"/>
+	<classpathentry kind="lib" path="webroot/WEB-INF/lib/mysql-connector-java-5.1.6-bin.jar"/>
 	<classpathentry kind="output" path="webroot/WEB-INF/classes"/>
 </classpath>
