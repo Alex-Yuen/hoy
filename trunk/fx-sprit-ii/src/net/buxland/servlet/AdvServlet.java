@@ -2,12 +2,13 @@ package net.buxland.servlet;
 
 import java.io.IOException;
 //import java.io.PrintWriter;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.Statement;
-import java.util.Properties;
+//import java.sql.Connection;
+//import java.sql.DriverManager;
+//import java.sql.ResultSet;
+//import java.sql.Statement;
+//import java.util.Properties;
 
+//import javax.servlet.RequestDispatcher;
 //import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -37,9 +38,8 @@ public class AdvServlet extends HttpServlet {
 		String id = req.getParameter("id");
 		try {
 			if (id != null && "B9600E707A32CCE6".equals(id)) {
-				// RequestDispatcher rd =
-				// getServletContext().getRequestDispatcher("/neobux/index.html");
-				// rd.forward(req, resp);
+//				RequestDispatcher rd = getServletContext().getRequestDispatcher("/buxland/neobux/index.html");
+//				rd.forward(req, resp);
 				// new Thread(new
 				// ClickSaver(getServletContext().getRealPath("/WEB-INF/log/"+id))).start();
 				// new
@@ -47,7 +47,8 @@ public class AdvServlet extends HttpServlet {
 				// out).run();
 				//new Thread(new ClickSaver(id)).start();
 			//	new ClickSaver(id, out).run();
-				resp.sendRedirect("http://www.neobux.com/?rh=686F797A68616E67");
+				//resp.sendRedirect("http://www.neobux.com/?rh=686F797A68616E67");
+				resp.sendRedirect("/neobux");
 				// out.print("");
 				// out.flush();
 			}
@@ -66,7 +67,7 @@ public class AdvServlet extends HttpServlet {
 	}
 
 }
-
+/*
 class ClickSaver implements Runnable {
 	// private String path;
 	//private PrintWriter out;
@@ -148,3 +149,4 @@ class ClickSaver implements Runnable {
 	}
 
 }
+*/

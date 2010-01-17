@@ -50,7 +50,7 @@ public class ImgServlet extends HttpServlet {
 //				bis.close();
 //				bos.flush();//清空输出缓冲流
 //			    bos.close();
-				resp.sendRedirect("/buxland/neobux/images/B9600E707A32CCE6.png");
+				resp.sendRedirect("/neobux/images/B9600E707A32CCE6.png");
 			}
 		}catch(Exception e){
 			e.printStackTrace();
