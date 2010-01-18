@@ -33,11 +33,71 @@
 		#gbar, #guser{
 			font-size:13px;padding-top:1px !important
 		}
-		-->
+		body {
+			font-family:verdana,arial,sans-serif,"宋体";
+			font-size:12px;
+			margin:0px;
+			padding:0px;
+		}
+
+		a {
+			color: #003499;
+			text-decoration: none;
+		}
+
+		a:hover {
+			color: #000000;
+			text-decoration: underline;
+		}
+
+		#tabnav {
+			background:#d5d5d5;
+			border-bottom:1px solid #333;
+			padding-bottom:3px;
+		}
+
+		#tabnav ul {
+			padding:15px 0px 5px 0px;
+			margin:5px 0px 5px 0px;
+			list-style:none;
+			background:#f1f1f1;
+			border-bottom:1px solid #999;
+		}
+		
+		#tabnav ul li {
+			display:inline;
+			margin-left:10px;
+		}
+		
+		#tabnav ul li a {
+			background:#fff;
+			padding:5px 10px 5px 10px;
+			border:1px solid #999;
+		}
+
+		#tabnav ul li a:hover {
+			background:#ccc;
+		}
+
+		#tabnav ul li a.here {
+			background:#d5d5d5;
+			padding:5px 10px 5px 10px;
+			border-top:1px solid #999;
+			border-left:1px solid #999;
+			border-right:1px solid #999;
+			border-bottom:1px solid #d5d5d5;
+		}
+
+		#tabnav ul li a.here:hover {
+			background:#d5d5d5;
+
+		} 
+
 		td{
 			font-size:10pt;
 			font-family:宋体;
 		}
+		-->
 		</style>
 	</head>
 	<body topmargin="3" style="margin:0;padding:0;text-align:center;">
@@ -114,9 +174,21 @@
 						<tr style="margin:0px;padding:0px;height:8px;line-height:8px;">
 							<td colspan="3">&nbsp;</td>
 						</tr>
-						<tr>
+						<!--tr>
 							<td colspan="3" align="left">
 								<div style="background-color:#9BAFF1;width:80%;height:5px;left-margin:0;">&nbsp;</div>
+							</td>
+						</tr-->
+						<tr>
+							<td colspan="3" align="left">
+								<div id="tabnav" style="width:80%">
+									<ul>
+										<li><a href="#" class="here">评论</a></li>
+										<li><a href="#">历史事件</a></li>
+										<li><a href="#">收款图</a></li>
+										<li><a href="#">如何注册</a></li>
+									</ul>
+								</div> 
 							</td>
 						</tr>
 					</table>

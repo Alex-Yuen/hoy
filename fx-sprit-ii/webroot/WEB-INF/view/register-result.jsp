@@ -2,7 +2,7 @@
 <html>
 	<head>
 		<meta http-equiv="content-type" content="text/html; charset=utf-8">
-		<title>Buxland-帮助</title>
+		<title>Buxland-注册</title>
 		<link rel="shortcut icon" href="http://www.buxland.net/favicon.ico">
 		<style type="text/css">
 		<!--
@@ -16,13 +16,16 @@
 	<body topmargin="3" style="margin:0;padding:0;">
 		<jsp:include page="header.jsp" flush="true"/>
 		
-		<span style="font-size:10pt;font-family:宋体;margin:20px;">
-			帮助, 建设中...
-		</span>
-		<span style="font-size:10pt;font-family:宋体;margin:20px;">
-			hoyzhang@163.com
-		</span>
 		<br/>
+		<span style="font-size: 10pt; font-family:宋体;">
+		<%
+			if("1".equals((String)session.getAttribute("REGISTER_RESULT"))){
+				out.println("注册成功");
+			}else{
+				out.println("注册失败:<br/><br/>"+(String)session.getAttribute("REGISTER_RESULT_MSG"));
+			}
+		%>
+		</span>
 		<br/>
 		<br/>
 		<br/>

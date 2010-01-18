@@ -61,7 +61,7 @@
 %>
 									<tr>
 										<td width="45%">
-											<%=(i<10?"0"+i:""+i)%>. <a target="_blank" href="/detail?id=<%=rs.getString("ID")%>"><%=rs.getString("DOMAIN")%></a>
+											<%=(i<10?"0"+i:""+i)%>. <a href="/detail?id=<%=rs.getString("ID")%>"><%=rs.getString("DOMAIN")%></a>
 										</td>
 										<td width="20%">
 										</td>
