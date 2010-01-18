@@ -19,65 +19,21 @@
 	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 	version="2.5">
 
-	<display-name>Welcome to FX Server</display-name>
+	<display-name>Welcome to Buxland Server</display-name>
 	<description>
-	Welcome to FX Server
+	Welcome to Buxland Server
 	</description>
-
-	<!--welcome-file-list>
-		<welcome-file>index</welcome-file>
-	</welcome-file-list-->
-<!-- 
-	<servlet>
-		<servlet-name>FX Servlet</servlet-name>
-		<servlet-class>net.fxsprit.servlet.FXServlet</servlet-class>
-		<load-on-startup>1</load-on-startup>
-	</servlet>
 	
-	<servlet>
-		<servlet-name>FX Service Servlet</servlet-name>
-		<servlet-class>net.fxsprit.servlet.ServiceServlet</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>FX Service Servlet</servlet-name>
-		<url-pattern>/service</url-pattern>
-	</servlet-mapping>
-
-	<servlet>
-		<servlet-name>FX Login Servlet</servlet-name>
-		<servlet-class>net.fxsprit.servlet.LoginServlet</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>FX Login Servlet</servlet-name>
-		<url-pattern>/login</url-pattern>
-	</servlet-mapping>
-
-	<servlet>
-		<servlet-name>FX Index Servlet</servlet-name>
-		<servlet-class>net.fxsprit.servlet.IndexServlet</servlet-class>
-	</servlet>.
-	 -->
-	<!--servlet-mapping>
-		<servlet-name>FX Index Servlet</servlet-name>
-		<url-pattern>/fx-admin/index</url-pattern>
-	</servlet-mapping-->
-	<!-- 
-	<servlet-mapping>
-		<servlet-name>FX Index Servlet</servlet-name>
-		<url-pattern>/fx-admin</url-pattern>
-	</servlet-mapping>
- -->
-	<!-- API FOR CRAWL -->
-	<!-- 
-	<servlet>
-		<servlet-name>FX Post Servlet</servlet-name>
-		<servlet-class>net.fxsprit.servlet.PostServlet</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>FX Post Servlet</servlet-name>
-		<url-pattern>/fx-api/post</url-pattern>
-	</servlet-mapping> 
-	-->
+    <welcome-file-list>
+        <welcome-file>index</welcome-file>
+    </welcome-file-list>
+    
+	<resource-ref>
+		<description>Datasource</description>
+		<res-ref-name>jdbc/buxland</res-ref-name>
+		<res-type>javax.sql.DataSource</res-type>
+		<res-auth>Container</res-auth>
+	</resource-ref>
 	
 	<servlet>
 		<servlet-name>Adv Servlet</servlet-name>
@@ -97,4 +53,77 @@
 		<url-pattern>/img</url-pattern>
 	</servlet-mapping>
 	
+	<servlet>
+		<servlet-name>Index Servlet</servlet-name>
+		<servlet-class>net.buxland.servlet.IndexServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>Index Servlet</servlet-name>
+		<url-pattern>/index</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>List Servlet</servlet-name>
+		<servlet-class>net.buxland.servlet.ListServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>List Servlet</servlet-name>
+		<url-pattern>/list</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>Search Servlet</servlet-name>
+		<servlet-class>net.buxland.servlet.SearchServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>Search Servlet</servlet-name>
+		<url-pattern>/search</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>Login Servlet</servlet-name>
+		<servlet-class>net.buxland.servlet.LoginServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>Login Servlet</servlet-name>
+		<url-pattern>/login</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>Register Servlet</servlet-name>
+		<servlet-class>net.buxland.servlet.RegisterServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>Register Servlet</servlet-name>
+		<url-pattern>/register</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>Help Servlet</servlet-name>
+		<servlet-class>net.buxland.servlet.HelpServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>Help Servlet</servlet-name>
+		<url-pattern>/help</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>Detail Servlet</servlet-name>
+		<servlet-class>net.buxland.servlet.DetailServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>Detail Servlet</servlet-name>
+		<url-pattern>/detail</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>Error Servlet</servlet-name>
+		<servlet-class>net.buxland.servlet.ErrorServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>Error Servlet</servlet-name>
+		<url-pattern>/error</url-pattern>
+	</servlet-mapping>
+	
+	<!--y-->
 </web-app>

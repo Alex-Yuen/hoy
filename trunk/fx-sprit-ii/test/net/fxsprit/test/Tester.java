@@ -10,6 +10,7 @@ public class Tester {
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		IdGenerator IDGENERATOR = new IdGenerator();
+		for(int i=0;i<50;i++)
 		System.out.println(IDGENERATOR.generateId(8));
 	}
 

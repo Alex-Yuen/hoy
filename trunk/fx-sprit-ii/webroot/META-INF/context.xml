@@ -1,0 +1,15 @@
+<?xml version='1.0' encoding='utf-8'?>
+<Context>
+	<WatchedResource>WEB-INF/web.xml</WatchedResource>
+	<Resource
+		name="jdbc/buxland"
+		auth="Container"
+		type="javax.sql.DataSource"
+		driverClassName="com.mysql.jdbc.Driver"
+		url="jdbc:mysql://61.135.129.103:3306/c079446?autoReconnect=true"
+		username="c079446"
+		password="VpPlEdS"
+		maxActive="20"
+		maxIdle="10"
+		maxWait="-1"/>
+</Context>
