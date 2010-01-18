@@ -1,4 +1,4 @@
-package net.fxsprit.test;
+package net.buxland.test;
 
 import java.io.BufferedReader;
 import java.io.InputStream;

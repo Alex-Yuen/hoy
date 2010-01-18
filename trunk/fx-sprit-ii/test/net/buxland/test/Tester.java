@@ -1,4 +1,4 @@
-package net.fxsprit.test;
+package net.buxland.test;
 
 import net.fxsprit.util.IdGenerator;
 
