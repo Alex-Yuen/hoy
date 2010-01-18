@@ -31,22 +31,22 @@
 				</tr>
 				<tr>
 					<td align="right">密码:</td>
-					<td><input style="width:140px;" type="password" name="password" id="password"/></td>
+					<td><input style="width:140px;" type="text" name="username" id="username"/></td>
 					<td>&nbsp;*</td>
 				</tr>
 				<tr>
 					<td align="right">确认密码:</td>
-					<td><input style="width:140px;" type="password" name="repassword" id="repassword"/></td>
+					<td><input style="width:140px;" type="text" name="username" id="username"/></td>
 					<td>&nbsp;*</td>
 				</tr>
 				<tr>
 					<td align="right">Email:</td>
-					<td><input style="width:140px;" type="text" name="email" id="email"/></td>
+					<td><input style="width:140px;" type="text" name="username" id="username"/></td>
 					<td>&nbsp;*</td>
 				</tr>
 				<tr>
 					<td>&nbsp;</td>
-					<td align="right"><input style="width:60px;" type="button" name="register" id="register" value=" 注 册 "/></td>
+					<td align="right"><input style="width:60px;" type="button" name="register" id="register" value=" 提 交 "/></td>
 					<td>&nbsp;</td>
 				</tr>
 				<tr>
