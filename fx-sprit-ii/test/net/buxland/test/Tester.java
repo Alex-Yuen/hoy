@@ -1,6 +1,6 @@
 package net.buxland.test;
 
-import net.fxsprit.util.IdGenerator;
+import net.buxland.util.IdGenerator;
 
 public class Tester {
 
