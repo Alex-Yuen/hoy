@@ -34,6 +34,7 @@
 		}
 		-->
 		</style>
+		<script type="text/javascript" src="/js/page.js"></script>
 	</head>
 	<body topmargin="3" style="margin:0;padding:0;text-align:center;">
 		<jsp:include page="header.jsp" flush="true"/>
@@ -53,7 +54,7 @@
   	DataSource ds = (DataSource)ctx.lookup(JNDINAME);
   	conn = ds.getConnection();
   	stmt = conn.createStatement();
-  	String sql = "select * from BUX_SITE order by SCORE desc";
+  	String sql = "select * from BUX_SITE order by SCORE desc limit 20";
   	rs = stmt.executeQuery(sql);
   	int i = 0;
   	while(rs.next()){
@@ -97,6 +98,20 @@
 				</td>
 				<td align="right" valign="top">
 					<jsp:include page="main-adv.jsp" flush="true"/>
+				</td>
+			</tr>
+			<tr>
+				<td>
+				&nbsp;
+				</td>
+				<td>
+				&nbsp;
+				</td>
+			</tr>
+			<tr>
+				<td colspan="2" align="right">
+				<!-- 翻页 -->
+				<jsp:include page="page.jsp" flush="true"/>
 				</td>
 			</tr>
 		</table>
