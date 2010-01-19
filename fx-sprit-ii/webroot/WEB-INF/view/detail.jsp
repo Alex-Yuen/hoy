@@ -155,7 +155,18 @@
 								评分:
 							</td>
 							<td>
-								<%=rs.getString("SCORE")%>
+							<%
+								int score = Integer.parseInt(rs.getString("SCORE"))/20;
+								if(Integer.parseInt(rs.getString("SCORE"))%20>5){
+									score++;
+								}
+								for(int s=0;s<score;s++){
+							%>
+								<div class="star"></div>
+							<%
+								}
+							%>
+							<!-- span style="font-size:9pt;">&nbsp;&nbsp;<%=rs.getString("SCORE")%></span-->
 							</td>
 						</tr>
 <%
