@@ -41,7 +41,8 @@
 		<table border="0" width="100%">
 			<tr>
 				<td colspan="2">
-					<img src="images/top.png"/ border="0">
+					<b><u>TOP: 25</u></b>
+					<!--img src="images/top.png"/ border="0"-->
 				</td>
 			</tr>
 			<tr>

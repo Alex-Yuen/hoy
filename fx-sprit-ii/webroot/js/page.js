@@ -12,19 +12,19 @@ function showListPage0(recordCount, show, pageCount, pageNow, pageStr){
  if(pageNow<=1)
   str += " 首页 ";
  else
-  str += " <A href=""+pageStr.replace("_page_",1)+"" mce_href=""+pageStr.replace("_page_",1)+"">首页</A> ";
+  str += " <A href='"+pageStr.replace("_page_",1)+"' mce_href='"+pageStr.replace("_page_",1)+"'>首页</A> ";
  if(pageNow<=1)
   str += " 上一页 ";
  else
-  str += " <A href=""+pageStr.replace("_page_",(pageNow-1))+"" mce_href=""+pageStr.replace("_page_",(pageNow-1))+"">上一页</A> ";
+  str += " <A href='"+pageStr.replace("_page_",(pageNow-1))+"' mce_href='"+pageStr.replace("_page_",(pageNow-1))+"'>上一页</A> ";
  if(pageNow>=pageCount)
   str += " 下一页 ";
  else
-  str += " <A href=""+pageStr.replace("_page_",(pageNow+1))+"" mce_href=""+pageStr.replace("_page_",(pageNow+1))+"">下一页</A> ";
+  str += " <A href='"+pageStr.replace("_page_",(pageNow+1))+"' mce_href='"+pageStr.replace("_page_",(pageNow+1))+"'>下一页</A> ";
  if(pageNow>=pageCount)
   str += " 尾页 ";
  else
-  str += " <A href=""+pageStr.replace("_page_",pageCount)+"" mce_href=""+pageStr.replace("_page_",pageCount)+"">尾页</A> ";
+  str += " <A href='"+pageStr.replace("_page_",pageCount)+"' mce_href='"+pageStr.replace("_page_",pageCount)+"'>尾页</A> ";
  str += "跳到<input type=\"text\" name=\"txtpage\" size=\"3\">页";
  str += "<input type=\"button\" value=\"GO\" onclick=\"pagego0(document.frmpage.txtpage.value,"+pageNow+","+pageCount+",'"+pageStr+"')\"></form>";
  return str;

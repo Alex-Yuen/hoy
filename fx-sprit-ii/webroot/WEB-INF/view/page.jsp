@@ -2,10 +2,10 @@
  <tr>
   <td align="right" nowrap>
     <script language="javascript">
-      recordCount = {recordcount};
-      show = {showinonepage}
-      pageCount = {pagecount};
-      pageNow = {page};
+      recordCount = <%=recordcount%>;
+      show = <%=showinonepage%>
+      pageCount = <%=pagecount%>;
+      pageNow = <%=p%>;
       pageStr = "?page=_page_";
       document.write(showListPage0(recordCount, show, pageCount, pageNow, pageStr));
 	</script>

@@ -8,6 +8,15 @@
 	Connection conn = null;
 	Statement stmt = null;
  	ResultSet rs = null;
+ 	
+ 	String p = "1";
+ 	int showinonepage = 20;
+ 	int recordcount = 0;
+    int pagecount = 0;
+    
+ 	if(request.getParameter("page")!=null){
+ 		p = request.getParameter("page");
+ 	}
 %>
 <html>
 	<head>
@@ -38,23 +47,44 @@
 	</head>
 	<body topmargin="3" style="margin:0;padding:0;text-align:center;">
 		<jsp:include page="header.jsp" flush="true"/>
+<%	
+	try{
+		Context ctx = new InitialContext();
+		DataSource ds = (DataSource)ctx.lookup(JNDINAME);
+		conn = ds.getConnection();
+		stmt = conn.createStatement();
+		String c = "select count(*) from BUX_SITE";
+		rs = stmt.executeQuery(c);
 		
+		if(rs.next()){
+			recordcount = rs.getInt(1);  		
+		}
+		rs.close();
+		stmt.close();
+		
+		if(recordcount%showinonepage!=0){
+			pagecount = recordcount/showinonepage + 1;
+		}else{
+			pagecount = recordcount/showinonepage;
+		}		
+%>		
 		<table border="0" width="100%">
 			<tr>
 				<td colspan="2">
-					<img src="images/total.png"/ border="0">
+					<b><u>TOTAL: <%=recordcount%></u></b>
+					<!--img src="images/total.png"/ border="0"-->
 				</td>
 			</tr>
 			<tr>
 				<td width="80%" valign="top">
-					<table border="0" width="100%" align="left" valign="top">
+					<table border="0" width="80%" align="left">
 <%  
-	try{
-  	Context ctx = new InitialContext();
-  	DataSource ds = (DataSource)ctx.lookup(JNDINAME);
-  	conn = ds.getConnection();
   	stmt = conn.createStatement();
-  	String sql = "select * from BUX_SITE order by SCORE desc limit 20";
+ 	
+  	String sql = "select * from BUX_SITE order by SCORE desc limit "+ (Integer.parseInt(p)-1)*showinonepage +", " + showinonepage;
+
+  	//out.println("<tr><td cospan=2>"+sql+"</td></tr>");
+  	
   	rs = stmt.executeQuery(sql);
   	int i = 0;
   	while(rs.next()){
@@ -82,36 +112,22 @@
 			conn.close();
 		}
 	}
-%>
-									<!--tr>
-										<td>
-											02. <a target="_blank" href="http://www.upbux.com/r?rh=9300450574B17242C7257C">www.upbux.com</a>
-										</td>
-										<td>
-											&nbsp;
-										</td>
-										<td>
-											<div class="star"></div>
-										</td>
-									</tr-->
+%>									
+						<tr>
+							<td colspan="3">
+							&nbsp;
+							</td>
+						</tr>
+						<tr>
+							<td colspan="3" align="center" valign="top">
+							<!-- 翻页 -->
+							<%@ include file="page.jsp"%>
+							</td>
+						</tr>
 					</table>
 				</td>
 				<td align="right" valign="top">
 					<jsp:include page="main-adv.jsp" flush="true"/>
-				</td>
-			</tr>
-			<tr>
-				<td>
-				&nbsp;
-				</td>
-				<td>
-				&nbsp;
-				</td>
-			</tr>
-			<tr>
-				<td colspan="2" align="right">
-				<!-- 翻页 -->
-				<jsp:include page="page.jsp" flush="true"/>
 				</td>
 			</tr>
 		</table>
