@@ -27,6 +27,7 @@
     <welcome-file-list>
         <welcome-file>index</welcome-file>
         <welcome-file>index.jsp</welcome-file>
+        <welcome-file>index.html</welcome-file>
     </welcome-file-list>
     
 	<resource-ref>
@@ -126,5 +127,5 @@
 		<url-pattern>/error</url-pattern>
 	</servlet-mapping>
 	
-	<!--t-->
+	<!--x-->
 </web-app>
