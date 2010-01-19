@@ -195,7 +195,7 @@
 								<div id="tabnav" style="width:80%">
 									<ul>
 										<li><a href="#" class="here">评论</a></li>
-										<li><a href="#">历史事件</a></li>
+										<li><a href="#">历史</a></li>
 										<li><a href="#">收款图</a></li>
 										<li><a href="#">如何注册</a></li>
 									</ul>
