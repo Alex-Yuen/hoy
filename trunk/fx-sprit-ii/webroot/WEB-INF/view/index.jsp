@@ -32,6 +32,10 @@
 			font-size:10pt;
 			font-family:宋体;
 		}
+		tr{
+			height:16px;
+			line-height:16px;
+		}
 		-->
 		</style>
 	</head>
