@@ -47,7 +47,7 @@
 			</tr>
 			<tr>
 				<td width="80%" valign="top">
-					<table border="0" width="100%" align="left" valign="top">
+					<table border="0" width="80%" align="left" valign="top">
 <%  
 	try{
   	Context ctx = new InitialContext();
