@@ -86,7 +86,7 @@
   	//out.println("<tr><td cospan=2>"+sql+"</td></tr>");
   	
   	rs = stmt.executeQuery(sql);
-  	int i = 0;
+  	int i = (Integer.parseInt(p)-1)*showinonepage;
   	while(rs.next()){
   		i++;
 %>
@@ -102,6 +102,17 @@
 									</tr>
 <%
   	}
+	
+	for(int j=i;j<(Integer.parseInt(p))*showinonepage;j++){
+%>
+						<tr>
+							<td colspan="3">
+							&nbsp;
+							</td>
+						</tr>
+<%
+	}
+	
 	}catch(Exception e){
 		out.println(e);
 		//out.println(e.getMessage());

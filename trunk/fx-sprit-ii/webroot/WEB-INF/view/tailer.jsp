@@ -13,7 +13,7 @@
 		<!--script language=javascript src=http://61.135.129.87/front/v_count/countshow.jsp?Count_Login_Id=5C344DC55F72F4FD39A7A1FD23B97878></script-->
 		<br/>
 		2010 buxland.net 备案中<br/>
-		数据仅供参考，本站不对所评估网站可靠性负责<br/><br/>
+		数据仅供参考，本站不对测评结果负责<br/><br/>
 		<!--
 		<hr/>
 		<a target="_blank" href="https://www.alipay.com">
