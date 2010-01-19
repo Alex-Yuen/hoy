@@ -9,9 +9,10 @@
 		url="jdbc:mysql://61.135.129.103:3306/c079446?autoReconnect=true"
 		username="c079446"
 		password="VpPlEdS"
-		maxActive="30"
-		maxIdle="30"
+		maxActive="20"
+		maxIdle="10"
 		maxWait="-1"
-		removeAbandoned="true"
-		removeAbandonedTimeout="60" />
+		testOnBorrow="true"
+		testWhileIdle="true"
+		validationQuery="select 1"/>
 </Context>
