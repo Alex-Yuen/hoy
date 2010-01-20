@@ -7,7 +7,7 @@
 	final String JNDINAME = "java:comp/env/jdbc/buxland";
 	Connection conn = null;
 	Statement stmt = null;
-  ResultSet rs = null;
+	ResultSet rs = null;
 %>
 <html>
 	<head>

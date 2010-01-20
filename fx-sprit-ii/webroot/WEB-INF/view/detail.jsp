@@ -33,22 +33,6 @@
 		#gbar, #guser{
 			font-size:13px;padding-top:1px !important
 		}
-		body {
-			font-family:verdana,arial,sans-serif,"宋体";
-			font-size:12px;
-			margin:0px;
-			padding:0px;
-		}
-
-		a {
-			color: #003499;
-			text-decoration: none;
-		}
-
-		a:hover {
-			color: #000000;
-			text-decoration: underline;
-		}
 
 		#tabnav {
 			background:#d5d5d5;
@@ -97,6 +81,10 @@
 			font-size:10pt;
 			font-family:宋体;
 		}
+		tr{
+			height:16px;
+			line-height:16px;
+		}
 		-->
 		</style>
 	</head>
@@ -106,7 +94,7 @@
 		<table border="0" width="100%">
 			<tr>
 				<td colspan="2">
-					<u><span>网站详情</span></u>
+					<u><b>网站详情</b></u>
 				</td>
 			</tr>
 			<tr>
