@@ -62,7 +62,8 @@ public class Tester {
 		List<String> line = null;
 		while((line=this.ds.fire())!=null){
 			//System.out.println(line);
-			this.st.run(line);
+			this.st.init(line);
+			this.st.run();
 		}
 	}
 	
