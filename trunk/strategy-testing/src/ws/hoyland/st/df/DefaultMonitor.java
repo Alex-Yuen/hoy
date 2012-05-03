@@ -7,7 +7,7 @@ import ws.hoyland.st.OutputMonitor;
 public class DefaultMonitor implements OutputMonitor {
 
 	@Override
-	public void receive(Date time, String message) {
+	public void put(Date time, String message) {
 		System.out.println(time+":"+message);
 		
 	}
