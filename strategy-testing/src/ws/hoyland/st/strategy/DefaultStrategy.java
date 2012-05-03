@@ -8,7 +8,7 @@ import ws.hoyland.st.Strategy;
 public class DefaultStrategy extends Strategy {
 	
 	public DefaultStrategy(){
-		//super();
+		super();
 	}
 	
 	@Override
