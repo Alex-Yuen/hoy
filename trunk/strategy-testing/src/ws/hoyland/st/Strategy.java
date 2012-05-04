@@ -38,8 +38,8 @@ public abstract class Strategy {
 	}
 	
 	public void buy(int volumn){
-		if(cash-close*size>=0){
-			cash = cash-close*size;
+		if(cash-close*volumn>=0){
+			cash = cash-close*volumn;
 			cost = (cost*size+close*volumn)/(size+volumn);
 			size += volumn;
 			monitor.put(new Date(), "BUY");

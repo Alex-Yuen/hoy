@@ -28,8 +28,9 @@ public class DefaultStrategy extends Strategy {
 //				close*(size+sx)=0.98*(cost*size+close*sx)
 //				close*size + close*sx = 0.98*cost*size + 0.98*close*sx
 //				0.02*close*sx = (0.98*cost - close)size
-//				TODO
-				//buy(Integer.parseInt((0.98*cost-close)*size/(close*0.02)));
+//				
+				//buy((int)Math.ceil((0.98*cost-close)*size/(close*0.02)));
+				buy(10000);
 			}else{
 				//不做处理
 			}
