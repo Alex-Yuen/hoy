@@ -64,6 +64,7 @@ public class Tester {
 			//System.out.println(line);
 			this.st.init(line);
 			this.st.run();
+			this.st.complete();
 		}
 	}
 	
