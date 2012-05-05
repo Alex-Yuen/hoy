@@ -30,11 +30,16 @@ public abstract class Strategy {
 	
 	public void init(List<String> line){
 		//System.out.println(line);
-		date = line.get(0);
-		open = Float.parseFloat(line.get(1));
-		high = Float.parseFloat(line.get(2));
-		low = Float.parseFloat(line.get(3));
-		close = Float.parseFloat(line.get(4));
+		this.date = line.get(0);
+		this.open = Float.parseFloat(line.get(1));
+		this.high = Float.parseFloat(line.get(2));
+		this.low = Float.parseFloat(line.get(3));
+		this.close = Float.parseFloat(line.get(4));
+	}
+	
+	public void complete(){
+		this.lc = close;
+		this.print();
 	}
 	
 	public void buy(int volumn){
@@ -42,11 +47,11 @@ public abstract class Strategy {
 			cash = cash-close*volumn;
 			cost = (cost*size+close*volumn)/(size+volumn);
 			size += volumn;
-			monitor.put(new Date(), "BUY:"+volumn);
+			monitor.put(this.date, "BUY:"+volumn);
 		}else{
-			monitor.put(new Date(), "CAN'T BUY");
+			monitor.put(this.date, "/CAN'T BUY/");
 		}
-		print();
+		//print();
 	}
 	
 	public void sell(int volumn){
@@ -54,22 +59,22 @@ public abstract class Strategy {
 			cash = cash + close*volumn;
 			cost = (cost*size-close*volumn)/(size-volumn);
 			size -= volumn;
-			monitor.put(new Date(), "SELL:"+volumn);
+			monitor.put(date, "SELL:"+volumn);
 		}else{
-			monitor.put(new Date(), "CAN'T SELL");
+			monitor.put(date, "/CAN'T SELL/");
 		}
-		print();
+		//print();
 	}
 	
-	public void print(){
-		System.out.println("["+date+"]");
-		System.out.print("Cash:"+cash);
-		System.out.print("\tSize:"+size);
-		System.out.print("\tCost:"+cost);
-		System.out.println("\tClose:"+close);
+	private void print(){
+		StringBuffer sb = new StringBuffer();
+		sb.append("Cash:"+cash);
+		sb.append("\tSize:"+size);
+		sb.append("\tCost:"+cost);
+		sb.append("\tClose:"+close+"\n");
 		
-		System.out.println("W/L:"+(close-cost)*size);
-		System.out.println("W/L(%):"+(close-cost)/cost*100+"%");
-		System.out.println();
+		sb.append("W/L:"+(close-cost)*size+"\n");
+		sb.append("W/L(%):"+(close-cost)/cost*100+"%\n\n");
+		monitor.put(date, sb.toString());
 	}
 }

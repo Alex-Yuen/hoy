@@ -13,29 +13,19 @@ public class DefaultStrategy extends Strategy {
 	}
 	
 	@Override
-	public void run() {
-//		for(String word:line){
-//			Monitor.put(new Date(), word);
-//		}
-		
-		
+	public void run() {		
 		if(lc==0){
 			this.buy(1000);
 		}else {
-			if((cost-close)/cost>=0.10){//>10%, 控制到5%
-				//买入
-//				close/0.98=(cost*size+close*sx)/(size+sx)
-//				close*(size+sx)=0.98*(cost*size+close*sx)
-//				close*size + close*sx = 0.98*cost*size + 0.98*close*sx
-//				0.02*close*sx = (0.98*cost - close)size
-//				
+			if((cost-close)/cost>=0.10){//亏损情况下, >10%, 控制到5%
 				int tot = (int)Math.ceil((0.95*cost-close)*size/(close*0.05));
 				if((tot-tot%1000)!=0){
 					buy(tot-tot%1000);
 				}
-				//buy(10000);
-			}else if((close-cost)/cost>0){
-				//不做处理
+			}else if((close-cost)/cost>0){//盈利情况下, 如仓位过高, 自动减仓
+				if(cost*size/(cost*size+cash)>0.10){
+					
+				}
 			}
 		}	
 		
