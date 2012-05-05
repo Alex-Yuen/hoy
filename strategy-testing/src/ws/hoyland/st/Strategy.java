@@ -65,7 +65,7 @@ public abstract class Strategy {
 		System.out.println("["+date+"]");
 		System.out.print("Cash:"+cash);
 		System.out.print("\tSize:"+size);
-		System.out.println("\tCost:"+cost);
+		System.out.print("\tCost:"+cost);
 		System.out.println("\tClose:"+close);
 		
 		System.out.println("W/L:"+(close-cost)*size);
