@@ -6,7 +6,7 @@ public class DefaultStrategy extends Strategy {
 	
 	public DefaultStrategy(){
 		super();
-		this.cash = 1000000;
+		this.cash = 100000;
 		this.size = 0;
 		this.lc = 0;
 		this.cost = 0;
@@ -20,18 +20,21 @@ public class DefaultStrategy extends Strategy {
 		
 		
 		if(lc==0){
-			this.buy(10000);
+			this.buy(1000);
 		}else {
-			if((cost-close)/cost>=0.05){//>5%, 控制到2%
+			if((cost-close)/cost>=0.10){//>10%, 控制到5%
 				//买入
 //				close/0.98=(cost*size+close*sx)/(size+sx)
 //				close*(size+sx)=0.98*(cost*size+close*sx)
 //				close*size + close*sx = 0.98*cost*size + 0.98*close*sx
 //				0.02*close*sx = (0.98*cost - close)size
 //				
-				//buy((int)Math.ceil((0.98*cost-close)*size/(close*0.02)));
-				buy(10000);
-			}else{
+				int tot = (int)Math.ceil((0.95*cost-close)*size/(close*0.05));
+				if((tot-tot%1000)!=0){
+					buy(tot-tot%1000);
+				}
+				//buy(10000);
+			}else if((close-cost)/cost>0){
 				//不做处理
 			}
 		}	
