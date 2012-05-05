@@ -49,18 +49,19 @@ public abstract class Strategy {
 			size += volumn;
 			monitor.put(this.date, "BUY:"+volumn);
 		}else{
-			monitor.put(this.date, "/CAN'T BUY/");
+			monitor.put(this.date, "/CAN'T BUY/"+volumn);
 		}
 	}
 	
 	public void sell(int volumn){
-		if(volumn>=size){
+		System.out.println(volumn+">>>"+size);
+		if(volumn<=size){
 			cash = cash + close*volumn;
 			cost = (cost*size-close*volumn)/(size-volumn);
 			size -= volumn;
 			monitor.put(date, "SELL:"+volumn);
 		}else{
-			monitor.put(date, "/CAN'T SELL/");
+			monitor.put(date, "/CAN'T SELL/"+volumn);
 		}
 	}
 	
