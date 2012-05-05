@@ -54,7 +54,7 @@ public abstract class Strategy {
 	}
 	
 	public void sell(int volumn){
-		System.out.println(volumn+">>>"+size);
+		//System.out.println(volumn+">>>"+size);
 		if(volumn<=size){
 			cash = cash + close*volumn;
 			cost = (cost*size-close*volumn)/(size-volumn);
