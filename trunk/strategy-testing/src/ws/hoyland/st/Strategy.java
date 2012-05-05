@@ -74,6 +74,7 @@ public abstract class Strategy {
 		
 		sb.append("W/L:"+(close-cost)*size+"\n");
 		sb.append("W/L(%):"+(close-cost)/cost*100+"%\n\n");
-		monitor.put(date, sb.toString());
+		//monitor.put(date, sb.toString());
+		monitor.put(date, close+":"+cost+":"+size+":"+cash);
 	}
 }
