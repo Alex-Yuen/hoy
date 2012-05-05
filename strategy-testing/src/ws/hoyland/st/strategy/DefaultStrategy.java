@@ -6,7 +6,7 @@ public class DefaultStrategy extends Strategy {
 	
 	public DefaultStrategy(){
 		super();
-		this.cash = 100000;
+		this.cash = 1000000;
 		this.size = 0;
 		this.lc = 0;
 		this.cost = 0;
