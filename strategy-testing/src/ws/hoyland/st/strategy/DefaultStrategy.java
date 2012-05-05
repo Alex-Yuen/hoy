@@ -24,7 +24,13 @@ public class DefaultStrategy extends Strategy {
 				}
 			}else if((close-cost)/cost>0){//盈利情况下, 如仓位过高, 自动减仓
 				if(cost*size/(cost*size+cash)>0.10){
-					
+//					cost*(size-sx)/(cost*(size-sx))+cash+close*sx=0.10
+//					10(cost*size - cost*sx)=cost*size-cost*sx+cash+close*sx
+//					9cost*size = 9cost*sx+cash+close*sx
+					int tot = (int)Math.ceil((9*cost*size-cash)/(9*cost+close));
+					if((tot-tot%1000)!=0){
+						sell(tot-tot%1000);
+					}
 				}
 			}
 		}	

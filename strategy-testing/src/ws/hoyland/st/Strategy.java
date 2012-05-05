@@ -51,7 +51,6 @@ public abstract class Strategy {
 		}else{
 			monitor.put(this.date, "/CAN'T BUY/");
 		}
-		//print();
 	}
 	
 	public void sell(int volumn){
@@ -63,7 +62,6 @@ public abstract class Strategy {
 		}else{
 			monitor.put(date, "/CAN'T SELL/");
 		}
-		//print();
 	}
 	
 	private void print(){
