@@ -62,16 +62,16 @@ public class DefaultMonitor implements OutputMonitor {
 		rangeAxis.setLabelAngle(Math.PI / 2.0);
 		line.setRangeAxis(rangeAxis);
 		
-		FileOutputStream jpg = null;
+		FileOutputStream png = null;
 		try {
-			jpg = new FileOutputStream("C:\\fruit.jpg");
+			png = new FileOutputStream("out/result.png");
 			//第二个参数是设置图片清晰度，从0.1f到1.0f
-			ChartUtilities.writeChartAsJPEG(jpg, 1.0f, chart, 1024, 768, null);
+			ChartUtilities.writeChartAsPNG(png, chart, 1024, 768, null);
 		}catch(Exception e){
 			e.printStackTrace();
 		}finally {
 			try {
-				jpg.close();
+				png.close();
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
