@@ -1,11 +1,12 @@
 package ws.hoyland.st.strategy;
 
+import ws.hoyland.st.OutputMonitor;
 import ws.hoyland.st.Strategy;
 
 public class DefaultStrategy extends Strategy {
 	
-	public DefaultStrategy(){
-		super();
+	public DefaultStrategy(OutputMonitor monitor){
+		super(monitor);
 		this.cash = 100000;
 		this.size = 0;
 		this.lc = 0;

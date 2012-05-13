@@ -29,19 +29,20 @@ public class DefaultMonitor implements OutputMonitor {
 		String[] msg = message.split(":");
 		//System.out.println(message+">"+msg.length);
 		this.close.add(new Object[]{msg[0], "close", date});
-		this.assets.add(new Object[]{Float.valueOf(msg[1])*Float.valueOf(msg[2])+Float.valueOf(msg[3]), "assets", date});
+		this.assets.add(new Object[]{Float.valueOf(msg[0])*Float.valueOf(msg[2])+Float.valueOf(msg[3]), "assets", date});
 	}
 	
 	@Override
 	public void draw(){
 		 
 		DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+		//System.out.println(close.size());
 		for(Object[] obj : this.close){
-			dataset.addValue((Double)(obj[0]), obj[1].toString(), obj[2].toString());
+			dataset.addValue(Double.parseDouble((obj[0].toString())), obj[1].toString(), obj[2].toString());
 		}
 		
 		for(Object[] obj : this.assets){
-			dataset.addValue((Double)(obj[0]), obj[1].toString(), obj[2].toString());
+			dataset.addValue(Double.parseDouble((obj[0].toString())), obj[1].toString(), obj[2].toString());
 		}
 
 		JFreeChart chart = ChartFactory.createLineChart("My Strategy", // chart title
@@ -53,19 +54,18 @@ public class DefaultMonitor implements OutputMonitor {
 				true, // tooltips
 				false // urls
 				);
-		CategoryPlot line = chart.getCategoryPlot();
-		// customise the range axis...
-		NumberAxis rangeAxis = (NumberAxis) line.getRangeAxis();
-		rangeAxis.setStandardTickUnits(NumberAxis.createIntegerTickUnits());
-		rangeAxis.setAutoRangeIncludesZero(true);
-		rangeAxis.setUpperMargin(0.20);
-		rangeAxis.setLabelAngle(Math.PI / 2.0);
-		line.setRangeAxis(rangeAxis);
+//		CategoryPlot line = chart.getCategoryPlot();
+//		// customise the range axis...
+//		NumberAxis rangeAxis = (NumberAxis) line.getRangeAxis();
+//		rangeAxis.setStandardTickUnits(NumberAxis.createIntegerTickUnits());
+//		rangeAxis.setAutoRangeIncludesZero(true);
+//		rangeAxis.setUpperMargin(0.20);
+//		rangeAxis.setLabelAngle(Math.PI / 2.0);
+//		line.setRangeAxis(rangeAxis);
 		
 		FileOutputStream png = null;
 		try {
 			png = new FileOutputStream("out/result.png");
-			//第二个参数是设置图片清晰度，从0.1f到1.0f
 			ChartUtilities.writeChartAsPNG(png, chart, 1024, 768, null);
 		}catch(Exception e){
 			e.printStackTrace();

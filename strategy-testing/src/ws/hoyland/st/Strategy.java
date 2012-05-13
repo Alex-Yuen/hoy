@@ -2,8 +2,6 @@ package ws.hoyland.st;
 
 import java.util.*;
 
-import ws.hoyland.st.df.DefaultMonitor;
-
 public abstract class Strategy {
 	protected OutputMonitor monitor;
 	protected Map<String, Object> v;
@@ -19,8 +17,8 @@ public abstract class Strategy {
 	
 	public abstract void run();
 	
-	public Strategy(){
-		this.monitor = new DefaultMonitor();
+	public Strategy(OutputMonitor monitor){
+		this.monitor = monitor;
 		this.v = new HashMap<String, Object>();
 	}
 
