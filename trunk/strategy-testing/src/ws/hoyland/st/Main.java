@@ -1,13 +1,17 @@
 package ws.hoyland.st;
 
+import ws.hoyland.st.df.*;
+import ws.hoyland.st.strategy.*;
+
 public class Main {
 
 	/**
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-		Tester tester = new Tester();
+		Fee fee = new DefaultFee();
+		OutputMonitor monitor = new DefaultMonitor();
+		Tester tester = new Tester(new DefaultSource(), new DefaultStrategy(fee, monitor));
 		tester.start();
 	}
 

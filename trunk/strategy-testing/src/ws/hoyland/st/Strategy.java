@@ -3,8 +3,8 @@ package ws.hoyland.st;
 import java.util.*;
 
 public abstract class Strategy {
+	protected Fee fee;
 	protected OutputMonitor monitor;
-	protected Map<String, Object> v;
 	protected String date;
 	protected float open;
 	protected float high;
@@ -17,14 +17,18 @@ public abstract class Strategy {
 	
 	public abstract void run();
 	
-	public Strategy(OutputMonitor monitor){
+	public Strategy(Fee fee, OutputMonitor monitor){
+		this.fee = fee;
 		this.monitor = monitor;
-		this.v = new HashMap<String, Object>();
 	}
 
-	public void setMonitor(OutputMonitor monitor) {
-		this.monitor = monitor;
-	}	
+	public OutputMonitor getMonitor() {
+		return this.monitor;
+	}
+	
+	public Fee getFee(){
+		return this.fee;
+	}
 	
 	public void init(List<String> line){
 		//System.out.println(line);

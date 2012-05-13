@@ -2,21 +2,13 @@ package ws.hoyland.st;
 
 import java.util.List;
 
-import ws.hoyland.st.df.*;
-import ws.hoyland.st.strategy.*;
-
 public class Tester {
-
 	private DataSource ds;
 	private Strategy st;
-	private OutputMonitor monitor;
-	private Fee fee;
 	
-	public Tester(){
-		this.ds = new DefaultSource();
-		this.monitor = new DefaultMonitor();
-		this.st = new DefaultStrategy(this.monitor);
-		this.fee = new DefaultFee();
+	public Tester(DataSource ds, Strategy st){		
+		this.ds = ds;
+		this.st = st;
 	}
 		
 	public DataSource getDs() {
@@ -38,35 +30,14 @@ public class Tester {
 		this.st = st;
 	}
 
-
-	public OutputMonitor getMonitor() {
-		return monitor;
-	}
-
-
-	public void setMonitor(OutputMonitor monitor) {
-		this.monitor = monitor;
-	}
-
-
-	public Fee getFee() {
-		return fee;
-	}
-
-
-	public void setFee(Fee fee) {
-		this.fee = fee;
-	}
-
 	public void start(){
 		List<String> line = null;
 		while((line=this.ds.fire())!=null){
-			//System.out.println(line);
 			this.st.init(line);
 			this.st.run();
 			this.st.complete();
 		}
-		this.getMonitor().draw();
+		this.st.getMonitor().draw();
 	}
 	
 }
