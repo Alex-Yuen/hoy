@@ -45,7 +45,7 @@ public abstract class Strategy {
 			cash = cash-close*volumn;
 			cost = (cost*size+close*volumn)/(size+volumn);
 			size += volumn;
-			System.out.println(date+"*buy:"+volumn);
+			//System.out.println(date+"*buy:"+volumn);
 			//monitor.put(this.date, "BUY:"+volumn);
 		}else{
 			System.out.println(date+"*can't buy:"+volumn);
@@ -59,7 +59,7 @@ public abstract class Strategy {
 			cash = cash + close*volumn;
 			cost = (cost*size-close*volumn)/(size-volumn);
 			size -= volumn;
-			System.out.println(date+"*sell:"+volumn);
+			//System.out.println(date+"*sell:"+volumn);
 			//monitor.put(date, "SELL:"+volumn);
 		}else{
 			System.out.println(date+"*can't sell:"+volumn);
