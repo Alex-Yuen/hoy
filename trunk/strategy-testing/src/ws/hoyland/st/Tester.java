@@ -66,6 +66,7 @@ public class Tester {
 			this.st.run();
 			this.st.complete();
 		}
+		this.getMonitor().draw();
 	}
 	
 }
