@@ -14,8 +14,8 @@ public class Tester {
 	
 	public Tester(){
 		this.ds = new DefaultSource();
-		this.st = new DefaultStrategy();
 		this.monitor = new DefaultMonitor();
+		this.st = new DefaultStrategy(this.monitor);
 		this.fee = new DefaultFee();
 	}
 		
