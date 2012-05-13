@@ -17,7 +17,7 @@ public class DefaultStrategy extends Strategy {
 	public void run() {
 		
 		if(lc==0){
-			this.buy(1000);
+			this.buy(5000);
 		}else {
 			if((cost-close)/cost>=0.10){//亏损情况下, >10%, 控制到5%
 //				close/0.95=(cost*size+close*sx)/(size+sx)
