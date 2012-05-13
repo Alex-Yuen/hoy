@@ -84,7 +84,7 @@ public class DefaultMonitor implements OutputMonitor {
 		rangeAxis.setAxisLinePaint(Color.RED);  
 		rangeAxis.setLabelPaint(Color.RED);  
 		rangeAxis.setTickLabelPaint(Color.RED);  
-	        
+		
 		//µÚ¶þ¸öYÖá		   
         NumberAxis axisofassets = new NumberAxis("Benefit");        
         axisofassets.setAxisLinePaint(Color.BLUE);  

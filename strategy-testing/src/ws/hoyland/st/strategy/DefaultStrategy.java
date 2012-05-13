@@ -1,13 +1,14 @@
 package ws.hoyland.st.strategy;
 
+import ws.hoyland.st.Fee;
 import ws.hoyland.st.OutputMonitor;
 import ws.hoyland.st.Strategy;
 
 public class DefaultStrategy extends Strategy {
 	
-	public DefaultStrategy(OutputMonitor monitor){
-		super(monitor);
-		this.cash = 100000;
+	public DefaultStrategy(Fee fee, OutputMonitor monitor){
+		super(fee, monitor);
+		this.cash = 500000;
 		this.size = 0;
 		this.lc = 0;
 		this.cost = 0;
@@ -17,7 +18,7 @@ public class DefaultStrategy extends Strategy {
 	public void run() {
 		
 		if(lc==0){
-			this.buy(5000);
+			this.buy(2000);
 		}else {
 			if((cost-close)/cost>=0.10){//亏损情况下, >10%, 控制到5%
 //				close/0.95=(cost*size+close*sx)/(size+sx)
@@ -40,6 +41,10 @@ public class DefaultStrategy extends Strategy {
 						sell(tot-tot%1000);
 					}
 				}
+			}else if((close-lc)/lc>0.0122){
+				//sell(10000);
+			}else if((lc-close)/lc>0.0122){
+				//buy(10000);
 			}
 		}	
 		
