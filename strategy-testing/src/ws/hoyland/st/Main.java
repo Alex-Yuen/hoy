@@ -13,6 +13,7 @@ public class Main {
 		OutputMonitor monitor = new DefaultMonitor();
 		Tester tester = new Tester(new DefaultSource(), new DefaultStrategy(fee, monitor));
 		tester.start();
+		
 	}
 
 }

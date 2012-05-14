@@ -30,7 +30,7 @@ public class Tester {
 		this.st = st;
 	}
 
-	public void start(){
+	public void start(){		
 		List<String> line = null;
 		while((line=this.ds.fire())!=null){
 			this.st.init(line);

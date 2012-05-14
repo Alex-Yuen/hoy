@@ -16,6 +16,9 @@ import org.jfree.chart.renderer.category.CategoryItemRenderer;
 import org.jfree.chart.renderer.category.LineAndShapeRenderer;
 import org.jfree.data.category.*;
 
+import com.tictactec.ta.lib.Core;
+import com.tictactec.ta.lib.MInteger;
+
 import ws.hoyland.st.OutputMonitor;
 
 public class DefaultMonitor implements OutputMonitor {
@@ -47,14 +50,38 @@ public class DefaultMonitor implements OutputMonitor {
 
 	@Override
 	public void draw() {
-
+		double[] cc = new double[this.close.size()];
+		int i = 0;
+		for (Object[] obj : this.close) {
+			cc[i++] = Double.parseDouble((obj[0].toString()));
+		}
+		
+		Core ta = new Core();
+		MInteger mi_begin = new MInteger();
+		MInteger mi_length = new MInteger();
+		
+//		System.out.println(ret.name());
+//		System.out.println(ret);
+		int period = 120;
+		double[] ema = new double[this.close.size()];
+		ta.ema(0, cc.length-1, cc, period, mi_begin, mi_length, ema);
+		
 		DefaultCategoryDataset dataset = new DefaultCategoryDataset();
 		DefaultCategoryDataset datasetofassets = new DefaultCategoryDataset();
 		DefaultCategoryDataset datasetofvolumn = new DefaultCategoryDataset();
 		
+		i = 0;
 		for (Object[] obj : this.close) {
 			dataset.addValue(Double.parseDouble((obj[0].toString())),
 					obj[1].toString(), obj[2].toString());
+			if(i<period){
+				dataset.addValue(0,
+						"EMA", obj[2].toString());
+			}else{
+				dataset.addValue(ema[i-period],
+						"EMA", obj[2].toString());
+			}
+			i++;
 		}
 
 		for (Object[] obj : this.assets) {
@@ -72,6 +99,7 @@ public class DefaultMonitor implements OutputMonitor {
 					obj[1].toString(), obj[2].toString());
 		}
 
+		
 		JFreeChart chart = ChartFactory.createLineChart("My Strategy", // chart title
 				"Date", // domain axis label
 				"Close", // range axis label
@@ -92,7 +120,9 @@ public class DefaultMonitor implements OutputMonitor {
 		//rangeAxis.setLabelAngle(Math.PI / 2.0);
 		rangeAxis.setAxisLinePaint(Color.RED);  
 		rangeAxis.setLabelPaint(Color.RED);  
-		rangeAxis.setTickLabelPaint(Color.RED);  
+		rangeAxis.setTickLabelPaint(Color.RED); 
+		
+		plot.getRenderer().setSeriesPaint(1, Color.GREEN);
 		
 		//第二个Y轴		   
         NumberAxis axisofassets = new NumberAxis("Benefit");        
@@ -113,24 +143,24 @@ public class DefaultMonitor implements OutputMonitor {
         //renderofassets.setBaseStroke(new BasicStroke(7.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL));
         //System.out.println(plot.getRenderer().getBaseStroke().getClass().getName());
         renderofassets.setSeriesPaint(0, Color.BLUE);
-        renderofassets.setSeriesPaint(1, Color.YELLOW);
+        renderofassets.setSeriesPaint(1, Color.WHITE);
         plot.setRenderer(1, renderofassets);
         
 		//第三个Y轴		   
         NumberAxis axisofvolumn = new NumberAxis("Volumn");        
-        axisofvolumn.setAxisLinePaint(Color.GREEN);  
-        axisofvolumn.setLabelPaint(Color.GREEN);  
-        axisofvolumn.setTickLabelPaint(Color.GREEN);
+        axisofvolumn.setAxisLinePaint(Color.GRAY);  
+        axisofvolumn.setLabelPaint(Color.GRAY);  
+        axisofvolumn.setTickLabelPaint(Color.GRAY);
         axisofvolumn.setRange(0, 220000000*4);
         plot.setRangeAxis(3, axisofvolumn);
         plot.setDataset(3, datasetofvolumn);
         plot.mapDatasetToRangeAxis(3, 3);
         
         CategoryItemRenderer renderofvolumn = new BarRenderer();
-        renderofvolumn.setSeriesPaint(0, Color.GREEN);
+        renderofvolumn.setSeriesPaint(0, Color.GRAY);
         plot.setRenderer(3, renderofvolumn);
         
-		ChartFrame frame = new ChartFrame("折线图", chart);
+		ChartFrame frame = new ChartFrame("测试结果", chart);
 		frame.setPreferredSize(new Dimension(1024, 768));
 		Dimension d = Toolkit.getDefaultToolkit().getScreenSize(); // 取得当前屏幕属性
 		int w = d.width; // 获取屏幕宽度
