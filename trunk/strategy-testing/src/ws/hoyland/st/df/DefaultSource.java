@@ -4,12 +4,16 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.*;
 
+import com.tictactec.ta.lib.Core;
+import com.tictactec.ta.lib.MInteger;
+
 import ws.hoyland.st.DataSource;
 
 public class DefaultSource implements DataSource {
 
 	private Queue<List<String>> data;
 	
+	@SuppressWarnings("unchecked")
 	public DefaultSource(){
 		this.data = new LinkedList<List<String>>();
 		try{
@@ -24,6 +28,30 @@ public class DefaultSource implements DataSource {
 
 				this.data.add(t);
 			}
+			
+			Object[] x = this.data.toArray();
+			double[] cc = new double[this.data.size()];
+			int i = 0;
+			for (List<String> lx : this.data) {
+				cc[i++] = Double.parseDouble(lx.get(4));
+			}
+			
+			Core ta = new Core();
+			MInteger mi_begin = new MInteger();
+			MInteger mi_length = new MInteger();
+			
+			int period = 20;
+			double[] ema = new double[cc.length];
+			ta.ema(0, cc.length-1, cc, period, mi_begin, mi_length, ema);
+			
+			int m=0;
+			for(;m<period;m++){
+				((List<String>)x[m]).add(String.valueOf(0));
+			}
+			for(;m<cc.length;m++){
+				((List<String>)x[m]).add(String.valueOf(ema[m-period]));
+			}
+			
 		}catch(Exception e){
 			e.printStackTrace();
 		}
