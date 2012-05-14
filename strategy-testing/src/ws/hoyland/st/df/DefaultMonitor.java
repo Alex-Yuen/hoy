@@ -16,9 +16,6 @@ import org.jfree.chart.renderer.category.CategoryItemRenderer;
 import org.jfree.chart.renderer.category.LineAndShapeRenderer;
 import org.jfree.data.category.*;
 
-import com.tictactec.ta.lib.Core;
-import com.tictactec.ta.lib.MInteger;
-
 import ws.hoyland.st.OutputMonitor;
 
 public class DefaultMonitor implements OutputMonitor {
@@ -40,7 +37,7 @@ public class DefaultMonitor implements OutputMonitor {
 		// System.out.println("["+date+"]:"+message);
 		String[] msg = message.split(":");
 		// System.out.println(message+">"+msg.length);
-		this.close.add(new Object[] { msg[0], "Close", date });
+		this.close.add(new Object[] { msg[0], "Close", msg[5], "EMA", date });
 		this.assets.add(new Object[] {
 				Float.valueOf(msg[0]) * Float.valueOf(msg[2])
 						+ Float.valueOf(msg[3]), "Assets", date });
@@ -49,39 +46,16 @@ public class DefaultMonitor implements OutputMonitor {
 	}
 
 	@Override
-	public void draw() {
-		double[] cc = new double[this.close.size()];
-		int i = 0;
-		for (Object[] obj : this.close) {
-			cc[i++] = Double.parseDouble((obj[0].toString()));
-		}
-		
-		Core ta = new Core();
-		MInteger mi_begin = new MInteger();
-		MInteger mi_length = new MInteger();
-		
-//		System.out.println(ret.name());
-//		System.out.println(ret);
-		int period = 120;
-		double[] ema = new double[this.close.size()];
-		ta.ema(0, cc.length-1, cc, period, mi_begin, mi_length, ema);
-		
+	public void draw() {		
 		DefaultCategoryDataset dataset = new DefaultCategoryDataset();
 		DefaultCategoryDataset datasetofassets = new DefaultCategoryDataset();
 		DefaultCategoryDataset datasetofvolumn = new DefaultCategoryDataset();
 		
-		i = 0;
 		for (Object[] obj : this.close) {
 			dataset.addValue(Double.parseDouble((obj[0].toString())),
-					obj[1].toString(), obj[2].toString());
-			if(i<period){
-				dataset.addValue(0,
-						"EMA", obj[2].toString());
-			}else{
-				dataset.addValue(ema[i-period],
-						"EMA", obj[2].toString());
-			}
-			i++;
+					obj[1].toString(), obj[4].toString());
+			dataset.addValue(Double.parseDouble((obj[2].toString())),
+					obj[3].toString(), obj[4].toString());
 		}
 
 		for (Object[] obj : this.assets) {
