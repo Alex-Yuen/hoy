@@ -11,6 +11,7 @@ import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.chart.renderer.category.BarRenderer;
 import org.jfree.chart.renderer.category.CategoryItemRenderer;
 import org.jfree.chart.renderer.category.LineAndShapeRenderer;
 import org.jfree.data.category.*;
@@ -102,26 +103,31 @@ public class DefaultMonitor implements OutputMonitor {
         plot.setDataset(1, datasetofassets);  
         plot.mapDatasetToRangeAxis(1, 1);
         
-        CategoryItemRenderer renderofassets = new LineAndShapeRenderer();
+        LineAndShapeRenderer renderofassets = new LineAndShapeRenderer();
 //        renderofassets.setBaseShape(new java.awt.geom.Rectangle2D.Double());
-//        renderofassets.setBaseStroke(new BasicStroke());
+        //renderofassets.setBaseShape(new Rectangle2D.Double(-1.5, -1.5, 3, 3));
+        renderofassets.setBaseShapesVisible(false);
+        //renderofassets.setShapesVisible(false); 
+        //renderofassets.setDrawOutlines(true);
+        //renderofassets.setUseFillPaint(true); 
+        //renderofassets.setBaseStroke(new BasicStroke(7.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL));
         //System.out.println(plot.getRenderer().getBaseStroke().getClass().getName());
         renderofassets.setSeriesPaint(0, Color.BLUE);
-        renderofassets.setSeriesPaint(1, Color.GREEN);
+        renderofassets.setSeriesPaint(1, Color.YELLOW);
         plot.setRenderer(1, renderofassets);
         
 		//第三个Y轴		   
         NumberAxis axisofvolumn = new NumberAxis("Volumn");        
-        axisofvolumn.setAxisLinePaint(Color.ORANGE);  
-        axisofvolumn.setLabelPaint(Color.ORANGE);  
-        axisofvolumn.setTickLabelPaint(Color.ORANGE);
+        axisofvolumn.setAxisLinePaint(Color.GREEN);  
+        axisofvolumn.setLabelPaint(Color.GREEN);  
+        axisofvolumn.setTickLabelPaint(Color.GREEN);
         axisofvolumn.setRange(0, 220000000*4);
-        plot.setRangeAxis(3, axisofvolumn);  
-        plot.setDataset(3, datasetofvolumn);  
+        plot.setRangeAxis(3, axisofvolumn);
+        plot.setDataset(3, datasetofvolumn);
         plot.mapDatasetToRangeAxis(3, 3);
         
-        CategoryItemRenderer renderofvolumn = new LineAndShapeRenderer();
-        renderofvolumn.setSeriesPaint(0, Color.ORANGE);
+        CategoryItemRenderer renderofvolumn = new BarRenderer();
+        renderofvolumn.setSeriesPaint(0, Color.GREEN);
         plot.setRenderer(3, renderofvolumn);
         
 		ChartFrame frame = new ChartFrame("折线图", chart);
