@@ -14,6 +14,7 @@ public abstract class Strategy {
 	protected float cash;
 	protected float lc;
 	protected float cost;
+	protected int volumn;
 	
 	public abstract void run();
 	
@@ -37,6 +38,7 @@ public abstract class Strategy {
 		this.high = Float.parseFloat(line.get(2));
 		this.low = Float.parseFloat(line.get(3));
 		this.close = Float.parseFloat(line.get(4));
+		this.volumn = Integer.parseInt(line.get(5));
 	}
 	
 	public void complete(){
@@ -81,6 +83,6 @@ public abstract class Strategy {
 		sb.append("W/L:"+(close-cost)*size+"\n");
 		sb.append("W/L(%):"+(close-cost)/cost*100+"%\n\n");
 		//monitor.put(date, sb.toString());
-		monitor.put(date, close+":"+cost+":"+size+":"+cash);
+		monitor.put(date, close+":"+cost+":"+size+":"+cash+":"+volumn);
 	}
 }

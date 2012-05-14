@@ -13,7 +13,7 @@ public class DefaultSource implements DataSource {
 	public DefaultSource(){
 		this.data = new LinkedList<List<String>>();
 		try{
-			BufferedReader reader = new BufferedReader(new InputStreamReader(this.getClass().getResourceAsStream("/SZ160706.TXT")));
+			BufferedReader reader = new BufferedReader(new InputStreamReader(this.getClass().getResourceAsStream("/SH000300.TXT")));
 			String line = null;
 			List<String> t = null;
 			while((line=reader.readLine())!=null){

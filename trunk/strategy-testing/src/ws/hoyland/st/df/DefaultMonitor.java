@@ -22,11 +22,13 @@ public class DefaultMonitor implements OutputMonitor {
 	private List<Object[]> close;
 	private List<Object[]> assets;
 	private List<Object[]> cash;
+	private List<Object[]> volumn;
 
 	public DefaultMonitor() {
 		this.close = new ArrayList<Object[]>();
 		this.assets = new ArrayList<Object[]>();
 		this.cash = new ArrayList<Object[]>();
+		this.volumn = new ArrayList<Object[]>();
 	}
 
 	@Override
@@ -39,6 +41,7 @@ public class DefaultMonitor implements OutputMonitor {
 				Float.valueOf(msg[0]) * Float.valueOf(msg[2])
 						+ Float.valueOf(msg[3]), "Assets", date });
 		this.cash.add(new Object[] { msg[3], "Cash", date });
+		this.volumn.add(new Object[] { msg[4], "Volumn", date });
 	}
 
 	@Override
@@ -46,7 +49,7 @@ public class DefaultMonitor implements OutputMonitor {
 
 		DefaultCategoryDataset dataset = new DefaultCategoryDataset();
 		DefaultCategoryDataset datasetofassets = new DefaultCategoryDataset();
-//		DefaultCategoryDataset datasetofcash = new DefaultCategoryDataset();
+		DefaultCategoryDataset datasetofvolumn = new DefaultCategoryDataset();
 		
 		for (Object[] obj : this.close) {
 			dataset.addValue(Double.parseDouble((obj[0].toString())),
@@ -60,6 +63,11 @@ public class DefaultMonitor implements OutputMonitor {
 		
 		for (Object[] obj : this.cash) {
 			datasetofassets.addValue(Double.parseDouble((obj[0].toString())),
+					obj[1].toString(), obj[2].toString());
+		}
+		
+		for (Object[] obj : this.volumn) {
+			datasetofvolumn.addValue(Double.parseDouble((obj[0].toString())),
 					obj[1].toString(), obj[2].toString());
 		}
 
@@ -103,17 +111,18 @@ public class DefaultMonitor implements OutputMonitor {
         plot.setRenderer(1, renderofassets);
         
 		//第三个Y轴		   
-//        NumberAxis axisofcash = new NumberAxis("Cash");        
-//        axisofcash.setAxisLinePaint(Color.MAGENTA);  
-//        axisofcash.setLabelPaint(Color.MAGENTA);  
-//        axisofcash.setTickLabelPaint(Color.MAGENTA);          
-//        plot.setRangeAxis(2, axisofcash);  
-//        plot.setDataset(2, datasetofcash);  
-//        plot.mapDatasetToRangeAxis(2, 2);
-//        
-//        CategoryItemRenderer renderofcash = new LineAndShapeRenderer();
-//        renderofcash.setSeriesPaint(0, Color.MAGENTA);
-//        plot.setRenderer(2, renderofcash);
+        NumberAxis axisofvolumn = new NumberAxis("Volumn");        
+        axisofvolumn.setAxisLinePaint(Color.ORANGE);  
+        axisofvolumn.setLabelPaint(Color.ORANGE);  
+        axisofvolumn.setTickLabelPaint(Color.ORANGE);
+        axisofvolumn.setRange(0, 220000000*4);
+        plot.setRangeAxis(3, axisofvolumn);  
+        plot.setDataset(3, datasetofvolumn);  
+        plot.mapDatasetToRangeAxis(3, 3);
+        
+        CategoryItemRenderer renderofvolumn = new LineAndShapeRenderer();
+        renderofvolumn.setSeriesPaint(0, Color.ORANGE);
+        plot.setRenderer(3, renderofvolumn);
         
 		ChartFrame frame = new ChartFrame("折线图", chart);
 		frame.setPreferredSize(new Dimension(1024, 768));
