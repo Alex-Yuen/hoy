@@ -53,10 +53,12 @@ public class DefaultStrategy extends Strategy {
 		
 		if(this.lema5<lema10&&ema5>=ema10){
 			//System.out.println("0.10");
-			position(0.6f);
+			position(0.65f);
+			//buy(100);
 		}else if(this.lema5>lema10&&ema5<=ema10){
 			//System.out.println("0.40");
 			position(0.05f);
+			//sell(100);
 		}
 		
 		this.lc = close;
