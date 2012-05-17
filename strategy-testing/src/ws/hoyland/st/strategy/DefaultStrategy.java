@@ -59,6 +59,20 @@ public class DefaultStrategy extends Strategy {
 			//System.out.println("0.40");
 			position(0.05f);
 			//sell(100);
+		}else{
+//			if((cost-close)/cost>=0.10){//亏损情况下, >10%, 控制到5%
+//				int tot = (int)Math.ceil((0.95*cost-close)*size/(close*0.05));
+//				if((tot-tot%1000)!=0){
+//					buy(tot-tot%1000);
+//				}
+//			}else if(close>cost){//盈利情况下, 如仓位过高, 自动减仓
+//				if(cost*size/(cost*size+cash)>=0.20){
+//					int tot = (int)Math.ceil((5*cost*size-cash)/(5*cost+close));
+//					if((tot-tot%1000)!=0){
+//						sell(tot-tot%1000);
+//					}
+//				}
+//			}
 		}
 		
 		this.lc = close;
