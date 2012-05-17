@@ -37,7 +37,7 @@ public class DefaultMonitor implements OutputMonitor {
 		// System.out.println("["+date+"]:"+message);
 		String[] msg = message.split(":");
 		// System.out.println(message+">"+msg.length);
-		this.close.add(new Object[] { msg[0], "Close", msg[5], "EMA", date });
+		this.close.add(new Object[] { msg[0], "Close", msg[5], "EMA10", msg[6], "EMA5", date });
 		this.assets.add(new Object[] {
 				Float.valueOf(msg[0]) * Float.valueOf(msg[2])
 						+ Float.valueOf(msg[3]), "Assets", date });
@@ -53,9 +53,11 @@ public class DefaultMonitor implements OutputMonitor {
 		
 		for (Object[] obj : this.close) {
 			dataset.addValue(Double.parseDouble((obj[0].toString())),
-					obj[1].toString(), obj[4].toString());
+					obj[1].toString(), obj[6].toString());
 			dataset.addValue(Double.parseDouble((obj[2].toString())),
-					obj[3].toString(), obj[4].toString());
+					obj[3].toString(), obj[6].toString());
+			dataset.addValue(Double.parseDouble((obj[4].toString())),
+					obj[5].toString(), obj[6].toString());
 		}
 
 		for (Object[] obj : this.assets) {
@@ -96,7 +98,8 @@ public class DefaultMonitor implements OutputMonitor {
 		rangeAxis.setLabelPaint(Color.RED);  
 		rangeAxis.setTickLabelPaint(Color.RED); 
 		
-		plot.getRenderer().setSeriesPaint(1, Color.GREEN);
+		plot.getRenderer().setSeriesPaint(1, Color.YELLOW);
+		plot.getRenderer().setSeriesPaint(2, Color.WHITE);
 		
 		//µÚ¶þ¸öYÖá		   
         NumberAxis axisofassets = new NumberAxis("Benefit");        

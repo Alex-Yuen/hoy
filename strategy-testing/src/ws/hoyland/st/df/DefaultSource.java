@@ -40,7 +40,7 @@ public class DefaultSource implements DataSource {
 			MInteger mi_begin = new MInteger();
 			MInteger mi_length = new MInteger();
 			
-			int period = 40;
+			int period = 10;
 			double[] ema = new double[cc.length];
 			ta.ema(0, cc.length-1, cc, period, mi_begin, mi_length, ema);
 			
@@ -52,7 +52,17 @@ public class DefaultSource implements DataSource {
 				((List<String>)x[m]).add(String.valueOf(ema[m-period]));
 			}
 			
+			period = 5;
+			ema = new double[cc.length];
+			ta.ema(0, cc.length-1, cc, period, mi_begin, mi_length, ema);
 			
+			m=0;
+			for(;m<period;m++){
+				((List<String>)x[m]).add(String.valueOf(0));
+			}
+			for(;m<cc.length;m++){
+				((List<String>)x[m]).add(String.valueOf(ema[m-period]));
+			}
 		}catch(Exception e){
 			e.printStackTrace();
 		}
