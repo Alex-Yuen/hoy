@@ -17,6 +17,7 @@ public abstract class Strategy {
 	protected int volumn;
 	protected float ema10;
 	protected float ema5;
+	protected float position;
 	
 	public abstract void run();
 	
@@ -78,6 +79,7 @@ public abstract class Strategy {
 	}
 	
 	public void position(float ss){
+		this.position = ss;
 //		close*nsize/(close*size+cash)=ss/1
 //		close*nsize=ss*close*size+cash*ss
 //		nsize=cash*ss/close+ss*size=ss(cash/close+size);
@@ -89,6 +91,10 @@ public abstract class Strategy {
 		}else{
 			sell(size-ns);
 		}
+	}
+	
+	public float position(){
+		return this.position;
 	}
 	
 	private void print(){
