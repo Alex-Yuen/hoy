@@ -8,6 +8,9 @@ public class DefaultStrategy extends Strategy {
 	
 	private float lema5;
 	private float lema10;
+	private boolean crossup = false;
+	private boolean crossdown = false;
+	private float lcc = 0;
 	
 	public DefaultStrategy(Fee fee, OutputMonitor monitor){
 		super(fee, monitor);
@@ -53,13 +56,37 @@ public class DefaultStrategy extends Strategy {
 		
 		if(this.lema5<lema10&&ema5>=ema10){
 			//System.out.println("0.10");
+			crossup = true;
+			crossdown = false;
+			lcc = close;
 			position(0.65f);
 			//buy(100);
 		}else if(this.lema5>lema10&&ema5<=ema10){
 			//System.out.println("0.40");
+			crossup = false;
+			crossdown = true;
+			lcc = close;
 			position(0.05f);
 			//sell(100);
 		}else{
+			if(crossdown){
+				if((lcc-close)/lcc>=0.10){
+					if(position()<0.60){
+						lcc = close;
+						position(position()+0.05f);
+					}
+				}
+			}
+			
+			
+			if(crossup){
+				if((close-lcc)/lcc>=0.10){
+					if(position()>0.05){
+						lcc = close;
+						position(position()-0.05f);
+					}
+				}
+			}
 //			if((cost-close)/cost>=0.10){//亏损情况下, >10%, 控制到5%
 //				int tot = (int)Math.ceil((0.95*cost-close)*size/(close*0.05));
 //				if((tot-tot%1000)!=0){
