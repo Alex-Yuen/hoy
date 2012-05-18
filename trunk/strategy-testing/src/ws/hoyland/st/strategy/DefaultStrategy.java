@@ -59,7 +59,7 @@ public class DefaultStrategy extends Strategy {
 			crossup = true;
 			crossdown = false;
 			lcc = close;
-			position(0.65f);
+			position(0.85f);
 			//buy(100);
 		}else if(this.lema5>lema10&&ema5<=ema10){
 			//System.out.println("0.40");
@@ -69,18 +69,17 @@ public class DefaultStrategy extends Strategy {
 			position(0.05f);
 			//sell(100);
 		}else{
-			if(crossdown){
-				if((lcc-close)/lcc>=0.10){
-					if(position()<0.60){
+			if(crossup){
+				if((lcc-close)/lcc>=0.05){
+					if(position()<0.85){
 						lcc = close;
 						position(position()+0.05f);
 					}
 				}
-			}
+			}			
 			
-			
-			if(crossup){
-				if((close-lcc)/lcc>=0.10){
+			if(crossdown){
+				if((close-lcc)/lcc>=0.05){
 					if(position()>0.05){
 						lcc = close;
 						position(position()-0.05f);
