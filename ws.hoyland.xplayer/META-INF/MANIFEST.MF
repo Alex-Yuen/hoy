@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: XPlayer
+Bundle-SymbolicName: ws.hoyland.xplayer; singleton:=true
+Bundle-Version: 1.0.0.0
+Bundle-Activator: ws.hoyland.xplayer.Activator
+Bundle-Vendor: www.hoyland.ws
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-ActivationPolicy: lazy
