@@ -33,7 +33,8 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
 			configurer.setShowMenuBar(false);
 			configurer.setShowStatusLine(false);
 			configurer.setShowCoolBar(false);
-			configurer.setShellStyle(SWT.MODELESS | SWT.NO_TRIM);
+			configurer.setShellStyle(SWT.NONE);
+			//configurer.
 		}
 		
 		
@@ -50,6 +51,7 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
 		}else{
 			shell.setLocation(0, 0);
 			shell.setSize(450, 300);
+			//shell.setMaximized(true);
 			//shell.setFullScreen(true);
 		}
 		// 可以通过|来组全不同的样式值来达到特定的效果
