@@ -1,5 +1,13 @@
 package ws.hoyland.xplayer;
 
+import org.eclipse.jface.action.ICoolBarManager;
+import org.eclipse.jface.action.IToolBarManager;
+import org.eclipse.jface.action.ToolBarContributionItem;
+import org.eclipse.jface.action.ToolBarManager;
+import org.eclipse.swt.SWT;
+import org.eclipse.ui.IWorkbenchWindow;
+import org.eclipse.ui.actions.ActionFactory;
+import org.eclipse.ui.actions.ActionFactory.IWorkbenchAction;
 import org.eclipse.ui.application.ActionBarAdvisor;
 import org.eclipse.ui.application.IActionBarConfigurer;
 
@@ -9,7 +17,7 @@ import org.eclipse.ui.application.IActionBarConfigurer;
  * new actions.
  */
 public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
-	
+	private IWorkbenchAction openFileAction;
 	// Actions - important to allocate these only in makeActions, and then use
 	// them
 	// in the fill methods. This ensures that the actions aren't recreated
@@ -17,6 +25,30 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
 
 	public ApplicationActionBarAdvisor(IActionBarConfigurer configurer) {
 		super(configurer);
+	}
+
+	
+	@Override
+	protected void makeActions(IWorkbenchWindow window) {
+		// TODO Auto-generated method stub
+		openFileAction = ActionFactory.OPEN_NEW_WINDOW.create(window);
+		//openFileAction.set
+        register(openFileAction);
+		super.makeActions(window);
+	}
+
+
+	@Override
+	protected void fillCoolBar(ICoolBarManager coolBar) {
+		// TODO Auto-generated method stub
+		//添加CoolBar
+        IToolBarManager toolbar = new ToolBarManager(coolBar.getStyle());
+        
+        //添加ToolBar到CoolBar中
+        coolBar.add(new ToolBarContributionItem(toolbar, "main"));  
+        //添加Action到ToolBar中
+        toolbar.add(openFileAction);
+		super.fillCoolBar(coolBar);
 	}
 
 	
