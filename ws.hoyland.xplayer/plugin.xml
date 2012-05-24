@@ -22,9 +22,15 @@
    <extension
          point="org.eclipse.ui.views">
       <view
-            name="View"
+            name="Material List"
             class="ws.hoyland.xplayer.View"
             id="ws.hoyland.xplayer.view">
+      </view>
+      <view
+            class="ws.hoyland.xplayer.ControlView"
+            id="ws.hoyland.xplayer.controlview"
+            name="Control Pannel"
+            restorable="true">
       </view>
    </extension>
    <extension
@@ -32,11 +38,40 @@
       <perspectiveExtension
             targetID="*">
          <view
-               standalone="true"
+               closeable="false"
+               id="ws.hoyland.xplayer.controlview"
                minimized="false"
+               moveable="false"
+               ratio="0.75"
+               relationship="bottom"
                relative="org.eclipse.ui.editorss"
+               showTitle="true"
+               standalone="true"
+               visible="true">
+         </view>
+         <view
+               closeable="false"
+               id="ws.hoyland.xplayer.view"
+               minimized="false"
+               moveable="false"
+               ratio="0.75"
                relationship="left"
-               id="ws.hoyland.xplayer.view">
+               relative="org.eclipse.ui.editorss"
+               showTitle="true"
+               standalone="true"
+               visible="true">
+         </view>
+         <view
+               closeable="false"
+               id="org.eclipse.ui.views.PropertySheet"
+               minimized="false"
+               moveable="false"
+               ratio="0.25"
+               relationship="right"
+               relative="org.eclipse.ui.editorss"
+               showTitle="true"
+               standalone="true"
+               visible="true">
          </view>
       </perspectiveExtension>
    </extension>
@@ -49,6 +84,15 @@
             <command
                   commandId="org.eclipse.ui.file.exit"
                   label="Exit">
+            </command>
+         </menu>
+         <menu
+               label="Option">
+            <command
+                  commandId="ws.hoyland.xplayer.commands.showscreen"
+                  label="Show Screen"
+                  mnemonic="S"
+                  style="push">
             </command>
          </menu>
       </menuContribution>
@@ -64,6 +108,34 @@
                value="icons/alt_window_16.gif,icons/alt_window_32.gif">
          </property>
       </product>
+   </extension>
+   <extension
+         point="org.eclipse.ui.commands">
+      <category
+            id="ws.hoyland.xplayer.commands.category"
+            name="Category">
+      </category>
+      <command
+            categoryId="ws.hoyland.xplayer.commands.category"
+            id="ws.hoyland.xplayer.commands.showscreen"
+            name="Show Screen">
+      </command>
+   </extension>
+   <extension
+         point="org.eclipse.ui.handlers">
+      <handler
+            class="ws.hoyland.xplayer.handlers.ScreenHandler"
+            commandId="ws.hoyland.xplayer.commands.showscreen">
+      </handler>
+   </extension>
+   <extension
+         point="org.eclipse.ui.bindings">
+      <key
+            commandId="ws.hoyland.xplayer.commands.showscreen"
+            contextId="org.eclipse.ui.contexts.window"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="CTRL+`">
+      </key>
    </extension>
 
 </plugin>

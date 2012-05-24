@@ -6,6 +6,7 @@ Bundle-Version: 1.0.0.0
 Bundle-Activator: ws.hoyland.xplayer.Activator
 Bundle-Vendor: www.hoyland.ws
 Require-Bundle: org.eclipse.ui,
- org.eclipse.core.runtime
+ org.eclipse.core.runtime,
+ org.eclipse.ui.views
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
