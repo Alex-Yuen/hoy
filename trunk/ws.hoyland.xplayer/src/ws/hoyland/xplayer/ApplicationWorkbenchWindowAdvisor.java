@@ -1,6 +1,8 @@
 package ws.hoyland.xplayer;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.TraverseEvent;
+import org.eclipse.swt.events.TraverseListener;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
@@ -38,12 +40,16 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
 
 		Display.getCurrent().addFilter(SWT.KeyDown, new Listener() {
 			public void handleEvent(Event e) {
-				if ((e.stateMask == SWT.CTRL) && (e.keyCode == SWT.CR || e.keyCode == SWT.KEYPAD_CR)) {
-					Application.SCREEN.setFullScreen(!Application.SCREEN.getFullScreen());
+				if ((e.stateMask == SWT.CTRL)
+						&& (e.keyCode == SWT.CR || e.keyCode == SWT.KEYPAD_CR)) {
+					Application.SCREEN.setFullScreen(!Application.SCREEN
+							.getFullScreen());
 
+				}else if ((e.stateMask == SWT.CTRL)&& (e.keyCode == '`')){
+					Application.SCREEN.setVisible(!Application.SCREEN.isVisible());
 				}
 			}
-		});		
+		});
 
 		// if("ws.hoyland.xplayer.perspective".equals(configurer.getWindow().getActivePage().getPerspective().getId())){
 		shell.setLocation(
@@ -75,6 +81,18 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
 		};
 		Application.SCREEN.addListener(SWT.MouseDown, listener);
 		Application.SCREEN.addListener(SWT.MouseMove, listener);
+
+		Application.SCREEN.addTraverseListener(new TraverseListener() {
+
+			@Override
+			public void keyTraversed(TraverseEvent e) {
+				// 如果按的是Esc键就不执行操作
+				if (e.detail == SWT.TRAVERSE_ESCAPE) {
+					e.doit = false;
+				}
+			}
+
+		});
 
 		Application.SCREEN.setLocation(0, 0);
 		Application.SCREEN.setSize(450, 300);
