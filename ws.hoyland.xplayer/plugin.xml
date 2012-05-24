@@ -18,6 +18,11 @@
             class="ws.hoyland.xplayer.Perspective"
             id="ws.hoyland.xplayer.perspective">
       </perspective>
+      <perspective
+            class="ws.hoyland.xplayer.ScreenPerspective"
+            id="ws.hoyland.xplayer.screenperspective"
+            name="Screen Perspective">
+      </perspective>
    </extension>
    <extension
          point="org.eclipse.ui.views">
@@ -32,11 +37,17 @@
             name="Control Pannel"
             restorable="true">
       </view>
+      <view
+            class="ws.hoyland.xplayer.ScreenView"
+            id="ws.hoyland.xplayer.screenview"
+            name="Screen View"
+            restorable="true">
+      </view>
    </extension>
    <extension
          point="org.eclipse.ui.perspectiveExtensions">
       <perspectiveExtension
-            targetID="*">
+            targetID="ws.hoyland.xplayer.perspective">
          <view
                closeable="false"
                id="ws.hoyland.xplayer.controlview"
@@ -74,6 +85,21 @@
                visible="true">
          </view>
       </perspectiveExtension>
+      <perspectiveExtension
+            targetID="ws.hoyland.xplayer.screenperspective">
+         <view
+               closeable="false"
+               id="ws.hoyland.xplayer.screenview"
+               minimized="false"
+               moveable="false"
+               ratio="1.0"
+               relationship="top"
+               relative="org.eclipse.ui.editorss"
+               showTitle="false"
+               standalone="true"
+               visible="true">
+         </view>
+      </perspectiveExtension>
    </extension>
    <extension
          point="org.eclipse.ui.menus">
@@ -90,9 +116,7 @@
                label="Option">
             <command
                   commandId="ws.hoyland.xplayer.commands.showscreen"
-                  label="Show Screen"
-                  mnemonic="S"
-                  style="push">
+                  label="Show Screen">
             </command>
          </menu>
       </menuContribution>
@@ -120,12 +144,21 @@
             id="ws.hoyland.xplayer.commands.showscreen"
             name="Show Screen">
       </command>
+      <command
+            categoryId="ws.hoyland.xplayer.commands.category"
+            id="ws.hoyland.xplayer.commands.fullscreen"
+            name="Full Screen">
+      </command>
    </extension>
    <extension
          point="org.eclipse.ui.handlers">
       <handler
             class="ws.hoyland.xplayer.handlers.ScreenHandler"
             commandId="ws.hoyland.xplayer.commands.showscreen">
+      </handler>
+      <handler
+            class="ws.hoyland.xplayer.handlers.FullScreenHandler"
+            commandId="ws.hoyland.xplayer.commands.fullscreen">
       </handler>
    </extension>
    <extension
@@ -135,6 +168,12 @@
             contextId="org.eclipse.ui.contexts.window"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
             sequence="CTRL+`">
+      </key>
+      <key
+            commandId="ws.hoyland.xplayer.commands.fullscreen"
+            contextId="org.eclipse.ui.contexts.window"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="CTRL+CR">
       </key>
    </extension>
 
