@@ -3,6 +3,7 @@ package ws.hoyland.xplayer.handlers;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.WorkbenchException;
@@ -17,7 +18,6 @@ import org.eclipse.ui.handlers.HandlerUtil;
  */
 public class ScreenHandler extends AbstractHandler {
 	
-	private static IWorkbenchPage SCREEN;
 	/**
 	 * The constructor.
 	 */
@@ -32,27 +32,22 @@ public class ScreenHandler extends AbstractHandler {
 		try {
 			IWorkbenchWindow window = HandlerUtil.getActiveWorkbenchWindowChecked(event);
 //			System.out.println(window.getActivePage().getPerspective().getId());
-			if(SCREEN==null){
-				//System.out.println(window);
-				
-				SCREEN = window.openPage("ws.hoyland.xplayer.screenperspective", null);
 				//SCREEN.getWorkbenchWindow()
 				//System.out.println(SCREEN.getWorkbenchWindow());
 				//SCREEN.getWorkbenchWindow().
 				//SCREEN.getWorkbenchWindow().
-//				Shell shell = SCREEN.getWorkbenchWindow().getShell();
+				Shell shell = window.getShell();
+				Shell screen = new Shell(shell, 33554432);
 //				shell.setMenuBar(null);
 //				SCREEN.getWorkbenchWindow().
 				//shell.set
-//				shell.setLocation(0, 0);
-//				shell.setSize(450, 300);
-				//shell.setFullScreen(true);
-			}else{
-				SCREEN.getWorkbenchWindow().close();
-				SCREEN = null;
+				screen.setLocation(0, 0);
+				screen.setSize(450, 300);
 				
-			}
-		} catch (WorkbenchException e) {
+				screen.open();
+				//shell.setFullScreen(true);
+
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
