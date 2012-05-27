@@ -89,15 +89,6 @@
             </command>
          </menu>
          <menu
-               label="Tool"
-               mnemonic="T">
-            <command
-                  commandId="ws.hoyland.xplayer.commands.showscreen"
-                  label="Show Screen"
-                  mnemonic="S">
-            </command>
-         </menu>
-         <menu
                label="Help"
                mnemonic="H">
             <command
@@ -131,22 +122,11 @@
             id="ws.hoyland.xplayer.commands.showscreen"
             name="Show Screen">
       </command>
-   </extension>
-   <extension
-         point="org.eclipse.ui.handlers">
-      <handler
-            class="ws.hoyland.xplayer.handlers.ScreenHandler"
-            commandId="ws.hoyland.xplayer.commands.showscreen">
-      </handler>
-   </extension>
-   <extension
-         point="org.eclipse.ui.bindings">
-      <key
-            commandId="ws.hoyland.xplayer.commands.showscreen"
-            contextId="org.eclipse.ui.contexts.window"
-            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
-            sequence="CTRL+`">
-      </key>
+      <command
+            categoryId="ws.hoyland.xplayer.commands.category"
+            id="ws.hoyland.xplayer.commands.option"
+            name="Option">
+      </command>
    </extension>
    <extension
          point="org.eclipse.ui.actionSets">

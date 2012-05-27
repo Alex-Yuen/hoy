@@ -13,6 +13,8 @@ import org.eclipse.ui.application.IActionBarConfigurer;
 import org.eclipse.ui.application.IWorkbenchWindowConfigurer;
 import org.eclipse.ui.application.WorkbenchWindowAdvisor;
 
+import ws.hoyland.xplayer.dialog.OptionDialog;
+
 public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
 
 	public ApplicationWorkbenchWindowAdvisor(
@@ -36,7 +38,7 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
 	@Override
 	public void postWindowOpen() {
 		IWorkbenchWindowConfigurer configurer = getWindowConfigurer();
-		Shell shell = configurer.getWindow().getShell();
+		final Shell shell = configurer.getWindow().getShell();
 
 		Display.getCurrent().addFilter(SWT.KeyDown, new Listener() {
 			public void handleEvent(Event e) {
@@ -47,6 +49,12 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
 
 				}else if ((e.stateMask == SWT.CTRL)&& (e.keyCode == '`')){
 					Application.SCREEN.setVisible(!Application.SCREEN.isVisible());
+				}else if ((e.stateMask == SWT.CTRL)&& (e.keyCode == 'o')){
+					//new OptionHandler().execute(null);
+					if(shell.getShells().length==1){
+						OptionDialog dialog = new OptionDialog(shell);						
+						dialog.open();
+					}
 				}
 			}
 		});
@@ -121,6 +129,8 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
 		// SCREEN.getWorkbenchWindow().
 		// shell.set
 
+		//填充propertysheet
+		
 		super.postWindowOpen();
 	}
 
