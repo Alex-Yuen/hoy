@@ -242,6 +242,10 @@ public class Archive implements Closeable {
 	    	System.out.println(md5);
 	    	byte[] hsb = Hash.toByteArray(md5);
 	    	
+	    	IMessageDigest md = HashFactory.getInstance("SHA-1");
+	    	md.update(input, 0, input.length);
+	    	byte[] digest = md.digest();
+	    	
 	    	System.out.println(hsb.length);
 	    	
 			SecretKeySpec skeySpec = new SecretKeySpec(new byte[]{hsb[0], hsb[1]}, "AES");
