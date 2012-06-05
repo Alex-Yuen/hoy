@@ -22,11 +22,17 @@ import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.crypto.Cipher;
+import javax.crypto.NoSuchPaddingException;
+import javax.crypto.spec.SecretKeySpec;
+
+import de.innosystec.unrar.alth.Hash;
 import de.innosystec.unrar.exception.RarException;
 import de.innosystec.unrar.exception.RarException.RarExceptionType;
 import de.innosystec.unrar.io.IReadOnlyAccess;
@@ -227,10 +233,43 @@ public class Archive implements Closeable {
 	    if (size == 0) {
 		break;
 	    }
+	    
+	    //added
+	    if(newMhd!=null&&newMhd.isEncrypted()){
+	    	//pwd | salt -> hash ->key+iv ->aes,,, no salt?
+	    	//baseBlockBuffer
+	    	String md5 = Hash.getMD5("1234".getBytes());
+	    	System.out.println(md5);
+	    	byte[] hsb = Hash.toByteArray(md5);
+	    	
+	    	System.out.println(hsb.length);
+	    	
+			SecretKeySpec skeySpec = new SecretKeySpec(new byte[]{hsb[0], hsb[1]}, "AES");
+			try {
+				Cipher cipher = Cipher.getInstance("AES");
+				cipher.init(Cipher.DECRYPT_MODE, skeySpec);
+
+				byte[] decrypted = cipher
+						.doFinal(baseBlockBuffer);
+				
+				System.out.print("decrypted:");
+			    for(int x=0;x<baseBlockBuffer.length;x++){
+			    	System.out.print(baseBlockBuffer[x]+",");
+			    }
+			    System.out.println();
+			    
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			//System.out.println("encrypted string: " + asHex(encrypted));
+			
+	    	//baseBlockBuffer = aes(hsb, baseBlockBuffer)^hsb;
+	    }
+	    
 	    BaseBlock block = new BaseBlock(baseBlockBuffer);
 
 	    block.setPositionInFile(position);
-
 	    switch (block.getHeaderType()) {
 
 	    case MarkHeader:
@@ -252,10 +291,11 @@ public class Archive implements Closeable {
 		MainHeader mainhead = new MainHeader(block, mainbuff);
 		headers.add(mainhead);
 		this.newMhd = mainhead;
+		/**
 		if (newMhd.isEncrypted()) {
 		    throw new RarException(
 			    RarExceptionType.rarEncryptedException);
-		}
+		}**/
 		// mainhead.print();
 		break;
 
@@ -330,6 +370,11 @@ public class Archive implements Closeable {
 		switch (blockHead.getHeaderType()) {
 		case NewSubHeader:
 		case FileHeader:
+		    System.out.print("BUFFER:");
+		    for(int x=0;x<baseBlockBuffer.length;x++){
+		    	System.out.print(baseBlockBuffer[x]+",");
+		    }
+		    System.out.println();
 		    toRead = blockHead.getHeaderSize()
 			    - BlockHeader.BaseBlockSize
 			    - BlockHeader.blockHeaderSize;
