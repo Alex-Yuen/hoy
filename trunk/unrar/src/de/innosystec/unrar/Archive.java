@@ -18,6 +18,9 @@
  */
 package de.innosystec.unrar;
 
+import gnu.crypto.hash.HashFactory;
+import gnu.crypto.hash.IMessageDigest;
+
 import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
@@ -220,7 +223,8 @@ public class Archive implements Closeable {
 	    int size = 0;
 	    long newpos = 0;
 	    byte[] baseBlockBuffer = new byte[BaseBlock.BaseBlockSize];
-
+	    byte[] salt = new byte[8];
+	    
 	    long position = rof.getPosition();
 
 	    // Weird, but is trying to read beyond the end of the file
@@ -228,37 +232,53 @@ public class Archive implements Closeable {
 		break;
 	    }
 
-	    // logger.info("\n--------reading header--------");
-	    size = rof.readFully(baseBlockBuffer, BaseBlock.BaseBlockSize);
-	    if (size == 0) {
-		break;
-	    }
-	    
-	    //added
+	    //read salt
 	    if(newMhd!=null&&newMhd.isEncrypted()){
-	    	//pwd | salt -> hash ->key+iv ->aes,,, no salt?
-	    	//baseBlockBuffer
-	    	String md5 = Hash.getMD5("1234".getBytes());
-	    	System.out.println(md5);
-	    	byte[] hsb = Hash.toByteArray(md5);
+	    	size = rof.readFully(salt,8);
+	    	if(size==0){
+	    		break;
+	    	}
+	    	int alignedReadSize = BaseBlock.BaseBlockSize;
+	    	alignedReadSize = alignedReadSize+((~alignedReadSize+1)&0xf);
+	    	byte[] alignedBolckBuffer = new byte[alignedReadSize];
 	    	
-	    	IMessageDigest md = HashFactory.getInstance("SHA-1");
-	    	md.update(input, 0, input.length);
+	    	size = rof.readFully(alignedBolckBuffer, alignedReadSize);
+	    	
+	    	//byte[] tabf = Hash.hex2byte(alignedBolckBuffer);
+	    	//decrypt
+	    	byte[] input = "1234".getBytes();
+	    	byte[] ipx = new byte[input.length+salt.length];
+	    	for(int x=0;x<input.length;x++){
+	    		ipx[x] = input[x];
+	    	}
+	    	for(int x=0;x<salt.length;x++){
+	    		ipx[x+input.length] = salt[x];
+	    	}
+	    	
+	    	IMessageDigest md = HashFactory.getInstance("SHA-256");
+	    	md.update(ipx, 0, ipx.length);
 	    	byte[] digest = md.digest();
 	    	
-	    	System.out.println(hsb.length);
+	    	byte[] key = new byte[16];
+	    	byte[] iv = new byte[16];
+	    	for(int x=0;x<key.length;x++){
+	    		key[x] = digest[x];
+	    	}
+	    	for(int x=0;x<iv.length;x++){
+	    		iv[x] = digest[x+key.length];
+	    	}
 	    	
-			SecretKeySpec skeySpec = new SecretKeySpec(new byte[]{hsb[0], hsb[1]}, "AES");
+			SecretKeySpec skeySpec = new SecretKeySpec(key, "AES");
 			try {
 				Cipher cipher = Cipher.getInstance("AES");
 				cipher.init(Cipher.DECRYPT_MODE, skeySpec);
 
 				byte[] decrypted = cipher
-						.doFinal(baseBlockBuffer);
+						.doFinal(alignedBolckBuffer);
 				
 				System.out.print("decrypted:");
-			    for(int x=0;x<baseBlockBuffer.length;x++){
-			    	System.out.print(baseBlockBuffer[x]+",");
+			    for(int x=0;x<decrypted.length;x++){
+			    	System.out.print(decrypted[x]+",");
 			    }
 			    System.out.println();
 			    
@@ -268,8 +288,18 @@ public class Archive implements Closeable {
 			}
 			//System.out.println("encrypted string: " + asHex(encrypted));
 			
-	    	//baseBlockBuffer = aes(hsb, baseBlockBuffer)^hsb;
 	    }
+	    else{
+	    	size = rof.readFully(baseBlockBuffer, BaseBlock.BaseBlockSize);
+	    }
+	    // logger.info("\n--------reading header--------");
+	    //size = rof.readFully(baseBlockBuffer, BaseBlock.BaseBlockSize);
+	    if (size == 0) {
+		break;
+	    }
+	    
+	    //password&salt decrypt baseblockbuffer
+	    
 	    
 	    BaseBlock block = new BaseBlock(baseBlockBuffer);
 
