@@ -58,4 +58,7 @@ public interface IReadOnlyAccess {
 
     /** Close this file. */
     public void close() throws IOException;
+    
+    
+    public void setSalt(byte[] salt);
 }

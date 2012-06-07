@@ -231,75 +231,22 @@ public class Archive implements Closeable {
 	    if (position >= fileLength) {
 		break;
 	    }
-
+	    
 	    //read salt
 	    if(newMhd!=null&&newMhd.isEncrypted()){
-	    	size = rof.readFully(salt,8);
+	    	size = rof.readFully(salt, 8);
 	    	if(size==0){
 	    		break;
 	    	}
-	    	int alignedReadSize = BaseBlock.BaseBlockSize;
-	    	alignedReadSize = alignedReadSize+((~alignedReadSize+1)&0xf);
-	    	byte[] alignedBolckBuffer = new byte[alignedReadSize];
-	    	
-	    	size = rof.readFully(alignedBolckBuffer, alignedReadSize);
-	    	
-	    	//byte[] tabf = Hash.hex2byte(alignedBolckBuffer);
-	    	//decrypt
-	    	byte[] input = "1234".getBytes();
-	    	byte[] ipx = new byte[input.length+salt.length];
-	    	for(int x=0;x<input.length;x++){
-	    		ipx[x] = input[x];
-	    	}
-	    	for(int x=0;x<salt.length;x++){
-	    		ipx[x+input.length] = salt[x];
-	    	}
-	    	
-	    	IMessageDigest md = HashFactory.getInstance("SHA-256");
-	    	md.update(ipx, 0, ipx.length);
-	    	byte[] digest = md.digest();
-	    	
-	    	byte[] key = new byte[16];
-	    	byte[] iv = new byte[16];
-	    	for(int x=0;x<key.length;x++){
-	    		key[x] = digest[x];
-	    	}
-	    	for(int x=0;x<iv.length;x++){
-	    		iv[x] = digest[x+key.length];
-	    	}
-	    	
-			SecretKeySpec skeySpec = new SecretKeySpec(key, "AES");
-			try {
-				Cipher cipher = Cipher.getInstance("AES");
-				cipher.init(Cipher.DECRYPT_MODE, skeySpec);
-
-				byte[] decrypted = cipher
-						.doFinal(alignedBolckBuffer);
-				
-				System.out.print("decrypted:");
-			    for(int x=0;x<decrypted.length;x++){
-			    	System.out.print(decrypted[x]+",");
-			    }
-			    System.out.println();
-			    
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			//System.out.println("encrypted string: " + asHex(encrypted));
-			
+	    	rof.setSalt(salt);
+	    	size = 0; //init
 	    }
-	    else{
-	    	size = rof.readFully(baseBlockBuffer, BaseBlock.BaseBlockSize);
-	    }
+	    
 	    // logger.info("\n--------reading header--------");
-	    //size = rof.readFully(baseBlockBuffer, BaseBlock.BaseBlockSize);
+	    size = rof.readFully(baseBlockBuffer, BaseBlock.BaseBlockSize);
 	    if (size == 0) {
 		break;
 	    }
-	    
-	    //password&salt decrypt baseblockbuffer
-	    
 	    
 	    BaseBlock block = new BaseBlock(baseBlockBuffer);
 
