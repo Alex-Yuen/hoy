@@ -31,6 +31,7 @@ public class ReadOnlyAccessByteArray implements IReadOnlyAccess{
 
 	private int positionInFile;
 	private byte[] file;
+	private byte[] salt;
 	
 	/**
 	 * Initialize with byte[ ]
@@ -87,4 +88,10 @@ public class ReadOnlyAccessByteArray implements IReadOnlyAccess{
 
     public void close() throws IOException {
     }
+
+	@Override
+	public void setSalt(byte[] salt) {
+		this.salt = salt;
+		
+	}
 }
