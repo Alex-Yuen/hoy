@@ -17,39 +17,34 @@
  */
 package de.innosystec.unrar.io;
 
-import gnu.crypto.hash.HashFactory;
-import gnu.crypto.hash.IMessageDigest;
-
-import java.io.EOFException;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
-import java.util.ArrayList;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Queue;
-import java.util.Stack;
 
-import javax.crypto.Cipher;
-import javax.crypto.spec.SecretKeySpec;
-
-import de.innosystec.unrar.rarfile.BaseBlock;
-
+import de.innosystec.unrar.crypt.Rijndael;
 /**
  * DOCUMENT ME
- *
+ * 
  * @author $LastChangedBy$
  * @version $LastChangedRevision$
  */
-public class ReadOnlyAccessFile extends RandomAccessFile
-        implements IReadOnlyAccess{
+public class ReadOnlyAccessFile extends RandomAccessFile implements
+		IReadOnlyAccess {
 
 	private byte[] salt;
 	private Queue<Byte> data = new LinkedList<Byte>();
-		
+	private Rijndael rin = new Rijndael();
+	private byte[] AESKey = new byte[16];
+	private byte[] AESInit = new byte[16];
+
 	/**
-	 * @param file the file
+	 * @param file
+	 *            the file
 	 * @throws FileNotFoundException
 	 */
 	public ReadOnlyAccessFile(File file) throws FileNotFoundException {
@@ -57,97 +52,93 @@ public class ReadOnlyAccessFile extends RandomAccessFile
 	}
 
 	public int readFully(byte[] buffer, int count) throws IOException {
-        assert (count > 0) : count;
+		assert (count > 0) : count;
 
-        //read salt
-	    if(this.salt!=null){
-	    	//System.out.println("salt is not null");
-	    	 
-	    	int cs = data.size();
-	    	int sizeToRead = count - cs;
+		// read salt
+		if (this.salt != null) {
+			// System.out.println("salt is not null");
 
-	    	if(sizeToRead>0){
-	    		int alignedSize = sizeToRead+((~sizeToRead+1)&0xf);
-	    		byte[] tr = new byte[alignedSize];
-		    	this.readFully(tr, 0, alignedSize);
-		    	
-		    	/**
-		    	 * decrypt
-		    	 * 
-		    	 */
-		    	//string
-		    	byte[] input = "1234".getBytes();
-		    	byte[] ipx = new byte[input.length+salt.length];
-		    	for(int x=0;x<input.length;x++){
-		    		ipx[x] = input[x];
-		    	}
-		    	for(int x=0;x<salt.length;x++){
-		    		ipx[x+input.length] = salt[x];
-		    	}
-		    	
-		    	//key & iv
-		    	IMessageDigest md = HashFactory.getInstance("SHA-256");
-		    	md.update(ipx, 0, ipx.length);
-		    	byte[] digest = md.digest();
-		    	
-		    	byte[] key = new byte[16];
-		    	byte[] iv = new byte[16];
-		    	for(int x=0;x<key.length;x++){
-		    		key[x] = digest[x];
-		    	}
-		    	for(int x=0;x<iv.length;x++){
-		    		iv[x] = digest[x+key.length];
-		    	}
-		    	
-//		    	tr = new byte[]{
-//		    			71,-93,39,21,58,40,-94,6,80,-42,-79,-14,-69,-109,-56,-13,64,-63,2,-24,29,100,80,-79,2,-35,-71,80,86,50,-49,27
-//		    	};
-		    //	key = "123456788DE54321".getBytes();
-		    	
-		    	//decrypt
-				SecretKeySpec skeySpec = new SecretKeySpec(key, "AES");
-				try {
-					Cipher cipher = Cipher.getInstance("AES");
-					cipher.init(Cipher.DECRYPT_MODE, skeySpec);
-	
-					byte[] decrypted = cipher
-							.doFinal(tr);
-					
-					for(int i=0;i<decrypted.length;i++){
-						data.add(decrypted[i]);
-					}
-					
-//					System.out.print("decrypted:");
-//				    for(int x=0;x<decrypted.length;x++){
-//				    	System.out.print(decrypted[x]+",");
-//				    }
-//				    System.out.println();
-				    
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-	    	}
-	    	
-	    	for(int i=0;i<count;i++){
-	    		buffer[i] = data.poll();
-	    	}
-	    		
-	    }else {
-	    	this.readFully(buffer, 0, count);
-	    }
-	    
-        return count;
-    }
+			int cs = data.size();
+			int sizeToRead = count - cs;
+
+			if (sizeToRead > 0) {
+				int alignedSize = sizeToRead + ((~sizeToRead + 1) & 0xf);
+				byte[] tr = new byte[alignedSize];
+				this.readFully(tr, 0, alignedSize);
+
+				/**
+				 * decrypt & add to data list
+				 * 
+				 */
+
+			}
+
+			for (int i = 0; i < count; i++) {
+				buffer[i] = data.poll();
+			}
+
+		} else {
+			this.readFully(buffer, 0, count);
+		}
+
+		return count;
+	}
 
 	public long getPosition() throws IOException {
-        return this.getFilePointer();
+		return this.getFilePointer();
 	}
 
 	public void setPosition(long pos) throws IOException {
-        this.seek(pos);
+		this.seek(pos);
 	}
-	
-	public void setSalt(byte[] salt){
+
+	public void setSalt(byte[] salt) {
 		this.salt = salt;
+
+		// caculate aes key and aes iv and then init rinj
+		String password = "1234";
+		int rawLength = 2 * password.length();
+		byte[] rawpsw = new byte[rawLength + 8];
+		byte[] pwd = password.getBytes();
+		for (int i = 0; i < password.length(); i++) {
+			rawpsw[i * 2] = pwd[i];
+			rawpsw[i * 2 + 1] = 0;
+		}
+		for (int i = 0; i < salt.length; i++) {
+			rawpsw[i + rawLength] = salt[i];
+		}
+
+		// rawLength += 8;
+
+		// SHA-1
+		try {
+			MessageDigest sha = MessageDigest.getInstance("sha-1");
+
+			final int HashRounds = 0x40000;
+			for (int i = 0; i < HashRounds; i++) {
+				sha.update(rawpsw);
+
+				byte[] pswNum = new byte[3];
+				pswNum[0] = (byte) i;
+				pswNum[1] = (byte) (i >> 8);
+				pswNum[2] = (byte) (i >> 16);
+				sha.update(pswNum);
+				if (i % (HashRounds / 16) == 0) {
+					byte[] digest = sha.digest();
+					AESInit[i / (HashRounds / 16)] = (byte) digest[4];
+				}
+			}
+
+			byte[] digest = sha.digest();
+			for (int i = 0; i < 4; i++)
+				for (int j = 0; j < 4; j++)
+					AESKey[i * 4 + j] = (byte) (digest[i] >> (j * 8));
+
+		} catch (NoSuchAlgorithmException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		rin.init(false, AESKey, AESInit);
 	}
 }
