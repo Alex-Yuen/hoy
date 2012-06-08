@@ -17,8 +17,6 @@
  */
 package de.innosystec.unrar.crc;
 
-import java.util.zip.CRC32;
-
 /**
  * DOCUMENT ME
  * 
