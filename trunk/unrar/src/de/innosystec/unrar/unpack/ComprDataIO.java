@@ -106,7 +106,8 @@ public class ComprDataIO {
         long startPos = hd.getPositionInFile() + hd.getHeaderSize();
         unpPackedSize = hd.getFullPackSize();
         inputStream = new ReadOnlyAccessInputStream(
-                archive.getRof(),
+                archive.getRof(), 
+                hd,
                 startPos,
                 startPos + unpPackedSize);
 		subHead = hd;

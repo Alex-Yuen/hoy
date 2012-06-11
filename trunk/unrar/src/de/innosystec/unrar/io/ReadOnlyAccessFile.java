@@ -72,21 +72,22 @@ public class ReadOnlyAccessFile extends RandomAccessFile implements
 
 			if (sizeToRead > 0) {
 				int alignedSize = sizeToRead + ((~sizeToRead + 1) & 0xf);
-				byte[] tr = new byte[alignedSize];
-				this.readFully(tr, 0, alignedSize);
+				for(int i=0;i<alignedSize/16;i++){
+					byte[] tr = new byte[16];
+					this.readFully(tr, 0, 16);
+	
+					/**
+					 * decrypt & add to data list
+					 * 
+					 */
+					byte[] out = new byte[16];
+					this.rin.decryptBlock(tr, 0, out, 0);
+					for(int j=0;j<out.length;j++){
+						this.data.add((byte)(out[j]^AESInit[j%16])); //32:114, 33:101
+					}
 
-				/**
-				 * decrypt & add to data list
-				 * 
-				 */
-				byte[] out = new byte[alignedSize];
-				this.rin.decryptBlock(tr, 0, out, 0);
-				for(int i=0;i<out.length;i++){
-					this.data.add((byte)(out[i]^AESInit[i%16])); //32:114, 33:101
-					if(i!=0&&(i+1)%16==0){
-						for(int j=0;j<AESInit.length;j++){
-							AESInit[j] = tr[i-15+j];
-						}
+					for(int j=0;j<AESInit.length;j++){
+						AESInit[j] = tr[j];
 					}
 				}
 				//System.out.println(out);
@@ -116,6 +117,14 @@ public class ReadOnlyAccessFile extends RandomAccessFile implements
 
 		// caculate aes key and aes iv and then init rinj
 		String password = "1234";
+		initAES(this.rin, password, salt, AESInit, AESKey);
+
+
+//		System.out.println(AESKey);
+//		System.out.println(AESInit);
+	}
+	
+	public void initAES(Rijndael rin, String password, byte[] salt, byte[] AESInit, byte[] AESKey){
 		int rawLength = 2 * password.length();
 		Byte[] rawpsw = new Byte[rawLength + 8];
 		byte[] pwd = password.getBytes();
@@ -171,12 +180,10 @@ public class ReadOnlyAccessFile extends RandomAccessFile implements
         try {
     		Map<Object, Object> map = new HashMap<Object, Object>();
             map.put(IBlockCipher.KEY_MATERIAL, AESKey);
+            map.put(IBlockCipher.CIPHER_BLOCK_SIZE, new Integer(16));
 			rin.init(map);
 		} catch (InvalidKeyException e) {
 			e.printStackTrace();
 		}		
-
-//		System.out.println(AESKey);
-//		System.out.println(AESInit);
 	}
 }

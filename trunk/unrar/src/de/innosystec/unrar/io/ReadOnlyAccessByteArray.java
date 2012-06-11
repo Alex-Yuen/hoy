@@ -17,6 +17,8 @@
  */
 package de.innosystec.unrar.io;
 
+import gnu.crypto.cipher.Rijndael;
+
 import java.io.EOFException;
 import java.io.IOException;
 
@@ -92,6 +94,19 @@ public class ReadOnlyAccessByteArray implements IReadOnlyAccess{
 	@Override
 	public void setSalt(byte[] salt) {
 		this.salt = salt;
+		
+	}
+
+	@Override
+	public void initAES(Rijndael rin, String password, byte[] salt,
+			byte[] AESInit, byte[] AESKey) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void readFully(byte[] tr, int i, int j) throws IOException {
+		// TODO Auto-generated method stub
 		
 	}
 }
