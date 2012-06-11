@@ -14,7 +14,7 @@ public class MVTest {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		String filename="c:/testdata/test3.rar";
+		String filename="c:/testdata/test2.rar";
 		File f = new File(filename);
 		Archive a=null;
 		try {

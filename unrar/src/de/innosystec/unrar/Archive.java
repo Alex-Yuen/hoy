@@ -18,24 +18,16 @@
  */
 package de.innosystec.unrar;
 
-import gnu.crypto.hash.HashFactory;
-import gnu.crypto.hash.IMessageDigest;
 
 import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.crypto.Cipher;
-import javax.crypto.NoSuchPaddingException;
-import javax.crypto.spec.SecretKeySpec;
-
-import de.innosystec.unrar.alth.Hash;
 import de.innosystec.unrar.exception.RarException;
 import de.innosystec.unrar.exception.RarException.RarExceptionType;
 import de.innosystec.unrar.io.IReadOnlyAccess;
@@ -497,8 +489,10 @@ public class Archive implements Closeable {
 		    : ~dataIO.getUnpFileCRC();
 	    int expectedCRC = hd.getFileCRC();
 	    if (actualCRC != expectedCRC) {
-		throw new RarException(RarExceptionType.crcError);
+	    	throw new RarException(RarExceptionType.crcError);
+	    	//System.out.println(hd.isEncrypted());
 	    }
+	    //System.out.println(hd.isEncrypted());
 	    // if (!hd.isSplitAfter()) {
 	    // // Verify file CRC
 	    // if(~dataIO.getUnpFileCRC() != hd.getFileCRC()){
