@@ -351,14 +351,14 @@ public class Archive implements Closeable {
 		switch (blockHead.getHeaderType()) {
 		case NewSubHeader:
 		case FileHeader:
-		    System.out.print("BUFFER:");
-		    for(int x=0;x<baseBlockBuffer.length;x++){
-		    	System.out.print(baseBlockBuffer[x]+",");
-		    }
-		    System.out.println();
+//		    System.out.print("BUFFER:");
+//		    for(int x=0;x<baseBlockBuffer.length;x++){
+//		    	System.out.print(baseBlockBuffer[x]+",");
+//		    }
+//		    System.out.println();
 		    toRead = blockHead.getHeaderSize()
 			    - BlockHeader.BaseBlockSize
-			    - BlockHeader.blockHeaderSize;
+			    - BlockHeader.blockHeaderSize; 
 		    byte[] fileHeaderBuffer = new byte[toRead];
 		    int fhsize = rof.readFully(fileHeaderBuffer, toRead);
 
