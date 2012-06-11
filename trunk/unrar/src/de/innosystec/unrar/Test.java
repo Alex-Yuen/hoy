@@ -50,9 +50,14 @@ public class Test {
 //			// TODO Auto-generated catch block
 //			e.printStackTrace();
 //		}
-		byte[][] t = new byte[4][5];
-		System.out.println(t.length);
-		System.out.println(t[1].length);
+//		byte[][] t = new byte[4][5];
+//		System.out.println(t.length);
+//		System.out.println(t[1].length);
+		byte[] b = "readme.txt".getBytes();
+		for(int i=0;i<b.length;i++){
+			System.out.print(b[i]+",");
+		}
+		System.out.println("readme.txt".getBytes());
 	}
 
 }
