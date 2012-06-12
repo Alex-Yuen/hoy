@@ -90,8 +90,8 @@ public class ReadOnlyAccessInputStream extends InputStream {
         }
         int bytesRead = 0;
         if(hd.isEncrypted()){
-    		byte[] bx = new byte[(int)Math.min(len, endPos - curPos)];
-    		bytesRead = this.deRead(bx, off, bx.length);
+    		//byte[] bx = new byte[(int)Math.min(len, endPos - curPos)];
+    		bytesRead = this.deRead(b, off, (int)Math.min(len, endPos - curPos));
     	}else{
     		bytesRead = file.read(b, off,
                 (int)Math.min(len, endPos - curPos));
