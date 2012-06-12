@@ -24,7 +24,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
-import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -147,6 +146,8 @@ public class ReadOnlyAccessFile extends RandomAccessFile implements
 
 			final int HashRounds = 0x40000;
 			List<Byte> content = new ArrayList<Byte>();
+			byte[] input = null;
+			byte[] digest = null;
 			for (int i = 0; i < HashRounds; i++) {
 				content.addAll(Arrays.asList(rawpsw));
 				Byte[] pswNum = new Byte[3];
@@ -155,26 +156,28 @@ public class ReadOnlyAccessFile extends RandomAccessFile implements
 				pswNum[2] = (byte) (i >> 16);
 				content.addAll(Arrays.asList(pswNum));
 				if (i % (HashRounds / 16) == 0) {
-					byte[] input = new byte[content.size()];
+					//System.out.println("i="+i);
+					input = new byte[content.size()];
 					for(int j=0;j<input.length;j++){
 						input[j] = content.get(j);
 					}
 					
-					sha.update((byte[])input);
-					byte[] digest = sha.digest();
+					sha.update(input);
+					digest = sha.digest();
 					AESInit[i / (HashRounds / 16)] = digest[digest.length-1];
 				}
 			}
 			
-			byte[] input = new byte[content.size()];
+			input = new byte[content.size()];
 			for(int j=0;j<input.length;j++){
 				input[j] = content.get(j);
 			}
 			sha.update(input);
-			byte[] digest = sha.digest();
+			digest = sha.digest();
 			for (int i = 0; i < 4; i++)
 				for (int j = 0; j < 4; j++)
 					AESKey[i * 4 + j] = (byte) (((digest[i*4]*0x1000000)&0xff000000|((digest[i*4+1]*0x10000)&0xff0000)|((digest[i*4+2]*0x100)&0xff00)|digest[i*4+3]&0xff) >> (j * 8));
+					//AESKey[i * 4 + j] = (byte) (((digest[i*4]<<24)&0xff000000+(digest[i*4+1]<<16)&0xff0000+(digest[i*4+2]<<8)&0xff00+digest[i*4+3]&0xff) >> (j * 8));
 
 		} catch (NoSuchAlgorithmException e) {
 			e.printStackTrace();
