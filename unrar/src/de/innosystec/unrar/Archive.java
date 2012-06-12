@@ -92,6 +92,8 @@ public class Archive implements Closeable {
 
     /** Number of bytes of compressed data read from current file. */
     private long totalPackedRead = 0L;
+    
+    private boolean saltRead = false;
 
     public Archive(File file) throws RarException, IOException {
 	this(file, null);
@@ -225,13 +227,14 @@ public class Archive implements Closeable {
 	    }
 	    
 	    //read salt
-	    if(newMhd!=null&&newMhd.isEncrypted()){
+	    if(newMhd!=null&&newMhd.isEncrypted()&&!saltRead){
 	    	size = rof.readFully(salt, 8);
 	    	if(size==0){
 	    		break;
 	    	}
 	    	rof.setSalt(salt);
 	    	size = 0; //init
+	    	saltRead = true;
 	    }
 	    
 	    // logger.info("\n--------reading header--------");
@@ -353,6 +356,10 @@ public class Archive implements Closeable {
 			    - BlockHeader.blockHeaderSize; 
 		    byte[] fileHeaderBuffer = new byte[toRead];
 		    int fhsize = rof.readFully(fileHeaderBuffer, toRead);
+		    if(newMhd!=null&&newMhd.isEncrypted()){
+		    	rof.resetData();
+		    	//rof.setSalt(null);
+		    }
 
 		    FileHeader fh = new FileHeader(blockHead, fileHeaderBuffer);
 		    // if (DEBUG) {

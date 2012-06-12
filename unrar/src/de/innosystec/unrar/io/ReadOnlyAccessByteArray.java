@@ -109,4 +109,10 @@ public class ReadOnlyAccessByteArray implements IReadOnlyAccess{
 		// TODO Auto-generated method stub
 		
 	}
+
+	@Override
+	public void resetData() {
+		// TODO Auto-generated method stub
+		
+	}
 }
