@@ -193,4 +193,10 @@ public class ReadOnlyAccessFile extends RandomAccessFile implements
 	public void resetData(){
 		this.data.clear();
 	}
+
+	@Override
+	public int paddedSize() {
+		// TODO Auto-generated method stub
+		return this.data.size();
+	}
 }

@@ -115,4 +115,10 @@ public class ReadOnlyAccessByteArray implements IReadOnlyAccess{
 		// TODO Auto-generated method stub
 		
 	}
+
+	@Override
+	public int paddedSize() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
 }

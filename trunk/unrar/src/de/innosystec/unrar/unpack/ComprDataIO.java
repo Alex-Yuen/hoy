@@ -104,6 +104,9 @@ public class ComprDataIO {
 
     public void init(FileHeader hd) throws IOException {
         long startPos = hd.getPositionInFile() + hd.getHeaderSize();
+        if(archive.getMainHeader().isEncrypted()){
+        	startPos += hd.getPaddedSize()+8;
+        }
         unpPackedSize = hd.getFullPackSize();
         inputStream = new ReadOnlyAccessInputStream(
                 archive.getRof(), 

@@ -221,20 +221,28 @@ public class Archive implements Closeable {
 	    
 	    long position = rof.getPosition();
 
+	    if(newMhd!=null&&newMhd.isEncrypted()&&position>20){	    	
+	    	newpos = position+(rof.paddedSize()+salt.length);
+	    	rof.setPosition(newpos);
+	    	position = rof.getPosition();
+	    	rof.resetData();
+	    	rof.setSalt(null);
+	    }
+	    
 	    // Weird, but is trying to read beyond the end of the file
 	    if (position >= fileLength) {
 		break;
 	    }
 	    
 	    //read salt
-	    if(newMhd!=null&&newMhd.isEncrypted()&&!saltRead){
+	    if(newMhd!=null&&newMhd.isEncrypted()){
 	    	size = rof.readFully(salt, 8);
 	    	if(size==0){
 	    		break;
 	    	}
 	    	rof.setSalt(salt);
 	    	size = 0; //init
-	    	saltRead = true;
+	    	//saltRead = true;
 	    }
 	    
 	    // logger.info("\n--------reading header--------");
@@ -356,10 +364,6 @@ public class Archive implements Closeable {
 			    - BlockHeader.blockHeaderSize; 
 		    byte[] fileHeaderBuffer = new byte[toRead];
 		    int fhsize = rof.readFully(fileHeaderBuffer, toRead);
-		    if(newMhd!=null&&newMhd.isEncrypted()){
-		    	rof.resetData();
-		    	//rof.setSalt(null);
-		    }
 
 		    FileHeader fh = new FileHeader(blockHead, fileHeaderBuffer);
 		    // if (DEBUG) {
@@ -369,6 +373,9 @@ public class Archive implements Closeable {
 		    newpos = fh.getPositionInFile() + fh.getHeaderSize()
 			    + fh.getFullPackSize();
 		    rof.setPosition(newpos);
+		    if(newMhd!=null&&newMhd.isEncrypted()){
+		    	fh.setPaddingSize(rof.paddedSize());
+		    }
 		    break;
 
 		case ProtectHeader:
@@ -448,6 +455,11 @@ public class Archive implements Closeable {
 		}
 	    }
 	    // logger.info("\n--------end header--------");
+
+//	    if(newMhd!=null&&newMhd.isEncrypted()){
+//	    	rof.resetData();
+//	    	rof.setSalt(null);
+//	    }
 	}
     }
 
