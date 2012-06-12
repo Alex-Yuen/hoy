@@ -85,6 +85,8 @@ public class FileHeader extends BlockHeader {
 
     private int recoverySectors = -1;
 
+	private int paddedSize;
+
     public FileHeader(BlockHeader bh, byte[] fileHeader) {
 	super(bh);
 
@@ -418,4 +420,13 @@ public class FileHeader extends BlockHeader {
     public boolean isDirectory() {
 	return (flags & LHD_WINDOWMASK) == LHD_DIRECTORY;
     }
+
+	public void setPaddingSize(int paddedSize) {
+		this.paddedSize = paddedSize;
+		
+	}
+	
+	public int getPaddedSize(){
+		return this.paddedSize;
+	}
 }

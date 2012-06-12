@@ -68,4 +68,6 @@ public interface IReadOnlyAccess {
 	public void readFully(byte[] tr, int i, int j) throws IOException;
 	
 	public void resetData();
+	
+	public int paddedSize();
 }

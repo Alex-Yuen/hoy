@@ -79,7 +79,7 @@ public class BitInput {
      */
     public void faddbits(int Bits)
     {
-      addbits(Bits);
+       addbits(Bits);
     }
 
 
