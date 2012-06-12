@@ -47,7 +47,7 @@ public class ReadOnlyAccessFile extends RandomAccessFile implements
 
 	private byte[] salt;
 	private Queue<Byte> data = new LinkedList<Byte>();
-	private Rijndael rin = new Rijndael();
+	private Rijndael rin;
 	private byte[] AESKey = new byte[16];
 	private byte[] AESInit = new byte[16];
 
@@ -115,9 +115,12 @@ public class ReadOnlyAccessFile extends RandomAccessFile implements
 	public void setSalt(byte[] salt) {
 		this.salt = salt;
 
+		if(salt!=null){
 		// caculate aes key and aes iv and then init rinj
-		String password = "1234";
-		initAES(this.rin, password, salt, AESInit, AESKey);
+			String password = "1234";
+			this.rin = new Rijndael();
+			initAES(this.rin, password, salt, AESInit, AESKey);
+		}
 
 
 //		System.out.println(AESKey);
@@ -182,8 +185,12 @@ public class ReadOnlyAccessFile extends RandomAccessFile implements
             map.put(IBlockCipher.KEY_MATERIAL, AESKey);
             map.put(IBlockCipher.CIPHER_BLOCK_SIZE, new Integer(16));
 			rin.init(map);
-		} catch (InvalidKeyException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}		
+	}
+	
+	public void resetData(){
+		this.data.clear();
 	}
 }
