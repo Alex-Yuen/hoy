@@ -16,7 +16,7 @@ public class MVTest {
 		Archive a = null;
 		boolean result = false;
 
-		boolean test = false;// test mode
+		boolean test = true;// test mode
 
 		if (test) {
 			String[] pwds = { "114", "1234", "sdfsdfsdfsdf" };
