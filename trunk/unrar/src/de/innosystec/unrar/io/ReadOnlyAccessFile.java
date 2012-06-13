@@ -49,14 +49,16 @@ public class ReadOnlyAccessFile extends RandomAccessFile implements
 	private Rijndael rin;
 	private byte[] AESKey = new byte[16];
 	private byte[] AESInit = new byte[16];
+	private String password;
 
 	/**
 	 * @param file
 	 *            the file
 	 * @throws FileNotFoundException
 	 */
-	public ReadOnlyAccessFile(File file) throws FileNotFoundException {
+	public ReadOnlyAccessFile(File file, String password) throws FileNotFoundException {
 		super(file, "r");
+		this.password = password;
 	}
 
 	public int readFully(byte[] buffer, int count) throws IOException {
@@ -116,9 +118,9 @@ public class ReadOnlyAccessFile extends RandomAccessFile implements
 
 		if(salt!=null){
 		// caculate aes key and aes iv and then init rinj
-			String password = "1234";
+			//String password = "1234";
 			this.rin = new Rijndael();
-			initAES(this.rin, password, salt, AESInit, AESKey);
+			initAES(this.rin, salt, AESInit, AESKey);
 		}
 
 
@@ -126,7 +128,7 @@ public class ReadOnlyAccessFile extends RandomAccessFile implements
 //		System.out.println(AESInit);
 	}
 	
-	public void initAES(Rijndael rin, String password, byte[] salt, byte[] AESInit, byte[] AESKey){
+	public void initAES(Rijndael rin, byte[] salt, byte[] AESInit, byte[] AESKey){
 		int rawLength = 2 * password.length();
 		Byte[] rawpsw = new Byte[rawLength + 8];
 		byte[] pwd = password.getBytes();

@@ -98,7 +98,7 @@ public class ReadOnlyAccessByteArray implements IReadOnlyAccess{
 	}
 
 	@Override
-	public void initAES(Rijndael rin, String password, byte[] salt,
+	public void initAES(Rijndael rin, byte[] salt,
 			byte[] AESInit, byte[] AESKey) {
 		// TODO Auto-generated method stub
 		
