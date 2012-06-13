@@ -66,7 +66,7 @@ public class MVTest {
 					try {
 						File out = new File("c:/testdata/"
 								+ fh.getFileNameString().trim());
-						// System.out.println(out.getAbsolutePath());
+						System.out.println(out.getAbsolutePath());
 						FileOutputStream os = new FileOutputStream(out);
 						a.extractFile(fh, os);
 						os.close();
