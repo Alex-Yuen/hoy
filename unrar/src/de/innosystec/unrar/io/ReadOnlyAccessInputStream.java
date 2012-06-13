@@ -38,7 +38,7 @@ public class ReadOnlyAccessInputStream extends InputStream {
 	private IReadOnlyAccess file;
 	
 	private long curPos;
-	private final long startPos;
+	protected final long startPos;
 	private final long endPos;
 	private FileHeader hd;
 	private Queue<Byte> data = new LinkedList<Byte>();
@@ -52,7 +52,7 @@ public class ReadOnlyAccessInputStream extends InputStream {
 		this.file = file;
 		this.hd = hd;
 		if(hd.isEncrypted()){
-			file.initAES(rin, "1234", hd.getSalt(), AESInit, AESKey);
+			file.initAES(rin, hd.getSalt(), AESInit, AESKey);
 		}
 		this.startPos = startPos;
 		curPos = startPos;

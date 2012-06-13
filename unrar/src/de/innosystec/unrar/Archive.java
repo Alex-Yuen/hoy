@@ -94,9 +94,13 @@ public class Archive implements Closeable {
     private long totalPackedRead = 0L;
     
     private boolean saltRead = false;
+    
+    private String password;
+    
+    private boolean pass;
 
-    public Archive(File file) throws RarException, IOException {
-	this(file, null);
+    public Archive(File file, String password) throws RarException, IOException {
+	this(file, null, password);
     }
 
     /**
@@ -106,8 +110,9 @@ public class Archive implements Closeable {
      *            the file to extract
      * @throws RarException
      */
-    public Archive(File file, UnrarCallback unrarCallback) throws RarException,
+    public Archive(File file, UnrarCallback unrarCallback, String password) throws RarException,
 	    IOException {
+    	this.password = password;
 	setFile(file);
 	this.unrarCallback = unrarCallback;
 	dataIO = new ComprDataIO(this);
@@ -122,13 +127,16 @@ public class Archive implements Closeable {
 	totalPackedSize = 0L;
 	totalPackedRead = 0L;
 	close();
-	rof = new ReadOnlyAccessFile(file);
+	rof = new ReadOnlyAccessFile(file, this.password);
+///	 readHeaders();
 	try {
 	    readHeaders();
+	    this.pass = true;
 	} catch (Exception e) {
-	    logger.log(Level.WARNING,
-		    "exception in archive constructor maybe file is encrypted "
-			    + "or currupt", e);
+		this.pass = false;
+//	    logger.log(Level.WARNING,
+//		    "exception in archive constructor maybe file is encrypted "
+//			    + "or currupt", e);
 	    // ignore exceptions to allow exraction of working files in
 	    // corrupt archive
 	}
@@ -492,6 +500,7 @@ public class Archive implements Closeable {
 	    throws RarException, IOException {
 	dataIO.init(os);
 	dataIO.init(hd);
+	dataIO.setTestMode(true);//TODO
 	dataIO.setUnpFileCRC(this.isOldFormat() ? 0 : 0xffFFffFF);
 	if (unpack == null) {
 	    unpack = new Unpack(dataIO);
@@ -553,4 +562,11 @@ public class Archive implements Closeable {
 	    unpack.cleanUp();
 	}
     }
+
+	public boolean isPass() {
+		return pass;
+	}
+
+    
+    
 }
