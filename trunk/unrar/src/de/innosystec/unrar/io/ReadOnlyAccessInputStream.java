@@ -115,6 +115,7 @@ public class ReadOnlyAccessInputStream extends InputStream {
 		if (sizeToRead > 0) {
 			int alignedSize = sizeToRead + ((~sizeToRead + 1) & 0xf);
 			for(int i=0;i<alignedSize/16;i++){
+				//long ax = System.currentTimeMillis();
 				byte[] tr = new byte[16];
 				file.readFully(tr, 0, 16);
 
@@ -131,6 +132,7 @@ public class ReadOnlyAccessInputStream extends InputStream {
 				for(int j=0;j<AESInit.length;j++){
 					AESInit[j] = tr[j];
 				}
+				//System.out.println(System.currentTimeMillis()-ax);
 			}
 		}
 		
