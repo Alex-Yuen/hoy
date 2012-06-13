@@ -46,7 +46,7 @@ public class RARParser implements Parser {
 
         try {
             File file = TikaInputStream.get(stream).getFile();
-            Archive archive = new Archive(file, null);
+            Archive archive = new Archive(file, null, false);
 
             metadata.set(Metadata.CONTENT_TYPE, TYPE.toString());
             XHTMLContentHandler xhtml =
