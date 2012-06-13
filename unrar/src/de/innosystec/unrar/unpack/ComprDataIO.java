@@ -192,6 +192,10 @@ public class ComprDataIO {
 		testMode = mode;
 	}
 
+	public boolean isTestMode() {
+		return testMode;
+	}
+
 	public void setSkipUnpCRC(boolean skip)
 	{
 		skipUnpCRC = skip;

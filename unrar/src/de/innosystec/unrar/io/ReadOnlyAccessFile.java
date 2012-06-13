@@ -20,10 +20,12 @@ package de.innosystec.unrar.io;
 import gnu.crypto.cipher.IBlockCipher;
 import gnu.crypto.cipher.Rijndael;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.nio.ByteBuffer;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -74,6 +76,7 @@ public class ReadOnlyAccessFile extends RandomAccessFile implements
 			if (sizeToRead > 0) {
 				int alignedSize = sizeToRead + ((~sizeToRead + 1) & 0xf);
 				for(int i=0;i<alignedSize/16;i++){
+					//long ax = System.currentTimeMillis();
 					byte[] tr = new byte[16];
 					this.readFully(tr, 0, 16);
 	
@@ -90,6 +93,7 @@ public class ReadOnlyAccessFile extends RandomAccessFile implements
 					for(int j=0;j<AESInit.length;j++){
 						AESInit[j] = tr[j];
 					}
+					//System.out.println(System.currentTimeMillis()-ax);
 				}
 				//System.out.println(out);
 			}
@@ -130,7 +134,7 @@ public class ReadOnlyAccessFile extends RandomAccessFile implements
 	
 	public void initAES(Rijndael rin, byte[] salt, byte[] AESInit, byte[] AESKey){
 		int rawLength = 2 * password.length();
-		Byte[] rawpsw = new Byte[rawLength + 8];
+		byte[] rawpsw = new byte[rawLength + 8];
 		byte[] pwd = password.getBytes();
 		for (int i = 0; i < password.length(); i++) {
 			rawpsw[i * 2] = pwd[i];
@@ -147,41 +151,58 @@ public class ReadOnlyAccessFile extends RandomAccessFile implements
 			MessageDigest sha = MessageDigest.getInstance("sha-1");
 
 			final int HashRounds = 0x40000;
-			List<Byte> content = new ArrayList<Byte>();
-			byte[] input = null;
+			final int xh = HashRounds / 16;
+			//List<Byte> content = new ArrayList<Byte>();
+			ByteArrayOutputStream bout = new ByteArrayOutputStream(); 
+			//byte[] input = null;
 			byte[] digest = null;
+//			byte[] pswNum = new byte[3];
+			//long ax = System.currentTimeMillis();
 			for (int i = 0; i < HashRounds; i++) {
-				content.addAll(Arrays.asList(rawpsw));
-				Byte[] pswNum = new Byte[3];
-				pswNum[0] = (byte) i;
-				pswNum[1] = (byte) (i >> 8);
-				pswNum[2] = (byte) (i >> 16);
-				content.addAll(Arrays.asList(pswNum));
-				if (i % (HashRounds / 16) == 0) {
-					//System.out.println("i="+i);
-					input = new byte[content.size()];
-					for(int j=0;j<input.length;j++){
-						input[j] = content.get(j);
-					}
+				bout.write(rawpsw);
+				//bb.put(rawpsw);
+				//content.addAll(Arrays.asList(rawpsw));
+//				pswNum[0] = (byte) i;
+//				pswNum[1] = (byte) (i >> 8);
+//				pswNum[2] = (byte) (i >> 16);
+				//bb.put(pswNum);
+				bout.write(new byte[]{(byte) i, (byte) (i >> 8), (byte) (i >> 16)});
+				//content.addAll(Arrays.asList(pswNum));
+				if (i % xh == 0) {
+//					//System.out.println("i="+i);
+//					input = new byte[content.size()];
+//					for(int j=0;j<input.length;j++){
+//						input[j] = content.get(j);
+//					}
+					//input = bout.toByteArray();
+					//long ax = System.currentTimeMillis();
+					byte[] input = bout.toByteArray();
+					//long bx = System.currentTimeMillis();
 					
 					sha.update(input);
+					//long cx = System.currentTimeMillis();
+					//System.out.println(cx-bx);
 					digest = sha.digest();
-					AESInit[i / (HashRounds / 16)] = digest[digest.length-1];
+					//AESInit[i / xh] = digest[digest.length-1];
+					AESInit[i / xh] = digest[19];
 				}
 			}
-			
-			input = new byte[content.size()];
-			for(int j=0;j<input.length;j++){
-				input[j] = content.get(j);
-			}
-			sha.update(input);
+			//System.out.println(System.currentTimeMillis()-ax);
+//			input = new byte[content.size()];
+//			for(int j=0;j<input.length;j++){
+//				input[j] = content.get(j);
+//			}
+			//input = bout.toByteArray();
+			//sha.reset();
+			sha.update(bout.toByteArray());
 			digest = sha.digest();
+			//System.out.println(System.currentTimeMillis()-ax);
 			for (int i = 0; i < 4; i++)
 				for (int j = 0; j < 4; j++)
 					AESKey[i * 4 + j] = (byte) (((digest[i*4]*0x1000000)&0xff000000|((digest[i*4+1]*0x10000)&0xff0000)|((digest[i*4+2]*0x100)&0xff00)|digest[i*4+3]&0xff) >> (j * 8));
 					//AESKey[i * 4 + j] = (byte) (((digest[i*4]<<24)&0xff000000+(digest[i*4+1]<<16)&0xff0000+(digest[i*4+2]<<8)&0xff00+digest[i*4+3]&0xff) >> (j * 8));
-
-		} catch (NoSuchAlgorithmException e) {
+			//System.out.println(System.currentTimeMillis()-ax);
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
