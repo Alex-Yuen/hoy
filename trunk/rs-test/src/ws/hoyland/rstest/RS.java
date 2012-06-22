@@ -36,7 +36,7 @@ public class RS {
 				//rs.add(rd);
 			}
 			
-			long start = System.currentTimeMillis();
+			//long start = System.currentTimeMillis();
 /**			
 			//search
 			final Record rdx = new Record();
