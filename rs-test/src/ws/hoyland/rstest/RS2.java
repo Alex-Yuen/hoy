@@ -41,6 +41,8 @@ public class RS2 {
 		    long s2 = System.currentTimeMillis();
 		    System.out.println(s2-start);
 		    
+		    List<Long> ns = new ArrayList<Long>();
+		    List<Long> zs = new ArrayList<Long>();
 //			Record rd = null;
 			Random rnd = new Random();
 //			for(int i=0; i<200000; i++){
@@ -83,6 +85,8 @@ public class RS2 {
 	//			}
 	//			i++;
 				if((rdx.getAge() == 0 || rdn.getAge() == rdx.getAge()) && (rdx.getFamily() == 0 || rdn.getFamily() == rdx.getFamily()) && (rdx.getNation() == 0 || rdn.getNation() == rdx.getNation()) && (rdx.getZone() == 0 || rdn.getZone() == rdx.getZone())){
+					ns.add(rdn.getNation());
+					zs.add(rdn.getZone());
 					i++;
 				}
 			}
