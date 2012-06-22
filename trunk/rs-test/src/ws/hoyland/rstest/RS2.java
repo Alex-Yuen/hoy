@@ -38,7 +38,8 @@ public class RS2 {
 				rd.setZone(rs.getLong("zone"));
 		    	rsx.add(rd);
 		    }
-		    System.out.println(System.currentTimeMillis()-start);
+		    long s2 = System.currentTimeMillis();
+		    System.out.println(s2-start);
 		    
 //			Record rd = null;
 			Random rnd = new Random();
@@ -87,7 +88,7 @@ public class RS2 {
 			}
 			
 				
-			System.out.println(System.currentTimeMillis()-start);
+			System.out.println(System.currentTimeMillis()-s2);
 			System.out.println("count="+i);
 
 		}catch(Exception e){
