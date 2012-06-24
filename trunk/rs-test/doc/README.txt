@@ -1,11 +1,9 @@
 http://looooj.iteye.com/blog/1003921
 http://www.pc6.com/softview/SoftView_51072.html
 
-http://www.digipedia.pl/usenet/thread/14258/188/
-
 http://root.cern.ch/drupal/content/cint
-è¿™é‡Œæœ‰ä¸ªcint 5.18ç‰ˆ
+ÕâÀïÓĞ¸öcint 5.18°æ
 
-äº‹å®ä¸Šæœ€æ–°ç‰ˆåœ¨è¿™é‡Œï¼š
+ÊÂÊµÉÏ×îĞÂ°æÔÚÕâÀï£º
 http://root.cern.ch/svn/root/trunk/cint
-svnæœåŠ¡å™¨
+svn·şÎñÆ÷
