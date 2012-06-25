@@ -56,6 +56,7 @@ public class ProxyThread extends Thread {
                 //        + urlToCall);
                 ///////////////////////////////////
                 //begin send request to server, get response from server
+            	//urlToCall = "http://"+urlToCall;
                 URL url = new URL(urlToCall);
                 URLConnection conn = url.openConnection();
                 conn.setDoInput(true);
@@ -103,6 +104,7 @@ public class ProxyThread extends Thread {
             } catch (Exception e) {
                 //can redirect this to error log
                 System.err.println("Encountered exception: " + e);
+                e.printStackTrace();
                 //encountered error - just send nothing back, so
                 //processing can continue
                 out.writeBytes("");
