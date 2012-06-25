@@ -24,7 +24,7 @@ public class RS {
 			//List<Record> rs = new ArrayList<Record>();
 			Record rd = null;
 			Random rnd = new Random();
-			for(int i=0; i<200000; i++){//56780
+			for(int i=0; i<200000-56780; i++){//56780
 				rd = new Record();
 				rd.setId(i);
 				rd.setAge(rnd.nextInt(100)+1);
