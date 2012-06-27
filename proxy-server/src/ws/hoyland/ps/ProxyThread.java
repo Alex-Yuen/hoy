@@ -56,12 +56,12 @@ public class ProxyThread extends Thread {
                 //        + urlToCall);
                 ///////////////////////////////////
                 //begin send request to server, get response from server
-            	//urlToCall = "http://"+urlToCall;
+            	urlToCall = "http://"+urlToCall;
                 URL url = new URL(urlToCall);
                 URLConnection conn = url.openConnection();
                 conn.setDoInput(true);
                 //not doing HTTP posts
-                conn.setDoOutput(false);
+                conn.setDoOutput(true);
                 //System.out.println("Type is: "
 			//+ conn.getContentType());
                 //System.out.println("content length: "
