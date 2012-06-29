@@ -1,0 +1,66 @@
+
+* Implement client side pipelining. 
+* Block filter for CONNECT 
+* Expire=-1 => no cache in non-strict mode
+* Make the html parser handle different encodings.
+* Simplify the handler config (text/html(;.*)?=FilterHandler, text/*=GZipHandler, ...)
+* Run some sorts of HttpFilters on CONNECT.
+* Fix so that http://localhost:9666/ works for admin stuff.
+* Make http://proxy:9666/Config work again.
+
+* Embed images/styles/script inside html page. RFC-2397. 
+
+* Find out what is causing (reported in error log): 
+[04/apr/2006:11:01:58 GMT][WARN][BaseHandler: error handling request: java.io.IOException: An established connection was aborted by the software in your host machine
+   at sun.nio.ch.SocketDispatcher.write0(Native Method)
+   at sun.nio.ch.SocketDispatcher.write(Unknown Source)
+   at sun.nio.ch.IOUtil.writeFromNativeBuffer(Unknown Source)
+   at sun.nio.ch.IOUtil.write(Unknown Source)
+   at sun.nio.ch.SocketChannelImpl.write(Unknown Source)
+   at sun.nio.ch.FileChannelImpl.transferToTrustedChannel(Unknown Source)
+   at sun.nio.ch.FileChannelImpl.transferTo(Unknown Source)
+   at rabbit.proxy.FileResourceSource.transferTo(FileResourceSource.java:59)
+   at rabbit.proxy.TransferHandler.run(TransferHandler.java:42)
+   at java.util.concurrent.ThreadPoolExecutor$Worker.runTask(Unknown Source)
+   at java.util.concurrent.ThreadPoolExecutor$Worker.run(Unknown Source)
+   at java.lang.Thread.run(Unknown Source)
+]
+
+[02/Apr/2006:14:53:55 GMT][WARN][BaseHandler: error handling request: java.io.IOException: Resource temporarily unavailable
+        at sun.nio.ch.FileChannelImpl.transferTo0(Native Method)
+        at sun.nio.ch.FileChannelImpl.transferToDirectly(FileChannelImpl.java:416)
+        at sun.nio.ch.FileChannelImpl.transferTo(FileChannelImpl.java:517)
+        at rabbit.proxy.FileResourceSource.transferTo(FileResourceSource.java:59)
+        at rabbit.proxy.TransferHandler.run(TransferHandler.java:42)
+        at java.util.concurrent.ThreadPoolExecutor$Worker.runTask(ThreadPoolExecutor.java:650)
+        at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:675)
+        at java.lang.Thread.run(Thread.java:595)
+]
+
+* Find out why we can get (reported on console only): 
+java.util.ConcurrentModificationException
+       at java.util.HashMap$HashIterator.nextEntry(Unknown Source)
+       at java.util.HashMap$KeyIterator.next(Unknown Source)
+       at java.util.Collections$UnmodifiableCollection$1.next(Unknown Source)
+       at rabbit.proxy.HttpProxy.cancelTimeouts(HttpProxy.java:402)
+       at rabbit.proxy.HttpProxy.run(HttpProxy.java:383)
+       at java.lang.Thread.run(Unknown Source)
+
+* investigate if Rabbit performs incorrect handshake over SSL when combined with user authentification. 
+
+* Fix the following problems: 
+java.lang.IndexOutOfBoundsException
+        at java.util.zip.DeflaterOutputStream.write(DeflaterOutputStream.java:107)
+        at java.util.zip.GZIPOutputStream.write(GZIPOutputStream.java:72)
+        at rabbit.html.HtmlBlock.send(HtmlBlock.java:165)
+        at rabbit.handler.FilterHandler.handleArray(FilterHandler.java:114)
+        at rabbit.handler.FilterHandler.writeDataToGZipper(FilterHandler.java:81)
+        at rabbit.handler.GZipHandler.bufferRead(GZipHandler.java:171)
+	....
+
+* Check why this happened, there is a workaround in the code for now.
+java.lang.ClassCastException: java.lang.String
+        at rabbit.proxy.HttpProxy.handleSelects(HttpProxy.java:432)
+        at rabbit.proxy.HttpProxy.run(HttpProxy.java:384)
+        at java.lang.Thread.run(Thread.java:595)
+
