@@ -117,7 +117,8 @@ public class ConnectionHandler {
 	if (!(method != null && 
 	      (method.equals ("GET") || method.equals ("HEAD")))) {
 	    wc = new WebConnection (a, counter, logger);
-	} else {	
+	} else {
+		//System.out.println("create a pooled connection:"+method);
 	    wc = getPooledConnection (a, activeConnections);
 	    if (wc == null)
 		wc = new WebConnection (a, counter, logger);
