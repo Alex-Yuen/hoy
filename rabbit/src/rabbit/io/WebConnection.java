@@ -72,9 +72,11 @@ public class WebConnection {
 				       address.getPort ());
 	    boolean connected = channel.connect (addr);
 	    if (connected) {
+	    	//System.out.println("connected:"+addr);
 		channel.socket ().setTcpNoDelay (true);
 		wcl.connectionEstablished (this);
 	    } else {
+	    	//System.out.println("!connected:"+addr);
 		new ConnectListener (selector, wcl);
 	    }
 	}

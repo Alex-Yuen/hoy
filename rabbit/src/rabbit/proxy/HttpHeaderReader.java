@@ -58,7 +58,9 @@ public class HttpHeaderReader extends BaseSocketHandler
 	this.request = request;
 	this.strictHttp = strictHttp;
 	this.reader = reader;
-	if (buffer != null) { 
+	if (buffer != null) {
+//		String s = new String(buffer.array());
+//		System.out.println(s);
 	    if (buffer.hasRemaining ()) {
 		startParseAt = buffer.position ();
 		parseBuffer ();
@@ -75,6 +77,7 @@ public class HttpHeaderReader extends BaseSocketHandler
     public void run () {
 	Logger logger = getLogger ();
 	try {
+		 //System.out.println("2");
 	    if (buffer == null)
 		allocateBuffer ();
 	    // read http request

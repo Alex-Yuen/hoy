@@ -52,6 +52,7 @@ class Tunnel implements SocketHandler {
     }
     
     private void registerRead () throws IOException {
+    	System.out.println("register read in tunnel");
 	fromBuffer.clear ();
 	toBuffer.clear ();
 	HandlerRegistration hr = new HandlerRegistration (this, Long.MAX_VALUE);
@@ -60,7 +61,7 @@ class Tunnel implements SocketHandler {
 	toSk = to.register (selector, SelectionKey.OP_READ, hr);
     }
 
-    private void sendBuffers () throws IOException {	
+    private void sendBuffers () throws IOException {    	
 	boolean needMore1 = sendBuffer (fromBuffer, to, toLogger);
 	if (needMore1) {
 	    HandlerRegistration hr = 
@@ -101,8 +102,10 @@ class Tunnel implements SocketHandler {
     }
     
     private boolean readBuffers () throws IOException {
+    System.out.println("from:="+new String(fromBuffer.array()));
 	boolean read1 = readBuffer (from, fromBuffer, fromLogger);
 	boolean read2 = readBuffer (to, toBuffer, toLogger);
+	System.out.println("to:="+new String(toBuffer.array()));
 	return (read1 || read2);
     }
 	

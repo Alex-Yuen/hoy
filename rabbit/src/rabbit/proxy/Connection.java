@@ -187,6 +187,7 @@ public class Connection {
 	    // SSL requests are special in a way... 
 	    // Don't depend upon being able to build URLs from the header...
 	    if (request.isSSLRequest ()) {
+	    	System.out.println("req is ssl req");
 		status = "Handling ssl request";
 		checkAndHandleSSL (requestBuffer);
 		return;

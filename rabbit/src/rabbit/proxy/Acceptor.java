@@ -25,6 +25,7 @@ class Acceptor implements SocketHandler {
     public void run () {
 	try {
 	    SocketChannel sc = proxy.getServerSocketChannel ().accept ();
+	    //System.out.println("1");
 	    if (sc == null)
 		return;
 	    proxy.getCounter ().inc ("Socket accepts");
