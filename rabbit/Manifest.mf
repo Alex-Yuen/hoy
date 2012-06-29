@@ -1,0 +1,2 @@
+Main-Class: rabbit.proxy.ProxyStarter
+Class-Path: ../external_libs/dnsjava-2.0.1.jar

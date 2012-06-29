@@ -1,0 +1,18 @@
+version 3.2 (2006-05-27) Fixed a NPE in BaseHandler.finish:208. Fixed a
+            workaround for a CCE in HttpProxy.handleSelects:432. Fixed a
+	    problem with GZipHandler and already compressed streams.
+
+version 3.1 (2006-04-06) Upstream proxy should work again. AdFilter has a
+            better default for adlinks. Fixed config of ImageHandler that
+	    was ignored. Infinite loop bug in RandomCacheResourceSource fixed.
+
+version 3.0 (2006-03-28) BaseHandler will no longer chunk resources if the 
+            content length is known. Set sockets to use TcpNoDelay
+	    (Nagle's algorithm). Started to redo the pipeline handling. 
+	    Implemented block listener handling to file reousrces. Cache
+	    will now use buffered streams. Added LogRotator again.
+
+version 3.0 pre-release (2006-02-13) first pre release of rabbit
+            3.0. RabbIT now uses java.nio for all network talk and most of
+	    the internal systems uses threads for long time operations. 
+	
