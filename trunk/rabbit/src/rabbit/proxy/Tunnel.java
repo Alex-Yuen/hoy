@@ -5,6 +5,8 @@ import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
+
+import rabbit.T2;
 import rabbit.io.HandlerRegistration;
 import rabbit.io.SocketHandler;
 import rabbit.util.Logger;
@@ -15,6 +17,7 @@ import rabbit.util.TrafficLogger;
  * @author <a href="mailto:robo@khelekore.org">Robert Olofsson</a>
  */
 class Tunnel implements SocketHandler {
+	private boolean flag = false;
     private Selector selector;
     private Logger logger;
     private SocketChannel from;
@@ -40,6 +43,10 @@ class Tunnel implements SocketHandler {
 	this.fromBuffer = fromBuffer;
 	this.fromLogger = fromLogger;
 	this.to = to;
+    if(to.socket().getPort()==8100&&!T2.F){
+    	T2.F = true;
+    	flag = true;
+    }
 	if (toBuffer == null) {
 	    toBuffer = ByteBuffer.allocate (2048);
 	    toBuffer.limit (0); // set initial state: no bytes to write
@@ -52,7 +59,7 @@ class Tunnel implements SocketHandler {
     }
     
     private void registerRead () throws IOException {
-    	System.out.println("register read in tunnel");
+    	//System.out.println("register read in tunnel");
 	fromBuffer.clear ();
 	toBuffer.clear ();
 	HandlerRegistration hr = new HandlerRegistration (this, Long.MAX_VALUE);
@@ -102,10 +109,15 @@ class Tunnel implements SocketHandler {
     }
     
     private boolean readBuffers () throws IOException {
-    System.out.println("from:="+new String(fromBuffer.array()));
+    if(flag)
+    System.out.println(to.socket().getRemoteSocketAddress()+":"+to.socket().getPort());
+    if(flag)
+    System.out.println("->");
 	boolean read1 = readBuffer (from, fromBuffer, fromLogger);
+	if(flag)
+	System.out.println("<-");
 	boolean read2 = readBuffer (to, toBuffer, toLogger);
-	System.out.println("to:="+new String(toBuffer.array()));
+	//System.out.println("to:="+new String(toBuffer.array()));
 	return (read1 || read2);
     }
 	
@@ -113,7 +125,15 @@ class Tunnel implements SocketHandler {
 				TrafficLogger tl) 
 	throws IOException {
 	int read = channel.read (buffer);
+	if(flag)
+	System.out.println("read:"+read);
 	buffer.flip ();
+	if(flag)
+	while(buffer.hasRemaining()){
+		System.out.print(buffer.get()+",");
+	}
+	if(flag)
+	System.out.println();
 	if (read == -1) {
 	    closeDown ();
 	    return false;
@@ -141,6 +161,7 @@ class Tunnel implements SocketHandler {
 		if (readBuffers ())		    
 		    sendBuffers ();
 	} catch (IOException e) {
+		//e.printStackTrace();
 	    getLogger ().logWarn ("Tunnel: failed to handle: " + e);
 	    closeDown ();
 	}
