@@ -3,6 +3,12 @@ package ws.hoyland.bcc;
 import java.net.*;
 import java.util.Arrays;
 
+/**
+ * read the flv file and send it to the server.
+ * this demo the capture client 
+ * @author hoy
+ *
+ */
 public class BCClient {
 
 	/**
