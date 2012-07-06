@@ -9,6 +9,8 @@ public class BCServer {
 	 * @throws UException
 	 */
 	public static void main(String[] args) throws Exception {
+		//TODO
+		//build a nio socket server, and buffer it, and then broadcast.
 		int port = 6789;
 		String sendMessage = "BCA";
 		InetAddress inetAddress = InetAddress.getByName("228.5.6.7");
