@@ -1,0 +1,12 @@
+1、自定义协议图示（监控视频）：
+packet_len	flag	version	decompress_len	packet_type	文件编号	文件偏移量	video_data
+
+2、说明：
+packet_len：包的长度（4字节）
+flag：是否压缩|是否加密（2字节）
+version：协议版本号（2字节）
+decompress_len：压缩数据长度（4字节）
+packet_type：命令字（4字节）
+文件编号（4字节）
+文件偏移量（8字节）
+video_data（packet_len－16字节数据）
