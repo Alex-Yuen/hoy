@@ -1,7 +1,10 @@
 package ws.hoyland.mlptnet;
 
 public class MlptNet {
-
+	
+	public MlptNet(){
+		
+	}
 	/**
 	 * @param args
 	 */
