@@ -1,4 +1,29 @@
 1.初始化时候自动建立数据库表（如果没有的话）
+smsserver_switch	切换时间、主机状态、备机状态、备注等字段。
+smsserver_backup	日期时间、主机、备份状态、文件大小、备注。
+
+装完之后，查看数据库信息，然后装进去。
+更新mysql的文件即可
+
+CREATE TABLE `smsserver`.`smsserver_switch` (
+	`id` INT NOT NULL AUTO_INCREMENT ,
+	`master` BOOL NOT NULL ,
+	`slaver` BOOL NOT NULL ,
+	`switch_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ,
+	`memo` VARCHAR( 255 ) NOT NULL ,
+	PRIMARY KEY ( `id` )
+) ENGINE = MYISAM 
+
+ CREATE TABLE `smsserver`.`smsserver_backup` (
+`id` INT NOT NULL AUTO_INCREMENT ,
+	`machine` BOOL NOT NULL ,
+	`state` TINYINT NOT NULL ,
+	`file_size` BIGINT NOT NULL ,
+	`backup_time` TIMESTAMP NOT NULL ,
+	`memo` VARCHAR( 255 ) NOT NULL ,
+	PRIMARY KEY ( `id` )
+) ENGINE = MYISAM 
+
 2.建立2个Action和2个JSP
-	一个显示主备状态
+	一个显示主备状态（定时刷新）
 	另外一个显示数据查询记录，可以选定2张表

@@ -25,11 +25,11 @@ public abstract class DbHelper
     public static DbHelper getDbHelper(Properties props, String dbid)
         throws ClassNotFoundException, NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException
     {
-        String classType1 = cn/sendsms/jdsmsserver/web/DbHelper.getName();
+        String classType1 = cn.sendsms.jdsmsserver.web.DbHelper.class.getName();
         String classType = (new StringBuilder(String.valueOf(classType1))).append("For").append(props.getProperty((new StringBuilder(String.valueOf(dbid))).append(".type").toString()).toUpperCase()).toString();
         Class c = Class.forName(classType);
         Constructor constructor = c.getConstructor(new Class[] {
-            java/util/Properties, java/lang/String
+            java.util.Properties.class, java.lang.String.class
         });
         DbHelper helper = (DbHelper)constructor.newInstance(new Object[] {
             props, dbid
