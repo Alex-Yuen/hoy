@@ -17,9 +17,9 @@
 <br/>
 <br/>
 <br/>
-主机状态&nbsp;&nbsp;<span style="color:<%if(st[0]){out.println("#123456");}else{out.println("#654321");}%>">□</span>
+主机状态&nbsp;&nbsp;<span style="color:<%if(st[0]){out.println("#00FF00");}else{out.println("#0000FF");}%>">■</span>
 <br/><br/>
-备机状态&nbsp;&nbsp;<span style="color:<%if(st[0]){out.println("#123456");}else{out.println("#654321");}%>">□</span>
+备机状态&nbsp;&nbsp;<span style="color:<%if(st[1]){out.println("#00FF00");}else{out.println("#0000FF");}%>">■</span>
 <%if(request.getAttribute("message")!=null){ %>
 <script type="text/javascript">
 alert('<%=request.getAttribute("message")%>');
