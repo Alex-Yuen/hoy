@@ -47,7 +47,19 @@
 /*     */   public void swit(HttpServletRequest req, HttpServletResponse resp)
 /*     */     throws ServletException, IOException
 /*     */   {
-/*  46 */     findForward("swit.jsp", true, req, resp);
+			    DbHelper hepler = null;
+			    try {
+			      hepler = DbHelper.getDbHelper(JDSMSServer.getInstance().getProperties(), "db1");
+			      boolean[] st = hepler.getSwitchStatus();
+			      req.setAttribute("st", st);
+			      findForward("/swit.jsp", true, req, resp);
+			    }
+			    catch (Exception e) {
+			      e.printStackTrace();
+			      req.setAttribute("st", null);
+			      req.setAttribute("message", "访问数据源失败，请确认数据源是否配置正确");
+			      findForward("/swit.jsp", true, req, resp);
+			    }
 /*     */   }
 
 /*     */   public void list(HttpServletRequest req, HttpServletResponse resp)
