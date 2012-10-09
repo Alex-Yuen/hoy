@@ -70,7 +70,7 @@ public class ConsoleHttpServer
             DataSourceAction datasource = new DataSourceAction();
             holder = new ServletHolder(datasource);
             webapp.addServlet(holder, "/datasource-config");
-            webapp.addServlet(cn/sendsms/jdsmsserver/web/DataSourceAction, "/datasource-config");
+            webapp.addServlet("cn.sendsms.jdsmsserver.web.DataSourceAction", "/datasource-config");
             DeviceConfigAction device = new DeviceConfigAction();
             holder = new ServletHolder(device);
             webapp.addServlet(holder, "/device-config");
@@ -100,7 +100,7 @@ public class ConsoleHttpServer
         public WebServer(int myPort)
         {
             this$0 = ConsoleHttpServer.this;
-            super();
+            //super();
             port = myPort;
         }
     }
