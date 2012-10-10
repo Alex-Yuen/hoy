@@ -25,6 +25,7 @@
 /*     */   private String password_read;
 /*     */   private String sendURL;
 /*     */   private String readURL;
+private Condition condition;
 /*     */ 
 /*     */   public void Init(HttpServletRequest req, HttpServletResponse resp)
 /*     */     throws ServletException, IOException
@@ -65,7 +66,24 @@
 /*     */   public void list(HttpServletRequest req, HttpServletResponse resp)
 /*     */     throws ServletException, IOException
 /*     */   {
-	
+			    DbHelper hepler = null;			
+			    Page page = null;
+			    try {
+			      hepler = DbHelper.getDbHelper(JDSMSServer.getInstance().getProperties(), "db1");
+			      if (this.condition == null)
+			        this.condition = new Condition();
+			      page = hepler.getSNBList(this.condition);
+			      req.setAttribute("page", page);
+			      findForward("/list.jsp", true, req, resp);
+			    }
+			    catch (Exception e) {
+			      e.printStackTrace();
+			      if (this.condition == null)
+			        this.condition = new Condition();
+			      req.setAttribute("page", null);
+			      req.setAttribute("message", "访问数据源失败，请确认数据源是否配置正确");
+			      findForward("/list.jsp", true, req, resp);
+			    }
 /*  46 */     findForward("list.jsp", true, req, resp);
 /*     */   }
 

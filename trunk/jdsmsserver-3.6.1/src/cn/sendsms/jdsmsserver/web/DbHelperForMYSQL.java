@@ -183,7 +183,86 @@ public boolean[] getSwitchStatus() throws InstantiationException,
 	 }else{
 		 return null;
 	 }
+}
+@Override
+public Page getSNBList(Condition condition) throws SQLException, InstantiationException, IllegalAccessException, ClassNotFoundException, IOException {
+	/*  86 */     Class.forName(getProperty("driver")).newInstance();
+	/*  87 */     Connection conn = DriverManager.getConnection(getProperty("url"), getProperty("username"), getProperty("password"));
+	/*  88 */     Statement stmt = conn.createStatement();
+	/*     */ 
+	/*  90 */     StringBuffer sql = new StringBuffer();
+	/*  91 */     sql.append("select * from ");
+	/*  92 */     if (condition.getType() == 0)
+	/*  93 */       sql.append(getProperty("tables.sms_switch"));
+	/*     */     else {
+	/*  95 */       sql.append(getProperty("tables.sms_backup"));
+	/*     */     }
+	/**
+	     if (condition.getType() != 3) {
+       sql.append(" where status = ");
+       if (condition.getType() == 1)
+         sql.append("'S'");
+       else
+        sql.append("'F'");
+	     } else {
+	       sql.append(" where type = 'I'");
+	    }
+	**/
+	/*     */ 
+	/* 107 */     StringBuffer countSql = new StringBuffer(sql.toString());
+	/* 108 */     int index = countSql.indexOf("*");
+	/* 109 */     countSql.replace(index, index + 1, "count(1) as totalnum");
+	/*     */ 
+	/* 111 */     sql.append(" order by ");
+	/* 112 */     if (condition.getType() == 0)
+	/* 113 */       sql.append("switch_time ");
+	/*     */     else
+	/* 115 */       sql.append("backup_time ");
+	
+	/* 116 */     if (condition.getOrder() == 0)
+	/* 117 */       sql.append("desc");
+	/*     */     else {
+	/* 119 */       sql.append("asc");
+	/*     */     }
+	/* 121 */     Page page = new Page();
+	/* 122 */     page.setPageIndex(condition.getPageIndex());
+	/*     */ 
+	/* 124 */     sql.append(" limit " + (condition.getPageIndex() - 1) * page.getPageSize() + "," + page.getPageSize());
+	/* 125 */     ArrayList list = page.getData();
+	/* 126 */     ResultSet rs = stmt.executeQuery(sql.toString());
+	/* 127 */     while (rs.next()) {
+	/* 128 */       if (condition.getType() == 0) {
+	/* 129 */         SwitRecord rec = new SwitRecord();
+	/* 130 */         rec.setId(rs.getLong("id"));
+					  rec.setMaster(rs.getBoolean("master"));
+					  rec.setSlaver(rs.getBoolean("slaver"));
+					  rec.setMemo(rs.getString("memo"));
+					  rec.setSwitTime(rs.getDate("switch_time"));
+	/* 138 */         list.add(rec);
+	/*     */       } else {
+	/* 140 */         BackupRecord rec = new BackupRecord();
+	/* 141 */         rec.setId(rs.getLong("id"));
+					  rec.setMachine(rs.getBoolean("machine"));
+					  rec.setMemo(rs.getString("memo"));
+					  rec.setState(rs.getInt("state"));
+					  rec.setFileSize(rs.getLong("file_size"));
+					  rec.setBackupTime(rs.getDate("backup_time"));
+	/* 148 */         list.add(rec);
+	/*     */       }
+	/*     */     }
+	/* 151 */     rs = stmt.executeQuery(countSql.toString());
+	/* 152 */     if (rs.next()) {
+	/* 153 */       page.setTotalNum(rs.getLong(1));
+	/* 154 */       if (page.getTotalNum() % page.getPageSize() == 0L)
+	/* 155 */         page.setPageNum((int)(page.getTotalNum() / page.getPageSize()));
+	/* 156 */       else page.setPageNum((int)(page.getTotalNum() / page.getPageSize() + 1L));
+	/*     */     }
+	/* 158 */     stmt.close();
+	/* 159 */     conn.close();
+	/* 160 */     return page;
 } 
+
+
 }
 /* Location:           C:\Users\Administrator\Desktop\jdsmsserver-3.6.1.jar
  * Qualified Name:     cn.sendsms.jdsmsserver.web.DbHelperForMYSQL
