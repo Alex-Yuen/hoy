@@ -66,7 +66,6 @@ private Condition condition;
 /*     */   public void list(HttpServletRequest req, HttpServletResponse resp)
 /*     */     throws ServletException, IOException
 /*     */   {
-	cn.sendsms.helper.Logger.getInstance().logError(">>>>h1", null, null);
 			    DbHelper hepler = null;
 			    Page page = null;
 			    try {
@@ -75,10 +74,8 @@ private Condition condition;
 			        this.condition = new Condition();
 			      }
 			      page = hepler.getSNBList(this.condition);
-			      cn.sendsms.helper.Logger.getInstance().logError(">>>>h1.1", null, null);
 			      cn.sendsms.helper.Logger.getInstance().logError(page.getTotalNum()+"", null, null);
 			      req.setAttribute("page", page);
-			      cn.sendsms.helper.Logger.getInstance().logError(">>>>h1.2", null, null);
 			      findForward("/list.jsp", true, req, resp);
 			    }
 			    catch (Exception e) {
