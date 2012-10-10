@@ -186,13 +186,14 @@ public boolean[] getSwitchStatus() throws InstantiationException,
 }
 @Override
 public Page getSNBList(Condition condition) throws SQLException, InstantiationException, IllegalAccessException, ClassNotFoundException, IOException {
+	cn.sendsms.helper.Logger.getInstance().logError(">>>>h2", null, null);
 	/*  86 */     Class.forName(getProperty("driver")).newInstance();
 	/*  87 */     Connection conn = DriverManager.getConnection(getProperty("url"), getProperty("username"), getProperty("password"));
 	/*  88 */     Statement stmt = conn.createStatement();
 	/*     */ 
 	/*  90 */     StringBuffer sql = new StringBuffer();
 	/*  91 */     sql.append("select * from ");
-	/*  92 */     if (condition.getType() == 0)
+	/*  92 */     if (condition.getType() == 1)
 	/*  93 */       sql.append(getProperty("tables.sms_switch"));
 	/*     */     else {
 	/*  95 */       sql.append(getProperty("tables.sms_backup"));
@@ -214,7 +215,7 @@ public Page getSNBList(Condition condition) throws SQLException, InstantiationEx
 	/* 109 */     countSql.replace(index, index + 1, "count(1) as totalnum");
 	/*     */ 
 	/* 111 */     sql.append(" order by ");
-	/* 112 */     if (condition.getType() == 0)
+	/* 112 */     if (condition.getType() == 1)
 	/* 113 */       sql.append("switch_time ");
 	/*     */     else
 	/* 115 */       sql.append("backup_time ");
@@ -229,9 +230,13 @@ public Page getSNBList(Condition condition) throws SQLException, InstantiationEx
 	/*     */ 
 	/* 124 */     sql.append(" limit " + (condition.getPageIndex() - 1) * page.getPageSize() + "," + page.getPageSize());
 	/* 125 */     ArrayList list = page.getData();
+
+	cn.sendsms.helper.Logger.getInstance().logError(sql.toString(), null, null);
 	/* 126 */     ResultSet rs = stmt.executeQuery(sql.toString());
 	/* 127 */     while (rs.next()) {
-	/* 128 */       if (condition.getType() == 0) {
+		cn.sendsms.helper.Logger.getInstance().logError("h4", null, null);
+	/* 128 */       if (condition.getType() == 1) {
+		cn.sendsms.helper.Logger.getInstance().logError("h5", null, null);
 	/* 129 */         SwitRecord rec = new SwitRecord();
 	/* 130 */         rec.setId(rs.getLong("id"));
 					  rec.setMaster(rs.getBoolean("master"));
@@ -239,6 +244,7 @@ public Page getSNBList(Condition condition) throws SQLException, InstantiationEx
 					  rec.setMemo(rs.getString("memo"));
 					  rec.setSwitTime(rs.getDate("switch_time"));
 	/* 138 */         list.add(rec);
+	cn.sendsms.helper.Logger.getInstance().logError("h6", null, null);
 	/*     */       } else {
 	/* 140 */         BackupRecord rec = new BackupRecord();
 	/* 141 */         rec.setId(rs.getLong("id"));
@@ -250,6 +256,8 @@ public Page getSNBList(Condition condition) throws SQLException, InstantiationEx
 	/* 148 */         list.add(rec);
 	/*     */       }
 	/*     */     }
+
+	cn.sendsms.helper.Logger.getInstance().logError(countSql.toString(), null, null);
 	/* 151 */     rs = stmt.executeQuery(countSql.toString());
 	/* 152 */     if (rs.next()) {
 	/* 153 */       page.setTotalNum(rs.getLong(1));
@@ -259,6 +267,8 @@ public Page getSNBList(Condition condition) throws SQLException, InstantiationEx
 	/*     */     }
 	/* 158 */     stmt.close();
 	/* 159 */     conn.close();
+
+	cn.sendsms.helper.Logger.getInstance().logError(">>>page"+page, null, null);
 	/* 160 */     return page;
 } 
 

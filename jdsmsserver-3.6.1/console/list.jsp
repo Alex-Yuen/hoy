@@ -62,8 +62,8 @@ function change(flag){
 <tr>
 <td colspan="3">
 <select name="condition.type" id="condition.type" onchange="change(true)">
-<option <%if(condition.getType()==0)out.print("selected"); %> value="0">主备切换记录</option>
-<option <%if(condition.getType()==1)out.print("selected"); %> value="1">备份记录</option>
+<option <%if(condition.getType()==1)out.print("selected"); %> value="0">主备切换记录</option>
+<option <%if(condition.getType()==2)out.print("selected"); %> value="1">备份记录</option>
 </select>
 </td>
 <td colspan="3">
@@ -74,7 +74,7 @@ function change(flag){
 </td>
 </tr>
 <%
-	if(condition.getType()==0)
+	if(condition.getType()==1)
 	{ 
 %>
 <tr align="center">
