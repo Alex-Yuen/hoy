@@ -119,4 +119,7 @@ public abstract class DbHelper
     
     public abstract boolean[] getSwitchStatus()
     throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException;
+    
+    public abstract Page getSNBList(Condition condition)
+    	throws SQLException, InstantiationException, IllegalAccessException, ClassNotFoundException, IOException;
 }
