@@ -242,7 +242,7 @@ public Page getSNBList(Condition condition) throws SQLException, InstantiationEx
 					  rec.setMaster(rs.getBoolean("master"));
 					  rec.setSlaver(rs.getBoolean("slaver"));
 					  rec.setMemo(rs.getString("memo"));
-					  rec.setSwitTime(rs.getDate("switch_time"));
+					  rec.setSwitTime(rs.getTimestamp("switch_time"));
 	/* 138 */         list.add(rec);
 	cn.sendsms.helper.Logger.getInstance().logError("h6", null, null);
 	/*     */       } else {
@@ -252,7 +252,7 @@ public Page getSNBList(Condition condition) throws SQLException, InstantiationEx
 					  rec.setMemo(rs.getString("memo"));
 					  rec.setState(rs.getInt("state"));
 					  rec.setFileSize(rs.getLong("file_size"));
-					  rec.setBackupTime(rs.getDate("backup_time"));
+					  rec.setBackupTime(rs.getTimestamp("backup_time"));
 	/* 148 */         list.add(rec);
 	/*     */       }
 	/*     */     }
