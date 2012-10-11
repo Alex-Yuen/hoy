@@ -6,9 +6,10 @@ import java.util.Date;
 /*    */ public class SwitRecord
 /*    */ {
 /*    */   private long id;
-/*    */   private boolean master;
-			private boolean slaver;
-			
+/*    */   private byte master;
+			private byte slaver;
+			private String mip;
+			private String sip;
 			private String memo;
 			private Date switTime;
 			
@@ -20,16 +21,10 @@ import java.util.Date;
 /* 16 */     this.id = id;
 /*    */   }
 
-public boolean isMaster() {
-	return master;
-}
-public void setMaster(boolean master) {
+public void setMaster(byte master) {
 	this.master = master;
 }
-public boolean isSlaver() {
-	return slaver;
-}
-public void setSlaver(boolean slaver) {
+public void setSlaver(byte slaver) {
 	this.slaver = slaver;
 }
 public String getMemo() {
@@ -43,6 +38,24 @@ public Date getSwitTime() {
 }
 public void setSwitTime(Date switTime) {
 	this.switTime = switTime;
+}
+public String getMip() {
+	return mip;
+}
+public void setMip(String mip) {
+	this.mip = mip;
+}
+public String getSip() {
+	return sip;
+}
+public void setSip(String sip) {
+	this.sip = sip;
+}
+public byte getMaster() {
+	return master;
+}
+public byte getSlaver() {
+	return slaver;
 }
 
 /*    */ }

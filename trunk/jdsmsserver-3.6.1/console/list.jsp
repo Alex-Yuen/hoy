@@ -17,6 +17,7 @@ String dtformat(Date time)
         }
     }
 
+String[] sts = new String[]{"OFF", "WAIT", "ON"};
 %> 
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
@@ -82,7 +83,7 @@ function change(flag){
 <option <%if(condition.getType()==2)out.print("selected"); %> value="2">备份记录</option>
 </select>
 </td>
-<td colspan="3">
+<td colspan="4">
 <select name="condition.order" id="condition.order" onchange="change(false)">
 <option <%if(condition.getOrder()==0)out.print("selected"); %> value="0">按时间降序排列</option>
 <option <%if(condition.getOrder()==1)out.print("selected"); %> value="1">按时间升序排列</option>
@@ -94,28 +95,18 @@ function change(flag){
 	{ 
 %>
 <tr align="center">
-<th width="10%">ID</th><th width="10%">主机状态</th><th width="10%">备机状态</th><th width="20%">切换时间</th><th colspan="2">备注</th>
+<th width="10%">ID</th><th width="10%">主机状态</th><th width="10%">主机IP</th><th width="10%">备机状态</th><th width="10%">备机IP</th><th width="20%">切换时间</th><th>备注</th>
 </tr>
 <%
 	for(int i = 0;i<page1.getData().size();i++){
 		SwitRecord rec =(SwitRecord) page1.getData().get(i);
 %>
 <tr align="center">
-<td><%=rec.getId() %></td>
-<td><%
-if(rec.isMaster()){
-	out.println("ON");
-}else{
-	out.println("OFF");
-}
-%></td>
-<td><%
-if(rec.isSlaver()){
-	out.println("ON");
-}else{
-	out.println("OFF");
-}
-%></td>
+<td><%=rec.getId()%></td>
+<td><%=sts[rec.getMaster()]%></td>
+<td><%=rec.getMip()%></td>
+<td><%=sts[rec.getSlaver()]%></td>
+<td><%=rec.getSip()%></td>
 <td><%=dtformat(rec.getSwitTime())%></td>
 <td align="left"><span style="word-warp:break-word;word-break:break-all"><%=rec.getMemo() %>
 </td>
@@ -123,7 +114,7 @@ if(rec.isSlaver()){
 <%}%>
 <%}else { %>
 <tr align="center">
-<th width="10%">ID</th><th width="10%">主机</th><th width="10%">备份状态</th><th width="10%">文件大小</th><th width="20%">备份时间</th><th>备注</th>
+<th width="10%">ID</th><th width="10%">备份主机</th><th width="10%">备份状态</th><th width="10%">文件名</th><th width="10%">文件大小</th><th width="20%">备份时间</th><th>备注</th>
 </tr>
 <%
 	for(int i = 0;i<page1.getData().size();i++){
@@ -133,6 +124,7 @@ if(rec.isSlaver()){
 <td><%=rec.getId() %></td>
 <td><%if(rec.isMachine()){out.println("主机");}else{out.println("备机");}%></td>
 <td><%=rec.getState()%></td>
+<td><%=rec.getFileName()%></td>
 <td><%=rec.getFileSize()%></td>
 <td><%=dtformat(rec.getBackupTime())%></td>
 <td align="left"><span style="word-warp:break-word;word-break:break-all"><%=rec.getMemo() %></span></td>

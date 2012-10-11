@@ -1,9 +1,9 @@
 hoyland.ws 14:39:45 
-ON 绿灯 
+ON 绿灯 	2
 hoyland.ws 14:39:49 
-OFF 红灯 
+OFF 红灯  0
 hoyland.ws 14:39:57 
-WAIT 蓝色 
+WAIT 蓝色  1
 hoyland.ws 14:39:58 
 可以吗 
 java反 14:40:01 
@@ -50,5 +50,3 @@ hoyland.ws  14:52:17
 还有主机你帮我改成备份主机好吧
 谢谢了
 
-
-title 更改

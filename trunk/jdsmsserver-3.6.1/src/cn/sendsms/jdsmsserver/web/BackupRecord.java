@@ -9,6 +9,7 @@ import java.util.Date;
 /*    */ 
 			private boolean machine;
 			private int state;
+			private String fileName;
 			private long fileSize;
 			private Date backupTime;
 			private String memo;
@@ -49,6 +50,12 @@ public String getMemo() {
 }
 public void setMemo(String memo) {
 	this.memo = memo;
+}
+public String getFileName() {
+	return fileName;
+}
+public void setFileName(String fileName) {
+	this.fileName = fileName;
 }
 
 

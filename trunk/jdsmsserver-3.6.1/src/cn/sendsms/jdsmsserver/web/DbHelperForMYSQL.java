@@ -163,7 +163,7 @@ import java.util.Properties;
 /*     */   }
 /*     */
 @Override
-public boolean[] getSwitchStatus() throws InstantiationException,
+public byte[] getSwitchStatus() throws InstantiationException,
 		IllegalAccessException, ClassNotFoundException, SQLException {
 	/*  74 */     Class.forName(getProperty("driver")).newInstance();
 	/*  75 */     Connection conn = DriverManager.getConnection(getProperty("url"), getProperty("username"), getProperty("password"));
@@ -173,9 +173,9 @@ public boolean[] getSwitchStatus() throws InstantiationException,
 	 ResultSet rs = stmt.executeQuery(sql.toString());
 	if (rs.next()) {
 
-			boolean[] rt = new boolean[2];
-			rt[0] = rs.getBoolean("master");
-			rt[1] = rs.getBoolean("slaver");
+		byte[] rt = new byte[2];
+			rt[0] = rs.getByte("master");
+			rt[1] = rs.getByte("slaver");
 			rs.close();
 			stmt.close();
 			conn.close();
@@ -235,9 +235,11 @@ public Page getSNBList(Condition condition) throws SQLException, InstantiationEx
 	/* 128 */       if (condition.getType() == 1) {
 	/* 129 */         SwitRecord rec = new SwitRecord();
 	/* 130 */         rec.setId(rs.getLong("id"));
-					  rec.setMaster(rs.getBoolean("master"));
-					  rec.setSlaver(rs.getBoolean("slaver"));
+					  rec.setMaster(rs.getByte("master"));
+					  rec.setSlaver(rs.getByte("slaver"));
 					  rec.setMemo(rs.getString("memo"));
+					  rec.setMip(rs.getString("master_ip"));
+					  rec.setSip(rs.getString("slaver_ip"));
 					  rec.setSwitTime(rs.getTimestamp("switch_time"));
 	/* 138 */         list.add(rec);
 	/*     */       } else {
@@ -246,6 +248,7 @@ public Page getSNBList(Condition condition) throws SQLException, InstantiationEx
 					  rec.setMachine(rs.getBoolean("machine"));
 					  rec.setMemo(rs.getString("memo"));
 					  rec.setState(rs.getInt("state"));
+					  rec.setFileName(rs.getString("file_name"));
 					  rec.setFileSize(rs.getLong("file_size"));
 					  rec.setBackupTime(rs.getTimestamp("backup_time"));
 	/* 148 */         list.add(rec);
