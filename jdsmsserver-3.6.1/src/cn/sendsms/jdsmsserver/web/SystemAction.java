@@ -51,7 +51,7 @@ private Condition condition;
 			    DbHelper hepler = null;
 			    try {
 			      hepler = DbHelper.getDbHelper(JDSMSServer.getInstance().getProperties(), "db1");
-			      boolean[] st = hepler.getSwitchStatus();
+			      byte[] st = hepler.getSwitchStatus();
 			      req.setAttribute("st", st);
 			      findForward("/swit.jsp", true, req, resp);
 			    }
