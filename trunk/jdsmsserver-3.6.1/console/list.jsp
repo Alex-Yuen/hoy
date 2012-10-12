@@ -23,7 +23,7 @@ String[] sts = new String[]{"OFF", "WAIT", "ON"};
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=GBK">
-<title>主备切换和备份记录</title>
+<title>备份记录</title>
 <link href="css.css" type="text/css" rel="stylesheet">
 <script type="text/javascript">
 function getvalueofselect(id){
@@ -68,7 +68,7 @@ function change(flag){
 </script>
 </head>
 <body>
-<div id="top"><span><img src="img/tu1.jpg"></span>主备切换和备份记录</div>
+<div id="top"><span><img src="img/tu1.jpg"></span>备份记录</div>
 <div id="center" >
 <div id="table" >
 <%
@@ -78,10 +78,7 @@ function change(flag){
 <table cellpadding="0" cellspacing="1" border="0" width="100%">
 <tr>
 <td colspan="3">
-<select name="condition.type" id="condition.type" onchange="change(true)">
-<option <%if(condition.getType()==1)out.print("selected"); %> value="1">主备切换记录</option>
-<option <%if(condition.getType()==2)out.print("selected"); %> value="2">备份记录</option>
-</select>
+<input type="hidden" name="condition.type" id="condition.type" value="2"/>
 </td>
 <td colspan="4">
 <select name="condition.order" id="condition.order" onchange="change(false)">
