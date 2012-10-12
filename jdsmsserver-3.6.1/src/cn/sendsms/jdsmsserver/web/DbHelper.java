@@ -117,7 +117,7 @@ public abstract class DbHelper
     public abstract Page findMsgByCondition(Condition condition)
         throws SQLException, InstantiationException, IllegalAccessException, ClassNotFoundException, IOException;
     
-    public abstract byte[] getSwitchStatus()
+    public abstract Object[] getSwitchStatus()
     throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException;
     
     public abstract Page getSNBList(Condition condition)

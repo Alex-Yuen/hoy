@@ -48,15 +48,30 @@ private Condition condition;
 /*     */   public void swit(HttpServletRequest req, HttpServletResponse resp)
 /*     */     throws ServletException, IOException
 /*     */   {
-			    DbHelper hepler = null;
+			 	DbHelper hepler = null;
+			    Page page = null;
 			    try {
 			      hepler = DbHelper.getDbHelper(JDSMSServer.getInstance().getProperties(), "db1");
-			      byte[] st = hepler.getSwitchStatus();
+			      if (this.condition == null){
+			        this.condition = new Condition();
+			      }
+			      this.condition.setType(1);
+			      this.condition.setPageSize(15);
+			      page = hepler.getSNBList(this.condition);
+			      //cn.sendsms.helper.Logger.getInstance().logError(page.getTotalNum()+"", null, null);
+			      Object[] st = hepler.getSwitchStatus();      
+			      req.setAttribute("page", page);
 			      req.setAttribute("st", st);
 			      findForward("/swit.jsp", true, req, resp);
 			    }
 			    catch (Exception e) {
 			      e.printStackTrace();
+			      if (this.condition == null){
+			        this.condition = new Condition();
+			      }
+			      this.condition.setType(1);
+			      this.condition.setPageSize(15);
+			      req.setAttribute("page", null);
 			      req.setAttribute("st", null);
 			      req.setAttribute("message", "访问数据源失败，请确认数据源是否配置正确");
 			      findForward("/swit.jsp", true, req, resp);
@@ -73,8 +88,9 @@ private Condition condition;
 			      if (this.condition == null){
 			        this.condition = new Condition();
 			      }
+			      this.condition.setType(2);
 			      page = hepler.getSNBList(this.condition);
-			      cn.sendsms.helper.Logger.getInstance().logError(page.getTotalNum()+"", null, null);
+			      //cn.sendsms.helper.Logger.getInstance().logError(page.getTotalNum()+"", null, null);
 			      req.setAttribute("page", page);
 			      findForward("/list.jsp", true, req, resp);
 			    }
@@ -83,6 +99,7 @@ private Condition condition;
 			      if (this.condition == null){
 			        this.condition = new Condition();
 			      }
+			      this.condition.setType(2);
 			      req.setAttribute("page", null);
 			      req.setAttribute("message", "访问数据源失败，请确认数据源是否配置正确");
 			      findForward("/list.jsp", true, req, resp);

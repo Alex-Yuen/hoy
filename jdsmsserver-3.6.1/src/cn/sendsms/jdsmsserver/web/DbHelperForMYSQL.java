@@ -163,7 +163,7 @@ import java.util.Properties;
 /*     */   }
 /*     */
 @Override
-public byte[] getSwitchStatus() throws InstantiationException,
+public Object[] getSwitchStatus() throws InstantiationException,
 		IllegalAccessException, ClassNotFoundException, SQLException {
 	/*  74 */     Class.forName(getProperty("driver")).newInstance();
 	/*  75 */     Connection conn = DriverManager.getConnection(getProperty("url"), getProperty("username"), getProperty("password"));
@@ -173,9 +173,11 @@ public byte[] getSwitchStatus() throws InstantiationException,
 	 ResultSet rs = stmt.executeQuery(sql.toString());
 	if (rs.next()) {
 
-		byte[] rt = new byte[2];
+		Object[] rt = new Object[4];
 			rt[0] = rs.getByte("master");
-			rt[1] = rs.getByte("slaver");
+			rt[1] = rs.getString("master_ip");
+			rt[2] = rs.getByte("slaver");
+			rt[3] = rs.getString("slaver_ip");
 			rs.close();
 			stmt.close();
 			conn.close();
