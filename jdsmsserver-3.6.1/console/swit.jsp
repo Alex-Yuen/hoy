@@ -16,7 +16,8 @@ String dtformat(Date time)
             return format.format(time);
         }
     }
-Object[] st = (Object[])(request.getAttribute("st"));
+    //out.print(request.getAttribute("st"));
+//Object[] st = (Object[])(request.getAttribute("st"));
 String[] sts = new String[]{"OFF", "WAIT", "ON"};
 %> 
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
@@ -29,6 +30,10 @@ String[] sts = new String[]{"OFF", "WAIT", "ON"};
 function getvalueofselect(id){
 	var index = document.getElementById(id).selectedIndex;
 	var value = document.getElementById(id).options[index].value;
+	return value;
+}
+function getvalueofinput(id){
+	var value = document.getElementById(id).value;
 	return value;
 }
 function next(){
@@ -60,7 +65,7 @@ function turn(){
 function change(flag){
 	var pageIndex = getvalueofselect('condition.pageIndex');
 	if(flag)pageIndex=1;
-	var type = getvalueofselect('condition.type');
+	var type = getvalueofinput('condition.type');
 	var order = getvalueofselect('condition.order');
 	url="/system?action=swit&condition.pageIndex="+pageIndex+"&condition.type="+type+"&condition.order="+order;
 	window.location.href=url;
@@ -70,18 +75,20 @@ function change(flag){
 <body>
 <div id="top"><span><img src="img/tu1.jpg"></span>主备状态</div>
 <div id="center">
+<%
+	Object[] st = (Object[])(request.getAttribute("st"));
+%>
 <div>
-	<br/>
-	<br/>
 	<br/>
 	<span style="color:#00FF00">■</span>开机&nbsp;<span style="color:#0000FF">■</span>暂停&nbsp;<span style="color:#FF0000">■</span>关机&nbsp;
 	<br/>
 	<br/>
-	<img src="img/computer_<%=st[0]%>.png"/>&nbsp;&nbsp;主机IP:<%=st[1]%>&nbsp;&nbsp;
-	<br/><br/>
-	<img src="img/computer_<%=st[2]%>.png"/>&nbsp;&nbsp;备机IP:<%=st[3]%>&nbsp;&nbsp;
+	<img src="img/computer-<%=st[0]%>.png"/>&nbsp;&nbsp;主机IP:<%=st[1]%>&nbsp;&nbsp;&nbsp;&nbsp;
+	<img src="img/computer-<%=st[2]%>.png"/>&nbsp;&nbsp;备机IP:<%=st[3]%>&nbsp;&nbsp;
 </div>
-
+<br/>
+<br/>
+<br/>
 <div id="table" >
 <%
 	Page page1 = (Page)request.getAttribute("page");
@@ -89,10 +96,8 @@ function change(flag){
 %>
 <table cellpadding="0" cellspacing="1" border="0" width="100%">
 <tr>
-<td colspan="3">
+<td colspan="7">
 <input type="hidden" name="condition.type" id="condition.type" value="1"/>
-</td>
-<td colspan="4">
 <select name="condition.order" id="condition.order" onchange="change(false)">
 <option <%if(condition.getOrder()==0)out.print("selected"); %> value="0">按时间降序排列</option>
 <option <%if(condition.getOrder()==1)out.print("selected"); %> value="1">按时间升序排列</option>
@@ -165,11 +170,11 @@ for(int i=0;i<page1.getPageNum();i++){
 </table>
 </div>
 
+</div>
 <%if(request.getAttribute("message")!=null){ %>
 <script type="text/javascript">
 alert('<%=request.getAttribute("message")%>');
 </script>
 <%} %>
-</div>
 </body>
 </html>

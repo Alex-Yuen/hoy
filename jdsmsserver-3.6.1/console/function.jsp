@@ -32,7 +32,7 @@
 <li><a href="/smsAction?action=unsentRecord&pageIndex=1" target="main"><img src="img/dfslb.png">待发送列表</a></li>
 <li><a href="/smsAction?action=msgRecord" target="main"><img src="img/dxjl.png">短信记录</a></li>
 <li><a href="/system?action=swit" target="main"> <img src="img/zbzt.png">主备状态</a></li>
-<li><a href="/system?action=list" target="main"> <img src="img/list.png">切换和备份记录</a></li>
+<li><a href="/system?action=list" target="main"> <img src="img/list.png">备份记录</a></li>
 <li><a href="/log?action=init&pageIndex1=1" target="main"><img src="img/xtrz.png">系统日志</a></li>
 <li><a href="/system?action=Init" target="main"> <img src="img/xtsz.png">系统设置</a></li>
 <li><a href="modify-password.jsp" target="main"> <img src="img/xgmm.png">修改密码</a></li>
@@ -40,7 +40,7 @@
 </ul>
 
 </div><div style="clear:both"><img src="img/left_btbg.jpg"/></div>
-<div>&nbsp;<a style="height:25px;line-height:25px;color:#333;text-decoration:none" href="#"  target="_blank">Copyright &copy; 2012&nbsp;短信服务平台</a></div>
+<div>&nbsp;<a style="height:25px;line-height:25px;color:#333;text-decoration:none" href="#"  target="_blank">Copyright&copy;2012&nbsp;短信服务平台</a></div>
 </div>
 </body>
 </html>

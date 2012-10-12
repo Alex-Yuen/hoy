@@ -31,6 +31,10 @@ function getvalueofselect(id){
 	var value = document.getElementById(id).options[index].value;
 	return value;
 }
+function getvalueofinput(id){
+	var value = document.getElementById(id).value;
+	return value;
+}
 function next(){
 	
 	var pageIndex = getvalueofselect('condition.pageIndex');
@@ -60,7 +64,7 @@ function turn(){
 function change(flag){
 	var pageIndex = getvalueofselect('condition.pageIndex');
 	if(flag)pageIndex=1;
-	var type = getvalueofselect('condition.type');
+	var type = getvalueofinput('condition.type');
 	var order = getvalueofselect('condition.order');
 	url="/system?action=list&condition.pageIndex="+pageIndex+"&condition.type="+type+"&condition.order="+order;
 	window.location.href=url;
@@ -77,10 +81,8 @@ function change(flag){
 %>
 <table cellpadding="0" cellspacing="1" border="0" width="100%">
 <tr>
-<td colspan="3">
+<td colspan="7">
 <input type="hidden" name="condition.type" id="condition.type" value="2"/>
-</td>
-<td colspan="4">
 <select name="condition.order" id="condition.order" onchange="change(false)">
 <option <%if(condition.getOrder()==0)out.print("selected"); %> value="0">按时间降序排列</option>
 <option <%if(condition.getOrder()==1)out.print("selected"); %> value="1">按时间升序排列</option>
