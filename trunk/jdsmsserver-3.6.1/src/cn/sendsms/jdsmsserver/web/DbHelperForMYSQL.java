@@ -170,9 +170,12 @@ public Object[] getSwitchStatus() throws InstantiationException,
 	/*  76 */     Statement stmt = conn.createStatement();
 
 	String sql = "select * from smsserver_switch order by id desc limit 1";
+	//cn.sendsms.helper.Logger.getInstance().logError(sql, null, null);
 	 ResultSet rs = stmt.executeQuery(sql.toString());
+	 //cn.sendsms.helper.Logger.getInstance().logError("BB", null, null);
+	 
 	if (rs.next()) {
-
+		//cn.sendsms.helper.Logger.getInstance().logError("CCC", null, null);
 		Object[] rt = new Object[4];
 			rt[0] = rs.getByte("master");
 			rt[1] = rs.getString("master_ip");
@@ -183,6 +186,7 @@ public Object[] getSwitchStatus() throws InstantiationException,
 			conn.close();
 			return rt;
 	 }else{
+		 //cn.sendsms.helper.Logger.getInstance().logError("DDD", null, null);
 		 return null;
 	 }
 }
@@ -228,6 +232,7 @@ public Page getSNBList(Condition condition) throws SQLException, InstantiationEx
 	/*     */     }
 	/* 121 */     Page page = new Page();
 	/* 122 */     page.setPageIndex(condition.getPageIndex());
+				  page.setPageSize(condition.getPageSize());
 	/*     */ 
 	/* 124 */     sql.append(" limit " + (condition.getPageIndex() - 1) * page.getPageSize() + "," + page.getPageSize());
 	/* 125 */     ArrayList list = page.getData();

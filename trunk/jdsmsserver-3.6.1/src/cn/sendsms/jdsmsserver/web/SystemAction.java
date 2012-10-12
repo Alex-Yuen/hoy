@@ -56,10 +56,12 @@ private Condition condition;
 			        this.condition = new Condition();
 			      }
 			      this.condition.setType(1);
-			      this.condition.setPageSize(15);
+			      this.condition.setPageSize(5);
 			      page = hepler.getSNBList(this.condition);
 			      //cn.sendsms.helper.Logger.getInstance().logError(page.getTotalNum()+"", null, null);
-			      Object[] st = hepler.getSwitchStatus();      
+			      //cn.sendsms.helper.Logger.getInstance().logError("AAAAA", null, null);
+			      Object[] st = hepler.getSwitchStatus();
+			      //cn.sendsms.helper.Logger.getInstance().logError(st.length+"", null, null);
 			      req.setAttribute("page", page);
 			      req.setAttribute("st", st);
 			      findForward("/swit.jsp", true, req, resp);
@@ -70,7 +72,7 @@ private Condition condition;
 			        this.condition = new Condition();
 			      }
 			      this.condition.setType(1);
-			      this.condition.setPageSize(15);
+			      this.condition.setPageSize(5);
 			      req.setAttribute("page", null);
 			      req.setAttribute("st", null);
 			      req.setAttribute("message", "访问数据源失败，请确认数据源是否配置正确");
