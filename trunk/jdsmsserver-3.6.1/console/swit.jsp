@@ -80,11 +80,11 @@ function change(flag){
 %>
 <div>
 	<br/>
-	<span style="color:#00FF00">■</span>开机&nbsp;<span style="color:#0000FF">■</span>暂停&nbsp;<span style="color:#FF0000">■</span>关机&nbsp;
+	<span style="color:#00FF00">■</span>主机&nbsp;<span style="color:#0000FF">■</span>备机&nbsp;<span style="color:#FF0000">■</span>暂停&nbsp;
 	<br/>
 	<br/>
-	<img src="img/computer-<%=st[0]%>.png"/>&nbsp;&nbsp;主机IP:<%=st[1]%>&nbsp;&nbsp;&nbsp;&nbsp;
-	<img src="img/computer-<%=st[2]%>.png"/>&nbsp;&nbsp;备机IP:<%=st[3]%>&nbsp;&nbsp;
+	<img src="img/computer-<%=st[0]%>.png"/>&nbsp;&nbsp;服务器1&nbsp;IP:<%=st[1]%>&nbsp;&nbsp;&nbsp;&nbsp;
+	<img src="img/computer-<%=st[2]%>.png"/>&nbsp;&nbsp;服务器2&nbsp;IP:<%=st[3]%>&nbsp;&nbsp;
 </div>
 <br/>
 <br/>
@@ -109,7 +109,7 @@ function change(flag){
 	{ 
 %>
 <tr align="center">
-<th width="10%">ID</th><th width="10%">主机状态</th><th width="10%">主机IP</th><th width="10%">备机状态</th><th width="10%">备机IP</th><th width="20%">切换时间</th><th>备注</th>
+<th width="10%">ID</th><th width="10%">主机状态</th><th width="10%">服务器1&nbsp;IP</th><th width="10%">备机状态</th><th width="10%">服务器2&nbsp;IP</th><th width="20%">切换时间</th><th>备注</th>
 </tr>
 <%
 	for(int i = 0;i<page1.getData().size();i++){
