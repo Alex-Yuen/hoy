@@ -7,8 +7,8 @@ import java.util.Date;
 /*    */ {
 /*    */   private long id;
 /*    */ 
-			private boolean machine;
-			private int state;
+			private String machine;
+			private String state;
 			private String fileName;
 			private long fileSize;
 			private Date backupTime;
@@ -21,16 +21,18 @@ import java.util.Date;
 /*    */   public void setId(long id) {
 /* 16 */     this.id = id;
 /*    */   }
-public boolean isMachine() {
+
+
+public String getMachine() {
 	return machine;
 }
-public void setMachine(boolean machine) {
+public void setMachine(String machine) {
 	this.machine = machine;
 }
-public int getState() {
+public String getState() {
 	return state;
 }
-public void setState(int state) {
+public void setState(String state) {
 	this.state = state;
 }
 public long getFileSize() {

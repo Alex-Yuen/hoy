@@ -252,9 +252,9 @@ public Page getSNBList(Condition condition) throws SQLException, InstantiationEx
 	/*     */       } else {
 	/* 140 */         BackupRecord rec = new BackupRecord();
 	/* 141 */         rec.setId(rs.getLong("id"));
-					  rec.setMachine(rs.getBoolean("machine"));
+					  rec.setMachine(rs.getString("machine"));
 					  rec.setMemo(rs.getString("memo"));
-					  rec.setState(rs.getInt("state"));
+					  rec.setState(rs.getString("state"));
 					  rec.setFileName(rs.getString("file_name"));
 					  rec.setFileSize(rs.getLong("file_size"));
 					  rec.setBackupTime(rs.getTimestamp("backup_time"));

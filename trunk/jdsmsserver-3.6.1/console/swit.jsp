@@ -136,7 +136,7 @@ function change(flag){
 %>
 <tr align="center">
 <td><%=rec.getId() %></td>
-<td><%if(rec.isMachine()){out.println("主机");}else{out.println("备机");}%></td>
+<td><%=rec.getMachine()%></td>
 <td><%=rec.getState()%></td>
 <td><%=rec.getFileName()%></td>
 <td><%=rec.getFileSize()%></td>
