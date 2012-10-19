@@ -1354,7 +1354,7 @@ namespace xplayer
 
         private void menuItem11_Click(object sender, EventArgs e)
         {
-            (new Option()).ShowDialog(this);
+            (new Option(this.screen)).ShowDialog(this);
         }
 
         private void listView1_Resize(object sender, EventArgs e)
