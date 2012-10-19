@@ -11,6 +11,7 @@ using System.Drawing.Imaging;
 using DirectShowLib;
 using DirectShowLib.DES;
 using System.Reflection;
+using System.Configuration;
 
 namespace xplayer
 {
@@ -613,7 +614,7 @@ namespace xplayer
             if (m_objMediaControl != null)
                 m_objMediaControl.Stop();
 
-            m_CurrentStatus = MediaStatus.Stopped;
+            m_CurrentStatus = MediaStatus.None;
 
             if (m_objMediaEventEx != null)
                 m_objMediaEventEx.SetNotifyWindow(IntPtr.Zero, 0, IntPtr.Zero);
@@ -731,15 +732,16 @@ namespace xplayer
                         // If this is the end of the clip, reset to beginning
                         if (lEventCode == EventCode.Complete)
                         {
-                            m_objMediaControl.Stop();
-                            m_CurrentStatus = MediaStatus.Stopped;
+                            CleanUp();
+                            //m_objMediaControl.Stop();
 
-                            DsLong pos = new DsLong(0);
+                            //DsLong pos = new DsLong(0);
                             // Reset to first frame of movie
                             /**
                         hr = this.mediaSeeking.SetPositions(pos, AMSeekingSeekingFlags.AbsolutePositioning, 
                           null, AMSeekingSeekingFlags.NoPositioning);
                              * */
+                            /**
                             hr = m_objMediaPosition.put_CurrentPosition(0.0);
                             if (hr < 0)
                             {
@@ -750,10 +752,36 @@ namespace xplayer
                                 // necessary in most cases.
                                 hr = this.m_objMediaControl.Stop();
                                 hr = this.m_objMediaControl.Run();
-                            }
-                            CleanUp();
-                            this.screen.BackColor = Color.Black;
+                            }**/
 
+                            //m_CurrentStatus = MediaStatus.None;
+
+                            bool sp = false;
+                            string ssp = ConfigurationManager.AppSettings["SP"];
+                            if (ssp != null)
+                            {
+                                sp = Boolean.Parse(ssp);
+                            }
+
+                            string path = null;
+                            if (sp)
+                            {
+                                path = ConfigurationManager.AppSettings["PATH"];
+                                //load image
+                                try
+                                {
+                                    Image bi = Image.FromFile(path);
+                                    this.screen.BackgroundImage = bi;
+                                }
+                                catch (Exception ex)
+                                {
+                                    this.screen.BackColor = Color.Black;
+                                }
+                            }
+                            else
+                            {
+                                this.screen.BackColor = Color.Black;
+                            }
                             UpdateStatusBar();
                             UpdateToolBar();
                         }
@@ -1009,7 +1037,7 @@ namespace xplayer
                     reserveScreen();
                     break;
                 case 6:
-                    (new Option()).ShowDialog(this);
+                    (new Option(this.screen)).ShowDialog(this);
                     break;
             }
         }
