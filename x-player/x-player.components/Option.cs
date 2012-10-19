@@ -46,11 +46,13 @@ namespace xplayer
                 }
                 catch (Exception ex)
                 {
+                    this.screen.BackgroundImage = null;
                     this.screen.BackColor = Color.Black;
                 }
             }
             else
             {
+                this.screen.BackgroundImage = null;
                 this.screen.BackColor = Color.Black;
             }
 
@@ -86,6 +88,7 @@ namespace xplayer
                 }
                 catch (Exception ex)
                 {
+                    this.panel1.BackgroundImage = null;
                     this.panel1.BackColor = Color.Black;
                 }
             }
@@ -93,6 +96,7 @@ namespace xplayer
             {
                 this.radioButton1.Checked = true;
                 this.radioButton2.Checked = false;
+                this.panel1.BackgroundImage = null;
                 this.panel1.BackColor = Color.Black;
             }
         }
@@ -113,6 +117,7 @@ namespace xplayer
                 }
                 catch (Exception ex)
                 {
+                    this.panel1.BackgroundImage = null;
                     this.panel1.BackColor = Color.Black;
                 }
             }
@@ -124,6 +129,7 @@ namespace xplayer
             {
                 this.textBox1.Enabled = false;
                 this.button3.Enabled = false;
+                this.panel1.BackgroundImage = null;
                 this.panel1.BackColor = Color.Black;
             }
         }
@@ -141,6 +147,7 @@ namespace xplayer
                 }
                 catch (Exception ex)
                 {
+                    this.panel1.BackgroundImage = null;
                     this.panel1.BackColor = Color.Black;
                 }
             }
