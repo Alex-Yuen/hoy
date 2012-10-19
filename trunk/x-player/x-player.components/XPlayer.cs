@@ -1232,7 +1232,7 @@ namespace xplayer
             if (isImage(this.listView1.SelectedItems[0].Text))
             {
                 CleanUp();
-                Image img = new Bitmap(this.listView1.SelectedItems[0].Text);
+                Image img = new Bitmap(this.listView1.SelectedItems[0].ToolTipText);
                 this.screen.BackgroundImage = img;
 
                 this.trackBar1.Enabled = false;
@@ -1247,7 +1247,7 @@ namespace xplayer
                     CleanUp();
 
                     m_objGraphBuilder = (IGraphBuilder)new FilterGraph();
-                    m_objGraphBuilder.RenderFile(this.listView1.SelectedItems[0].Text, null);
+                    m_objGraphBuilder.RenderFile(this.listView1.SelectedItems[0].ToolTipText, null);
 
                     m_objBasicAudio = m_objGraphBuilder as IBasicAudio;
                     m_objBasicVideo = m_objGraphBuilder as IBasicVideo;
