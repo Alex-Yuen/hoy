@@ -11,9 +11,12 @@ namespace xplayer
 {
     public partial class Option : Form
     {
-        public Option()
+        private Screen screen;
+
+        public Option(Screen screen)
         {
             InitializeComponent();
+            this.screen = screen;
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -23,6 +26,34 @@ namespace xplayer
             config.AppSettings.Settings["PATH"].Value = this.textBox1.Text;
             config.Save(ConfigurationSaveMode.Modified);
             ConfigurationManager.RefreshSection("appSettings");
+
+            bool sp = false;
+            string ssp = ConfigurationManager.AppSettings["SP"];
+            if (ssp != null)
+            {
+                sp = Boolean.Parse(ssp);
+            }
+
+            string path = null;
+            if (sp)
+            {
+                path = ConfigurationManager.AppSettings["PATH"];
+                //load image
+                try
+                {
+                    Image bi = Image.FromFile(path);
+                    this.screen.BackgroundImage = bi;
+                }
+                catch (Exception ex)
+                {
+                    this.screen.BackColor = Color.Black;
+                }
+            }
+            else
+            {
+                this.screen.BackColor = Color.Black;
+            }
+
             this.Close();
         }
 

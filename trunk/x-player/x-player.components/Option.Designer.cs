@@ -169,10 +169,10 @@
             this.linkLabel1.AutoSize = true;
             this.linkLabel1.Location = new System.Drawing.Point(255, 196);
             this.linkLabel1.Name = "linkLabel1";
-            this.linkLabel1.Size = new System.Drawing.Size(137, 12);
+            this.linkLabel1.Size = new System.Drawing.Size(131, 12);
             this.linkLabel1.TabIndex = 0;
             this.linkLabel1.TabStop = true;
-            this.linkLabel1.Text = "http://www.hoyland.ws/";
+            this.linkLabel1.Text = "http://www.hoyland.ws";
             // 
             // label1
             // 
