@@ -86,7 +86,10 @@ namespace xplayer
         private MenuItem menuItem11;
         private ToolBarButton toolBarButton11;
         private ToolBarButton toolBarButton12;
+        private PropertyGrid propertyGrid1;
         private Form pf = null;
+        private MediaItem mi = null;
+
         public XPlayer(Form pf)
         {
             this.pf = pf;
@@ -122,6 +125,7 @@ namespace xplayer
             //ShowScrollBar((int)this.listView1.Handle, SB_VERT, 1);
             try
             {
+                this.mi = new MediaItem();
                 //Console.WriteLine("F3");
                 this.title += " " + Assembly.GetExecutingAssembly().GetName().Version.ToString();
                 this.Text = title;
@@ -214,11 +218,13 @@ namespace xplayer
             this.panel5 = new System.Windows.Forms.Panel();
             this.panel3 = new System.Windows.Forms.Panel();
             this.trackBar1 = new System.Windows.Forms.TrackBar();
+            this.propertyGrid1 = new System.Windows.Forms.PropertyGrid();
             ((System.ComponentModel.ISupportInitialize)(this.statusBarPanel1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.statusBarPanel2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.statusBarPanel3)).BeginInit();
             this.panel1.SuspendLayout();
             this.panel4.SuspendLayout();
+            this.panel5.SuspendLayout();
             this.panel3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.trackBar1)).BeginInit();
             this.SuspendLayout();
@@ -553,6 +559,7 @@ namespace xplayer
             // panel5
             // 
             this.panel5.BackColor = System.Drawing.SystemColors.ScrollBar;
+            this.panel5.Controls.Add(this.propertyGrid1);
             this.panel5.Dock = System.Windows.Forms.DockStyle.Left;
             this.panel5.Location = new System.Drawing.Point(0, 0);
             this.panel5.Name = "panel5";
@@ -582,6 +589,14 @@ namespace xplayer
             this.trackBar1.TickStyle = System.Windows.Forms.TickStyle.None;
             this.trackBar1.Scroll += new System.EventHandler(this.trackBar1_Scroll);
             // 
+            // propertyGrid1
+            // 
+            this.propertyGrid1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.propertyGrid1.Location = new System.Drawing.Point(0, 0);
+            this.propertyGrid1.Name = "propertyGrid1";
+            this.propertyGrid1.Size = new System.Drawing.Size(243, 236);
+            this.propertyGrid1.TabIndex = 1;
+            // 
             // XPlayer
             // 
             this.AutoScaleBaseSize = new System.Drawing.Size(6, 14);
@@ -601,6 +616,7 @@ namespace xplayer
             ((System.ComponentModel.ISupportInitialize)(this.statusBarPanel3)).EndInit();
             this.panel1.ResumeLayout(false);
             this.panel4.ResumeLayout(false);
+            this.panel5.ResumeLayout(false);
             this.panel3.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.trackBar1)).EndInit();
             this.ResumeLayout(false);
@@ -911,6 +927,7 @@ namespace xplayer
             {
                 this.toolBarButton9.Pushed = true;
                 screen.Show();
+                screen.BringToFront();
             }
         }
 
@@ -1126,8 +1143,8 @@ namespace xplayer
 
             imageList2.Images.Add(img);
             img.Dispose();
-
-            ListViewItem item = new ListViewItem(fn);
+            string simplefn = fn.Substring(fn.LastIndexOf("\\")+1);
+            ListViewItem item = new ListViewItem(simplefn);
             //item.
             item.ImageIndex = imageList2.Images.Count - 1;
             item.ToolTipText = fn;
@@ -1188,10 +1205,16 @@ namespace xplayer
             if (this.listView1.SelectedItems.Count > 0)
             {
                 this.toolBarButton8.Enabled = true;
+                ListViewItem lvi = this.listView1.SelectedItems[0];
+                mi.Name = lvi.Text;
+                mi.Path = lvi.ToolTipText;
+                mi.Type = lvi.Text.Substring(lvi.Text.LastIndexOf(".") + 1);
+                this.propertyGrid1.SelectedObject = mi;
             }
             else
             {
                 this.toolBarButton8.Enabled = false;
+                this.propertyGrid1.SelectedObject = null;
             }
         }
 
@@ -1200,6 +1223,10 @@ namespace xplayer
             if (screen.Visible == false)
             {
                 reserveScreen();
+            }
+            else
+            {
+                this.screen.BringToFront();
             }
 
             if (isImage(this.listView1.SelectedItems[0].Text))
