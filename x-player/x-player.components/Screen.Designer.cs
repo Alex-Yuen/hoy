@@ -34,6 +34,7 @@
             this.menuItem5 = new System.Windows.Forms.MenuItem();
             this.menuItem2 = new System.Windows.Forms.MenuItem();
             this.menuItem1 = new System.Windows.Forms.MenuItem();
+            this.menuItem3 = new System.Windows.Forms.MenuItem();
             this.SuspendLayout();
             // 
             // mainMenu1
@@ -46,7 +47,8 @@
             this.menuItem5.Index = 0;
             this.menuItem5.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
             this.menuItem2,
-            this.menuItem1});
+            this.menuItem1,
+            this.menuItem3});
             this.menuItem5.Text = "&Tool";
             this.menuItem5.Visible = false;
             // 
@@ -65,6 +67,13 @@
             this.menuItem1.Text = "Full/Part Screen";
             this.menuItem1.Visible = false;
             this.menuItem1.Click += new System.EventHandler(this.menuItem1_Click);
+            // 
+            // menuItem3
+            // 
+            this.menuItem3.Index = 2;
+            this.menuItem3.Shortcut = System.Windows.Forms.Shortcut.Ctrl0;
+            this.menuItem3.Text = "Show Background";
+            this.menuItem3.Click += new System.EventHandler(this.menuItem3_Click);
             // 
             // Screen
             // 
@@ -93,5 +102,6 @@
         private System.Windows.Forms.MenuItem menuItem5;
         private System.Windows.Forms.MenuItem menuItem2;
         private System.Windows.Forms.MenuItem menuItem1;
+        private System.Windows.Forms.MenuItem menuItem3;
     }
 }
