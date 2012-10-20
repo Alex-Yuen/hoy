@@ -86,8 +86,11 @@ namespace xplayer
         private MenuItem menuItem11;
         private ToolBarButton toolBarButton11;
         private ToolBarButton toolBarButton12;
-        private PropertyGrid propertyGrid1;
         private Form pf = null;
+        private MenuItem menuItem12;
+        private PropertyGrid propertyGrid1;
+        private Panel panel2;
+        private Label label1;
         private MediaItem mi = null;
 
         public XPlayer(Form pf)
@@ -187,6 +190,7 @@ namespace xplayer
             this.menuItem3 = new System.Windows.Forms.MenuItem();
             this.menuItem9 = new System.Windows.Forms.MenuItem();
             this.menuItem10 = new System.Windows.Forms.MenuItem();
+            this.menuItem12 = new System.Windows.Forms.MenuItem();
             this.menuItem6 = new System.Windows.Forms.MenuItem();
             this.menuItem7 = new System.Windows.Forms.MenuItem();
             this.imageList1 = new System.Windows.Forms.ImageList(this.components);
@@ -218,7 +222,9 @@ namespace xplayer
             this.panel5 = new System.Windows.Forms.Panel();
             this.panel3 = new System.Windows.Forms.Panel();
             this.trackBar1 = new System.Windows.Forms.TrackBar();
+            this.panel2 = new System.Windows.Forms.Panel();
             this.propertyGrid1 = new System.Windows.Forms.PropertyGrid();
+            this.label1 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.statusBarPanel1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.statusBarPanel2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.statusBarPanel3)).BeginInit();
@@ -227,6 +233,7 @@ namespace xplayer
             this.panel5.SuspendLayout();
             this.panel3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.trackBar1)).BeginInit();
+            this.panel2.SuspendLayout();
             this.SuspendLayout();
             // 
             // mainMenu1
@@ -258,14 +265,15 @@ namespace xplayer
             this.menuItem11,
             this.menuItem3,
             this.menuItem9,
-            this.menuItem10});
+            this.menuItem10,
+            this.menuItem12});
             this.menuItem5.Text = "&Tool";
             this.menuItem5.Visible = false;
             // 
             // menuItem8
             // 
             this.menuItem8.Index = 0;
-            this.menuItem8.Text = "&Option";
+            this.menuItem8.Text = "Option";
             // 
             // menuItem2
             // 
@@ -305,6 +313,13 @@ namespace xplayer
             this.menuItem10.Text = "Insert Item";
             this.menuItem10.Visible = false;
             this.menuItem10.Click += new System.EventHandler(this.menuItem10_Click);
+            // 
+            // menuItem12
+            // 
+            this.menuItem12.Index = 6;
+            this.menuItem12.Shortcut = System.Windows.Forms.Shortcut.Ctrl0;
+            this.menuItem12.Text = "Show Background";
+            this.menuItem12.Click += new System.EventHandler(this.menuItem12_Click);
             // 
             // menuItem6
             // 
@@ -560,6 +575,7 @@ namespace xplayer
             // 
             this.panel5.BackColor = System.Drawing.SystemColors.ScrollBar;
             this.panel5.Controls.Add(this.propertyGrid1);
+            this.panel5.Controls.Add(this.panel2);
             this.panel5.Dock = System.Windows.Forms.DockStyle.Left;
             this.panel5.Location = new System.Drawing.Point(0, 0);
             this.panel5.Name = "panel5";
@@ -589,13 +605,37 @@ namespace xplayer
             this.trackBar1.TickStyle = System.Windows.Forms.TickStyle.None;
             this.trackBar1.Scroll += new System.EventHandler(this.trackBar1_Scroll);
             // 
+            // panel2
+            // 
+            this.panel2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(224)))), ((int)(((byte)(192)))));
+            this.panel2.Controls.Add(this.label1);
+            this.panel2.Dock = System.Windows.Forms.DockStyle.Top;
+            this.panel2.Location = new System.Drawing.Point(0, 0);
+            this.panel2.Name = "panel2";
+            this.panel2.Size = new System.Drawing.Size(243, 80);
+            this.panel2.TabIndex = 2;
+            // 
             // propertyGrid1
             // 
             this.propertyGrid1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.propertyGrid1.Location = new System.Drawing.Point(0, 0);
+            this.propertyGrid1.HelpVisible = false;
+            this.propertyGrid1.Location = new System.Drawing.Point(0, 80);
             this.propertyGrid1.Name = "propertyGrid1";
-            this.propertyGrid1.Size = new System.Drawing.Size(243, 236);
-            this.propertyGrid1.TabIndex = 1;
+            this.propertyGrid1.Size = new System.Drawing.Size(243, 156);
+            this.propertyGrid1.TabIndex = 3;
+            // 
+            // label1
+            // 
+            this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                        | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.label1.AutoSize = true;
+            this.label1.Font = new System.Drawing.Font("微软雅黑", 21.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.label1.Location = new System.Drawing.Point(32, 21);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(172, 38);
+            this.label1.TabIndex = 0;
+            this.label1.Text = "hoyland.ws";
             // 
             // XPlayer
             // 
@@ -619,6 +659,8 @@ namespace xplayer
             this.panel5.ResumeLayout(false);
             this.panel3.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.trackBar1)).EndInit();
+            this.panel2.ResumeLayout(false);
+            this.panel2.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -953,16 +995,19 @@ namespace xplayer
             {
                 ListViewItem item = this.listView1.SelectedItems[i];
                 this.listView1.Items.Remove(item);
-                int idx = item.StateImageIndex;
+                int idx = item.ImageIndex;
                 this.imageList2.Images.RemoveAt(idx);
-                //item 后的所有StateImageIndex都要-1
+
+                /**
+                //item 后的所有ImageIndex都要-1
                 foreach (ListViewItem itx in this.listView1.Items)
                 {
-                    if (itx.StateImageIndex > idx)
+                    if (itx.ImageIndex > idx)
                     {
-                        itx.StateImageIndex = itx.StateImageIndex - 1;
+                        itx.ImageIndex = itx.ImageIndex - 1;
                     }
-                }
+                }**/
+                
                 if (this.currentFile == null && this.listView1.Items.Count == 0)
                 {
                     this.toolBarButton6.Enabled = false;
@@ -973,6 +1018,11 @@ namespace xplayer
                 }
             }
 
+            //refresh
+            for (int i = 0; i < this.listView1.Items.Count; i++)
+            {
+                this.listView1.Items[i].ImageIndex = this.listView1.Items[i].ImageIndex;
+            }
             //this.imageList2.Images.Clear();
         }
 
@@ -1101,11 +1151,28 @@ namespace xplayer
 
                         BitmapInfoHeader bitmapHeader = (BitmapInfoHeader)Marshal.PtrToStructure(buffer, typeof(BitmapInfoHeader));
                         IntPtr bitmapData;
-
+                        //bitmapData.
                         if (IntPtr.Size == 4)
                             bitmapData = new IntPtr(buffer.ToInt32() + bitmapHeader.Size);
                         else
                             bitmapData = new IntPtr(buffer.ToInt64() + bitmapHeader.Size);
+                        /**
+                        IntPtr tbuf = Marshal.AllocCoTaskMem(bufSize-bitmapHeader.Size);
+
+                        if (IntPtr.Size == 4)
+                        {
+                            for (int i = 0; i < bufSize - bitmapHeader.Size; i+=3)
+                            {
+                                CopyMemory(new IntPtr(tbuf.ToInt32() + i*3), new IntPtr(buffer.ToInt32() + bufSize - i*3), 3);
+                            }
+                        }
+                        else
+                        {
+                            for (int i = 0; i < bufSize - bitmapHeader.Size; i++)
+                            {
+                                CopyMemory(new IntPtr(tbuf.ToInt64() + i*3), new IntPtr(buffer.ToInt64() + bufSize - i*3), 3);
+                            }
+                        }**/
 
                         bitmap = new Bitmap(bitmapHeader.Width, bitmapHeader.Height, PixelFormat.Format24bppRgb);
                         BitmapData bmpData = bitmap.LockBits(new Rectangle(0, 0, bitmapHeader.Width, bitmapHeader.Height), ImageLockMode.WriteOnly, PixelFormat.Format24bppRgb);
@@ -1134,6 +1201,7 @@ namespace xplayer
             if (bitmap != null)
             {
                 img = bitmap;
+                img.RotateFlip(RotateFlipType.Rotate180FlipX);
                 //File.Delete(tmp);
             }
             else
@@ -1232,12 +1300,12 @@ namespace xplayer
             if (isImage(this.listView1.SelectedItems[0].Text))
             {
                 CleanUp();
+                UpdateStatusBar();
+                UpdateToolBar();
                 Image img = new Bitmap(this.listView1.SelectedItems[0].ToolTipText);
                 this.screen.BackgroundImage = img;
 
                 this.trackBar1.Enabled = false;
-                UpdateStatusBar();
-                //UpdateToolBar();
             }
             else
             {
@@ -1245,6 +1313,8 @@ namespace xplayer
                 if (this.listView1.SelectedItems.Count != 0)
                 {
                     CleanUp();
+                    UpdateStatusBar();
+                    UpdateToolBar();
 
                     m_objGraphBuilder = (IGraphBuilder)new FilterGraph();
                     m_objGraphBuilder.RenderFile(this.listView1.SelectedItems[0].ToolTipText, null);
@@ -1388,6 +1458,52 @@ namespace xplayer
         {
             //listView1.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
             //listView1.Items[listView1.Items.Count - 1].EnsureVisible();
+        }
+
+        private void menuItem12_Click(object sender, EventArgs e)
+        {
+            showBackground();
+        }
+
+        public void showBackground()
+        {
+            this.screen.BringToFront();
+
+            CleanUp();
+
+            bool sp = false;
+            string ssp = ConfigurationManager.AppSettings["SP"];
+            if (ssp != null)
+            {
+                sp = Boolean.Parse(ssp);
+            }
+
+            string path = null;
+            if (sp)
+            {
+                path = ConfigurationManager.AppSettings["PATH"];
+                //load image
+                try
+                {
+                    Image bi = Image.FromFile(path);
+                    this.screen.BackgroundImage = bi;
+                }
+                catch (Exception ex)
+                {
+                    this.screen.BackgroundImage = null;
+                    this.screen.BackColor = Color.Black;
+                }
+            }
+            else
+            {
+                this.screen.BackgroundImage = null;
+                this.screen.BackColor = Color.Black;
+            }
+
+            UpdateStatusBar();
+            UpdateToolBar();
+
+            this.screen.Focus();
         }
     }
 }

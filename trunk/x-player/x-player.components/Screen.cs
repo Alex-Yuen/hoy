@@ -191,5 +191,10 @@ namespace xplayer
         {
             this.xPlayer.sizeChanged(sender, e);
         }
+
+        private void menuItem3_Click(object sender, EventArgs e)
+        {
+            this.xPlayer.showBackground();
+        }
     }
 }
