@@ -76,6 +76,7 @@ namespace xplayer
         private SaveFileDialog saveFileDialog;
         private MenuItem menuItem2;
         private string currentFile = null;
+        private string currentMedia = null;
         private MenuItem menuItem3;
         private ImageList imageList3;
         private MenuItem menuItem7;
@@ -872,8 +873,8 @@ namespace xplayer
             switch (m_CurrentStatus)
             {
                 case MediaStatus.None: statusBarPanel1.Text = "Stopped"; break;
-                case MediaStatus.Paused: statusBarPanel1.Text = "Paused "; break;
-                case MediaStatus.Running: statusBarPanel1.Text = "Running"; break;
+                case MediaStatus.Paused: statusBarPanel1.Text = "Paused - " + this.currentMedia; break;
+                case MediaStatus.Running: statusBarPanel1.Text = "Running - " + this.currentMedia; break;
                 case MediaStatus.Stopped: statusBarPanel1.Text = "Stopped"; break;
             }
 
@@ -1156,23 +1157,7 @@ namespace xplayer
                             bitmapData = new IntPtr(buffer.ToInt32() + bitmapHeader.Size);
                         else
                             bitmapData = new IntPtr(buffer.ToInt64() + bitmapHeader.Size);
-                        /**
-                        IntPtr tbuf = Marshal.AllocCoTaskMem(bufSize-bitmapHeader.Size);
-
-                        if (IntPtr.Size == 4)
-                        {
-                            for (int i = 0; i < bufSize - bitmapHeader.Size; i+=3)
-                            {
-                                CopyMemory(new IntPtr(tbuf.ToInt32() + i*3), new IntPtr(buffer.ToInt32() + bufSize - i*3), 3);
-                            }
-                        }
-                        else
-                        {
-                            for (int i = 0; i < bufSize - bitmapHeader.Size; i++)
-                            {
-                                CopyMemory(new IntPtr(tbuf.ToInt64() + i*3), new IntPtr(buffer.ToInt64() + bufSize - i*3), 3);
-                            }
-                        }**/
+                        
 
                         bitmap = new Bitmap(bitmapHeader.Width, bitmapHeader.Height, PixelFormat.Format24bppRgb);
                         BitmapData bmpData = bitmap.LockBits(new Rectangle(0, 0, bitmapHeader.Width, bitmapHeader.Height), ImageLockMode.WriteOnly, PixelFormat.Format24bppRgb);
@@ -1302,9 +1287,11 @@ namespace xplayer
                 CleanUp();
                 UpdateStatusBar();
                 UpdateToolBar();
-                Image img = new Bitmap(this.listView1.SelectedItems[0].ToolTipText);
+                this.currentMedia = this.listView1.SelectedItems[0].ToolTipText;
+                Image img = new Bitmap(this.currentMedia);
                 this.screen.BackgroundImage = img;
 
+                statusBarPanel1.Text = "Running - " + this.currentMedia;
                 this.trackBar1.Enabled = false;
             }
             else
@@ -1317,7 +1304,8 @@ namespace xplayer
                     UpdateToolBar();
 
                     m_objGraphBuilder = (IGraphBuilder)new FilterGraph();
-                    m_objGraphBuilder.RenderFile(this.listView1.SelectedItems[0].ToolTipText, null);
+                    this.currentMedia = this.listView1.SelectedItems[0].ToolTipText;
+                    m_objGraphBuilder.RenderFile(this.currentMedia, null);
 
                     m_objBasicAudio = m_objGraphBuilder as IBasicAudio;
                     m_objBasicVideo = m_objGraphBuilder as IBasicVideo;
