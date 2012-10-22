@@ -1178,7 +1178,7 @@ namespace xplayer
 
                     hr = mediaCtrl2.Pause();
                     DsError.ThrowExceptionForHR(hr);
-
+                    
                     IMediaPosition m_objMediaPosition2 = m_FilterGraph as IMediaPosition;
                     hr = m_objMediaPosition2.put_CurrentPosition(0.0);
                     DsError.ThrowExceptionForHR(hr);
@@ -1187,6 +1187,7 @@ namespace xplayer
 
                     //setcallback
                     sampGrabber.SetCallback(capture, 1);
+                    //mediaCtrl2.Stop();
                     /**
                     IMediaDet imd = (IMediaDet)new MediaDet();
                     imd.put_Filename(fn);
@@ -1662,7 +1663,6 @@ namespace xplayer
                BM = b;
                flag = true;
             }
-
             /**
             IntPtr buffer = Marshal.AllocCoTaskMem(BufferLen);
             CopyMemory(buffer, pBuffer, BufferLen);
