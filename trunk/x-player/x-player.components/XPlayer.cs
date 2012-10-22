@@ -90,10 +90,8 @@ namespace xplayer
         private Form pf = null;
         private MenuItem menuItem12;
         private PropertyGrid propertyGrid1;
-        private Panel panel2;
-        private Label label1;
         private MediaItem mi = null;
-
+        
         public XPlayer(Form pf)
         {
             this.pf = pf;
@@ -221,11 +219,9 @@ namespace xplayer
             this.listView1 = new System.Windows.Forms.ListView();
             this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.panel5 = new System.Windows.Forms.Panel();
+            this.propertyGrid1 = new System.Windows.Forms.PropertyGrid();
             this.panel3 = new System.Windows.Forms.Panel();
             this.trackBar1 = new System.Windows.Forms.TrackBar();
-            this.panel2 = new System.Windows.Forms.Panel();
-            this.propertyGrid1 = new System.Windows.Forms.PropertyGrid();
-            this.label1 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.statusBarPanel1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.statusBarPanel2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.statusBarPanel3)).BeginInit();
@@ -234,7 +230,6 @@ namespace xplayer
             this.panel5.SuspendLayout();
             this.panel3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.trackBar1)).BeginInit();
-            this.panel2.SuspendLayout();
             this.SuspendLayout();
             // 
             // mainMenu1
@@ -576,12 +571,19 @@ namespace xplayer
             // 
             this.panel5.BackColor = System.Drawing.SystemColors.ScrollBar;
             this.panel5.Controls.Add(this.propertyGrid1);
-            this.panel5.Controls.Add(this.panel2);
             this.panel5.Dock = System.Windows.Forms.DockStyle.Left;
             this.panel5.Location = new System.Drawing.Point(0, 0);
             this.panel5.Name = "panel5";
             this.panel5.Size = new System.Drawing.Size(243, 236);
             this.panel5.TabIndex = 18;
+            // 
+            // propertyGrid1
+            // 
+            this.propertyGrid1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.propertyGrid1.Location = new System.Drawing.Point(0, 0);
+            this.propertyGrid1.Name = "propertyGrid1";
+            this.propertyGrid1.Size = new System.Drawing.Size(243, 236);
+            this.propertyGrid1.TabIndex = 3;
             // 
             // panel3
             // 
@@ -606,38 +608,6 @@ namespace xplayer
             this.trackBar1.TickStyle = System.Windows.Forms.TickStyle.None;
             this.trackBar1.Scroll += new System.EventHandler(this.trackBar1_Scroll);
             // 
-            // panel2
-            // 
-            this.panel2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(224)))), ((int)(((byte)(192)))));
-            this.panel2.Controls.Add(this.label1);
-            this.panel2.Dock = System.Windows.Forms.DockStyle.Top;
-            this.panel2.Location = new System.Drawing.Point(0, 0);
-            this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(243, 80);
-            this.panel2.TabIndex = 2;
-            // 
-            // propertyGrid1
-            // 
-            this.propertyGrid1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.propertyGrid1.HelpVisible = false;
-            this.propertyGrid1.Location = new System.Drawing.Point(0, 80);
-            this.propertyGrid1.Name = "propertyGrid1";
-            this.propertyGrid1.Size = new System.Drawing.Size(243, 156);
-            this.propertyGrid1.TabIndex = 3;
-            // 
-            // label1
-            // 
-            this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
-            this.label1.AutoSize = true;
-            this.label1.Font = new System.Drawing.Font("Î¢ÈíÑÅºÚ", 21.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.label1.Location = new System.Drawing.Point(32, 21);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(172, 38);
-            this.label1.TabIndex = 0;
-            this.label1.Text = "hoyland.ws";
-            // 
             // XPlayer
             // 
             this.AutoScaleBaseSize = new System.Drawing.Size(6, 14);
@@ -660,8 +630,6 @@ namespace xplayer
             this.panel5.ResumeLayout(false);
             this.panel3.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.trackBar1)).EndInit();
-            this.panel2.ResumeLayout(false);
-            this.panel2.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -924,6 +892,7 @@ namespace xplayer
                     toolBarButton11.Enabled = false;
                     //toolBarButton12.ImageIndex = 9;
                     toolBarButton12.Enabled = false;
+                    trackBar1.Value = 0;
                     trackBar1.Enabled = false;
                     break;
 
@@ -1117,6 +1086,29 @@ namespace xplayer
             return Convert.ToUInt32(ts.TotalSeconds);
         }**/
 
+        private void ConfigureSampleGrabber(ISampleGrabber sampGrabber)
+        {
+            AMMediaType media;
+            int hr;
+
+            // Set the media type to Video/RBG24
+            media = new AMMediaType();
+            media.majorType = MediaType.Video;
+            media.subType = MediaSubType.RGB24;
+            media.formatType = FormatType.VideoInfo; //FormatType.VideoInfo2
+
+            //Console.WriteLine(iPinOutSource.QueryAccept(media));
+
+            hr = sampGrabber.SetMediaType(media);
+            DsError.ThrowExceptionForHR(hr);
+
+            DsUtils.FreeAMMediaType(media);
+            media = null;
+
+            //hr = sampGrabber.SetCallback(this.capture, 1);
+            //DsError.ThrowExceptionForHR(hr);
+        }
+        
         private void addItem(string fn)
         {
             if (!File.Exists(fn))
@@ -1124,13 +1116,78 @@ namespace xplayer
                 return;
             }
             //string tmp = null;
-            Bitmap bitmap = null;
+            //Bitmap bitmap = null;
             if (fn.ToLower().EndsWith(".mpeg") || fn.ToLower().EndsWith(".mpg"))
             {
+                int hr;
+
+                IBaseFilter ibfRenderer = null;
+                ISampleGrabber sampGrabber = null;
+                IBaseFilter capFilter = null;
+                IPin iPinInFilter = null;
+                IPin iPinOutFilter = null;
+                IPin iPinInDest = null;
+
                 try
                 {
                     //tmp = Environment.CurrentDirectory + "\\temp\\tb-" + UnixStamp() + ".tmp";
+                    Capture capture = new Capture(this, fn);
 
+                    IFilterGraph2 m_FilterGraph = new FilterGraph() as IFilterGraph2;
+
+                    sampGrabber = new SampleGrabber() as ISampleGrabber;
+                    //IBaseFilter bf = (IBaseFilter) sb;
+
+                    hr = m_FilterGraph.AddSourceFilter(fn, "Ds.NET FileFilter", out capFilter);
+                    DsError.ThrowExceptionForHR(hr);
+
+                    // Hopefully this will be the video pin
+                    IPin iPinOutSource = DsFindPin.ByDirection(capFilter, PinDirection.Output, 0);
+
+                    IBaseFilter baseGrabFlt = sampGrabber as IBaseFilter;
+                    ConfigureSampleGrabber(sampGrabber);
+
+                    iPinInFilter = DsFindPin.ByDirection(baseGrabFlt, PinDirection.Input, 0);
+                    iPinOutFilter = DsFindPin.ByDirection(baseGrabFlt, PinDirection.Output, 0);
+
+                    // Add the frame grabber to the graph
+                    hr = m_FilterGraph.AddFilter(baseGrabFlt, "Ds.NET Grabber");
+                    DsError.ThrowExceptionForHR(hr);
+
+                    hr = m_FilterGraph.Connect(iPinOutSource, iPinInFilter);
+                    DsError.ThrowExceptionForHR(hr);
+
+                    // Get the default video renderer
+                    ibfRenderer = (IBaseFilter)new NullRenderer();
+
+                    // Add it to the graph
+                    hr = m_FilterGraph.AddFilter(ibfRenderer, "Ds.NET VideoRendererDefault");
+                    DsError.ThrowExceptionForHR(hr);
+                    iPinInDest = DsFindPin.ByDirection(ibfRenderer, PinDirection.Input, 0);
+
+                    // Connect the graph.  Many other filters automatically get added here                    
+                    hr = m_FilterGraph.Connect(iPinOutFilter, iPinInDest);                    
+                    DsError.ThrowExceptionForHR(hr);
+
+                    capture.SaveSizeInfo(sampGrabber);
+
+                    //run to first frame
+                    IMediaControl mediaCtrl2 = m_FilterGraph as IMediaControl;
+                    hr = mediaCtrl2.Run();
+                    DsError.ThrowExceptionForHR(hr);
+
+                    hr = mediaCtrl2.Pause();
+                    DsError.ThrowExceptionForHR(hr);
+
+                    IMediaPosition m_objMediaPosition2 = m_FilterGraph as IMediaPosition;
+                    hr = m_objMediaPosition2.put_CurrentPosition(0.0);
+                    DsError.ThrowExceptionForHR(hr);
+
+                    capture.FrameEvent += new Capture.ShowFrame(capture.CaptureDone);
+
+                    //setcallback
+                    sampGrabber.SetCallback(capture, 1);
+                    /**
                     IMediaDet imd = (IMediaDet)new MediaDet();
                     imd.put_Filename(fn);
                     imd.put_CurrentStream(0);
@@ -1169,6 +1226,7 @@ namespace xplayer
 
                     }
                     imd = null;
+                     **/
                     //loMD.
                     //Image loImg = Image.FromFile(tmp);
                     //loImg.Save(tmp+".jpg", ImageFormat.Jpeg);
@@ -1180,23 +1238,53 @@ namespace xplayer
                     Console.WriteLine(ex.Message);
                     // Means media not supported
                 }
-            }
-
-            Image img = null;
-            if (bitmap != null)
-            {
-                img = bitmap;
-                img.RotateFlip(RotateFlipType.Rotate180FlipX);
-                //File.Delete(tmp);
+                finally
+                {
+                    if (capFilter != null)
+                    {
+                        Marshal.ReleaseComObject(capFilter);
+                        capFilter = null;
+                    }
+                    if (sampGrabber != null)
+                    {
+                        Marshal.ReleaseComObject(sampGrabber);
+                        sampGrabber = null;
+                    }
+                    if (ibfRenderer != null)
+                    {
+                        Marshal.ReleaseComObject(ibfRenderer);
+                        ibfRenderer = null;
+                    }
+                    if (iPinInFilter != null)
+                    {
+                        Marshal.ReleaseComObject(iPinInFilter);
+                        iPinInFilter = null;
+                    }
+                    if (iPinOutFilter != null)
+                    {
+                        Marshal.ReleaseComObject(iPinOutFilter);
+                        iPinOutFilter = null;
+                    }
+                    if (iPinInDest != null)
+                    {
+                        Marshal.ReleaseComObject(iPinInDest);
+                        iPinInDest = null;
+                    }
+                }
             }
             else
             {
-                img = Image.FromFile(fn);
+                Image img = Image.FromFile(fn);
+                AddImage(AddImageCB, fn, img);
             }
+        }
 
+        public delegate void AddImageDelegate(string fn, Image img);
+        public void AddImageCB(string fn, Image img)
+        {
             imageList2.Images.Add(img);
             img.Dispose();
-            string simplefn = fn.Substring(fn.LastIndexOf("\\")+1);
+            string simplefn = fn.Substring(fn.LastIndexOf("\\") + 1);
             ListViewItem item = new ListViewItem(simplefn);
             //item.
             item.ImageIndex = imageList2.Images.Count - 1;
@@ -1206,7 +1294,20 @@ namespace xplayer
             listView1.Items.Add(item);
             listView1.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
             listView1.Items[listView1.Items.Count - 1].EnsureVisible();
+        }
 
+        public void AddImage(AddImageDelegate ai, string fn, Image img)
+        {
+            if (this.InvokeRequired)
+            {
+                this.Invoke(ai, fn, img);
+                return;
+            }
+            else
+            {
+                ai(fn, img);
+                return;
+            }
         }
 
         private void listView1_DragEnter(object sender, DragEventArgs e)
@@ -1493,5 +1594,178 @@ namespace xplayer
 
             this.screen.Focus();
         }
+
+        public Screen getScreen()
+        {
+            return this.screen;
+        }
+
+    }
+    
+    internal class Capture : ISampleGrabberCB
+    {
+        private XPlayer xplayer;
+        private string fn;
+
+        private int m_videoWidth;
+        private int m_videoHeight;
+        private int m_stride;
+        private int m_imageSize;
+        private bool flag = false;
+
+        public Capture(XPlayer xplayer, String fn)
+        {
+            this.xplayer = xplayer;
+            this.fn = fn;
+        }
+
+        public void SaveSizeInfo(ISampleGrabber sampGrabber)
+        {
+            int hr;
+
+            // Get the media type from the SampleGrabber
+            AMMediaType media = new AMMediaType();
+            hr = sampGrabber.GetConnectedMediaType(media);
+            DsError.ThrowExceptionForHR(hr);
+
+            if ((media.formatType != FormatType.VideoInfo) || (media.formatPtr == IntPtr.Zero))
+            {
+                throw new NotSupportedException("Unknown Grabber Media Format");
+            }
+
+            // Grab the size info
+            VideoInfoHeader videoInfoHeader = (VideoInfoHeader)Marshal.PtrToStructure(media.formatPtr, typeof(VideoInfoHeader));
+            m_videoWidth = videoInfoHeader.BmiHeader.Width;
+            m_videoHeight = videoInfoHeader.BmiHeader.Height;
+            m_imageSize = videoInfoHeader.BmiHeader.ImageSize;
+            m_stride = m_videoWidth * (videoInfoHeader.BmiHeader.BitCount / 8); 
+
+            DsUtils.FreeAMMediaType(media);
+            media = null;
+        }
+
+        [DllImport("kernel32.dll", EntryPoint = "RtlMoveMemory")]
+        private static extern void CopyMemory(IntPtr Destination, IntPtr Source, int Length);
+
+        /// <summary> sample callback, NOT USED. </summary>
+        int ISampleGrabberCB.SampleCB(double SampleTime, IMediaSample pSample)
+        {
+            Marshal.ReleaseComObject(pSample);
+            return 0;
+        }
+
+        /// <summary> buffer callback, COULD BE FROM FOREIGN THREAD. </summary>
+        int ISampleGrabberCB.BufferCB(double SampleTime, IntPtr pBuffer, int BufferLen)
+        {
+            if (!flag){
+               Bitmap b = new Bitmap(m_videoWidth, m_videoHeight, m_stride, PixelFormat.Format24bppRgb, pBuffer);
+               BM = b;
+               flag = true;
+            }
+
+            /**
+            IntPtr buffer = Marshal.AllocCoTaskMem(BufferLen);
+            CopyMemory(buffer, pBuffer, BufferLen);
+
+            if (!flag)
+            {
+                BitmapInfoHeader bitmapHeader = (BitmapInfoHeader)Marshal.PtrToStructure(buffer, typeof(BitmapInfoHeader));
+                IntPtr bitmapData;
+                //bitmapData.
+                if (IntPtr.Size == 4)
+                    bitmapData = new IntPtr(buffer.ToInt32() + bitmapHeader.Size);
+                else
+                    bitmapData = new IntPtr(buffer.ToInt64() + bitmapHeader.Size);
+
+
+                Bitmap bitmap = new Bitmap(bitmapHeader.Width, bitmapHeader.Height, PixelFormat.Format24bppRgb);
+                BitmapData bmpData = bitmap.LockBits(new Rectangle(0, 0, bitmapHeader.Width, bitmapHeader.Height), ImageLockMode.WriteOnly, PixelFormat.Format24bppRgb);
+                CopyMemory(bmpData.Scan0, bitmapData, m_videoWidth * m_videoHeight * 3);
+                bitmap.UnlockBits(bmpData);
+            **/
+                //if (buffer != IntPtr.Zero)
+                //    Marshal.FreeCoTaskMem(buffer);
+
+                /**
+                int bufferedSize = BufferLen;
+                int stride = this.m_stride * 3;
+                byte[] savedArray = new byte[this.m_imageSize + 64000];
+
+                Marshal.Copy(pBuffer, savedArray, 0, BufferLen);
+
+                GCHandle handle = GCHandle.Alloc(savedArray, GCHandleType.Pinned);
+                int scan0 = (int)handle.AddrOfPinnedObject();
+                scan0 += (this.m_videoHeight - 1) * stride;
+                Bitmap b = new Bitmap(this.m_videoWidth, this.m_videoHeight, -stride,
+                    System.Drawing.Imaging.PixelFormat.Format24bppRgb, (IntPtr)scan0);
+                handle.Free();
+                 * */
+                /**
+                Image img = b;
+                if (img != null)
+                {
+                    try
+                    {
+                        img.RotateFlip(RotateFlipType.Rotate180FlipX);
+                        this.xplayer.addImage(this.fn, img);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine(ex.Message);
+                        Console.WriteLine(ex.StackTrace);
+                    }
+                }
+                **/
+            //    flag = true;
+            //}
+            return 0;
+        }
+
+        public Bitmap BM
+        {
+            set
+            {
+                this.FrameEvent(value);
+            }
+        }
+
+        /// <summary> Frame event </summary>
+        public event ShowFrame FrameEvent;
+        
+        /// <summary> Interface frame event </summary>
+        public delegate void ShowFrame(Bitmap e);
+
+        public void CaptureDone(Bitmap e)
+        {
+            /**
+            try
+            {
+                this.xplayer.getScreen().BackgroundImage = e;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                Console.WriteLine(ex.StackTrace);
+            }
+            **/
+            Image img = e;
+            if (img != null)
+            {
+                try
+                {
+                    img.RotateFlip(RotateFlipType.Rotate180FlipX);
+                    this.xplayer.AddImage(this.xplayer.AddImageCB, this.fn, img);
+                    //this.xplayer.getScreen().BackgroundImage = img;
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                    Console.WriteLine(ex.StackTrace);
+                }
+            }
+
+            this.FrameEvent -= new ShowFrame(CaptureDone);
+        }
+
     }
 }
