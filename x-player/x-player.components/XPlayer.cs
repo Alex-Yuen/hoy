@@ -90,6 +90,9 @@ namespace xplayer
         private Form pf = null;
         private MenuItem menuItem12;
         private PropertyGrid propertyGrid1;
+        private ToolBarButton toolBarButton13;
+        private ToolBarButton toolBarButton14;
+        private ToolBarButton toolBarButton15;
         private MediaItem mi = null;
         
         public XPlayer(Form pf)
@@ -222,6 +225,9 @@ namespace xplayer
             this.propertyGrid1 = new System.Windows.Forms.PropertyGrid();
             this.panel3 = new System.Windows.Forms.Panel();
             this.trackBar1 = new System.Windows.Forms.TrackBar();
+            this.toolBarButton13 = new System.Windows.Forms.ToolBarButton();
+            this.toolBarButton14 = new System.Windows.Forms.ToolBarButton();
+            this.toolBarButton15 = new System.Windows.Forms.ToolBarButton();
             ((System.ComponentModel.ISupportInitialize)(this.statusBarPanel1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.statusBarPanel2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.statusBarPanel3)).BeginInit();
@@ -342,6 +348,8 @@ namespace xplayer
             this.imageList1.Images.SetKeyName(5, "screen.png");
             this.imageList1.Images.SetKeyName(6, "option.png");
             this.imageList1.Images.SetKeyName(7, "new.png");
+            this.imageList1.Images.SetKeyName(8, "up-arrow-t.png");
+            this.imageList1.Images.SetKeyName(9, "down-arrow-t.png");
             // 
             // statusBar1
             // 
@@ -462,7 +470,10 @@ namespace xplayer
             this.toolBarButton7,
             this.toolBarButton8,
             this.toolBarButton9,
-            this.toolBarButton10});
+            this.toolBarButton10,
+            this.toolBarButton13,
+            this.toolBarButton14,
+            this.toolBarButton15});
             this.toolBar2.ButtonSize = new System.Drawing.Size(46, 46);
             this.toolBar2.DropDownArrows = true;
             this.toolBar2.ImageList = this.imageList1;
@@ -607,6 +618,21 @@ namespace xplayer
             this.trackBar1.TabStop = false;
             this.trackBar1.TickStyle = System.Windows.Forms.TickStyle.None;
             this.trackBar1.Scroll += new System.EventHandler(this.trackBar1_Scroll);
+            // 
+            // toolBarButton13
+            // 
+            this.toolBarButton13.Name = "toolBarButton13";
+            this.toolBarButton13.Style = System.Windows.Forms.ToolBarButtonStyle.Separator;
+            // 
+            // toolBarButton14
+            // 
+            this.toolBarButton14.ImageIndex = 8;
+            this.toolBarButton14.Name = "toolBarButton14";
+            // 
+            // toolBarButton15
+            // 
+            this.toolBarButton15.ImageIndex = 9;
+            this.toolBarButton15.Name = "toolBarButton15";
             // 
             // XPlayer
             // 
@@ -1171,15 +1197,52 @@ namespace xplayer
 
                     capture.SaveSizeInfo(sampGrabber);
 
+                    
                     //run to first frame
                     IMediaControl mediaCtrl2 = m_FilterGraph as IMediaControl;
+                    
                     hr = mediaCtrl2.Run();
                     DsError.ThrowExceptionForHR(hr);
 
                     hr = mediaCtrl2.Pause();
                     DsError.ThrowExceptionForHR(hr);
-                    
+
+                    /**
+                    IMediaSeeking ims = m_FilterGraph as IMediaSeeking;
+                    ims.SetTimeFormat(TimeFormat.Frame);
+                    long frames = 0;
+                    ims.GetDuration(out frames);
+                    Console.WriteLine(frames);
+                     * */
+                    /**
+                    Guid tf = new Guid();
+                    IMediaSeeking ims = m_FilterGraph as IMediaSeeking;
+                    ims.GetTimeFormat(out tf);
+                    long dur = 0;
+                    ims.SetTimeFormat(TimeFormat.MediaTime);
+                    ims.GetDuration(out dur);
+                    Console.WriteLine(">>>" + dur);
+                    Console.WriteLine(tf);
+                    if (tf == TimeFormat.MediaTime)
+                    {
+                        Console.WriteLine("111");
+                    }
+                    else
+                    {
+                        Console.WriteLine("222");
+                    }**/
+
                     IMediaPosition m_objMediaPosition2 = m_FilterGraph as IMediaPosition;
+                    //m_objMediaPosition2.
+                    //double oo = 0.0;
+                    //m_objMediaPosition2.get_Duration(out oo);
+                    //int s = (int)oo;
+                    //int total = s;
+                    //int h = s / 3600;
+                    //int m = (s - (h * 3600)) / 60;
+                    //s = s - (h * 3600 + m * 60);
+
+                    //Console.WriteLine(h+":"+m+":"+s);
                     hr = m_objMediaPosition2.put_CurrentPosition(0.0);
                     DsError.ThrowExceptionForHR(hr);
 
@@ -1276,13 +1339,14 @@ namespace xplayer
             else
             {
                 Image img = Image.FromFile(fn);
-                AddImage(AddImageCB, fn, img);
+                AddImage(AddImageCB, 0, fn, img);
             }
         }
 
-        public delegate void AddImageDelegate(string fn, Image img);
-        public void AddImageCB(string fn, Image img)
+        public delegate void AddImageDelegate(long avgtime, string fn, Image img);
+        public void AddImageCB(long avgtime, string fn, Image img)
         {
+            Console.WriteLine(avgtime);
             imageList2.Images.Add(img);
             img.Dispose();
             string simplefn = fn.Substring(fn.LastIndexOf("\\") + 1);
@@ -1290,6 +1354,7 @@ namespace xplayer
             //item.
             item.ImageIndex = imageList2.Images.Count - 1;
             item.ToolTipText = fn;
+            item.Tag = avgtime;
             //item.SubItems.Add("IMAGE");
             //item.SubItems.Add(s);
             listView1.Items.Add(item);
@@ -1297,16 +1362,16 @@ namespace xplayer
             listView1.Items[listView1.Items.Count - 1].EnsureVisible();
         }
 
-        public void AddImage(AddImageDelegate ai, string fn, Image img)
+        public void AddImage(AddImageDelegate ai, long avgtime, string fn, Image img)
         {
             if (this.InvokeRequired)
             {
-                this.Invoke(ai, fn, img);
+                this.Invoke(ai, avgtime, fn, img);
                 return;
             }
             else
             {
-                ai(fn, img);
+                ai(avgtime, fn, img);
                 return;
             }
         }
@@ -1363,6 +1428,7 @@ namespace xplayer
                 ListViewItem lvi = this.listView1.SelectedItems[0];
                 mi.Name = lvi.Text;
                 mi.Path = lvi.ToolTipText;
+                //mi.Duration = (long)lvi.Tag;
                 mi.Type = lvi.Text.Substring(lvi.Text.LastIndexOf(".") + 1);
                 this.propertyGrid1.SelectedObject = mi;
             }
@@ -1612,6 +1678,7 @@ namespace xplayer
         private int m_videoHeight;
         private int m_stride;
         private int m_imageSize;
+        private long avgTimePerFrame;
         private bool flag = false;
 
         public Capture(XPlayer xplayer, String fn)
@@ -1639,8 +1706,8 @@ namespace xplayer
             m_videoWidth = videoInfoHeader.BmiHeader.Width;
             m_videoHeight = videoInfoHeader.BmiHeader.Height;
             m_imageSize = videoInfoHeader.BmiHeader.ImageSize;
-            m_stride = m_videoWidth * (videoInfoHeader.BmiHeader.BitCount / 8); 
-
+            m_stride = m_videoWidth * (videoInfoHeader.BmiHeader.BitCount / 8);
+            avgTimePerFrame = videoInfoHeader.AvgTimePerFrame;
             DsUtils.FreeAMMediaType(media);
             media = null;
         }
@@ -1754,7 +1821,7 @@ namespace xplayer
                 try
                 {
                     img.RotateFlip(RotateFlipType.Rotate180FlipX);
-                    this.xplayer.AddImage(this.xplayer.AddImageCB, this.fn, img);
+                    this.xplayer.AddImage(this.xplayer.AddImageCB, this.avgTimePerFrame, this.fn, img);
                     //this.xplayer.getScreen().BackgroundImage = img;
                 }
                 catch (Exception ex)

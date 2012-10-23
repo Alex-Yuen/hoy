@@ -9,6 +9,7 @@ namespace xplayer
         private string _name;
         private string _path;
         private string _type;
+        private long _duration;
 
         public string Name
         {
@@ -28,5 +29,10 @@ namespace xplayer
             set { this._type = value; }
         }
 
+        public long Duration
+        {
+            get { return _duration; }
+            set { this._duration = value; }
+        }
     }
 }
