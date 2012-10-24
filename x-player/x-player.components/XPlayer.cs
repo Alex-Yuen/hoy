@@ -94,6 +94,7 @@ namespace xplayer
         private ToolBarButton toolBarButton14;
         private ToolBarButton toolBarButton15;
         private MediaItem mi = null;
+        private ListViewItem currentLVI = null;
         
         public XPlayer(Form pf)
         {
@@ -138,6 +139,8 @@ namespace xplayer
                 //Console.WriteLine("F4");
                 this.toolBarButton6.Enabled = false;
                 this.toolBarButton8.Enabled = false;
+                this.toolBarButton9.Enabled = false;
+                this.toolBarButton10.Enabled = false;
                 //Console.WriteLine("F5");
                 screen = new Screen(this);
                 //Console.WriteLine("F6");
@@ -217,6 +220,9 @@ namespace xplayer
             this.toolBarButton8 = new System.Windows.Forms.ToolBarButton();
             this.toolBarButton9 = new System.Windows.Forms.ToolBarButton();
             this.toolBarButton10 = new System.Windows.Forms.ToolBarButton();
+            this.toolBarButton13 = new System.Windows.Forms.ToolBarButton();
+            this.toolBarButton14 = new System.Windows.Forms.ToolBarButton();
+            this.toolBarButton15 = new System.Windows.Forms.ToolBarButton();
             this.panel1 = new System.Windows.Forms.Panel();
             this.panel4 = new System.Windows.Forms.Panel();
             this.listView1 = new System.Windows.Forms.ListView();
@@ -225,9 +231,6 @@ namespace xplayer
             this.propertyGrid1 = new System.Windows.Forms.PropertyGrid();
             this.panel3 = new System.Windows.Forms.Panel();
             this.trackBar1 = new System.Windows.Forms.TrackBar();
-            this.toolBarButton13 = new System.Windows.Forms.ToolBarButton();
-            this.toolBarButton14 = new System.Windows.Forms.ToolBarButton();
-            this.toolBarButton15 = new System.Windows.Forms.ToolBarButton();
             ((System.ComponentModel.ISupportInitialize)(this.statusBarPanel1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.statusBarPanel2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.statusBarPanel3)).BeginInit();
@@ -516,16 +519,33 @@ namespace xplayer
             // 
             // toolBarButton9
             // 
-            this.toolBarButton9.ImageIndex = 5;
+            this.toolBarButton9.ImageIndex = 8;
             this.toolBarButton9.Name = "toolBarButton9";
-            this.toolBarButton9.Style = System.Windows.Forms.ToolBarButtonStyle.ToggleButton;
-            this.toolBarButton9.ToolTipText = "Screen (Ctrl+H)";
+            this.toolBarButton9.ToolTipText = "Up Item(s)";
             // 
             // toolBarButton10
             // 
-            this.toolBarButton10.ImageIndex = 6;
+            this.toolBarButton10.ImageIndex = 9;
             this.toolBarButton10.Name = "toolBarButton10";
-            this.toolBarButton10.ToolTipText = "Option (Ctrl+O)";
+            this.toolBarButton10.ToolTipText = "Down Item(s)";
+            // 
+            // toolBarButton13
+            // 
+            this.toolBarButton13.Name = "toolBarButton13";
+            this.toolBarButton13.Style = System.Windows.Forms.ToolBarButtonStyle.Separator;
+            // 
+            // toolBarButton14
+            // 
+            this.toolBarButton14.ImageIndex = 5;
+            this.toolBarButton14.Name = "toolBarButton14";
+            this.toolBarButton14.Style = System.Windows.Forms.ToolBarButtonStyle.ToggleButton;
+            this.toolBarButton14.ToolTipText = "Screen (Ctrl+H)";
+            // 
+            // toolBarButton15
+            // 
+            this.toolBarButton15.ImageIndex = 6;
+            this.toolBarButton15.Name = "toolBarButton15";
+            this.toolBarButton15.ToolTipText = "Option (Ctrl+O)";
             // 
             // panel1
             // 
@@ -619,21 +639,6 @@ namespace xplayer
             this.trackBar1.TickStyle = System.Windows.Forms.TickStyle.None;
             this.trackBar1.Scroll += new System.EventHandler(this.trackBar1_Scroll);
             // 
-            // toolBarButton13
-            // 
-            this.toolBarButton13.Name = "toolBarButton13";
-            this.toolBarButton13.Style = System.Windows.Forms.ToolBarButtonStyle.Separator;
-            // 
-            // toolBarButton14
-            // 
-            this.toolBarButton14.ImageIndex = 8;
-            this.toolBarButton14.Name = "toolBarButton14";
-            // 
-            // toolBarButton15
-            // 
-            this.toolBarButton15.ImageIndex = 9;
-            this.toolBarButton15.Name = "toolBarButton15";
-            // 
             // XPlayer
             // 
             this.AutoScaleBaseSize = new System.Drawing.Size(6, 14);
@@ -648,6 +653,7 @@ namespace xplayer
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "X-Player";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.XPlayer_FormClosing);
+            this.Load += new System.EventHandler(this.XPlayer_Load);
             ((System.ComponentModel.ISupportInitialize)(this.statusBarPanel1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.statusBarPanel2)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.statusBarPanel3)).EndInit();
@@ -732,6 +738,7 @@ namespace xplayer
             {
                 case 0:
                     //prev
+                    play(this.listView1.Items[this.currentLVI.Index - 1]);
                     break;
 
                 case 1: m_objMediaControl.Run();
@@ -750,6 +757,7 @@ namespace xplayer
 
                 case 4:
                     //next
+                    play(this.listView1.Items[this.currentLVI.Index + 1]);
                     break;
             }
 
@@ -864,12 +872,27 @@ namespace xplayer
 
         private void UpdateStatusBar()
         {
-            switch (m_CurrentStatus)
+            if (currentLVI == null)
             {
-                case MediaStatus.None: statusBarPanel1.Text = "Stopped"; break;
-                case MediaStatus.Paused: statusBarPanel1.Text = "Paused - " + this.currentMedia; break;
-                case MediaStatus.Running: statusBarPanel1.Text = "Running - " + this.currentMedia; break;
-                case MediaStatus.Stopped: statusBarPanel1.Text = "Stopped"; break;
+                statusBarPanel1.Text = "Stopped";
+                statusBarPanel2.Text = "00:00:00";
+                statusBarPanel3.Text = "00:00:00";
+                return;
+            }
+
+            if (isImage(currentLVI.Text))
+            {
+                statusBarPanel1.Text = "Running - " + this.currentMedia;
+            }
+            else
+            {
+                switch (m_CurrentStatus)
+                {
+                    case MediaStatus.None: statusBarPanel1.Text = "Stopped"; break;
+                    case MediaStatus.Paused: statusBarPanel1.Text = "Paused - " + this.currentMedia; break;
+                    case MediaStatus.Running: statusBarPanel1.Text = "Running - " + this.currentMedia; break;
+                    case MediaStatus.Stopped: statusBarPanel1.Text = "Stopped"; break;
+                }
             }
 
             if (m_objMediaPosition != null)
@@ -905,52 +928,114 @@ namespace xplayer
 
         private void UpdateToolBar()
         {
-            switch (m_CurrentStatus)
+            if (this.currentLVI == null)
             {
-                case MediaStatus.None:
-                    //toolBarButton1.ImageIndex = 5;
-                    toolBarButton1.Enabled = false;
-                    //toolBarButton2.ImageIndex = 6;
-                    toolBarButton2.Enabled = false;
-                    //toolBarButton3.ImageIndex = 7;
-                    toolBarButton3.Enabled = false;
-                    //toolBarButton11.ImageIndex = 8;
-                    toolBarButton11.Enabled = false;
-                    //toolBarButton12.ImageIndex = 9;
-                    toolBarButton12.Enabled = false;
-                    trackBar1.Value = 0;
-                    trackBar1.Enabled = false;
-                    break;
+                toolBarButton1.Enabled = false;
+                toolBarButton2.Enabled = false;
+                toolBarButton3.Enabled = false;
+                toolBarButton11.Enabled = false;
+                toolBarButton12.Enabled = false;
+                trackBar1.Value = 0;
+                trackBar1.Enabled = false;
+                return;
+            }
 
-                case MediaStatus.Paused:
-                    //toolBarButton1.ImageIndex = 0;
-                    toolBarButton1.Enabled = true;
-                    //toolBarButton2.ImageIndex = 6;
-                    toolBarButton2.Enabled = false;
-                    //toolBarButton3.ImageIndex = 2;
-                    toolBarButton3.Enabled = true;
-                    trackBar1.Enabled = true;
-                    break;
+            if (isImage(this.currentLVI.Text))
+            {
+                //Console.WriteLine("HERE");
+                toolBarButton1.Enabled = false;
+                toolBarButton2.Enabled = false;
+                toolBarButton3.Enabled = false;
+                trackBar1.Value = 0;
+                trackBar1.Enabled = false;
+                int idx = this.currentLVI.Index;
 
-                case MediaStatus.Running:
-                    //toolBarButton1.ImageIndex = 5;
-                    toolBarButton1.Enabled = false;
-                    //toolBarButton2.ImageIndex = 1;
-                    toolBarButton2.Enabled = true;
-                    //toolBarButton3.ImageIndex = 2;
-                    toolBarButton3.Enabled = true;
-                    trackBar1.Enabled = true;
-                    break;
+                if (idx == 0)
+                {
+                    this.toolBarButton11.Enabled = false;
+                }
+                else
+                {
+                    this.toolBarButton11.Enabled = true;
+                }
 
-                case MediaStatus.Stopped:
-                    //toolBarButton1.ImageIndex = 0;
-                    toolBarButton1.Enabled = true;
-                    //toolBarButton2.ImageIndex = 6;
-                    toolBarButton2.Enabled = false;
-                    //toolBarButton3.ImageIndex = 7;
-                    toolBarButton3.Enabled = false;
-                    trackBar1.Enabled = true;
-                    break;
+                if (idx == this.listView1.Items.Count - 1)
+                {
+                    this.toolBarButton12.Enabled = false;
+                }
+                else
+                {
+                    this.toolBarButton12.Enabled = true;
+                }
+            }
+            else
+            {
+                switch (m_CurrentStatus)
+                {
+                    case MediaStatus.None:
+                        //toolBarButton1.ImageIndex = 5;
+                        toolBarButton1.Enabled = false;
+                        //toolBarButton2.ImageIndex = 6;
+                        toolBarButton2.Enabled = false;
+                        //toolBarButton3.ImageIndex = 7;
+                        toolBarButton3.Enabled = false;
+                        //toolBarButton11.ImageIndex = 8;
+                        toolBarButton11.Enabled = false;
+                        //toolBarButton12.ImageIndex = 9;
+                        toolBarButton12.Enabled = false;
+                        trackBar1.Value = 0;
+                        trackBar1.Enabled = false;
+                        break;
+
+                    case MediaStatus.Paused:
+                        //toolBarButton1.ImageIndex = 0;
+                        toolBarButton1.Enabled = true;
+                        //toolBarButton2.ImageIndex = 6;
+                        toolBarButton2.Enabled = false;
+                        //toolBarButton3.ImageIndex = 2;
+                        toolBarButton3.Enabled = true;
+                        trackBar1.Enabled = true;
+                        break;
+
+                    case MediaStatus.Running:
+                        //toolBarButton1.ImageIndex = 5;
+                        toolBarButton1.Enabled = false;
+                        //toolBarButton2.ImageIndex = 1;
+                        toolBarButton2.Enabled = true;
+                        //toolBarButton3.ImageIndex = 2;
+                        toolBarButton3.Enabled = true;
+                        trackBar1.Enabled = true;
+                        int idx = this.currentLVI.Index;
+
+                        if (idx == 0)
+                        {
+                            this.toolBarButton11.Enabled = false;
+                        }
+                        else
+                        {
+                            this.toolBarButton11.Enabled = true;
+                        }
+
+                        if (idx == this.listView1.Items.Count - 1)
+                        {
+                            this.toolBarButton12.Enabled = false;
+                        }
+                        else
+                        {
+                            this.toolBarButton12.Enabled = true;
+                        }
+                        break;
+
+                    case MediaStatus.Stopped:
+                        //toolBarButton1.ImageIndex = 0;
+                        toolBarButton1.Enabled = true;
+                        //toolBarButton2.ImageIndex = 6;
+                        toolBarButton2.Enabled = false;
+                        //toolBarButton3.ImageIndex = 7;
+                        toolBarButton3.Enabled = false;
+                        trackBar1.Enabled = true;
+                        break;
+                }
             }
         }
 
@@ -958,12 +1043,12 @@ namespace xplayer
         {
             if (screen.Visible == true)
             {
-                this.toolBarButton9.Pushed = false;
+                this.toolBarButton14.Pushed = false;
                 screen.Hide();
             }
             else
             {
-                this.toolBarButton9.Pushed = true;
+                this.toolBarButton14.Pushed = true;
                 screen.Show();
                 screen.BringToFront();
             }
@@ -1097,9 +1182,33 @@ namespace xplayer
                     deleteItems();
                     break;
                 case 5:
-                    reserveScreen();
+                    foreach (ListViewItem lvi in this.listView1.SelectedItems)
+                    {
+                        int idx = lvi.Index;
+                        this.listView1.Items.RemoveAt(idx);
+                        this.listView1.Items.Insert(idx-1, lvi);
+                        //ListViewItem ulvi = this.listView1.Items[lvi.Index - 1];
+                        //this.listView1.Items[lvi.Index - 1] = lvi;
+                        //this.listView1.Items[lvi.Index + 1] = ulvi;
+                    }
                     break;
                 case 6:
+                    foreach (ListViewItem lvi in this.listView1.SelectedItems)
+                    {
+                        int idx = lvi.Index;
+                        this.listView1.Items.RemoveAt(idx);
+                        this.listView1.Items.Insert(idx + 1, lvi);
+                        //ListViewItem ulvi = this.listView1.Items[lvi.Index - 1];
+                        //this.listView1.Items[lvi.Index - 1] = lvi;
+                        //this.listView1.Items[lvi.Index + 1] = ulvi;
+                    }
+                    break;
+                case 7:
+                    break;
+                case 8:
+                    reserveScreen();
+                    break;
+                case 9:
                     (new Option(this.screen)).ShowDialog(this);
                     break;
             }
@@ -1339,14 +1448,14 @@ namespace xplayer
             else
             {
                 Image img = Image.FromFile(fn);
-                AddImage(AddImageCB, 0, fn, img);
+                AddImage(AddImageCB, fn, img);
             }
         }
 
-        public delegate void AddImageDelegate(long avgtime, string fn, Image img);
-        public void AddImageCB(long avgtime, string fn, Image img)
+        public delegate void AddImageDelegate(string fn, Image img);
+        public void AddImageCB(string fn, Image img)
         {
-            Console.WriteLine(avgtime);
+            //Console.WriteLine(avgtime);
             imageList2.Images.Add(img);
             img.Dispose();
             string simplefn = fn.Substring(fn.LastIndexOf("\\") + 1);
@@ -1354,7 +1463,7 @@ namespace xplayer
             //item.
             item.ImageIndex = imageList2.Images.Count - 1;
             item.ToolTipText = fn;
-            item.Tag = avgtime;
+            //item.Tag = avgtime;
             //item.SubItems.Add("IMAGE");
             //item.SubItems.Add(s);
             listView1.Items.Add(item);
@@ -1362,16 +1471,16 @@ namespace xplayer
             listView1.Items[listView1.Items.Count - 1].EnsureVisible();
         }
 
-        public void AddImage(AddImageDelegate ai, long avgtime, string fn, Image img)
+        public void AddImage(AddImageDelegate ai, string fn, Image img)
         {
             if (this.InvokeRequired)
             {
-                this.Invoke(ai, avgtime, fn, img);
+                this.Invoke(ai, fn, img);
                 return;
             }
             else
             {
-                ai(avgtime, fn, img);
+                ai(fn, img);
                 return;
             }
         }
@@ -1425,6 +1534,24 @@ namespace xplayer
             if (this.listView1.SelectedItems.Count > 0)
             {
                 this.toolBarButton8.Enabled = true;
+                if (this.listView1.SelectedItems[0].Index != 0)
+                {
+                    this.toolBarButton9.Enabled = true;
+                }
+                else
+                {
+                    this.toolBarButton9.Enabled = false;
+                }
+
+                if (this.listView1.SelectedItems[this.listView1.SelectedItems.Count - 1].Index != this.listView1.Items.Count-1)
+                {
+                    this.toolBarButton10.Enabled = true;
+                }
+                else
+                {
+                    this.toolBarButton10.Enabled = false;
+                }
+
                 ListViewItem lvi = this.listView1.SelectedItems[0];
                 mi.Name = lvi.Text;
                 mi.Path = lvi.ToolTipText;
@@ -1435,32 +1562,51 @@ namespace xplayer
             else
             {
                 this.toolBarButton8.Enabled = false;
+                this.toolBarButton9.Enabled = false;
+                this.toolBarButton10.Enabled = false;
                 this.propertyGrid1.SelectedObject = null;
             }
         }
 
-        private void listView1_DoubleClick(object sender, EventArgs e)
+        private void play(ListViewItem lvi)
         {
             if (screen.Visible == false)
             {
                 reserveScreen();
             }
-            else
+            //else
+            //{
+           //     this.screen.BringToFront();
+            //}
+
+            foreach (ListViewItem lvix in this.listView1.Items)
             {
-                this.screen.BringToFront();
+                lvix.Selected = false;
             }
 
-            if (isImage(this.listView1.SelectedItems[0].Text))
+            /**
+            if (this.currentLVI != null)
+            {
+                this.currentLVI.Selected = false;
+            }**/
+
+            lvi.Selected = true;
+            lvi.EnsureVisible();
+
+            if (isImage(lvi.Text))
             {
                 CleanUp();
                 UpdateStatusBar();
                 UpdateToolBar();
-                this.currentMedia = this.listView1.SelectedItems[0].ToolTipText;
+                this.currentMedia = lvi.ToolTipText;
+                this.currentLVI = lvi;
                 Image img = new Bitmap(this.currentMedia);
                 this.screen.BackgroundImage = img;
 
                 statusBarPanel1.Text = "Running - " + this.currentMedia;
-                this.trackBar1.Enabled = false;
+                UpdateStatusBar();
+                UpdateToolBar();
+                //this.trackBar1.Enabled = false;
             }
             else
             {
@@ -1472,7 +1618,8 @@ namespace xplayer
                     UpdateToolBar();
 
                     m_objGraphBuilder = (IGraphBuilder)new FilterGraph();
-                    this.currentMedia = this.listView1.SelectedItems[0].ToolTipText;
+                    this.currentMedia = lvi.ToolTipText;
+                    this.currentLVI = lvi;
                     m_objGraphBuilder.RenderFile(this.currentMedia, null);
 
                     m_objBasicAudio = m_objGraphBuilder as IBasicAudio;
@@ -1532,6 +1679,16 @@ namespace xplayer
                     UpdateToolBar();
 
                 }
+            }
+
+            this.Focus();
+        }
+
+        private void listView1_DoubleClick(object sender, EventArgs e)
+        {
+            if (this.listView1.SelectedItems.Count > 0)
+            {
+                play(this.listView1.SelectedItems[0]);
             }
         }
 
@@ -1667,6 +1824,11 @@ namespace xplayer
             return this.screen;
         }
 
+        private void XPlayer_Load(object sender, EventArgs e)
+        {
+
+        }
+
     }
     
     internal class Capture : ISampleGrabberCB
@@ -1678,7 +1840,7 @@ namespace xplayer
         private int m_videoHeight;
         private int m_stride;
         private int m_imageSize;
-        private long avgTimePerFrame;
+        //private long avgTimePerFrame;
         private bool flag = false;
 
         public Capture(XPlayer xplayer, String fn)
@@ -1707,7 +1869,7 @@ namespace xplayer
             m_videoHeight = videoInfoHeader.BmiHeader.Height;
             m_imageSize = videoInfoHeader.BmiHeader.ImageSize;
             m_stride = m_videoWidth * (videoInfoHeader.BmiHeader.BitCount / 8);
-            avgTimePerFrame = videoInfoHeader.AvgTimePerFrame;
+            //avgTimePerFrame = videoInfoHeader.AvgTimePerFrame;
             DsUtils.FreeAMMediaType(media);
             media = null;
         }
@@ -1821,7 +1983,7 @@ namespace xplayer
                 try
                 {
                     img.RotateFlip(RotateFlipType.Rotate180FlipX);
-                    this.xplayer.AddImage(this.xplayer.AddImageCB, this.avgTimePerFrame, this.fn, img);
+                    this.xplayer.AddImage(this.xplayer.AddImageCB, this.fn, img);
                     //this.xplayer.getScreen().BackgroundImage = img;
                 }
                 catch (Exception ex)
