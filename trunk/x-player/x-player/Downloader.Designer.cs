@@ -66,9 +66,9 @@
             this.button1.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
             this.button1.FlatAppearance.BorderSize = 0;
             this.button1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.button1.Location = new System.Drawing.Point(373, 3);
+            this.button1.Location = new System.Drawing.Point(375, 5);
             this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(23, 27);
+            this.button1.Size = new System.Drawing.Size(20, 20);
             this.button1.TabIndex = 4;
             this.button1.UseVisualStyleBackColor = false;
             this.button1.Click += new System.EventHandler(this.button1_Click_1);

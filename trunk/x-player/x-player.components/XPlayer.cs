@@ -1308,6 +1308,7 @@ namespace xplayer
 
                     
                     //run to first frame
+
                     IMediaControl mediaCtrl2 = m_FilterGraph as IMediaControl;
                     
                     hr = mediaCtrl2.Run();
