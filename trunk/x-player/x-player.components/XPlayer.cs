@@ -1317,13 +1317,14 @@ namespace xplayer
                     hr = mediaCtrl2.Pause();
                     DsError.ThrowExceptionForHR(hr);
 
-                    /**
+                    
                     IMediaSeeking ims = m_FilterGraph as IMediaSeeking;
-                    ims.SetTimeFormat(TimeFormat.Frame);
-                    long frames = 0;
-                    ims.GetDuration(out frames);
-                    Console.WriteLine(frames);
-                     * */
+                    ims.SetTimeFormat(TimeFormat.MediaTime);
+                    long dtr = 0;
+                    ims.GetDuration(out dtr);
+                    capture.setDtr(dtr);
+                    //Console.WriteLine(frames);
+                    
                     /**
                     Guid tf = new Guid();
                     IMediaSeeking ims = m_FilterGraph as IMediaSeeking;
@@ -1449,12 +1450,12 @@ namespace xplayer
             else
             {
                 Image img = Image.FromFile(fn);
-                AddImage(AddImageCB, fn, img);
+                AddImage(AddImageCB, 0, fn, img);
             }
         }
 
-        public delegate void AddImageDelegate(string fn, Image img);
-        public void AddImageCB(string fn, Image img)
+        public delegate void AddImageDelegate(long dtr, string fn, Image img);
+        public void AddImageCB(long dtr, string fn, Image img)
         {
             //Console.WriteLine(avgtime);
             imageList2.Images.Add(img);
@@ -1462,6 +1463,7 @@ namespace xplayer
             string simplefn = fn.Substring(fn.LastIndexOf("\\") + 1);
             ListViewItem item = new ListViewItem(simplefn);
             //item.
+            item.Tag = dtr;
             item.ImageIndex = imageList2.Images.Count - 1;
             item.ToolTipText = fn;
             //item.Tag = avgtime;
@@ -1472,16 +1474,16 @@ namespace xplayer
             listView1.Items[listView1.Items.Count - 1].EnsureVisible();
         }
 
-        public void AddImage(AddImageDelegate ai, string fn, Image img)
+        public void AddImage(AddImageDelegate ai, long dtr, string fn, Image img)
         {
             if (this.InvokeRequired)
             {
-                this.Invoke(ai, fn, img);
+                this.Invoke(ai, dtr, fn, img);
                 return;
             }
             else
             {
-                ai(fn, img);
+                ai(dtr, fn, img);
                 return;
             }
         }
@@ -1556,7 +1558,15 @@ namespace xplayer
                 ListViewItem lvi = this.listView1.SelectedItems[0];
                 mi.Name = lvi.Text;
                 mi.Path = lvi.ToolTipText;
-                //mi.Duration = (long)lvi.Tag;
+                //float 
+                long drt = ((long)lvi.Tag) / 10000000;
+                int s = (int)drt;
+                int total = s;
+                int h = s / 3600;
+                int m = (s - (h * 3600)) / 60;
+                s = s - (h * 3600 + m * 60);
+                //statusBarPanel3.Text = String.Format("{0:D2}:{1:D2}:{2:D2}", h, m, s);
+                mi.Duration = String.Format("{0:D2}:{1:D2}:{2:D2}", h, m, s);
                 mi.Type = lvi.Text.Substring(lvi.Text.LastIndexOf(".") + 1);
                 this.propertyGrid1.SelectedObject = mi;
             }
@@ -1568,7 +1578,7 @@ namespace xplayer
                 this.propertyGrid1.SelectedObject = null;
             }
         }
-
+        
         private void play(ListViewItem lvi)
         {
             if (screen.Visible == false)
@@ -1619,6 +1629,10 @@ namespace xplayer
                     UpdateToolBar();
 
                     m_objGraphBuilder = (IGraphBuilder)new FilterGraph();
+
+                    int cookie = 0;
+                    DsROT.AddGraphToRot(m_objGraphBuilder, out cookie);
+
                     this.currentMedia = lvi.ToolTipText;
                     this.currentLVI = lvi;
                     m_objGraphBuilder.RenderFile(this.currentMedia, null);
@@ -1961,6 +1975,7 @@ namespace xplayer
 
         /// <summary> Frame event </summary>
         public event ShowFrame FrameEvent;
+        private long dtr;
         
         /// <summary> Interface frame event </summary>
         public delegate void ShowFrame(Bitmap e);
@@ -1984,7 +1999,7 @@ namespace xplayer
                 try
                 {
                     img.RotateFlip(RotateFlipType.Rotate180FlipX);
-                    this.xplayer.AddImage(this.xplayer.AddImageCB, this.fn, img);
+                    this.xplayer.AddImage(this.xplayer.AddImageCB, this.dtr, this.fn, img);
                     //this.xplayer.getScreen().BackgroundImage = img;
                 }
                 catch (Exception ex)
@@ -1997,5 +2012,10 @@ namespace xplayer
             this.FrameEvent -= new ShowFrame(CaptureDone);
         }
 
+
+        public void setDtr(long dtr)
+        {
+            this.dtr = dtr;
+        }
     }
 }

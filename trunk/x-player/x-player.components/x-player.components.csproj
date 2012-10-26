@@ -73,6 +73,7 @@
     <Compile Include="AboutBox.Designer.cs">
       <DependentUpon>AboutBox.cs</DependentUpon>
     </Compile>
+    <Compile Include="DsROT.cs" />
     <Compile Include="MediaItem.cs" />
     <Compile Include="Option.cs">
       <SubType>Form</SubType>
