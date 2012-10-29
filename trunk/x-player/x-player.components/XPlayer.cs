@@ -1651,18 +1651,21 @@ namespace xplayer
                         m_objVideoWindow.put_Owner(screen.Handle);
                         m_objVideoWindow.put_WindowStyle(WindowStyle.Child | WindowStyle.ClipChildren);
                         //m_objVideoWindow.WindowStyle = WS_CHILD;
-                        //m_objVideoWindow.FullScreenMode = 1;
-                        m_objVideoWindow.SetWindowPosition(screen.ClientRectangle.Left,
-                            screen.ClientRectangle.Top,
-                            screen.ClientRectangle.Width,
-                            screen.ClientRectangle.Height);
-
-                        //m_objVideoWindow.put_MessageDrain(screen.Handle);
+                        m_objVideoWindow.put_AutoShow(OABool.False);
                         //m_objVideoWindow.
-                        // m_objBasicVideo.SetDestinationPosition(screen.ClientRectangle.Left-400,
-                        //     screen.ClientRectangle.Top,
-                        //     screen.ClientRectangle.Width+400,
+                        //m_objVideoWindow.SetWindowPosition(0, 0, screen.ClientRectangle.Right-300, screen.ClientRectangle.Bottom);
+                        //m_objVideoWindow.SetWindowPosition(screen.ClientRectangle.Left,
+                        //    screen.ClientRectangle.Top,
+                        //    screen.ClientRectangle.Width,
                         //    screen.ClientRectangle.Height);
+
+                        m_objVideoWindow.put_FullScreenMode(OABool.True);
+                        //m_objVideoWindow.put_MessageDrain(screen.Parent.Handle);
+                        //m_objVideoWindow.
+                        //m_objBasicVideo.SetDestinationPosition(screen.ClientRectangle.Left,
+                        //     screen.ClientRectangle.Top,
+                        //     screen.ClientRectangle.Width+200,
+                        //     screen.ClientRectangle.Height+200);
                         //  m_objBasicVideo.SetDestinationPosition(screen.ClientRectangle.Left - 400,
                         //       screen.ClientRectangle.Top,
                         //         screen.ClientRectangle.Width + 400,
