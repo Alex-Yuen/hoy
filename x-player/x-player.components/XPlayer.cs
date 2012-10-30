@@ -1069,18 +1069,18 @@ namespace xplayer
 
         private void insertItems()
         {
-            openFileDialog = new OpenFileDialog();
-            openFileDialog.Multiselect = true;
-            openFileDialog.Filter = "Media & Image Files (jpeg, bmp, png, mpeg)|*.jpg;*.jpeg;*.bmp;*.png;*.mpg;*.mpeg";
+                openFileDialog = new OpenFileDialog();
+                openFileDialog.Multiselect = true;
+                openFileDialog.Filter = "Media & Image Files (jpeg, bmp, png, mpeg)|*.jpg;*.jpeg;*.bmp;*.png;*.mpg;*.mpeg";
 
-            if (DialogResult.OK == openFileDialog.ShowDialog())
-            {
-                foreach (String fn in openFileDialog.FileNames)
+                if (DialogResult.OK == openFileDialog.ShowDialog())
                 {
-                    addItem(fn);
-                    this.toolBarButton6.Enabled = true;
+                    foreach (String fn in openFileDialog.FileNames)
+                    {
+                        addItem(fn);
+                        this.toolBarButton6.Enabled = true;
+                    }
                 }
-            }
         }
 
         private void deleteItems()
@@ -1259,6 +1259,12 @@ namespace xplayer
         
         private void addItem(string fn)
         {
+            if (!this.registered && this.listView1.Items.Count == 5)
+            {
+                MessageBox.Show("Please register the application to add more items!", "Infomation");
+                return;
+            }
+
             if (!File.Exists(fn))
             {
                 return;
@@ -1922,18 +1928,18 @@ namespace xplayer
                     }
                 }
 
-                Console.WriteLine(regcode);
+                //Console.WriteLine(regcode);
                 if (regcode != null && regcode.Equals(license))
                 {
                     //ture
                     this.registered = true;
-                    Console.WriteLine("TTT");
+                    //Console.WriteLine("TTT");
                 }
                 else
                 {
                     //false
                     this.registered = false;
-                    Console.WriteLine("FFF");
+                    //Console.WriteLine("FFF");
                 }
             }
         }
