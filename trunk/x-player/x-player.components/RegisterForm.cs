@@ -39,7 +39,7 @@ namespace xplayer
             config.AppSettings.Settings["LICENSE"].Value = this.textBox2.Text;
             config.Save(ConfigurationSaveMode.Modified);
             ConfigurationManager.RefreshSection("appSettings");
-            Environment.Exit(0);
+            this.Close();
         }
     }
 }

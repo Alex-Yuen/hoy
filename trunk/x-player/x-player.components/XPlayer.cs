@@ -99,7 +99,7 @@ namespace xplayer
         private ListViewItem currentLVI = null;
         private bool registered = false;
         private string hardcode = null;
-        private string regcode = null;
+        private string license = null;
 
         public XPlayer(Form pf)
         {
@@ -1857,25 +1857,7 @@ namespace xplayer
 
         private void XPlayer_Load(object sender, EventArgs e)
         {
-            hardcode = ConfigurationManager.AppSettings["MACHINE"];
-            if (hardcode == null)
-            {
-                hardcode = getCpu() + GetDiskVolumeSerialNumber();//获得24位Cpu和硬盘序列号
-                string[] strid = new string[24];//
-                for (int i = 0; i < 24; i++)//把字符赋给数组
-                {
-                    strid[i] = hardcode.Substring(i, 1);
-                }
-
-                hardcode = "";
-                Random rdid = new Random();
-                for (int i = 0; i < 24; i++)//从数组随机抽取24个字符组成新的字符生成机器三
-                {
-                    hardcode += strid[rdid.Next(0, 24)];
-                }
-            }
-
-            string license = ConfigurationManager.AppSettings["LICENSE"];
+            license = ConfigurationManager.AppSettings["LICENSE"];
             if (license != null)
             {
                 hardcode = getCpu() + GetDiskVolumeSerialNumber();//获得24位Cpu和硬盘序列号
@@ -1889,10 +1871,12 @@ namespace xplayer
                 Random rdid = new Random();
                 for (int i = 0; i < 24; i++)//从数组随机抽取24个字符组成新的字符生成机器三
                 {
-                    hardcode += strid[rdid.Next(0, 24)];
+                    //hardcode += strid[rdid.Next(0, 24)];
+                    hardcode += strid[i];
                 }
 
                 //regcode
+                string regcode = "";
                 if (hardcode != "")
                 {
                     //把机器码存入数组中
@@ -1938,15 +1922,18 @@ namespace xplayer
                     }
                 }
 
+                Console.WriteLine(regcode);
                 if (regcode != null && regcode.Equals(license))
                 {
                     //ture
                     this.registered = true;
+                    Console.WriteLine("TTT");
                 }
                 else
                 {
                     //false
                     this.registered = false;
+                    Console.WriteLine("FFF");
                 }
             }
         }
@@ -1954,11 +1941,12 @@ namespace xplayer
         public int[] intCode = new int[127];//用于存密钥
         public void setIntCode()//给数组赋值个小于10的随机数
         {
-            Random ra = new Random();
+            //Random ra = new Random();
 
             for (int i = 1; i < intCode.Length; i++)
             {
-                intCode[i] = ra.Next(0, 9);
+                //intCode[i] = ra.Next(0, 9);
+                intCode[i] = i%9;
             }
         }
 
@@ -1967,7 +1955,7 @@ namespace xplayer
         
         private void menuItem13_Click(object sender, EventArgs e)
         {
-            Form rf = new RegisterForm(this.hardcode, this.regcode, this.registered);
+            Form rf = new RegisterForm(this.hardcode, this.license, this.registered);
             rf.Visible = false;
             rf.ShowDialog();
         }
