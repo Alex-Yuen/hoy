@@ -4,6 +4,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "x-player", "x-player\x-play
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "x-player.components", "x-player.components\x-player.components.csproj", "{0B9AB5A1-2193-46C1-B1F3-9D97875C0B12}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "keygen", "keygen\keygen.csproj", "{89F44566-45DD-4543-8603-00C38BD7EED2}"
+EndProject
 Global
 	GlobalSection(SubversionScc) = preSolution
 		Svn-Managed = True
@@ -44,6 +46,18 @@ Global
 		{0B9AB5A1-2193-46C1-B1F3-9D97875C0B12}.Release|Mixed Platforms.Build.0 = Release|x86
 		{0B9AB5A1-2193-46C1-B1F3-9D97875C0B12}.Release|x86.ActiveCfg = Release|x86
 		{0B9AB5A1-2193-46C1-B1F3-9D97875C0B12}.Release|x86.Build.0 = Release|x86
+		{89F44566-45DD-4543-8603-00C38BD7EED2}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{89F44566-45DD-4543-8603-00C38BD7EED2}.Debug|Itanium.ActiveCfg = Debug|x86
+		{89F44566-45DD-4543-8603-00C38BD7EED2}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
+		{89F44566-45DD-4543-8603-00C38BD7EED2}.Debug|Mixed Platforms.Build.0 = Debug|x86
+		{89F44566-45DD-4543-8603-00C38BD7EED2}.Debug|x86.ActiveCfg = Debug|x86
+		{89F44566-45DD-4543-8603-00C38BD7EED2}.Debug|x86.Build.0 = Debug|x86
+		{89F44566-45DD-4543-8603-00C38BD7EED2}.Release|Any CPU.ActiveCfg = Release|x86
+		{89F44566-45DD-4543-8603-00C38BD7EED2}.Release|Itanium.ActiveCfg = Release|x86
+		{89F44566-45DD-4543-8603-00C38BD7EED2}.Release|Mixed Platforms.ActiveCfg = Release|x86
+		{89F44566-45DD-4543-8603-00C38BD7EED2}.Release|Mixed Platforms.Build.0 = Release|x86
+		{89F44566-45DD-4543-8603-00C38BD7EED2}.Release|x86.ActiveCfg = Release|x86
+		{89F44566-45DD-4543-8603-00C38BD7EED2}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
