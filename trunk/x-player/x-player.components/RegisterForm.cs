@@ -35,11 +35,19 @@ namespace xplayer
 
         private void button1_Click(object sender, EventArgs e)
         {
-            Configuration config = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
-            config.AppSettings.Settings["LICENSE"].Value = this.textBox2.Text;
-            config.Save(ConfigurationSaveMode.Modified);
-            ConfigurationManager.RefreshSection("appSettings");
-            this.Close();
+            if (!registered&&!this.textBox2.Text.Equals(""))
+            {
+                Configuration config = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
+                config.AppSettings.Settings["LICENSE"].Value = this.textBox2.Text;
+                config.Save(ConfigurationSaveMode.Modified);
+                ConfigurationManager.RefreshSection("appSettings");
+                MessageBox.Show("Please restart the application to check if the license is valid!", "Information");
+                Environment.Exit(0);
+            }
+            else
+            {
+                this.Close();
+            }
         }
     }
 }
