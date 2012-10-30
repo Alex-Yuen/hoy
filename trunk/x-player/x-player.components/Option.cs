@@ -44,7 +44,7 @@ namespace xplayer
                     Image bi = Image.FromFile(path);
                     this.screen.BackgroundImage = bi;
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     this.screen.BackgroundImage = null;
                     this.screen.BackColor = Color.Black;
@@ -86,7 +86,7 @@ namespace xplayer
                     Image bi = Image.FromFile(path);
                     this.panel1.BackgroundImage = bi;
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     this.panel1.BackgroundImage = null;
                     this.panel1.BackColor = Color.Black;
@@ -115,7 +115,7 @@ namespace xplayer
                     Image bi = Image.FromFile(this.textBox1.Text);
                     this.panel1.BackgroundImage = bi;
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     this.panel1.BackgroundImage = null;
                     this.panel1.BackColor = Color.Black;
@@ -145,7 +145,7 @@ namespace xplayer
                     Image bi = Image.FromFile(this.textBox1.Text);
                     this.panel1.BackgroundImage = bi;
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     this.panel1.BackgroundImage = null;
                     this.panel1.BackColor = Color.Black;

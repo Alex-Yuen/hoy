@@ -12,6 +12,7 @@ using DirectShowLib;
 using DirectShowLib.DES;
 using System.Reflection;
 using System.Configuration;
+using System.Management;
 
 namespace xplayer
 {
@@ -94,8 +95,12 @@ namespace xplayer
         private ToolBarButton toolBarButton14;
         private ToolBarButton toolBarButton15;
         private MediaItem mi = null;
+        private MenuItem menuItem13;
         private ListViewItem currentLVI = null;
-        
+        private bool registered = false;
+        private string hardcode = null;
+        private string regcode = null;
+
         public XPlayer(Form pf)
         {
             this.pf = pf;
@@ -231,6 +236,7 @@ namespace xplayer
             this.propertyGrid1 = new System.Windows.Forms.PropertyGrid();
             this.panel3 = new System.Windows.Forms.Panel();
             this.trackBar1 = new System.Windows.Forms.TrackBar();
+            this.menuItem13 = new System.Windows.Forms.MenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.statusBarPanel1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.statusBarPanel2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.statusBarPanel3)).BeginInit();
@@ -330,13 +336,14 @@ namespace xplayer
             // 
             this.menuItem6.Index = 2;
             this.menuItem6.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+            this.menuItem13,
             this.menuItem7});
             this.menuItem6.Text = "&Help";
             // 
             // menuItem7
             // 
-            this.menuItem7.Index = 0;
-            this.menuItem7.Text = "&About";
+            this.menuItem7.Index = 1;
+            this.menuItem7.Text = "&About...";
             this.menuItem7.Click += new System.EventHandler(this.menuItem7_Click);
             // 
             // imageList1
@@ -639,6 +646,12 @@ namespace xplayer
             this.trackBar1.TickStyle = System.Windows.Forms.TickStyle.None;
             this.trackBar1.Scroll += new System.EventHandler(this.trackBar1_Scroll);
             // 
+            // menuItem13
+            // 
+            this.menuItem13.Index = 0;
+            this.menuItem13.Text = "&Register...";
+            this.menuItem13.Click += new System.EventHandler(this.menuItem13_Click);
+            // 
             // XPlayer
             // 
             this.AutoScaleBaseSize = new System.Drawing.Size(6, 14);
@@ -834,7 +847,7 @@ namespace xplayer
                                     Image bi = Image.FromFile(path);
                                     this.screen.BackgroundImage = bi;
                                 }
-                                catch (Exception ex)
+                                catch (Exception)
                                 {
                                     this.screen.BackColor = Color.Black;
                                 }
@@ -1651,15 +1664,15 @@ namespace xplayer
                         m_objVideoWindow.put_Owner(screen.Handle);
                         m_objVideoWindow.put_WindowStyle(WindowStyle.Child | WindowStyle.ClipChildren);
                         //m_objVideoWindow.WindowStyle = WS_CHILD;
-                        m_objVideoWindow.put_AutoShow(OABool.False);
+                        //m_objVideoWindow.put_AutoShow(OABool.False);
                         //m_objVideoWindow.
                         //m_objVideoWindow.SetWindowPosition(0, 0, screen.ClientRectangle.Right-300, screen.ClientRectangle.Bottom);
-                        //m_objVideoWindow.SetWindowPosition(screen.ClientRectangle.Left,
-                        //    screen.ClientRectangle.Top,
-                        //    screen.ClientRectangle.Width,
-                        //    screen.ClientRectangle.Height);
+                        m_objVideoWindow.SetWindowPosition(screen.ClientRectangle.Left,
+                            screen.ClientRectangle.Top,
+                            screen.ClientRectangle.Width,
+                            screen.ClientRectangle.Height);
 
-                        m_objVideoWindow.put_FullScreenMode(OABool.True);
+                        //m_objVideoWindow.put_FullScreenMode(OABool.True);
                         //m_objVideoWindow.put_MessageDrain(screen.Parent.Handle);
                         //m_objVideoWindow.
                         //m_objBasicVideo.SetDestinationPosition(screen.ClientRectangle.Left,
@@ -1819,7 +1832,7 @@ namespace xplayer
                     Image bi = Image.FromFile(path);
                     this.screen.BackgroundImage = bi;
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     this.screen.BackgroundImage = null;
                     this.screen.BackColor = Color.Black;
@@ -1844,9 +1857,142 @@ namespace xplayer
 
         private void XPlayer_Load(object sender, EventArgs e)
         {
+            hardcode = ConfigurationManager.AppSettings["MACHINE"];
+            if (hardcode == null)
+            {
+                hardcode = getCpu() + GetDiskVolumeSerialNumber();//获得24位Cpu和硬盘序列号
+                string[] strid = new string[24];//
+                for (int i = 0; i < 24; i++)//把字符赋给数组
+                {
+                    strid[i] = hardcode.Substring(i, 1);
+                }
 
+                hardcode = "";
+                Random rdid = new Random();
+                for (int i = 0; i < 24; i++)//从数组随机抽取24个字符组成新的字符生成机器三
+                {
+                    hardcode += strid[rdid.Next(0, 24)];
+                }
+            }
+
+            string license = ConfigurationManager.AppSettings["LICENSE"];
+            if (license != null)
+            {
+                hardcode = getCpu() + GetDiskVolumeSerialNumber();//获得24位Cpu和硬盘序列号
+                string[] strid = new string[24];//
+                for (int i = 0; i < 24; i++)//把字符赋给数组
+                {
+                    strid[i] = hardcode.Substring(i, 1);
+                }
+
+                hardcode = "";
+                Random rdid = new Random();
+                for (int i = 0; i < 24; i++)//从数组随机抽取24个字符组成新的字符生成机器三
+                {
+                    hardcode += strid[rdid.Next(0, 24)];
+                }
+
+                //regcode
+                if (hardcode != "")
+                {
+                    //把机器码存入数组中
+                    setIntCode();//初始化127位数组
+                    for (int i = 1; i < Charcode.Length; i++)//把机器码存入数组中
+                    {
+                        Charcode[i] = Convert.ToChar(hardcode.Substring(i - 1, 1));
+                    }//
+                    for (int j = 1; j < intNumber.Length; j++)//把字符的ASCII值存入一个整数组中。
+                    {
+                        intNumber[j] = intCode[Convert.ToInt32(Charcode[j])] + Convert.ToInt32(Charcode[j]);
+                    }
+
+                    string strAsciiName = null;//用于存储机器码
+                    for (int j = 1; j < intNumber.Length; j++)
+                    {
+                        //MessageBox.Show((Convert.ToChar(intNumber[j])).ToString());
+                        if (intNumber[j] >= 48 && intNumber[j] <= 57)//判断字符ASCII值是否0－9之间
+                        {
+                            strAsciiName += Convert.ToChar(intNumber[j]).ToString();
+                        }
+                        else if (intNumber[j] >= 65 && intNumber[j] <= 90)//判断字符ASCII值是否A－Z之间
+                        {
+                            strAsciiName += Convert.ToChar(intNumber[j]).ToString();
+                        }
+                        else if (intNumber[j] >= 97 && intNumber[j] <= 122)//判断字符ASCII值是否a－z之间
+                        {
+                            strAsciiName += Convert.ToChar(intNumber[j]).ToString();
+                        }
+                        else//判断字符ASCII值不在以上范围内
+                        {
+                            if (intNumber[j] > 122)//判断字符ASCII值是否大于z
+                            { 
+                                strAsciiName += Convert.ToChar(intNumber[j] - 10).ToString(); 
+                            }
+                            else
+                            {
+                                strAsciiName += Convert.ToChar(intNumber[j] - 9).ToString();
+                            }
+                        }
+
+                        regcode = strAsciiName;//得到注册码
+                    }
+                }
+
+                if (regcode != null && regcode.Equals(license))
+                {
+                    //ture
+                    this.registered = true;
+                }
+                else
+                {
+                    //false
+                    this.registered = false;
+                }
+            }
         }
 
+        public int[] intCode = new int[127];//用于存密钥
+        public void setIntCode()//给数组赋值个小于10的随机数
+        {
+            Random ra = new Random();
+
+            for (int i = 1; i < intCode.Length; i++)
+            {
+                intCode[i] = ra.Next(0, 9);
+            }
+        }
+
+        public int[] intNumber = new int[25];//用于存机器码的Ascii值
+        public char[] Charcode = new char[25];//存储机器码字
+        
+        private void menuItem13_Click(object sender, EventArgs e)
+        {
+            Form rf = new RegisterForm(this.hardcode, this.regcode, this.registered);
+            rf.Visible = false;
+            rf.ShowDialog();
+        }
+
+        private string getCpu()
+        {
+            string strCpu = null;
+            ManagementClass myCpu = new ManagementClass("win32_Processor");
+            ManagementObjectCollection myCpuConnection = myCpu.GetInstances();
+            foreach (ManagementObject myObject in myCpuConnection)
+            {
+                strCpu = myObject.Properties["Processorid"].Value.ToString();
+                break;
+            }
+
+            return strCpu;
+        }
+
+        private string GetDiskVolumeSerialNumber()
+        {
+            ManagementClass mc = new ManagementClass("Win32_NetworkAdapterConfiguration");
+            ManagementObject disk = new ManagementObject("win32_logicaldisk.deviceid=\"c:\"");
+            disk.Get();
+            return disk.GetPropertyValue("VolumeSerialNumber").ToString();
+        }
     }
     
     internal class Capture : ISampleGrabberCB
