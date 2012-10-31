@@ -739,10 +739,10 @@ namespace xplayer
             //Console.WriteLine("U1");
             if (m_objVideoWindow != null)
             {
-                //m_objVideoWindow.SetWindowPosition(screen.ClientRectangle.Left,
-               //     screen.ClientRectangle.Top,
-              //      screen.ClientRectangle.Width,
-              //      screen.ClientRectangle.Height);
+                m_objVideoWindow.SetWindowPosition(screen.ClientRectangle.Left,
+                    screen.ClientRectangle.Top,
+                    screen.ClientRectangle.Width,
+                    screen.ClientRectangle.Height);
 
               //  m_objBasicVideo.SetDestinationPosition(0,
              //                0,
