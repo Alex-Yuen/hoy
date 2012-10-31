@@ -1676,7 +1676,7 @@ namespace xplayer
                         m_objMediaEventEx.SetNotifyWindow(this.Handle, WM_GRAPHNOTIFY, IntPtr.Zero);
 
                         m_objVideoWindow.put_Owner(screen.Handle);
-                        m_objVideoWindow.put_WindowStyle(WindowStyle.Child | WindowStyle.ClipChildren);
+                        m_objVideoWindow.put_WindowStyle(WindowStyle.Child | WindowStyle.ClipChildren | WindowStyle.ClipSiblings);
                         //m_objVideoWindow.
                         //m_objVideoWindow.WindowStyle = WS_CHILD;
                         //m_objVideoWindow.put_AutoShow(OABool.False);
@@ -1686,14 +1686,15 @@ namespace xplayer
                             screen.ClientRectangle.Top,
                             screen.ClientRectangle.Width,
                             screen.ClientRectangle.Height);
-                        m_objVideoWindow.put_BorderColor(0x00FF00);
+                        //m_objVideoWindow.put_FullScreenMode(OABool.True);
+                        //m_objVideoWindow.put_BorderColor(0x00FF00);
                         ///m_objBasicVideo.
                         //Console.WriteLine("KK:"+m_objBasicVideo.put_DestinationWidth(300));
                         //Console.WriteLine(m_objBasicVideo.SetSourcePosition(0, 0, 100, 100));
-                        m_objBasicVideo.SetDestinationPosition(0,
-                               0,
-                                 screen.ClientRectangle.Width,
-                                 screen.ClientRectangle.Height);
+                        //m_objBasicVideo.SetDestinationPosition(0,
+                         //      0,
+                         //        screen.ClientRectangle.Width,
+                         //        screen.ClientRectangle.Height);
                         //m_objBasicVideo.
                         //m_objBasicVideo.SetDestinationPosition(screen.ClientRectangle.Left, screen.ClientRectangle.Top - 60, 1950, 1040);
                         //m_objVideoWindow.put_FullScreenMode(OABool.True);
