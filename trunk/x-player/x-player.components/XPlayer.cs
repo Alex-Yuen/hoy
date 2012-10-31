@@ -739,10 +739,15 @@ namespace xplayer
             //Console.WriteLine("U1");
             if (m_objVideoWindow != null)
             {
-                m_objVideoWindow.SetWindowPosition(screen.ClientRectangle.Left,
-                    screen.ClientRectangle.Top,
-                    screen.ClientRectangle.Width,
-                    screen.ClientRectangle.Height);
+                //m_objVideoWindow.SetWindowPosition(screen.ClientRectangle.Left,
+               //     screen.ClientRectangle.Top,
+              //      screen.ClientRectangle.Width,
+              //      screen.ClientRectangle.Height);
+
+              //  m_objBasicVideo.SetDestinationPosition(0,
+             //                0,
+              //              100,
+               //              100);
             }
             //Console.WriteLine("U2");
         }
@@ -1660,6 +1665,7 @@ namespace xplayer
 
                     m_objBasicAudio = m_objGraphBuilder as IBasicAudio;
                     m_objBasicVideo = m_objGraphBuilder as IBasicVideo;
+                    //IBasicVideo2 ivb2 = m_objGraphBuilder as IBasicVideo2;
                     m_objMediaEventEx = m_objGraphBuilder as IMediaEventEx;
                     m_objVideoWindow = m_objGraphBuilder as IVideoWindow;
                     m_objMediaPosition = m_objGraphBuilder as IMediaPosition;
@@ -1671,6 +1677,7 @@ namespace xplayer
 
                         m_objVideoWindow.put_Owner(screen.Handle);
                         m_objVideoWindow.put_WindowStyle(WindowStyle.Child | WindowStyle.ClipChildren);
+                        //m_objVideoWindow.
                         //m_objVideoWindow.WindowStyle = WS_CHILD;
                         //m_objVideoWindow.put_AutoShow(OABool.False);
                         //m_objVideoWindow.
@@ -1679,14 +1686,23 @@ namespace xplayer
                             screen.ClientRectangle.Top,
                             screen.ClientRectangle.Width,
                             screen.ClientRectangle.Height);
-
+                        m_objVideoWindow.put_BorderColor(0x00FF00);
+                        ///m_objBasicVideo.
+                        //Console.WriteLine("KK:"+m_objBasicVideo.put_DestinationWidth(300));
+                        //Console.WriteLine(m_objBasicVideo.SetSourcePosition(0, 0, 100, 100));
+                        m_objBasicVideo.SetDestinationPosition(0,
+                               0,
+                                 screen.ClientRectangle.Width,
+                                 screen.ClientRectangle.Height);
+                        //m_objBasicVideo.
+                        //m_objBasicVideo.SetDestinationPosition(screen.ClientRectangle.Left, screen.ClientRectangle.Top - 60, 1950, 1040);
                         //m_objVideoWindow.put_FullScreenMode(OABool.True);
                         //m_objVideoWindow.put_MessageDrain(screen.Parent.Handle);
                         //m_objVideoWindow.
-                        //m_objBasicVideo.SetDestinationPosition(screen.ClientRectangle.Left,
-                        //     screen.ClientRectangle.Top,
-                        //     screen.ClientRectangle.Width+200,
-                        //     screen.ClientRectangle.Height+200);
+                        //m_objBasicVideo.SetDestinationPosition(0,
+                        //     0,
+                        //    100,
+                        //     100);
                         //  m_objBasicVideo.SetDestinationPosition(screen.ClientRectangle.Left - 400,
                         //       screen.ClientRectangle.Top,
                         //         screen.ClientRectangle.Width + 400,
