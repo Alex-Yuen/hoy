@@ -29,6 +29,7 @@ namespace xplayer
             {
                 this.textBox2.Text = regcode;
                 this.textBox2.Enabled = false;
+                this.Text += " - Registered";
             }
             this.textBox1.Text = hardcode;
         }
