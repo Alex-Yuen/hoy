@@ -2006,7 +2006,7 @@ namespace xplayer
 
         private string getCpu()
         {
-            string strCpu = null;
+            string strCpu2 = null;
             ManagementClass myCpu = new ManagementClass("win32_Processor");
             ManagementObjectCollection myCpuConnection = myCpu.GetInstances();
             foreach (ManagementObject myObject in myCpuConnection)
@@ -2014,14 +2014,14 @@ namespace xplayer
                 //Console.WriteLine("KK:"+myObject.Properties["ProcessorId"].Value);
                 if (myObject.Properties["Processorid"].Value == null)
                 {
-                    strCpu = myObject.Properties["name"].Value.ToString();
+                    strCpu2 = myObject.Properties["name"].Value.ToString();
                 }else{
-                    strCpu = myObject.Properties["Processorid"].Value.ToString();
+                    strCpu2 = myObject.Properties["Processorid"].Value.ToString();
                 }
                 break;
             }
             //Console.WriteLine(strCpu);
-            return strCpu;
+            return strCpu2;
         }
 
         private string GetDiskVolumeSerialNumber()

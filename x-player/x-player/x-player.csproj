@@ -108,6 +108,7 @@
   <ItemGroup>
     <None Include="Resources\splash.jpg" />
     <None Include="Resources\close2.png" />
+    <None Include="Resources\logo.png" />
     <Content Include="x-player.ico" />
   </ItemGroup>
   <ItemGroup>
