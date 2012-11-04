@@ -130,6 +130,23 @@ namespace xplayer
         {
             try
             {
+                string splash = AppDomain.CurrentDomain.BaseDirectory + "//splash.png";
+                if (File.Exists(splash))
+                {
+                    Image imsp = Image.FromFile(splash);
+                    if (imsp != null)
+                    {
+                        this.BackgroundImage = imsp;
+                    }
+                }
+            }
+            catch (Exception)
+            {
+
+            }
+
+            try
+            {
                 this.client = new WebClient();
                 AppDomain od = AppDomain.CreateDomain("new");
                 //SRVersion srv = new SRVersion();
