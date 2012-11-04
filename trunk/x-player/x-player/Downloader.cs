@@ -9,6 +9,7 @@ using System.Threading;
 using System.Net;
 using System.IO;
 using System.Reflection;
+using System.Security.Cryptography;
 
 namespace xplayer
 {
@@ -17,6 +18,7 @@ namespace xplayer
         private string version = null;
         private WebClient client = null;
         private bool gsf = true;//是否已经进入关闭模式
+        private string md5 = null;
 
         public Downloader()
         {
@@ -129,10 +131,29 @@ namespace xplayer
         private void Downloader_Load(object sender, EventArgs e)
         {
             try
-            {
+            {                
                 string splash = AppDomain.CurrentDomain.BaseDirectory + "//splash.png";
+                string splashnew = AppDomain.CurrentDomain.BaseDirectory + "//splash.new";
+                if (File.Exists(splashnew))
+                {
+                    File.Delete(splash);
+                    File.Move(splashnew, splash);
+                }
+
                 if (File.Exists(splash))
                 {
+                    FileStream file = new FileStream(splash, FileMode.Open);
+                    MD5 md5s = new MD5CryptoServiceProvider();
+                    byte[] retVal = md5s.ComputeHash(file);
+                    file.Close();
+                    StringBuilder sb = new StringBuilder();
+                    for (int i = 0; i < retVal.Length; i++)
+                    {
+                        sb.Append(retVal[i].ToString("x2"));
+                    }
+                    this.md5 = sb.ToString();
+                    //Console.WriteLine(this.md5);
+
                     Image imsp = Image.FromFile(splash);
                     if (imsp != null)
                     {
@@ -140,9 +161,10 @@ namespace xplayer
                     }
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-
+                Console.WriteLine(ex.Message);
+                Console.WriteLine(ex.StackTrace);
             }
 
             try
@@ -236,7 +258,7 @@ namespace xplayer
                 {
                     if (DllType.Namespace == "xplayer" && DllType.Name == "XPlayer")
                     {
-                        form = (Form)(Activator.CreateInstance(DllType, new object[]{this}));
+                        form = (Form)(Activator.CreateInstance(DllType, new object[]{this, this.md5}));
                         break;
                     }
                 }
@@ -259,11 +281,14 @@ namespace xplayer
             {
                 e.Cancel = true;
                 //gs();
-                if (this.client.IsBusy)
+                if (this.client != null)
                 {
-                    this.client.CancelAsync();
+                    if (this.client.IsBusy)
+                    {
+                        this.client.CancelAsync();
+                    }
+                    this.client.Dispose();
                 }
-                this.client.Dispose();
                 gs();
             }
             //base.OnFormClosing(e); 

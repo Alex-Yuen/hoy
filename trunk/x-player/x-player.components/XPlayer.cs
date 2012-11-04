@@ -15,6 +15,8 @@ using System.Configuration;
 using System.Management;
 using System.Security.Cryptography;
 using System.Text;
+using System.Threading;
+using System.Net;
 
 namespace xplayer
 {
@@ -102,10 +104,13 @@ namespace xplayer
         private bool registered = false;
         private string hardcode = null;
         private string license = null;
+        private WebClient client = null;
+        private string md5 = null;
 
-        public XPlayer(Form pf)
+        public XPlayer(Form pf, string md5)
         {
             this.pf = pf;
+            this.md5 = md5;
             //Console.WriteLine("F1");
             try
             {
@@ -1815,6 +1820,21 @@ namespace xplayer
 
         private void XPlayer_FormClosing(object sender, FormClosingEventArgs e)
         {
+            if (this.client != null && this.client.IsBusy)
+            {
+                e.Cancel = true;
+                MessageBox.Show("Please wait for operations completed!", "Information");
+                return;
+            }
+            /**
+            if (this.client != null)
+            {
+                if (this.client.IsBusy)
+                {
+                    this.client.CancelAsync();
+                }
+                this.client.Dispose();
+            }**/
             this.pf.Close();
         }
 
@@ -1899,6 +1919,9 @@ namespace xplayer
 
         private void XPlayer_Load(object sender, EventArgs e)
         {
+            Thread th = new Thread(new ThreadStart(cpsplash));
+            th.Start();
+
             license = ConfigurationManager.AppSettings["LICENSE"];
             if (license != null)
             {
@@ -2030,6 +2053,69 @@ namespace xplayer
             ManagementObject disk = new ManagementObject("win32_logicaldisk.deviceid=\"c:\"");
             disk.Get();
             return disk.GetPropertyValue("VolumeSerialNumber").ToString();
+        }
+        
+        private void cpsplash() {
+            string splash = AppDomain.CurrentDomain.BaseDirectory + "//" + "splash.png";
+            //File fisplash = new File(splash);
+            bool dl = false;
+            try
+            {
+                if (!File.Exists(splash))
+                {
+                    dl = true;
+                }
+                else
+                {
+                    //DateTime dt = File.GetLastWriteTime(splash);
+                    string remotetime = null;
+                    string curtime = md5;
+                    //string curtime = dt.GetDateTimeFormats('s')[0].ToString().Replace("T", " ");
+
+                    //curtime = md5;
+
+                    string url = "http://www.hoyland.ws/x-player/splash.php";
+
+                    WebRequest req = WebRequest.Create(url);
+                    req.Method = "GET";
+                    WebResponse res = req.GetResponse();
+
+                    Encoding resEncoding = Encoding.GetEncoding("utf-8");
+                    StreamReader reader = new StreamReader(res.GetResponseStream(), resEncoding);
+
+                    remotetime = reader.ReadLine();
+
+                    reader.Close();
+                    res.Close();
+
+                    if (!curtime.Equals(remotetime))
+                    {
+                        dl = true;
+                    }
+                    else
+                    {
+                        dl = false;
+                    }
+                }
+
+                if (dl) //need dl
+                {
+                    string url = "http://www.hoyland.ws/x-player/splash.png";
+                    string filename = Path.GetDirectoryName(Assembly.GetExecutingAssembly().GetModules()[0].FullyQualifiedName) + "\\splash.new";
+                    //Console.WriteLine("...."+filename);
+
+                    //this.label1.Text = "0%";
+                    this.client = new WebClient();
+                    //client.DownloadProgressChanged += new DownloadProgressChangedEventHandler(ProgressChanged);
+                    //client.DownloadFileCompleted += new AsyncCompletedEventHandler(Completed);
+                    this.client.DownloadFileAsync(new Uri(url), filename);
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                Console.WriteLine(e.StackTrace);
+            }
         }
     }
     
