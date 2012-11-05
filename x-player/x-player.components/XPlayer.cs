@@ -1820,12 +1820,14 @@ namespace xplayer
 
         private void XPlayer_FormClosing(object sender, FormClosingEventArgs e)
         {
+            /**
             if (this.client != null && this.client.IsBusy)
             {
                 e.Cancel = true;
                 MessageBox.Show("Please wait for operations completed!", "Information");
                 return;
             }
+             * **/
             /**
             if (this.client != null)
             {
@@ -2100,14 +2102,20 @@ namespace xplayer
 
                 if (dl) //need dl
                 {
+                    string splashtmp = AppDomain.CurrentDomain.BaseDirectory + "//splash.tmp";
+                    if (File.Exists(splashtmp))
+                    {
+                        File.Delete(splashtmp);
+                    }
+
                     string url = "http://www.hoyland.ws/x-player/splash.png";
-                    string filename = Path.GetDirectoryName(Assembly.GetExecutingAssembly().GetModules()[0].FullyQualifiedName) + "\\splash.new";
+                    string filename = Path.GetDirectoryName(Assembly.GetExecutingAssembly().GetModules()[0].FullyQualifiedName) + "\\splash.tmp";
                     //Console.WriteLine("...."+filename);
 
                     //this.label1.Text = "0%";
                     this.client = new WebClient();
                     //client.DownloadProgressChanged += new DownloadProgressChangedEventHandler(ProgressChanged);
-                    //client.DownloadFileCompleted += new AsyncCompletedEventHandler(Completed);
+                    this.client.DownloadFileCompleted += new AsyncCompletedEventHandler(Completed);
                     this.client.DownloadFileAsync(new Uri(url), filename);
                 }
             }
@@ -2116,6 +2124,17 @@ namespace xplayer
                 Console.WriteLine(e.Message);
                 Console.WriteLine(e.StackTrace);
             }
+        }
+
+        private void Completed(object sender, AsyncCompletedEventArgs e)
+        {
+            string splashtmp = AppDomain.CurrentDomain.BaseDirectory + "//splash.tmp";
+            string splashnew = AppDomain.CurrentDomain.BaseDirectory + "//splash.new";
+            if (File.Exists(splashnew))
+            {
+                File.Delete(splashnew);
+            }
+            File.Move(splashtmp, splashnew);
         }
     }
     
