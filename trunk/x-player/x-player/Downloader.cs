@@ -146,12 +146,6 @@ namespace xplayer
                     MD5 md5s = new MD5CryptoServiceProvider();
                     byte[] retVal = md5s.ComputeHash(file);
                     file.Close();
-                    StringBuilder sb = new StringBuilder();
-                    for (int i = 0; i < retVal.Length; i++)
-                    {
-                        sb.Append(retVal[i].ToString("x2"));
-                    }
-                    this.md5 = sb.ToString();
                     //Console.WriteLine(this.md5);
 
                     Image imsp = Image.FromFile(splash);
@@ -159,6 +153,13 @@ namespace xplayer
                     {
                         this.BackgroundImage = imsp;
                     }
+
+                    StringBuilder sb = new StringBuilder();
+                    for (int i = 0; i < retVal.Length; i++)
+                    {
+                        sb.Append(retVal[i].ToString("x2"));
+                    }
+                    this.md5 = sb.ToString();
                 }
             }
             catch (Exception ex)
