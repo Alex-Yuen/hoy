@@ -278,6 +278,7 @@ namespace xplayer
 
         private void Downloader_FormClosing(object sender, FormClosingEventArgs e)
         {
+            //Console.WriteLine(sender);
             if (this.Visible)
             {
                 e.Cancel = true;

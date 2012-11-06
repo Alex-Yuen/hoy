@@ -17,6 +17,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using System.Net;
+using System.Globalization;
 
 namespace xplayer
 {
@@ -52,7 +53,6 @@ namespace xplayer
         private MenuItem menuItem6;
         private Screen screen;
         private ImageList imageList2;
-        private MenuItem menuItem8;
         private ToolBar toolBar1;
         private ToolBar toolBar2;
         private ToolBarButton toolBarButton1;
@@ -105,6 +105,11 @@ namespace xplayer
         private string hardcode = null;
         private string license = null;
         private WebClient client = null;
+        private MenuItem menuItem14;
+        private MenuItem menuItem8;
+        private MenuItem menuItem15;
+        private MenuItem menuItem16;
+        private MenuItem menuItem17;
         private string md5 = null;
 
         public XPlayer(Form pf, string md5)
@@ -201,14 +206,19 @@ namespace xplayer
             this.menuItem1 = new System.Windows.Forms.MenuItem();
             this.menuItem4 = new System.Windows.Forms.MenuItem();
             this.menuItem5 = new System.Windows.Forms.MenuItem();
+            this.menuItem14 = new System.Windows.Forms.MenuItem();
+            this.menuItem15 = new System.Windows.Forms.MenuItem();
+            this.menuItem16 = new System.Windows.Forms.MenuItem();
+            this.menuItem17 = new System.Windows.Forms.MenuItem();
             this.menuItem8 = new System.Windows.Forms.MenuItem();
-            this.menuItem2 = new System.Windows.Forms.MenuItem();
             this.menuItem11 = new System.Windows.Forms.MenuItem();
+            this.menuItem2 = new System.Windows.Forms.MenuItem();
             this.menuItem3 = new System.Windows.Forms.MenuItem();
             this.menuItem9 = new System.Windows.Forms.MenuItem();
             this.menuItem10 = new System.Windows.Forms.MenuItem();
             this.menuItem12 = new System.Windows.Forms.MenuItem();
             this.menuItem6 = new System.Windows.Forms.MenuItem();
+            this.menuItem13 = new System.Windows.Forms.MenuItem();
             this.menuItem7 = new System.Windows.Forms.MenuItem();
             this.imageList1 = new System.Windows.Forms.ImageList(this.components);
             this.statusBar1 = new System.Windows.Forms.StatusBar();
@@ -243,7 +253,6 @@ namespace xplayer
             this.propertyGrid1 = new System.Windows.Forms.PropertyGrid();
             this.panel3 = new System.Windows.Forms.Panel();
             this.trackBar1 = new System.Windows.Forms.TrackBar();
-            this.menuItem13 = new System.Windows.Forms.MenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.statusBarPanel1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.statusBarPanel2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.statusBarPanel3)).BeginInit();
@@ -260,97 +269,121 @@ namespace xplayer
             this.menuItem1,
             this.menuItem5,
             this.menuItem6});
+            resources.ApplyResources(this.mainMenu1, "mainMenu1");
             // 
             // menuItem1
             // 
+            resources.ApplyResources(this.menuItem1, "menuItem1");
             this.menuItem1.Index = 0;
             this.menuItem1.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
             this.menuItem4});
-            this.menuItem1.Text = "&File";
             // 
             // menuItem4
             // 
+            resources.ApplyResources(this.menuItem4, "menuItem4");
             this.menuItem4.Index = 0;
-            this.menuItem4.Text = "E&xit";
             this.menuItem4.Click += new System.EventHandler(this.menuItem4_Click);
             // 
             // menuItem5
             // 
+            resources.ApplyResources(this.menuItem5, "menuItem5");
             this.menuItem5.Index = 1;
             this.menuItem5.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+            this.menuItem14,
             this.menuItem8,
-            this.menuItem2,
             this.menuItem11,
+            this.menuItem2,
             this.menuItem3,
             this.menuItem9,
             this.menuItem10,
             this.menuItem12});
-            this.menuItem5.Text = "&Tool";
-            this.menuItem5.Visible = false;
+            // 
+            // menuItem14
+            // 
+            resources.ApplyResources(this.menuItem14, "menuItem14");
+            this.menuItem14.Index = 0;
+            this.menuItem14.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+            this.menuItem15,
+            this.menuItem16,
+            this.menuItem17});
+            // 
+            // menuItem15
+            // 
+            resources.ApplyResources(this.menuItem15, "menuItem15");
+            this.menuItem15.Index = 0;
+            this.menuItem15.Click += new System.EventHandler(this.menuItem15_Click);
+            // 
+            // menuItem16
+            // 
+            resources.ApplyResources(this.menuItem16, "menuItem16");
+            this.menuItem16.Index = 1;
+            this.menuItem16.Click += new System.EventHandler(this.menuItem16_Click);
+            // 
+            // menuItem17
+            // 
+            resources.ApplyResources(this.menuItem17, "menuItem17");
+            this.menuItem17.Index = 2;
+            this.menuItem17.Click += new System.EventHandler(this.menuItem17_Click);
             // 
             // menuItem8
             // 
-            this.menuItem8.Index = 0;
-            this.menuItem8.Text = "Option";
-            // 
-            // menuItem2
-            // 
-            this.menuItem2.Index = 1;
-            this.menuItem2.Shortcut = System.Windows.Forms.Shortcut.CtrlH;
-            this.menuItem2.Text = "Show/Hide Screen";
-            this.menuItem2.Visible = false;
-            this.menuItem2.Click += new System.EventHandler(this.menuItem2_Click);
+            resources.ApplyResources(this.menuItem8, "menuItem8");
+            this.menuItem8.Index = 1;
             // 
             // menuItem11
             // 
+            resources.ApplyResources(this.menuItem11, "menuItem11");
             this.menuItem11.Index = 2;
-            this.menuItem11.Shortcut = System.Windows.Forms.Shortcut.CtrlO;
-            this.menuItem11.Text = "Option";
             this.menuItem11.Click += new System.EventHandler(this.menuItem11_Click);
+            // 
+            // menuItem2
+            // 
+            resources.ApplyResources(this.menuItem2, "menuItem2");
+            this.menuItem2.Index = 3;
+            this.menuItem2.Click += new System.EventHandler(this.menuItem2_Click);
             // 
             // menuItem3
             // 
-            this.menuItem3.Index = 3;
-            this.menuItem3.Shortcut = System.Windows.Forms.Shortcut.CtrlF12;
-            this.menuItem3.Text = "Full/Part Screen";
-            this.menuItem3.Visible = false;
+            resources.ApplyResources(this.menuItem3, "menuItem3");
+            this.menuItem3.Index = 4;
             this.menuItem3.Click += new System.EventHandler(this.menuItem3_Click);
             // 
             // menuItem9
             // 
-            this.menuItem9.Index = 4;
-            this.menuItem9.Shortcut = System.Windows.Forms.Shortcut.Del;
-            this.menuItem9.Text = "Delete Item";
-            this.menuItem9.Visible = false;
+            resources.ApplyResources(this.menuItem9, "menuItem9");
+            this.menuItem9.Index = 5;
             this.menuItem9.Click += new System.EventHandler(this.menuItem9_Click);
             // 
             // menuItem10
             // 
-            this.menuItem10.Index = 5;
-            this.menuItem10.Shortcut = System.Windows.Forms.Shortcut.Ins;
-            this.menuItem10.Text = "Insert Item";
-            this.menuItem10.Visible = false;
+            resources.ApplyResources(this.menuItem10, "menuItem10");
+            this.menuItem10.Index = 6;
             this.menuItem10.Click += new System.EventHandler(this.menuItem10_Click);
             // 
             // menuItem12
             // 
-            this.menuItem12.Index = 6;
-            this.menuItem12.Shortcut = System.Windows.Forms.Shortcut.Ctrl0;
-            this.menuItem12.Text = "Show Background";
+            resources.ApplyResources(this.menuItem12, "menuItem12");
+            this.menuItem12.Index = 7;
             this.menuItem12.Click += new System.EventHandler(this.menuItem12_Click);
             // 
             // menuItem6
             // 
+            resources.ApplyResources(this.menuItem6, "menuItem6");
             this.menuItem6.Index = 2;
             this.menuItem6.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
             this.menuItem13,
             this.menuItem7});
-            this.menuItem6.Text = "&Help";
+            // 
+            // menuItem13
+            // 
+            resources.ApplyResources(this.menuItem13, "menuItem13");
+            this.menuItem13.Index = 0;
+            this.menuItem13.Click += new System.EventHandler(this.menuItem13_Click);
             // 
             // menuItem7
             // 
+            resources.ApplyResources(this.menuItem7, "menuItem7");
             this.menuItem7.Index = 1;
-            this.menuItem7.Text = "&About...";
             this.menuItem7.Click += new System.EventHandler(this.menuItem7_Click);
             // 
             // imageList1
@@ -370,39 +403,29 @@ namespace xplayer
             // 
             // statusBar1
             // 
-            this.statusBar1.Location = new System.Drawing.Point(0, 394);
+            resources.ApplyResources(this.statusBar1, "statusBar1");
             this.statusBar1.Name = "statusBar1";
             this.statusBar1.Panels.AddRange(new System.Windows.Forms.StatusBarPanel[] {
             this.statusBarPanel1,
             this.statusBarPanel2,
             this.statusBarPanel3});
             this.statusBar1.ShowPanels = true;
-            this.statusBar1.Size = new System.Drawing.Size(679, 20);
-            this.statusBar1.TabIndex = 2;
             // 
             // statusBarPanel1
             // 
+            resources.ApplyResources(this.statusBarPanel1, "statusBarPanel1");
             this.statusBarPanel1.AutoSize = System.Windows.Forms.StatusBarPanelAutoSize.Spring;
             this.statusBarPanel1.BorderStyle = System.Windows.Forms.StatusBarPanelBorderStyle.None;
-            this.statusBarPanel1.Name = "statusBarPanel1";
-            this.statusBarPanel1.Text = "Ready";
-            this.statusBarPanel1.Width = 534;
             // 
             // statusBarPanel2
             // 
-            this.statusBarPanel2.Alignment = System.Windows.Forms.HorizontalAlignment.Center;
+            resources.ApplyResources(this.statusBarPanel2, "statusBarPanel2");
             this.statusBarPanel2.AutoSize = System.Windows.Forms.StatusBarPanelAutoSize.Contents;
-            this.statusBarPanel2.Name = "statusBarPanel2";
-            this.statusBarPanel2.Text = "00:00:00";
-            this.statusBarPanel2.Width = 64;
             // 
             // statusBarPanel3
             // 
-            this.statusBarPanel3.Alignment = System.Windows.Forms.HorizontalAlignment.Center;
+            resources.ApplyResources(this.statusBarPanel3, "statusBarPanel3");
             this.statusBarPanel3.AutoSize = System.Windows.Forms.StatusBarPanelAutoSize.Contents;
-            this.statusBarPanel3.Name = "statusBarPanel3";
-            this.statusBarPanel3.Text = "00:00:00";
-            this.statusBarPanel3.Width = 64;
             // 
             // timer1
             // 
@@ -412,59 +435,46 @@ namespace xplayer
             // imageList2
             // 
             this.imageList2.ColorDepth = System.Windows.Forms.ColorDepth.Depth32Bit;
-            this.imageList2.ImageSize = new System.Drawing.Size(70, 45);
+            resources.ApplyResources(this.imageList2, "imageList2");
             this.imageList2.TransparentColor = System.Drawing.Color.Transparent;
             // 
             // toolBar1
             // 
-            this.toolBar1.Appearance = System.Windows.Forms.ToolBarAppearance.Flat;
-            this.toolBar1.AutoSize = false;
+            resources.ApplyResources(this.toolBar1, "toolBar1");
             this.toolBar1.Buttons.AddRange(new System.Windows.Forms.ToolBarButton[] {
             this.toolBarButton11,
             this.toolBarButton1,
             this.toolBarButton2,
             this.toolBarButton3,
             this.toolBarButton12});
-            this.toolBar1.ButtonSize = new System.Drawing.Size(46, 46);
-            this.toolBar1.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.toolBar1.DropDownArrows = true;
             this.toolBar1.ImageList = this.imageList3;
-            this.toolBar1.Location = new System.Drawing.Point(0, 321);
             this.toolBar1.Name = "toolBar1";
-            this.toolBar1.ShowToolTips = true;
-            this.toolBar1.Size = new System.Drawing.Size(679, 73);
-            this.toolBar1.TabIndex = 9;
             this.toolBar1.ButtonClick += new System.Windows.Forms.ToolBarButtonClickEventHandler(this.toolBar1_ButtonClick);
             // 
             // toolBarButton11
             // 
-            this.toolBarButton11.ImageIndex = 3;
+            resources.ApplyResources(this.toolBarButton11, "toolBarButton11");
             this.toolBarButton11.Name = "toolBarButton11";
-            this.toolBarButton11.ToolTipText = "Prev";
             // 
             // toolBarButton1
             // 
-            this.toolBarButton1.ImageIndex = 0;
+            resources.ApplyResources(this.toolBarButton1, "toolBarButton1");
             this.toolBarButton1.Name = "toolBarButton1";
-            this.toolBarButton1.ToolTipText = "Play";
             // 
             // toolBarButton2
             // 
-            this.toolBarButton2.ImageIndex = 1;
+            resources.ApplyResources(this.toolBarButton2, "toolBarButton2");
             this.toolBarButton2.Name = "toolBarButton2";
-            this.toolBarButton2.ToolTipText = "Pause";
             // 
             // toolBarButton3
             // 
-            this.toolBarButton3.ImageIndex = 2;
+            resources.ApplyResources(this.toolBarButton3, "toolBarButton3");
             this.toolBarButton3.Name = "toolBarButton3";
-            this.toolBarButton3.ToolTipText = "Stop";
             // 
             // toolBarButton12
             // 
-            this.toolBarButton12.ImageIndex = 4;
+            resources.ApplyResources(this.toolBarButton12, "toolBarButton12");
             this.toolBarButton12.Name = "toolBarButton12";
-            this.toolBarButton12.ToolTipText = "Next";
             // 
             // imageList3
             // 
@@ -478,8 +488,7 @@ namespace xplayer
             // 
             // toolBar2
             // 
-            this.toolBar2.Appearance = System.Windows.Forms.ToolBarAppearance.Flat;
-            this.toolBar2.AutoSize = false;
+            resources.ApplyResources(this.toolBar2, "toolBar2");
             this.toolBar2.Buttons.AddRange(new System.Windows.Forms.ToolBarButton[] {
             this.toolBarButton4,
             this.toolBarButton5,
@@ -491,114 +500,89 @@ namespace xplayer
             this.toolBarButton13,
             this.toolBarButton14,
             this.toolBarButton15});
-            this.toolBar2.ButtonSize = new System.Drawing.Size(46, 46);
-            this.toolBar2.DropDownArrows = true;
             this.toolBar2.ImageList = this.imageList1;
-            this.toolBar2.Location = new System.Drawing.Point(0, 0);
             this.toolBar2.Name = "toolBar2";
-            this.toolBar2.ShowToolTips = true;
-            this.toolBar2.Size = new System.Drawing.Size(679, 46);
-            this.toolBar2.TabIndex = 13;
             this.toolBar2.ButtonClick += new System.Windows.Forms.ToolBarButtonClickEventHandler(this.toolBar2_ButtonClick);
             // 
             // toolBarButton4
             // 
-            this.toolBarButton4.ImageIndex = 0;
+            resources.ApplyResources(this.toolBarButton4, "toolBarButton4");
             this.toolBarButton4.Name = "toolBarButton4";
-            this.toolBarButton4.ToolTipText = "New X-Player List";
             // 
             // toolBarButton5
             // 
-            this.toolBarButton5.ImageIndex = 1;
+            resources.ApplyResources(this.toolBarButton5, "toolBarButton5");
             this.toolBarButton5.Name = "toolBarButton5";
-            this.toolBarButton5.ToolTipText = "Open X-Player List";
             // 
             // toolBarButton6
             // 
-            this.toolBarButton6.ImageIndex = 2;
+            resources.ApplyResources(this.toolBarButton6, "toolBarButton6");
             this.toolBarButton6.Name = "toolBarButton6";
-            this.toolBarButton6.ToolTipText = "Save X-Player List";
             // 
             // toolBarButton7
             // 
-            this.toolBarButton7.ImageIndex = 3;
+            resources.ApplyResources(this.toolBarButton7, "toolBarButton7");
             this.toolBarButton7.Name = "toolBarButton7";
-            this.toolBarButton7.ToolTipText = "Add File to List (Ins)";
             // 
             // toolBarButton8
             // 
-            this.toolBarButton8.ImageIndex = 4;
+            resources.ApplyResources(this.toolBarButton8, "toolBarButton8");
             this.toolBarButton8.Name = "toolBarButton8";
-            this.toolBarButton8.ToolTipText = "Remove File from List (Del)";
             // 
             // toolBarButton9
             // 
-            this.toolBarButton9.ImageIndex = 8;
+            resources.ApplyResources(this.toolBarButton9, "toolBarButton9");
             this.toolBarButton9.Name = "toolBarButton9";
-            this.toolBarButton9.ToolTipText = "Up Item(s)";
             // 
             // toolBarButton10
             // 
-            this.toolBarButton10.ImageIndex = 9;
+            resources.ApplyResources(this.toolBarButton10, "toolBarButton10");
             this.toolBarButton10.Name = "toolBarButton10";
-            this.toolBarButton10.ToolTipText = "Down Item(s)";
             // 
             // toolBarButton13
             // 
+            resources.ApplyResources(this.toolBarButton13, "toolBarButton13");
             this.toolBarButton13.Name = "toolBarButton13";
             this.toolBarButton13.Style = System.Windows.Forms.ToolBarButtonStyle.Separator;
             // 
             // toolBarButton14
             // 
-            this.toolBarButton14.ImageIndex = 5;
+            resources.ApplyResources(this.toolBarButton14, "toolBarButton14");
             this.toolBarButton14.Name = "toolBarButton14";
             this.toolBarButton14.Style = System.Windows.Forms.ToolBarButtonStyle.ToggleButton;
-            this.toolBarButton14.ToolTipText = "Screen (Ctrl+H)";
             // 
             // toolBarButton15
             // 
-            this.toolBarButton15.ImageIndex = 6;
+            resources.ApplyResources(this.toolBarButton15, "toolBarButton15");
             this.toolBarButton15.Name = "toolBarButton15";
-            this.toolBarButton15.ToolTipText = "Option (Ctrl+O)";
             // 
             // panel1
             // 
+            resources.ApplyResources(this.panel1, "panel1");
             this.panel1.Controls.Add(this.panel4);
             this.panel1.Controls.Add(this.panel3);
-            this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel1.Location = new System.Drawing.Point(0, 46);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(679, 275);
-            this.panel1.TabIndex = 15;
             // 
             // panel4
             // 
+            resources.ApplyResources(this.panel4, "panel4");
             this.panel4.Controls.Add(this.listView1);
             this.panel4.Controls.Add(this.panel5);
-            this.panel4.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel4.Location = new System.Drawing.Point(0, 0);
             this.panel4.Name = "panel4";
-            this.panel4.Size = new System.Drawing.Size(679, 236);
-            this.panel4.TabIndex = 20;
             // 
             // listView1
             // 
-            this.listView1.Alignment = System.Windows.Forms.ListViewAlignment.Default;
+            resources.ApplyResources(this.listView1, "listView1");
             this.listView1.AllowDrop = true;
             this.listView1.BackColor = System.Drawing.SystemColors.Info;
             this.listView1.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.columnHeader1});
-            this.listView1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.listView1.FullRowSelect = true;
             this.listView1.GridLines = true;
             this.listView1.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
-            this.listView1.Location = new System.Drawing.Point(243, 0);
-            this.listView1.Margin = new System.Windows.Forms.Padding(0);
             this.listView1.Name = "listView1";
             this.listView1.ShowItemToolTips = true;
-            this.listView1.Size = new System.Drawing.Size(436, 236);
             this.listView1.SmallImageList = this.imageList2;
-            this.listView1.TabIndex = 19;
             this.listView1.UseCompatibleStateImageBehavior = false;
             this.listView1.View = System.Windows.Forms.View.Details;
             this.listView1.SelectedIndexChanged += new System.EventHandler(this.listView1_SelectedIndexChanged);
@@ -609,69 +593,45 @@ namespace xplayer
             // 
             // columnHeader1
             // 
-            this.columnHeader1.Text = "Overview";
-            this.columnHeader1.Width = 429;
+            resources.ApplyResources(this.columnHeader1, "columnHeader1");
             // 
             // panel5
             // 
+            resources.ApplyResources(this.panel5, "panel5");
             this.panel5.BackColor = System.Drawing.SystemColors.ScrollBar;
             this.panel5.Controls.Add(this.propertyGrid1);
-            this.panel5.Dock = System.Windows.Forms.DockStyle.Left;
-            this.panel5.Location = new System.Drawing.Point(0, 0);
             this.panel5.Name = "panel5";
-            this.panel5.Size = new System.Drawing.Size(243, 236);
-            this.panel5.TabIndex = 18;
             // 
             // propertyGrid1
             // 
-            this.propertyGrid1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.propertyGrid1.Location = new System.Drawing.Point(0, 0);
+            resources.ApplyResources(this.propertyGrid1, "propertyGrid1");
             this.propertyGrid1.Name = "propertyGrid1";
-            this.propertyGrid1.Size = new System.Drawing.Size(243, 236);
-            this.propertyGrid1.TabIndex = 3;
             // 
             // panel3
             // 
+            resources.ApplyResources(this.panel3, "panel3");
             this.panel3.Controls.Add(this.trackBar1);
-            this.panel3.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.panel3.Location = new System.Drawing.Point(0, 236);
             this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(679, 39);
-            this.panel3.TabIndex = 19;
             // 
             // trackBar1
             // 
-            this.trackBar1.AutoSize = false;
+            resources.ApplyResources(this.trackBar1, "trackBar1");
             this.trackBar1.BackColor = System.Drawing.SystemColors.Control;
-            this.trackBar1.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.trackBar1.Location = new System.Drawing.Point(0, 8);
             this.trackBar1.Maximum = 200;
             this.trackBar1.Name = "trackBar1";
-            this.trackBar1.Size = new System.Drawing.Size(679, 31);
-            this.trackBar1.TabIndex = 12;
             this.trackBar1.TabStop = false;
             this.trackBar1.TickStyle = System.Windows.Forms.TickStyle.None;
             this.trackBar1.Scroll += new System.EventHandler(this.trackBar1_Scroll);
             // 
-            // menuItem13
-            // 
-            this.menuItem13.Index = 0;
-            this.menuItem13.Text = "&Register...";
-            this.menuItem13.Click += new System.EventHandler(this.menuItem13_Click);
-            // 
             // XPlayer
             // 
-            this.AutoScaleBaseSize = new System.Drawing.Size(6, 14);
-            this.ClientSize = new System.Drawing.Size(679, 414);
+            resources.ApplyResources(this, "$this");
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.toolBar2);
             this.Controls.Add(this.toolBar1);
             this.Controls.Add(this.statusBar1);
-            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Menu = this.mainMenu1;
             this.Name = "XPlayer";
-            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "X-Player";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.XPlayer_FormClosing);
             this.Load += new System.EventHandler(this.XPlayer_Load);
             ((System.ComponentModel.ISupportInitialize)(this.statusBarPanel1)).EndInit();
@@ -1661,8 +1621,8 @@ namespace xplayer
 
                     m_objGraphBuilder = (IGraphBuilder)new FilterGraph();
 
-                    int cookie = 0;
-                    DsROT.AddGraphToRot(m_objGraphBuilder, out cookie);
+                    //int cookie = 0;
+                    //DsROT.AddGraphToRot(m_objGraphBuilder, out cookie);
 
                     this.currentMedia = lvi.ToolTipText;
                     this.currentLVI = lvi;
@@ -1828,7 +1788,7 @@ namespace xplayer
                 return;
             }
              * **/
-            /**
+            
             if (this.client != null)
             {
                 if (this.client.IsBusy)
@@ -1836,7 +1796,8 @@ namespace xplayer
                     this.client.CancelAsync();
                 }
                 this.client.Dispose();
-            }**/
+            }
+            //this.pf.Tag = "X";
             this.pf.Close();
         }
 
@@ -2135,6 +2096,55 @@ namespace xplayer
                 File.Delete(splashnew);
             }
             File.Move(splashtmp, splashnew);
+        }
+
+        private void menuItem15_Click(object sender, EventArgs e)
+        {
+            swt(0);
+        }
+
+        private void menuItem16_Click(object sender, EventArgs e)
+        {
+            swt(1);
+        }
+
+        private void menuItem17_Click(object sender, EventArgs e)
+        {
+            swt(2);
+        }
+
+        private void swt(int language)
+        {
+            string lanf = "";
+            switch (language)
+            {
+                case 0:
+                    break;
+                case 1:
+                    lanf = "zh-CN";
+                    break;
+                case 2:
+                    lanf = "zh-TW";
+                    break;
+                default:
+                    break;
+            }
+
+            CultureInfo UICulture = new CultureInfo(lanf);
+            Thread.CurrentThread.CurrentUICulture = UICulture;
+
+            menuItem1.Text = Properties.Resource.MENU_FILE;
+            menuItem4.Text = Properties.Resource.MENU_EXIT;
+            menuItem5.Text = Properties.Resource.MENU_TOOL;
+            menuItem6.Text = Properties.Resource.MENU_HELP;
+            menuItem7.Text = Properties.Resource.MENU_ABOUT;
+            menuItem11.Text = Properties.Resource.MENU_OPTION;
+            menuItem13.Text = Properties.Resource.MENU_REGISTER;
+            menuItem14.Text = Properties.Resource.MENU_LANGUAGE;
+
+            //string msg = Properties.Resource.MENU_HELP;
+
+            //Console.WriteLine("msg=" + msg);
         }
     }
     
