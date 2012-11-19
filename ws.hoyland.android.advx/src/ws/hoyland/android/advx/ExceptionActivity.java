@@ -10,7 +10,7 @@ public class ExceptionActivity extends Activity {
 	public void onCreate(Bundle paramBundle) {
 		super.onCreate(paramBundle);
 		this.tv = new TextView(this);
-		String str = getIntent().getStringExtra("error");
+		String str = getIntent().getStringExtra("message");
 		if (str != null){
 			this.tv.setText(str);
 		}
