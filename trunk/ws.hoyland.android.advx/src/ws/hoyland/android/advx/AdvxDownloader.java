@@ -48,7 +48,7 @@ public class AdvxDownloader implements Runnable {
 
 				Bundle bundle = new Bundle();
 				bundle.putInt("period", period);
-				//bundle.put
+				bundle.putBoolean("sf", sf);
 				if(type==0){
 					images[0] = "/itv01.png";
 					images[1] = "/itv02.png";
