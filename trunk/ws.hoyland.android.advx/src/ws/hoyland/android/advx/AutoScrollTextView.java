@@ -164,7 +164,7 @@ public class AutoScrollTextView extends TextView implements OnClickListener {
 		if (!isStarting) {
 			return;
 		}
-		step += 0.5;
+		step += 2.5;
 		if (step > temp_view_plus_two_text_length)
 			step = textLength;
 		invalidate();
