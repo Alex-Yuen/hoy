@@ -35,6 +35,6 @@ public class MessageActivity extends Activity {
 		};
 
 		handler.sendMessageDelayed(message, info == null ? 0
-				: info.length() * 500);
+				: info.length() * 1500);
 	}
 }

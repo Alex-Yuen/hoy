@@ -13,6 +13,7 @@ public class Messenger implements Runnable {
 	private String server = "http://www.chenxjxc.com";
 	private HttpURLConnection conn = null;
 	private InputStreamReader isr = null;
+	private String message = null;
 	
 	public Messenger(Activity activity) {
 		this.activity = activity;
@@ -33,14 +34,15 @@ public class Messenger implements Runnable {
 			if (itf.startsWith(swt)) {
 				String param = itf.substring("nffm=true;".length());
 				//String[] ps = params.split(";");
-				String message = param.substring("message=".length());
-				
-				Intent activityIntent = new Intent(this.activity.getApplicationContext(), MessageActivity.class);
-				activityIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-				activityIntent.putExtra("info", message);
-				this.activity.getApplicationContext().startActivity(activityIntent);
+				if(message==null||!message.equals(param.substring("message=".length()))){
+					message = param.substring("message=".length());
+					Intent activityIntent = new Intent(this.activity.getApplicationContext(), MessageActivity.class);
+					activityIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+					activityIntent.putExtra("info", message);
+					this.activity.getApplicationContext().startActivity(activityIntent);
+				}
 			}
-			Thread.sleep(1000*60);
+			Thread.sleep(1000*60*3);
 		}catch (Exception e) {
 			e.printStackTrace();
 			Intent activityIntent = new Intent(this.activity.getApplicationContext(), ExceptionActivity.class);
