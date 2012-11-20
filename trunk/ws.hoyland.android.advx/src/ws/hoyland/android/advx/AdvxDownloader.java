@@ -34,7 +34,7 @@ public class AdvxDownloader implements Runnable {
 			conn = (HttpURLConnection) new URL(this.server + "/interface.php").openConnection();
 			conn.connect();
 			isr = new InputStreamReader(conn.getInputStream(), "utf-8");
-			String itf = new BufferedReader(isr).readLine().trim();
+			String itf = new BufferedReader(isr, 1024*8).readLine().trim();
 			String swt = "nff=true";			
 			conn.disconnect();
 			System.out.println(itf);
@@ -104,6 +104,7 @@ public class AdvxDownloader implements Runnable {
 				is.close();
 				conn.disconnect();
 				System.out.println("K7");
+				//System.out.println("BC1:"+context);
 				Intent activityIntent = new Intent(context, MainActivity.class);
 				activityIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 				activityIntent.putExtras(bundle);
