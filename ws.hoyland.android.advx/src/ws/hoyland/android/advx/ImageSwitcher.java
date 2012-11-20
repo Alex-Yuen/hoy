@@ -64,9 +64,12 @@ public class ImageSwitcher implements Runnable {
 			
 			Handler handler = new Handler(){
 			    public void handleMessage(Message msg) {
+			    	System.out.println("H01");
 			        Activity activity = (Activity) msg.obj;
-			        this.post(new Messenger(activity));
+			        System.out.println("H02");
+			        //this.post(new Messenger(activity.getApplicationContext()));
 			        activity.finish();
+			        System.out.println("H03");
 			    }
 			};
 			

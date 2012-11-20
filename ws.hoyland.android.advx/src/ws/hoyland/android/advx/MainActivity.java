@@ -2,12 +2,15 @@ package ws.hoyland.android.advx;
 
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Message;
 import android.widget.ImageView;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
+@SuppressLint("HandlerLeak")
 public class MainActivity extends Activity {
 
 	private ImageView iv;
@@ -50,12 +53,34 @@ public class MainActivity extends Activity {
         	iv.setImageBitmap(img2);
 			setContentView(iv);
         }
-
+        //System.out.println("BC2:"+this.getBaseContext());
+        //System.out.println("BC2:"+this.getParent().getBaseContext());
 		Handler handler = new Handler();
 		handler.postDelayed(new ImageSwitcher(this), 1000*this.period);
     }
 
     
+	@Override
+	protected void onDestroy() {
+		System.out.println("H11");
+		Message message = new Message();
+		message.obj = this;
+		
+		Handler handler = new Handler(){
+		    public void handleMessage(Message msg) {
+		    	System.out.println("H12");
+		        Activity activity = (Activity) msg.obj;
+		        this.post(new Messenger(activity.getApplicationContext()));
+		        System.out.println("H13");
+		    }
+		};
+		System.out.println("H14");
+		handler.sendMessage(message);
+		System.out.println("H15");
+		super.onDestroy();
+	}
+
+
 	public byte[] getImg2bs() {
 		return img2bs;
 	}
