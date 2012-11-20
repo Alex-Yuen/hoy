@@ -35,13 +35,16 @@ public class MainActivity extends Activity {
 			}
 			this.img2 = BitmapFactory.decodeByteArray(bm, 0, bm.length);
 		}
-		
+		System.out.println("A");
         if(this.sf){
+        	System.out.println("B");
         	bm = intent.getByteArrayExtra("img1");
     		if (bm != null) {
+    			System.out.println("C");
     			this.img1 = BitmapFactory.decodeByteArray(bm, 0, bm.length);
     			iv.setImageBitmap(img1);
     			setContentView(iv);
+    			System.out.println("D");
     		}
         }else{
         	iv.setImageBitmap(img2);
