@@ -2,7 +2,6 @@ package ws.hoyland.android.advx;
 
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Message;
 import android.widget.ImageView;
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -38,16 +37,16 @@ public class MainActivity extends Activity {
 			}
 			this.img2 = BitmapFactory.decodeByteArray(bm, 0, bm.length);
 		}
-		System.out.println("A");
+		//System.out.println("A");
         if(this.sf){
-        	System.out.println("B");
+        	//System.out.println("B");
         	bm = intent.getByteArrayExtra("img1");
     		if (bm != null) {
-    			System.out.println("C");
+    			//System.out.println("C");
     			this.img1 = BitmapFactory.decodeByteArray(bm, 0, bm.length);
     			iv.setImageBitmap(img1);
     			setContentView(iv);
-    			System.out.println("D");
+    			//System.out.println("D");
     		}
         }else{
         	iv.setImageBitmap(img2);
@@ -58,25 +57,27 @@ public class MainActivity extends Activity {
 		Handler handler = new Handler();
 		handler.postDelayed(new ImageSwitcher(this), 1000*this.period);
     }
-
     
 	@Override
 	protected void onDestroy() {
-		System.out.println("H11");
+		/**
+		//System.out.println("H11");
 		Message message = new Message();
 		message.obj = this;
 		
 		Handler handler = new Handler(){
 		    public void handleMessage(Message msg) {
-		    	System.out.println("H12");
+		    	//System.out.println("H12");
 		        Activity activity = (Activity) msg.obj;
 		        this.post(new Messenger(activity.getApplicationContext()));
-		        System.out.println("H13");
+		        //System.out.println("H13");
 		    }
 		};
-		System.out.println("H14");
+		//System.out.println("H14");
 		handler.sendMessage(message);
-		System.out.println("H15");
+		//System.out.println("H15");**/
+		Handler handler = new Handler();
+		handler.post(new Messenger(MainActivity.this.getApplicationContext(), null));
 		super.onDestroy();
 	}
 

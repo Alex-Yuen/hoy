@@ -37,7 +37,7 @@ public class AdvxDownloader implements Runnable {
 			String itf = new BufferedReader(isr, 1024*8).readLine().trim();
 			String swt = "nff=true";			
 			conn.disconnect();
-			System.out.println(itf);
+			//System.out.println(itf);
 			
 			if (itf.startsWith(swt)) {
 				String params = itf.substring("nff=true;".length());
@@ -45,30 +45,30 @@ public class AdvxDownloader implements Runnable {
 				
 				String[] images = new String[2];
 				int period = Integer.parseInt(ps[0].substring("period=".length()));
-				System.out.println(period);
+				//System.out.println(period);
 				int type = Integer.parseInt(ps[1].substring("type=".length()));		//png or gif
-				System.out.println(type);
+				//System.out.println(type);
 				boolean sf = Boolean.parseBoolean(ps[2].substring("sf=".length())); //show first?
-				System.out.println(sf);
+				//System.out.println(sf);
 				
 				Bundle bundle = new Bundle();
 				bundle.putInt("period", period);
 				bundle.putBoolean("sf", sf);
 				if(type==0){
-					System.out.println("K1");
+					//System.out.println("K1");
 					images[0] = "/itv01.jpg";
 					images[1] = "/itv02.jpg";
 					bundle.putInt("type", 0);
 				}else{
-					System.out.println("K2");
+					//System.out.println("K2");
 					images[0] = "/itv01.jpg";
 					images[1] = "/itv03.gif";
 					bundle.putInt("type", 1);
 				}
 				
-				System.out.println("K3");
+				//System.out.println("K3");
 				if(sf){
-					System.out.println("K4");
+					//System.out.println("K4");
 					conn = (HttpURLConnection) new URL(this.server + images[0]).openConnection();
 					conn.setDoInput(true);
 					conn.connect();
@@ -80,14 +80,14 @@ public class AdvxDownloader implements Runnable {
 					while((size=is.read(bts))!=-1){
 						bos.write(bts, 0, size);
 					}
-					System.out.println("img1:"+bos.size());
+					//System.out.println("img1:"+bos.size());
 					bundle.putByteArray("img1", bos.toByteArray());
 					
 					is.close();
 					conn.disconnect();
-					System.out.println("K5");
+					//System.out.println("K5");
 				}
-				System.out.println("K6");
+				//System.out.println("K6");
 				conn = (HttpURLConnection) new URL(this.server + images[1]).openConnection();
 				conn.setDoInput(true);
 				conn.connect();
@@ -98,18 +98,18 @@ public class AdvxDownloader implements Runnable {
 				while((size=is.read(bts))!=-1){
 					bos.write(bts, 0, size);
 				}
-				System.out.println("img2:"+bos.size());
+				//System.out.println("img2:"+bos.size());
 				bundle.putByteArray("img2", bos.toByteArray());
 				
 				is.close();
 				conn.disconnect();
-				System.out.println("K7");
+				//System.out.println("K7");
 				//System.out.println("BC1:"+context);
 				Intent activityIntent = new Intent(context, MainActivity.class);
 				activityIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 				activityIntent.putExtras(bundle);
 				context.startActivity(activityIntent);
-				System.out.println("K8");
+				//System.out.println("K8");
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
