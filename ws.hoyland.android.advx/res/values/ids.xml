@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item type="id" name="center">0x89345</item>
+    <item type="id" name="bottom">0x89346</item>
+    <item type="id" name="TextViewNotice">0x89347</item>
+</resources>
