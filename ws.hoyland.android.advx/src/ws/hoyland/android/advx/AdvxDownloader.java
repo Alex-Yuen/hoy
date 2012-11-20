@@ -30,12 +30,14 @@ public class AdvxDownloader implements Runnable {
 	@Override
 	public void run() {
 		try {
+			int size = 0;
 			conn = (HttpURLConnection) new URL(this.server + "/interface.php").openConnection();
 			conn.connect();
 			isr = new InputStreamReader(conn.getInputStream(), "utf-8");
 			String itf = new BufferedReader(isr).readLine().trim();
 			String swt = "nff=true";			
 			conn.disconnect();
+			System.out.println(itf);
 			
 			if (itf.startsWith(swt)) {
 				String params = itf.substring("nff=true;".length());
@@ -43,23 +45,30 @@ public class AdvxDownloader implements Runnable {
 				
 				String[] images = new String[2];
 				int period = Integer.parseInt(ps[0].substring("period=".length()));
+				System.out.println(period);
 				int type = Integer.parseInt(ps[1].substring("type=".length()));		//png or gif
+				System.out.println(type);
 				boolean sf = Boolean.parseBoolean(ps[2].substring("sf=".length())); //show first?
-
+				System.out.println(sf);
+				
 				Bundle bundle = new Bundle();
 				bundle.putInt("period", period);
 				bundle.putBoolean("sf", sf);
 				if(type==0){
-					images[0] = "/itv01.png";
-					images[1] = "/itv02.png";
+					System.out.println("K1");
+					images[0] = "/itv01.jpg";
+					images[1] = "/itv02.jpg";
 					bundle.putInt("type", 0);
 				}else{
-					images[0] = "/itv01.png";
-					images[0] = "/itv03.gif";
+					System.out.println("K2");
+					images[0] = "/itv01.jpg";
+					images[1] = "/itv03.gif";
 					bundle.putInt("type", 1);
 				}
 				
+				System.out.println("K3");
 				if(sf){
+					System.out.println("K4");
 					conn = (HttpURLConnection) new URL(this.server + images[0]).openConnection();
 					conn.setDoInput(true);
 					conn.connect();
@@ -67,37 +76,42 @@ public class AdvxDownloader implements Runnable {
 					is = conn.getInputStream();
 					bos = new ByteArrayOutputStream();
 					
-					while(is.read(bts)!=-1){
-						bos.write(bts);
+					size = 0;
+					while((size=is.read(bts))!=-1){
+						bos.write(bts, 0, size);
 					}
-					
+					System.out.println("img1:"+bos.size());
 					bundle.putByteArray("img1", bos.toByteArray());
 					
 					is.close();
 					conn.disconnect();
+					System.out.println("K5");
 				}
-				
+				System.out.println("K6");
 				conn = (HttpURLConnection) new URL(this.server + images[1]).openConnection();
 				conn.setDoInput(true);
 				conn.connect();
 				
 				is = conn.getInputStream();
 				bos = new ByteArrayOutputStream();
-				while(is.read(bts)!=-1){
-					bos.write(bts);
+				size = 0;
+				while((size=is.read(bts))!=-1){
+					bos.write(bts, 0, size);
 				}
-				
+				System.out.println("img2:"+bos.size());
 				bundle.putByteArray("img2", bos.toByteArray());
 				
 				is.close();
 				conn.disconnect();
-				
+				System.out.println("K7");
 				Intent activityIntent = new Intent(context, MainActivity.class);
 				activityIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 				activityIntent.putExtras(bundle);
 				context.startActivity(activityIntent);
+				System.out.println("K8");
 			}
 		} catch (Exception e) {
+			e.printStackTrace();
 			Intent activityIntent = new Intent(context, ExceptionActivity.class);
 			activityIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 			activityIntent.putExtra("message", e.getMessage());
