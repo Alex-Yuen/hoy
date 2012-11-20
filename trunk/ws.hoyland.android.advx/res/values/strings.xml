@@ -1,5 +1,4 @@
 <resources>
 	<string name="app_name">众达科技</string>
-    <string name="menu_settings">Settings</string>
     <string name="hello">Hi, 众达科技欢迎您！</string>
 </resources>
