@@ -24,11 +24,11 @@ public class ImageSwitcher implements Runnable {
 			int period = 0;
 			if(activity.isSf()){
 				if(activity.getType()==0){
-					System.out.println("E");
+					//System.out.println("E");
 					activity.getIv().setImageBitmap(activity.getImg2());
 					activity.setContentView(activity.getIv());
 				}else{
-					System.out.println("F");
+					//System.out.println("F");
 					/**
 					 * LayoutInflater inflater = (LayoutInflater)
 					 * getSystemService(LAYOUT_INFLATER_SERVICE); RelativeLayout parent =
@@ -44,7 +44,7 @@ public class ImageSwitcher implements Runnable {
 					//activity.fin
 					//GifView gif = (GifView) findViewById(0);
 					GifView gif = new GifView(activity);
-					System.out.println(gif); 
+					//System.out.println(gif); 
 					gif.setGifImage(activity.getImg2bs()); // 添加监听器 //
 					//gif.setOnClickListener(this); // 设置显示的大小，拉伸或者压缩
 					//gif.set
@@ -53,10 +53,10 @@ public class ImageSwitcher implements Runnable {
 					gif.setShowDimension(dm.widthPixels, dm.heightPixels); // 设置加载方式：先加载后显示、边加载边显示、只显示第一帧再显示
 					gif.setGifImageType(GifImageType.WAIT_FINISH); //R.layout.activity_main
 					activity.setContentView(gif);
-					System.out.println("F1");
+					//System.out.println("F1");
 				}
 				period = activity.getPeriod();
-				System.out.println("F2");
+				//System.out.println("F2");
 			}
 			
 			Message message = new Message();
@@ -64,19 +64,19 @@ public class ImageSwitcher implements Runnable {
 			
 			Handler handler = new Handler(){
 			    public void handleMessage(Message msg) {
-			    	System.out.println("H01");
+			    	//System.out.println("H01");
 			        Activity activity = (Activity) msg.obj;
-			        System.out.println("H02");
+			        //System.out.println("H02");
 			        //this.post(new Messenger(activity.getApplicationContext()));
 			        activity.finish();
-			        System.out.println("H03");
+			        //System.out.println("H03");
 			    }
 			};
 			
 			handler.sendMessageDelayed(message, 1000*period); 
-			System.out.println("F3");
+			//System.out.println("F3");
 		}catch(Exception e){
-			System.out.println("G:"+e.getMessage());
+			//System.out.println("G:"+e.getMessage());
 			e.printStackTrace();
 		}
 	}
