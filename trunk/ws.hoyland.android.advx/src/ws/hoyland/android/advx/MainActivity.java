@@ -13,6 +13,7 @@ public class MainActivity extends Activity {
 	private ImageView iv;
     private Bitmap img1 = null;
     private Bitmap img2 = null;
+    private byte[] img2bs = null;
     private int type = 0;
     private boolean sf = false;
     private int period = 5;
@@ -29,6 +30,9 @@ public class MainActivity extends Activity {
 
     	byte[] bm = intent.getByteArrayExtra("img2");
 		if (bm != null) {
+			if(this.type!=0){
+				this.img2bs = bm.clone();
+			}
 			this.img2 = BitmapFactory.decodeByteArray(bm, 0, bm.length);
 		}
 		
@@ -47,6 +51,15 @@ public class MainActivity extends Activity {
 		Handler handler = new Handler();
 		handler.postDelayed(new ImageSwitcher(this), 1000*this.period);
     }
+
+    
+	public byte[] getImg2bs() {
+		return img2bs;
+	}
+
+	public void setImg2bs(byte[] img2bs) {
+		this.img2bs = img2bs;
+	}
 
 	public ImageView getIv() {
 		return iv;
