@@ -35,14 +35,18 @@ public class Messenger implements Runnable {
 				
 			if (itf.startsWith(swt)) {
 				//System.out.println("T1");
-				String param = itf.substring("nffm=true;".length());
-				//String[] ps = params.split(";");
-				if(message==null||!message.equals(param.substring("message=".length()))){
+				String params = itf.substring("nffm=true;".length());
+				String[] ps = params.split(";");
+				String msg = ps[0].substring("message=".length());
+				int ts = Integer.parseInt(ps[1].substring("ts=".length()));
+				
+				if(message==null||!message.equals(msg)){
 					//System.out.println("T2");
-					message = param.substring("message=".length());
+					message = msg;
 					Intent activityIntent = new Intent(this.context, MessageActivity.class);
 					activityIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 					activityIntent.putExtra("info", message);
+					activityIntent.putExtra("ts", ts);
 					this.context.startActivity(activityIntent);
 					//this.context.get
 					//System.out.println("T3");

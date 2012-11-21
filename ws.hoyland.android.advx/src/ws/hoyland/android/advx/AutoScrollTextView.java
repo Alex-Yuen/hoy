@@ -1,9 +1,10 @@
 package ws.hoyland.android.advx;
 
-import android.app.Activity;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.os.Message;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.AttributeSet;
@@ -21,6 +22,7 @@ import android.widget.TextView;
  * @author tianlu
  * @version 1.0 Create At : 2010-2-16 下午09:35:03
  */
+@SuppressLint("DrawAllocation")
 public class AutoScrollTextView extends TextView implements OnClickListener {
 	public final static String TAG = AutoScrollTextView.class.getSimpleName();
 
@@ -34,7 +36,11 @@ public class AutoScrollTextView extends TextView implements OnClickListener {
 	private Paint paint = null;// 绘图样式
 	private String text = "";// 文本内容
 	private int t = 0;
-	private Activity activity = null;
+	private MessageActivity activity = null;
+
+	private int ts;
+
+	private boolean flag = false;
 
 	public AutoScrollTextView(Context context) {
 		super(context);
@@ -167,16 +173,18 @@ public class AutoScrollTextView extends TextView implements OnClickListener {
 		if (!isStarting) {
 			return;
 		}
-		step += 2.0;
+		step += 2.5;
 		if (step > temp_view_plus_two_text_length){
 			t++;
 			step = textLength;
 		}
 		invalidate();
 		
-		if(t==2){
-			//this.getContext().get
-			this.activity.finish();
+		if(t==ts&&!flag){
+			this.flag  = true;
+			Message message = new Message();
+			message.what = 0x12;
+			this.activity.send(message);
 		}
 	}
 
@@ -188,8 +196,13 @@ public class AutoScrollTextView extends TextView implements OnClickListener {
 			startScroll();
 	}
 
-	public void setActivity(Activity activity) {
+	public void setActivity(MessageActivity activity) {
 		this.activity = activity;
+		
+	}
+
+	public void setTS(int ts) {
+		this.ts = ts;
 		
 	}	
 	
