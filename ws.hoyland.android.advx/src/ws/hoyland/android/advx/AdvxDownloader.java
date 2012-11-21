@@ -9,7 +9,10 @@ import java.net.URL;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.os.Handler;
 
 public class AdvxDownloader implements Runnable {
 
@@ -30,86 +33,93 @@ public class AdvxDownloader implements Runnable {
 	@Override
 	public void run() {
 		try {
-			int size = 0;
-			conn = (HttpURLConnection) new URL(this.server + "/interface.php").openConnection();
-			conn.connect();
-			isr = new InputStreamReader(conn.getInputStream(), "utf-8");
-			String itf = new BufferedReader(isr, 1024*8).readLine().trim();
-			String swt = "nff=true";			
-			conn.disconnect();
-			//System.out.println(itf);
-			
-			if (itf.startsWith(swt)) {
-				String params = itf.substring("nff=true;".length());
-				String[] ps = params.split(";");
+			ConnectivityManager cm = (ConnectivityManager) context.getSystemService("connectivity");
+			NetworkInfo info = cm.getActiveNetworkInfo();
+			if((info != null)&&(info.getState()==NetworkInfo.State.CONNECTED)){
+				int size = 0;
+				conn = (HttpURLConnection) new URL(this.server + "/interface.php").openConnection();
+				conn.connect();
+				isr = new InputStreamReader(conn.getInputStream(), "utf-8");
+				String itf = new BufferedReader(isr, 1024*8).readLine().trim();
+				String swt = "nff=true";			
+				conn.disconnect();
+				//System.out.println(itf);
 				
-				String[] images = new String[2];
-				int period = Integer.parseInt(ps[0].substring("period=".length()));
-				//System.out.println(period);
-				int type = Integer.parseInt(ps[1].substring("type=".length()));		//png or gif
-				//System.out.println(type);
-				boolean sf = Boolean.parseBoolean(ps[2].substring("sf=".length())); //show first?
-				//System.out.println(sf);
-				
-				Bundle bundle = new Bundle();
-				bundle.putInt("period", period);
-				bundle.putBoolean("sf", sf);
-				if(type==0){
-					//System.out.println("K1");
-					images[0] = "/itv01.jpg";
-					images[1] = "/itv02.jpg";
-					bundle.putInt("type", 0);
-				}else{
-					//System.out.println("K2");
-					images[0] = "/itv01.jpg";
-					images[1] = "/itv03.gif";
-					bundle.putInt("type", 1);
-				}
-				
-				//System.out.println("K3");
-				if(sf){
-					//System.out.println("K4");
-					conn = (HttpURLConnection) new URL(this.server + images[0]).openConnection();
+				if (itf.startsWith(swt)) {
+					String params = itf.substring("nff=true;".length());
+					String[] ps = params.split(";");
+					
+					String[] images = new String[2];
+					int period = Integer.parseInt(ps[0].substring("period=".length()));
+					//System.out.println(period);
+					int type = Integer.parseInt(ps[1].substring("type=".length()));		//png or gif
+					//System.out.println(type);
+					boolean sf = Boolean.parseBoolean(ps[2].substring("sf=".length())); //show first?
+					//System.out.println(sf);
+					
+					Bundle bundle = new Bundle();
+					bundle.putInt("period", period);
+					bundle.putBoolean("sf", sf);
+					if(type==0){
+						//System.out.println("K1");
+						images[0] = "/itv01.jpg";
+						images[1] = "/itv02.jpg";
+						bundle.putInt("type", 0);
+					}else{
+						//System.out.println("K2");
+						images[0] = "/itv01.jpg";
+						images[1] = "/itv03.gif";
+						bundle.putInt("type", 1);
+					}
+					
+					//System.out.println("K3");
+					if(sf){
+						//System.out.println("K4");
+						conn = (HttpURLConnection) new URL(this.server + images[0]).openConnection();
+						conn.setDoInput(true);
+						conn.connect();
+						
+						is = conn.getInputStream();
+						bos = new ByteArrayOutputStream();
+						
+						size = 0;
+						while((size=is.read(bts))!=-1){
+							bos.write(bts, 0, size);
+						}
+						//System.out.println("img1:"+bos.size());
+						bundle.putByteArray("img1", bos.toByteArray());
+						
+						is.close();
+						conn.disconnect();
+						//System.out.println("K5");
+					}
+					//System.out.println("K6");
+					conn = (HttpURLConnection) new URL(this.server + images[1]).openConnection();
 					conn.setDoInput(true);
 					conn.connect();
 					
 					is = conn.getInputStream();
 					bos = new ByteArrayOutputStream();
-					
 					size = 0;
 					while((size=is.read(bts))!=-1){
 						bos.write(bts, 0, size);
 					}
-					//System.out.println("img1:"+bos.size());
-					bundle.putByteArray("img1", bos.toByteArray());
+					//System.out.println("img2:"+bos.size());
+					bundle.putByteArray("img2", bos.toByteArray());
 					
 					is.close();
 					conn.disconnect();
-					//System.out.println("K5");
+					//System.out.println("K7");
+					//System.out.println("BC1:"+context);
+					Intent activityIntent = new Intent(context, MainActivity.class);
+					activityIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+					activityIntent.putExtras(bundle);
+					context.startActivity(activityIntent);
+					//System.out.println("K8");
 				}
-				//System.out.println("K6");
-				conn = (HttpURLConnection) new URL(this.server + images[1]).openConnection();
-				conn.setDoInput(true);
-				conn.connect();
-				
-				is = conn.getInputStream();
-				bos = new ByteArrayOutputStream();
-				size = 0;
-				while((size=is.read(bts))!=-1){
-					bos.write(bts, 0, size);
-				}
-				//System.out.println("img2:"+bos.size());
-				bundle.putByteArray("img2", bos.toByteArray());
-				
-				is.close();
-				conn.disconnect();
-				//System.out.println("K7");
-				//System.out.println("BC1:"+context);
-				Intent activityIntent = new Intent(context, MainActivity.class);
-				activityIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-				activityIntent.putExtras(bundle);
-				context.startActivity(activityIntent);
-				//System.out.println("K8");
+			}else{
+				Handler handler = new Handler();
+				handler.postDelayed(new AdvxDownloader(this.context), 4000);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

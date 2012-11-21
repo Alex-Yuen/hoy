@@ -3,8 +3,6 @@ package ws.hoyland.android.advx;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 
 @SuppressLint("HandlerLeak")
 public class MessageActivity extends Activity {
@@ -21,9 +19,13 @@ public class MessageActivity extends Activity {
 			this.autoScrollTextView = (AutoScrollTextView) findViewById(R.id.TextViewNotice);
 			this.autoScrollTextView.setText(info);
 			this.autoScrollTextView.init(getWindowManager());
+			//this.autoScrollTextView.setMarqueeRepeatLimit(2);
+			//this.autoScrollTextView.
+			this.autoScrollTextView.setActivity(this);
 			this.autoScrollTextView.startScroll();
 		}
 
+		/**
 		Message message = new Message();
 		message.obj = this;
 
@@ -35,6 +37,6 @@ public class MessageActivity extends Activity {
 		};
 
 		handler.sendMessageDelayed(message, info == null ? 0
-				: info.length() * 1500);
+				: info.length() * 1000);**/
 	}
 }

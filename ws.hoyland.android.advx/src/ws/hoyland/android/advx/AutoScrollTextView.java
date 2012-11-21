@@ -1,5 +1,6 @@
 package ws.hoyland.android.advx;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
@@ -32,6 +33,8 @@ public class AutoScrollTextView extends TextView implements OnClickListener {
 	public boolean isStarting = false;// 是否开始滚动
 	private Paint paint = null;// 绘图样式
 	private String text = "";// 文本内容
+	private int t = 0;
+	private Activity activity = null;
 
 	public AutoScrollTextView(Context context) {
 		super(context);
@@ -164,10 +167,17 @@ public class AutoScrollTextView extends TextView implements OnClickListener {
 		if (!isStarting) {
 			return;
 		}
-		step += 2.5;
-		if (step > temp_view_plus_two_text_length)
+		step += 2.0;
+		if (step > temp_view_plus_two_text_length){
+			t++;
 			step = textLength;
+		}
 		invalidate();
+		
+		if(t==2){
+			//this.getContext().get
+			this.activity.finish();
+		}
 	}
 
 	@Override
@@ -177,4 +187,10 @@ public class AutoScrollTextView extends TextView implements OnClickListener {
 		else
 			startScroll();
 	}
+
+	public void setActivity(Activity activity) {
+		this.activity = activity;
+		
+	}	
+	
 }
