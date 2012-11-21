@@ -1,7 +1,11 @@
 package ws.hoyland.android.advx;
 
+import com.ant.liao.GifView;
+import com.ant.liao.GifView.GifImageType;
+
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.DisplayMetrics;
 import android.widget.ImageView;
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -49,8 +53,24 @@ public class MainActivity extends Activity {
     			//System.out.println("D");
     		}
         }else{
-        	iv.setImageBitmap(img2);
-			setContentView(iv);
+        	if(type==0){
+	        	iv.setImageBitmap(img2);
+				setContentView(iv);
+        	}else{
+        		GifView gif = new GifView(this);
+				//System.out.println(gif); 
+				gif.setGifImage(getImg2bs()); // 添加监听器 //
+				//gif.setOnClickListener(this); // 设置显示的大小，拉伸或者压缩
+				//gif.set
+				//gif.set
+				//img2.getWidth()/img2.getHeight() = dm.widthPixels/x;
+				//x = dm.widthPixels*img2.getHeight()/img2.getWidth()
+				DisplayMetrics dm = new DisplayMetrics();  
+				getWindowManager().getDefaultDisplay().getMetrics(dm);   
+				gif.setShowDimension(dm.widthPixels, dm.heightPixels); // 设置加载方式：先加载后显示、边加载边显示、只显示第一帧再显示
+				gif.setGifImageType(GifImageType.COVER); //R.layout.activity_main
+				setContentView(gif);
+        	}
         }
         //System.out.println("BC2:"+this.getBaseContext());
         //System.out.println("BC2:"+this.getParent().getBaseContext());
