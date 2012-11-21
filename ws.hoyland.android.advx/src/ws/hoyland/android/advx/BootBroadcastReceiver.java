@@ -16,6 +16,7 @@ public class BootBroadcastReceiver extends BroadcastReceiver {
 				while (true) {
 					NetworkInfo info = cm.getActiveNetworkInfo();
 					if ((info != null)&&(info.getState()==NetworkInfo.State.CONNECTED)) {
+						Thread.sleep(4000);
 						Handler handler = new Handler();
 						handler.post(new AdvxDownloader(context));
 						break;
