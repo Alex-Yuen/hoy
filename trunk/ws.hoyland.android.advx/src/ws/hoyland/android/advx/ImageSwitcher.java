@@ -51,7 +51,7 @@ public class ImageSwitcher implements Runnable {
 					DisplayMetrics dm = new DisplayMetrics();  
 					activity.getWindowManager().getDefaultDisplay().getMetrics(dm);   
 					gif.setShowDimension(dm.widthPixels, dm.heightPixels); // 设置加载方式：先加载后显示、边加载边显示、只显示第一帧再显示
-					gif.setGifImageType(GifImageType.WAIT_FINISH); //R.layout.activity_main
+					gif.setGifImageType(GifImageType.COVER); //R.layout.activity_main
 					activity.setContentView(gif);
 					//System.out.println("F1");
 				}
