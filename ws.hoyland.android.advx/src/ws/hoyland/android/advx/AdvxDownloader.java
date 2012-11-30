@@ -123,10 +123,10 @@ public class AdvxDownloader implements Runnable {
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-			Intent activityIntent = new Intent(context, ExceptionActivity.class);
-			activityIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-			activityIntent.putExtra("message", e.getMessage());
-			context.startActivity(activityIntent);
+//			Intent activityIntent = new Intent(context, ExceptionActivity.class);
+//			activityIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//			activityIntent.putExtra("message", e.getMessage());
+//			context.startActivity(activityIntent);
 		}
 	}
 
