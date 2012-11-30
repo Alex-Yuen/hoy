@@ -57,10 +57,10 @@ public class Messenger implements Runnable {
 			//System.out.println("T4");
 		}catch (Exception e) {
 			e.printStackTrace();
-			Intent activityIntent = new Intent(this.context, ExceptionActivity.class);
-			activityIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-			activityIntent.putExtra("message", e.getMessage());
-			this.context.startActivity(activityIntent);
+//			Intent activityIntent = new Intent(this.context, ExceptionActivity.class);
+//			activityIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//			activityIntent.putExtra("message", e.getMessage());
+//			this.context.startActivity(activityIntent);
 		}
 		
 	}
