@@ -19,20 +19,22 @@ public class Main {
 		ThreadPoolExecutor executor = new ThreadPoolExecutor(100, Integer.MAX_VALUE, 60, TimeUnit.SECONDS, queue);    
 		try{
 			int c = 0;
+			for(int m=0;m<cs.length;m++){
 			for(int i=0;i<cs.length;i++){
 				for(int j=0;j<cs.length;j++){
 					for(int k=0;k<cs.length;k++){
-						if(c%250==0){
-							Thread.sleep(1000*5);
+						if(c%50==0){
+							Thread.sleep(1000*10);
 						}
 						while(queue.size()>=200){
 							Thread.sleep(5000);
 						}
-						Thread.sleep(50);
-						executor.execute(new Poster(cs[i]+cs[j]+cs[k]));
+						Thread.sleep(100);
+						executor.execute(new Poster(cs[m]+cs[i]+cs[j]+cs[k]));
 						c++;
 					}
 				}
+			}
 			}
 		}catch(Exception e){
 			e.printStackTrace();
