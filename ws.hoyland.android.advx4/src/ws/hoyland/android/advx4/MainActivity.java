@@ -80,6 +80,7 @@ public class MainActivity extends Activity {
     
 	@Override
 	protected void onDestroy() {
+		//System.out.println("EEFG");
 		/**
 		//System.out.println("H11");
 		Message message = new Message();
