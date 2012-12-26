@@ -5,6 +5,6 @@
         <TextView android:layout_width="fill_parent" android:layout_height="wrap_content" />
     </LinearLayout>
     <LinearLayout android:orientation="vertical" android:id="@id/bottom" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_alignParentBottom="true">
-        <ws.hoyland.android.advx.AutoScrollTextView android:textSize="20.0sp" android:textColor="#ff000000" android:id="@id/TextViewNotice" android:background="#ffedc33e" android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="@string/hello" android:height="40.0dip" />
+        <ws.hoyland.android.advx4.AutoScrollTextView android:textSize="20.0sp" android:textColor="#ff000000" android:id="@id/TextViewNotice" android:background="#ffedc33e" android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="@string/hello" android:height="40.0dip" />
     </LinearLayout>
 </RelativeLayout>
