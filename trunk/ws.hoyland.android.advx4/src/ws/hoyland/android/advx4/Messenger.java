@@ -29,7 +29,7 @@ public class Messenger implements Runnable {
 			conn.connect();
 			isr = new InputStreamReader(conn.getInputStream(), "utf-8");
 			String itf = new BufferedReader(isr, 1024*8).readLine().trim();
-			String swt = "nffm=true";			
+			String swt = "nffm=true";
 			conn.disconnect();
 			//System.out.println(itf);
 				
