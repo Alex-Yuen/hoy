@@ -1153,7 +1153,7 @@ namespace xplayer
                         StreamWriter sw = File.CreateText(this.currentFile);
                         foreach (ListViewItem lvi in listView1.Items)
                         {
-                            sw.WriteLine(lvi.Text);
+                            sw.WriteLine(lvi.ToolTipText);
                         }
                         sw.Close();
                         this.toolBarButton6.Enabled = false;
