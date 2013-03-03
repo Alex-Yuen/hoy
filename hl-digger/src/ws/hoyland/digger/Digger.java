@@ -15,6 +15,7 @@ public class Digger {
 		List<String> days = new ArrayList<String>();
 		String line = null;
 		final float HEIGHT = 1.022f;
+		final int WIDTH_DAYS = 5;
 		
 		try {
 			BufferedReader br = new BufferedReader(new InputStreamReader(Digger.class.getResourceAsStream("/000300.csv")));
@@ -24,18 +25,30 @@ public class Digger {
 			int total = 0;
 			int real = 0;
 			double close = 0.0;
+			String[] today = null;
+			String[] yesterday = null;
+			String[] tomorrow = null;
+			boolean flag = false;
 			
 			for(int i=20;i<days.size()-20;i++){
-				String[] today = days.get(i).split(",");
-				String[] yesterday = days.get(i-1).split(",");
-				String[] tomorrow = days.get(i+1).split(",");
-				String[] tomorrow2 = days.get(i+2).split(",");
+				today = days.get(i).split(",");
+				yesterday = days.get(i-1).split(",");
+				flag = false;
 				
 				if(Float.parseFloat(yesterday[8])<Float.parseFloat(yesterday[9])&&Float.parseFloat(today[8])>=Float.parseFloat(today[9])){
 					total++;
 					close = Float.parseFloat(today[4])*HEIGHT;
-					System.out.println(Float.parseFloat(yesterday[8]));
-					if(Float.parseFloat(tomorrow[4])>close||Float.parseFloat(tomorrow2[4])>close){
+					//System.out.println("Y:"+Float.parseFloat(yesterday[8])+"/"+Float.parseFloat(yesterday[9]));
+					//System.out.println("T:"+Float.parseFloat(today[8])+"/"+Float.parseFloat(today[9]));
+					for(int d=0;d<WIDTH_DAYS;d++){
+						tomorrow = days.get(i+1+d).split(",");
+						if(Float.parseFloat(tomorrow[2])>close){
+							flag = true;
+							break;
+						}
+					}
+					
+					if(flag){
 						real++;
 					}
 				}
