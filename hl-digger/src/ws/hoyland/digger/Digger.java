@@ -18,7 +18,7 @@ public class Digger {
 		final int WIDTH_DAYS = 2;
 		
 		try {
-			BufferedReader br = new BufferedReader(new InputStreamReader(Digger.class.getResourceAsStream("/160706.csv")));
+			BufferedReader br = new BufferedReader(new InputStreamReader(Digger.class.getResourceAsStream("/000002.csv")));
 			while((line=br.readLine())!=null){
 				days.add(line);
 			}
@@ -33,14 +33,17 @@ public class Digger {
 			boolean fs = false;
 //			boolean ff = false;
 //			double tf = 0.0;
+//			double upheight = 0.0;
 			
 			for(int i=20;i<days.size()-20;i++){
 				today = days.get(i).split(",");
 				yesterday = days.get(i-1).split(",");
 				fs = false;
 //				ff = false;
+//				upheight = (double)(Math.round((Float.parseFloat(today[5])-Float.parseFloat(yesterday[5]))*100/Float.parseFloat(yesterday[5]))/100.0);
 				
 				if(Float.parseFloat(yesterday[8])<Float.parseFloat(yesterday[9])&&Float.parseFloat(today[8])>=Float.parseFloat(today[9])){
+				//if(Float.parseFloat(yesterday[8])<Float.parseFloat(yesterday[9])&&Float.parseFloat(today[8])>=Float.parseFloat(today[9]) && Float.parseFloat(yesterday[5])<=Float.parseFloat(today[5])){
 					total++;
 					close = Float.parseFloat(today[4])*(1+HEIGHT);
 					//low = Float.parseFloat(today[4])*(1-HEIGHT);
