@@ -11,8 +11,11 @@ public class Digger {
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		System.out.println("Testing...");
-		// 测试信号出现情况下，2个交易日内增长2.2%的概率
-		// 计算盈亏比
+		// 1.1 测试信号出现情况下，2个交易日内增长2.2%的概率
+		// 计算盈亏比，不能以low值的后来形成，来指导日间的操作。分成功，止损，正常退出3种。
+		
+		// 1.2 测试金叉死叉算法
+		
 		List<String> days = new ArrayList<String>();
 		String line = null;
 //		final float HEIGHT_T = 0.015f;
@@ -20,7 +23,7 @@ public class Digger {
 //		final int WIDTH_DAYS = 5;
 		
 		try {
-			BufferedReader br = new BufferedReader(new InputStreamReader(Digger.class.getResourceAsStream("/601009.csv")));
+			BufferedReader br = new BufferedReader(new InputStreamReader(Digger.class.getResourceAsStream("/160706.csv")));
 			while((line=br.readLine())!=null){
 				days.add(line);
 			}
@@ -41,7 +44,7 @@ public class Digger {
 //			double tts = 0;
 //			double ttf = 0;
 //			double upheight = 0.0;
-			double money = 1000000;
+			double money = 100000;
 			int size = 0;
 			int buyt = 0;
 			int sellt = 0;
@@ -57,10 +60,10 @@ public class Digger {
 				//if(Float.parseFloat(yesterday[8])<Float.parseFloat(yesterday[9])&&Float.parseFloat(today[8])>=Float.parseFloat(today[9]) && Float.parseFloat(yesterday[5])<=Float.parseFloat(today[5])){
 					//buy
 					close = Float.parseFloat(today[4]);
-					size += 1000;
+					size += 10000;
 					money -= close*size;
 					buyt++;
-//					
+					System.out.println("BUY:"+today[0]);
 //					low = Float.parseFloat(today[4])*(1-HEIGHT_B);
 //					//System.out.println("Y:"+Float.parseFloat(yesterday[8])+"/"+Float.parseFloat(yesterday[9]));
 //					//System.out.println("T:"+Float.parseFloat(today[8])+"/"+Float.parseFloat(today[9]));
@@ -113,6 +116,7 @@ public class Digger {
 					money += close*size;
 					size = 0;
 					sellt++;
+					System.out.println("SELL:"+today[0]);
 				}
 			}
 			System.out.print("买入次数:");
