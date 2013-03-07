@@ -19,7 +19,7 @@ public class Digger {
 		// 一种操作方法，平均盈利高，成功率也高
 		List<String> days = new ArrayList<String>();
 		String line = null;
-		final float HEIGHT_T = 0.20f;
+		final float HEIGHT_T = 0.10f;
 		final float HEIGHT_B = 0.05f;
 		final int WIDTH_DAYS = 10;
 		
