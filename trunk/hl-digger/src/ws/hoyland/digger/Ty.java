@@ -14,16 +14,16 @@ public class Ty {
 		Random r = new Random();
 		double bit = 0;
 		
-		for(int t=0;t<1;t++){
+//		for(int t=0;t<1;t++){
 			money = 100000;
 			earn = 0;
-			for(int i=0;i<1000;i++){			
-				if(money>100000){
-					earn += money - 100000;
-					money = 100000;
-				}
+			for(int i=0;i<1000;i++){
 	//			
-				bit = money*0.01;
+				bit = money*0.05;
+//				bit = 100000 - money;
+//				if(bit==0){
+//					bit = 100;
+//				}
 				//bit = 100;
 				//System.out.println(bit);
 				
@@ -32,10 +32,15 @@ public class Ty {
 				}else{
 					money -= bit;
 				}
+				
+				if(money>100000){
+					earn += money - 100000;
+					money = 100000;
+				}
 			}
 			
-			System.out.println(t+"->money:"+money);
-			System.out.println(t+"->earn:"+earn);
-		}
+			System.out.println("->money:"+money);
+			System.out.println("->earn:"+earn);
+//		}
 	}
 }
