@@ -30,8 +30,7 @@ public class Test {
 		BigInteger bi3 = new BigInteger("-1");
 		bi3 = bi3.modPow(bi1, bi2);
 		String hex = bi3.toString();//.toUpperCase();
-		byte[] kk = Converts.hexStringToByte(hex);
-		byte[] key = Converts.MD5Encode(kk);
+		byte[] key = Converts.MD5Encode(Converts.hexStringToByte(hex));
 		System.out.println(key.length);
 		byte[] bb = crypter.encrypt(array, key);
 		System.out.println(bb.length);//64, 必须是88才对
