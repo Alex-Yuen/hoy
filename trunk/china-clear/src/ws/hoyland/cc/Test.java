@@ -21,6 +21,7 @@ public class Test {
 		json.put("tkn_seq", "1406087124841854");
 		json.put("password", "981019.*");
 //		json.put("mobile_code", "123456");
+		System.out.println(json.toString());
 		byte[] array = json.toString().getBytes();
 		System.out.println(array.length); //81 到88之间?
 		
