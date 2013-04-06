@@ -20,6 +20,7 @@ public class T5 {
 	 */
 	public static void main(String[] args) {
 
+		String token = "1406087124841854";	//手机上的令牌序列号
 		BigInteger root = new BigInteger("2");
 		BigInteger d = new BigInteger("B8008767A628A4F53BCB84C13C961A55BF87607DAA5BE0BA3AC2E0CB778E494579BD444F699885F4968CD9028BB3FC6FA657D532F1718F581669BDC333F83DC3", 16);
 
@@ -64,10 +65,22 @@ public class T5 {
 		byte[] key = Converts.MD5Encode(Converts.hexStringToByte(sk));		
 		//System.out.println(key.length);
 		
+		
+		
+		
+		
+		
+		
+		//1812664241, 09137123939
 		//crypt request data
-		String uin = "744625551";	//要绑定的其他QQ号
-		String token = "1406087124841854";	//手机上的令牌
-		String password = "981019.*";	//要绑定的其他QQ号密码
+		String uin = "1812664241";	//要绑定的其他QQ号
+		String password = "0913712393";	//要绑定的其他QQ号密码
+		
+		
+		
+		
+		
+		
 		//System.out.println(Converts.MD5EncodeToHex("123456"));
 		json = new JSONObject();
 		json.put("tkn_seq", token);
