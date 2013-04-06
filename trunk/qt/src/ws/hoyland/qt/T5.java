@@ -1,6 +1,9 @@
 package ws.hoyland.qt;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.math.BigInteger;
@@ -28,9 +31,11 @@ public class T5 {
 		InputStreamReader isr = new InputStreamReader(is);
 		BufferedReader reader = new BufferedReader(isr);
 		String qq = null;
-		//File f = new File("C:\\out.txt");
-		//BufferedWriter output = new BufferedWriter(new FileWriter(f));
+		File f = new File("d:\\out.txt");
+		BufferedWriter output = new BufferedWriter(new FileWriter(f));
+		int cc = 0;
 		while((qq=reader.readLine())!=null){
+			if(cc>0&&cc%50==0) Thread.sleep(1000*5);
 			//if(cc>50) break;
 			//generate random e
 			byte[] bs = new byte[14];
@@ -78,7 +83,7 @@ public class T5 {
 			
 			
 			
-			String[] qs = qq.split("---");
+			String[] qs = qq.split("----");
 			//1812664241, 09137123939
 			//crypt request data
 //			String uin = "1812664241";	//要绑定的其他QQ号
@@ -106,8 +111,10 @@ public class T5 {
 			sb = new StringBuffer();
 			try{
 				URL url = new URL("http://w.aq.qq.com/cn/mbtoken3/mbtoken3_upgrade_determin_v2?uin="+uin+"&sess_id="+sid+"&data="+data);
-				System.out.println(url.toString());
-				//output.write(url.toString()+"\n");
+				//System.out.println(url.toString());
+				System.out.println(cc);
+				output.write(url.toString()+"\r\n");
+				output.flush();
 	//			InputStream in = url.openStream();
 	//			BufferedReader bin = new BufferedReader(new InputStreamReader(in));
 	//			String line = null;
@@ -119,9 +126,9 @@ public class T5 {
 			}catch(Exception ex){
 				ex.printStackTrace();
 			}
-			//cc++;
+			cc++;
 		}
-		//output.close();
+		output.close();
 		
 		//System.out.println(sb.toString());
 	}
