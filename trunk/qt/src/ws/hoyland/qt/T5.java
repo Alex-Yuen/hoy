@@ -27,7 +27,7 @@ public class T5 {
 		BigInteger root = new BigInteger("2");
 		BigInteger d = new BigInteger("B8008767A628A4F53BCB84C13C961A55BF87607DAA5BE0BA3AC2E0CB778E494579BD444F699885F4968CD9028BB3FC6FA657D532F1718F581669BDC333F83DC3", 16);
 
-		InputStream is = T5.class.getResourceAsStream("/num2.txt");
+		InputStream is = T5.class.getResourceAsStream("/num3.txt");
 		InputStreamReader isr = new InputStreamReader(is);
 		BufferedReader reader = new BufferedReader(isr);
 		String qq = null;
