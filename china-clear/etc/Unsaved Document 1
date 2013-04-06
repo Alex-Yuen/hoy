@@ -1,0 +1,54 @@
+b com.tencent.token.core.i a(Ljava/lang/String;Ljava/lang/String;)
+
+
+## Active Hooks
+   -- Hook <536870924> com.tencent.token.core.i.a(Ljava/lang/String;Ljava/lang/S
+      tring;)Lcom/tencent/token/core/f;:0 <class 'andbug.vm.Location'>
+>> ## Breakpoint hit in thread <14> UserTask #1    (waiting suspended), process
+   suspended.
+   -- com.tencent.token.core.i.a(Ljava/lang/String;Ljava/lang/String;)Lcom/tence
+      nt/token/core/f;:0
+   -- com.tencent.token.ui.jl.a([Ljava/lang/Object;)Ljava/lang/Object;:20
+   -- com.tencent.token.core.o.call()Ljava/lang/Object;:9
+
+
+9778AD4DCFCAE0D8510F936
+
+E10ADC3949BA59ABBE56E05
+
+
+\xf9\xbc\xe0\x05\x7fB\xf3\x96'\xd6\xe3\xccY\xb4\xea\x0f
+
+
+249, 188, 224, 5, 127, 66, 243, 150, 39, 214, 227, 204, 89, 180, 234, 15,
+
+
+121.114
+
+->
+82C49C3C3F122047F38F06DC38E05A967C573D446E1E428828942BD7248EC301B79A3110C3D1F1357C9A1922C79C424F12CC521585D8E2B31B8DF57AF31C3B32
+
+<-
+79AE9031A8A6775DBC78F98222CCA16F0E27484EB7134C887344F80FE276A6685570BC3D3690B6C765D11A6D38AD349FBB589DD707FD4D3AC2FC1C5B61CA52C6
+
+
+82C49C3C3F122047F38F06DC38E05A967C573D446E1E428828942BD7248EC301B79A3110C3D1F1357C9A1922C79C424F12CC521585D8E2B31B8DF57AF31C3B32
+由以下而来：
+ com.tencent.token.core.encrypt.a.c localc1 = new com.tencent.token.core.encrypt.a.c("2");
+    com.tencent.token.core.encrypt.a.c localc2 = this.e;
+    com.tencent.token.core.encrypt.a.c localc3 = d;
+    return localc1.a(localc2, localc3).a().toUpperCase(); 
+    
+    d=B8008767A628A4F53BCB84C13C961A55BF87607DAA5BE0BA3AC2E0CB778E494579BD444F699885F4968CD9028BB3FC6FA657D532F1718F581669BDC333F83DC3
+ 由以上计算出e，
+ 
+ 再计算出key   
+  com.tencent.token.core.encrypt.a.c localc1 = this.e;
+    com.tencent.token.core.encrypt.a.c localc2 = d;
+    return com.tencent.token.core.a.d.a(this.g.a(localc1, localc2).a());
+    
+    
+    
+    d->f->a->e(md5?error)
+    c->b
+    
