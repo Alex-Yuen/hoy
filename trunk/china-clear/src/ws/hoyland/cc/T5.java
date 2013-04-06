@@ -1,6 +1,7 @@
 package ws.hoyland.cc;
 
 import java.math.BigInteger;
+import java.util.Random;
 
 public class T5 {
 
@@ -14,6 +15,7 @@ public class T5 {
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		byte[] bs = new byte[14];
+		Random r = new Random();
 		BigInteger bi = new BigInteger(bs);
 		
 		
