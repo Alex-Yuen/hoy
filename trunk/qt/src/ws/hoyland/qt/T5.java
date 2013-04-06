@@ -35,7 +35,7 @@ public class T5 {
 		BufferedWriter output = new BufferedWriter(new FileWriter(f));
 		int cc = 0;
 		while((qq=reader.readLine())!=null){
-			if(cc>0&&cc%50==0) Thread.sleep(1000*5);
+			if(cc>0&&cc%50==0) Thread.sleep(1000*5); //每59个休眠5秒，避免服务器繁忙
 			//if(cc>50) break;
 			//generate random e
 			byte[] bs = new byte[14];
