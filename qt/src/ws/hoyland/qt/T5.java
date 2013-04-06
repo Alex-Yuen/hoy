@@ -58,7 +58,7 @@ public class T5 {
 		String tcpk = json.getString("pub_key"); //get server's crypt pub key
 		//System.out.println(tcpk);
 		
-		//caculate the key for TEA alth
+		//caculate the key
 		BigInteger btcpk = new BigInteger(tcpk, 16);
 		String sk = btcpk.modPow(e, d).toString(16).toUpperCase();
 		byte[] key = Converts.MD5Encode(Converts.hexStringToByte(sk));		
@@ -72,7 +72,6 @@ public class T5 {
 		json = new JSONObject();
 		json.put("tkn_seq", token);
 		json.put("password", Converts.MD5EncodeToHex(password));
-//		json.put("mobile_code", "123456");
 		//System.out.println(json.toString());
 		byte[] array = json.toString().getBytes();
 		
