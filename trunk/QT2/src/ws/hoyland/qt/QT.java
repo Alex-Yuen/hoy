@@ -29,7 +29,8 @@ public class QT {
 	protected Shell shlQt;
 	private Text txtC;
 	private Label lblNewLabel_7;
-
+	private Label lblNewLabel_1;
+	
 	private Map<String, String> ns = new HashMap<String, String>();
 	/**
 	 * Launch the application.
@@ -80,7 +81,7 @@ public class QT {
 						}
 						reader.close();
 						is.close();
-						lblNewLabel_7.setText(String.valueOf(ns.size()));
+						lblNewLabel_1.setText("0/"+String.valueOf(ns.size()));
 					}
 				}catch(Exception ex){
 					ex.printStackTrace();
@@ -104,7 +105,7 @@ public class QT {
 		lblNewLabel.setBounds(25, 86, 61, 17);
 		lblNewLabel.setText("进度:");
 		
-		Label lblNewLabel_1 = new Label(shlQt, SWT.NONE);
+		lblNewLabel_1 = new Label(shlQt, SWT.NONE);
 		lblNewLabel_1.setBounds(92, 86, 110, 17);
 		lblNewLabel_1.setText("0/0");
 		
