@@ -35,6 +35,8 @@ public class QT {
 	
 	private ThreadPoolExecutor pool = null;
 	private List<String> ns = new ArrayList<String>();
+	private boolean flag = false;
+	private Text text;
 	
 	public QT(){ 
     }
@@ -83,11 +85,13 @@ public class QT {
 			}
 			@Override
 			public void shellClosed(ShellEvent e) {
-				pool.shutdownNow();
+				if(pool!=null){
+					pool.shutdownNow();
+				}
 			}
 		});
 		shlQt.setToolTipText("");
-		shlQt.setSize(603, 242);
+		shlQt.setSize(603, 276);
 		shlQt.setText("QT");
 		
 
@@ -124,13 +128,28 @@ public class QT {
 					
 					for(int i=0;i<ns.size();i++){
 						String[] qp = ns.get(i).split("----");
-						Task task = new Task(qp[0], qp[1]);
+						Task task = new Task(text.getText(), qp[0], qp[1]);
 						pool.execute(task);
 					}
+					flag = true;
+//					Display.getCurrent().asyncExec(new Runnable(){
+//						public void run(){
+//							while(flag){
+//								System.out.println("CMP:"+pool);
+//								try{
+//									Thread.sleep(1000);
+//								}catch(Exception e){
+//									e.printStackTrace();
+//								}
+//							}
+//						}
+//					});
 					btnNewButton.setEnabled(false);
 					button_1.setText("结束");
 				}else{
+					pool.shutdown();
 					pool.shutdownNow();
+					flag = false;
 					btnNewButton.setEnabled(true);
 					button_1.setText("开始");					
 				}
@@ -138,14 +157,14 @@ public class QT {
 		});
 		button_1.setEnabled(false);
 		button_1.setText("开始");
-		button_1.setBounds(411, 117, 176, 50);
+		button_1.setBounds(411, 133, 176, 73);
 		
 		Label label = new Label(shlQt, SWT.NONE);
 		label.setBounds(411, 82, 61, 17);
 		label.setText("线程设置:");
 		
 		Label lblNewLabel_3 = new Label(shlQt, SWT.NONE);
-		lblNewLabel_3.setBounds(10, 82, 61, 17);
+		lblNewLabel_3.setBounds(10, 77, 61, 17);
 		lblNewLabel_3.setText("密码正确:");
 		
 		Label lblNewLabel_4 = new Label(shlQt, SWT.NONE);
@@ -153,7 +172,7 @@ public class QT {
 		lblNewLabel_4.setText("密码错误:");
 		
 		Label lblNewLabel_5 = new Label(shlQt, SWT.NONE);
-		lblNewLabel_5.setBounds(92, 82, 61, 17);
+		lblNewLabel_5.setBounds(92, 77, 61, 17);
 		lblNewLabel_5.setText("0");
 		
 		Label lblNewLabel_6 = new Label(shlQt, SWT.NONE);
@@ -213,11 +232,11 @@ public class QT {
 		lblNewLabel_8.setText("未知错误:");
 		
 		ProgressBar progressBar = new ProgressBar(shlQt, SWT.SMOOTH);
-		progressBar.setBounds(10, 178, 579, 26);
+		progressBar.setBounds(10, 212, 579, 26);
 		
 		spinner = new Spinner(shlQt, SWT.BORDER);
 		spinner.setMaximum(1024);
-		spinner.setMinimum(128);
+		spinner.setMinimum(1);
 		spinner.setSelection(128);
 		spinner.setBounds(484, 79, 66, 23);
 		
@@ -238,6 +257,14 @@ public class QT {
 		label_3 = new Label(shlQt, SWT.NONE);
 		label_3.setBounds(77, 8, 61, 17);
 		label_3.setText("共 0 条");
+		
+		Label lblNewLabel = new Label(shlQt, SWT.NONE);
+		lblNewLabel.setBounds(10, 183, 75, 17);
+		lblNewLabel.setText("令牌序列号:");
+		
+		text = new Text(shlQt, SWT.BORDER);
+		text.setText("1406087124841854");
+		text.setBounds(92, 183, 230, 23);
 
 	}
 }
