@@ -1,8 +1,10 @@
 package ws.hoyland.qt;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileWriter;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,6 +15,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.FileDialog;
+import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Label;
@@ -51,8 +54,21 @@ public class QT {
 	private List<String> sc = null;
 	private List<String> fc = null;
 	private List<String> oc = null;
+	private List<String> proxy = null;
 	
-	public QT(){ 
+	public QT(){
+		this.proxy = new ArrayList<String>();
+		try{
+			InputStreamReader isr = new InputStreamReader(QT.class.getResourceAsStream("/proxy.txt"));
+			BufferedReader reader = new BufferedReader(isr);
+			String line = null;
+			while((line=reader.readLine())!=null){
+				proxy.add(line);
+				//System.out.println(line);
+			}
+		}catch(Exception e){
+			e.printStackTrace();
+		}
     }
 	
 	public boolean getFlag(){
@@ -170,8 +186,8 @@ public class QT {
 					progressBar.setSelection(0);
 					
 					// 线程池 数据库连接池 可联系起来
-					int corePoolSize = 2;// minPoolSize
-					int maxPoolSize = 2;
+					int corePoolSize = 100;// minPoolSize
+					int maxPoolSize = 500;
 					int maxTaskSize = 1024;//缓冲队列
 					long keepAliveTime = 10;			        
 					TimeUnit unit = TimeUnit.SECONDS;
@@ -185,9 +201,13 @@ public class QT {
 					pool = new ThreadPoolExecutor(corePoolSize, maxPoolSize, keepAliveTime, unit, workQueue, handler);
 					
 					startTime = System.currentTimeMillis();
-					for(int i=0;i<ns.size();i++){
+					for(int i=0,j=0;i<ns.size();i++,j++){
+						if(j==proxy.size()){//代理
+							j=0;
+						}
+						String px = proxy.get(j);
 						String[] qp = ns.get(i).split("----");
-						Task task = new Task(QT.this, text.getText(), qp[0], qp[1]);
+						Task task = new Task(QT.this, text.getText(), qp[0], qp[1], px);
 						pool.execute(task);
 					}
 //					Display.getCurrent().syncExec(new Runnable(){
@@ -220,8 +240,8 @@ public class QT {
 		button_1.setBounds(388, 145, 199, 61);
 		
 		Label label = new Label(shlQt, SWT.NONE);
-		label.setBounds(388, 82, 103, 17);
-		label.setText("线程设置 (2~20):");
+		label.setBounds(388, 82, 127, 17);
+		label.setText("线程设置 (100~1000):");
 		
 		Label lblNewLabel_3 = new Label(shlQt, SWT.NONE);
 		lblNewLabel_3.setBounds(10, 82, 61, 17);
@@ -240,6 +260,12 @@ public class QT {
 		lblNewLabel_6.setText("0");
 		
 		button_2 = new Button(shlQt, SWT.NONE);
+		button_2.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				op(0);
+			}
+		});
 		button_2.setEnabled(false);
 		button_2.setBounds(190, 77, 132, 27);
 		button_2.setText("导出");
@@ -296,9 +322,9 @@ public class QT {
 		progressBar.setBounds(10, 212, 579, 26);
 		
 		spinner = new Spinner(shlQt, SWT.BORDER);
-		spinner.setMaximum(20);
-		spinner.setMinimum(2);
-		spinner.setSelection(3);
+		spinner.setMaximum(1000);
+		spinner.setMinimum(100);
+		spinner.setSelection(500);
 		spinner.setBounds(521, 79, 66, 23);
 		
 		label_2 = new Label(shlQt, SWT.NONE);
@@ -306,11 +332,23 @@ public class QT {
 		label_2.setText("0");
 		
 		button_3 = new Button(shlQt, SWT.NONE);
+		button_3.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				op(1);
+			}
+		});
 		button_3.setEnabled(false);
 		button_3.setText("导出");
 		button_3.setBounds(190, 112, 132, 27);
 		
 		button_4 = new Button(shlQt, SWT.NONE);
+		button_4.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				op(2);
+			}
+		});
 		button_4.setEnabled(false);
 		button_4.setText("导出");
 		button_4.setBounds(190, 145, 132, 27);
@@ -332,8 +370,53 @@ public class QT {
 		lblNewLabel_2.setText("耗时:");
 		
 		lblNewLabel_1 = new Label(shlQt, SWT.NONE);
-		lblNewLabel_1.setBounds(433, 117, 61, 17);
+		lblNewLabel_1.setBounds(433, 117, 154, 17);
 		lblNewLabel_1.setText("0 ms");
 
+	}
+	
+	private void op(int type){
+		String fn = null;
+		List<String> list = null;
+		switch(type){
+		case 0:
+			fn = "正确.txt";
+			list = sc;
+			break;
+		case 1:
+			fn = "错误.txt";
+			list = fc;
+			break;
+		case 2:
+			fn = "异常.txt";
+			list = oc;
+			break;
+		}
+		FileDialog fileDlg=new FileDialog(shlQt, SWT.SAVE);
+		//fileDlg.setFilterExtensions(new String[]{"*.torrent"});
+		fileDlg.setFileName(fn);
+		fileDlg.setFilterPath(null);
+		fileDlg.setText("导出文件");
+		String filePath=fileDlg.open();
+		if(filePath!=null){
+			try{
+				File f = new File(filePath);
+				BufferedWriter output = new BufferedWriter(new FileWriter(f));
+				for(String line:list){
+					output.write(line+"\r\n");
+				}
+				output.flush();
+				output.close();
+				
+				int style = SWT.APPLICATION_MODAL | SWT.YES;
+                MessageBox messageBox = new MessageBox(shlQt, style);  
+                messageBox.setText("提示");  
+                messageBox.setMessage("保存成功!");  
+                messageBox.open();
+				//System.out.println(filePath);
+			}catch(Exception e){
+				e.printStackTrace();
+			}
+		}
 	}
 }
