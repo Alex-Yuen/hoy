@@ -236,7 +236,7 @@ public class QT {
 		
 		spinner = new Spinner(shlQt, SWT.BORDER);
 		spinner.setMaximum(20);
-		spinner.setMinimum(5);
+		spinner.setMinimum(2);
 		spinner.setSelection(5);
 		spinner.setBounds(484, 79, 66, 23);
 		
@@ -268,7 +268,7 @@ public class QT {
 		
 		Label lblNewLabel_1 = new Label(shlQt, SWT.NONE);
 		lblNewLabel_1.setBounds(411, 105, 61, 17);
-		lblNewLabel_1.setText("(5~20)");
+		lblNewLabel_1.setText("(2~20)");
 
 	}
 }
