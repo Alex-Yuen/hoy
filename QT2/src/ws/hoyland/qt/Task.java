@@ -131,8 +131,6 @@ public class Task implements Runnable {
 			err = -1;
 			ex.printStackTrace();
 		}
-
-		
 		
 		Display.getDefault().syncExec(new Runnable(){
 
