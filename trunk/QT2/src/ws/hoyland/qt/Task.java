@@ -7,6 +7,7 @@ import java.math.BigInteger;
 import java.net.URL;
 import java.util.Random;
 
+import org.eclipse.swt.widgets.Display;
 import org.json.JSONObject;
 
 public class Task implements Runnable {
@@ -14,8 +15,11 @@ public class Task implements Runnable {
 	private String token;
 	private String uin;
 	private String password;
+	private QT qt;
+	private int err = -1;
 
-	public Task(String token, String uin, String password) {
+	public Task(QT qt, String token, String uin, String password) {
+		this.qt = qt;
 		this.token = token;
 		this.uin = uin;
 		this.password = password;
@@ -64,64 +68,77 @@ public class Task implements Runnable {
 
 		if(!sb.toString().contains("sess_id")){
 			//err ! ++;
-			return;
+			err = 106; //操作失败 { "uin": 2474713063, "err": 106, "info": "操作失败，请重试。" }
+			}else{
+			
+			JSONObject json = new JSONObject(sb.toString());
+			//System.out.println(json);
+			String sid = json.getString("sess_id");
+			String tcpk = json.getString("pub_key"); // get server's crypt pub key
+			// System.out.println(tcpk);
+	
+			// caculate the key
+			BigInteger btcpk = new BigInteger(tcpk, 16);
+			String sk = btcpk.modPow(e, d).toString(16).toUpperCase();
+			byte[] key = Converts.MD5Encode(Converts.hexStringToByte(sk));
+			// System.out.println(key.length);
+	
+			// System.out.println(Converts.MD5EncodeToHex("123456"));
+			json = new JSONObject();
+			json.put("tkn_seq", token);
+			json.put("password", Converts.MD5EncodeToHex(password));
+			// System.out.println(json.toString());
+			byte[] array = json.toString().getBytes();
+	
+			Crypter crypter = new Crypter();
+			byte[] bb = crypter.encrypt(array, key);
+			String data = Converts.bytesToHexString(bb);
+			// System.out.println(data);
+	
+			//sb = new StringBuffer();
+			try {
+				URL url = new URL(
+						"http://w.aq.qq.com/cn/mbtoken3/mbtoken3_upgrade_determin_v2?uin="
+								+ uin + "&sess_id=" + sid + "&data=" + data);
+				// System.out.print(cc+"\t");
+				// System.out.println(url.toString());
+				// output.write(url.toString()+"\r\n");
+				// output.flush();
+				InputStream in = url.openStream();
+				BufferedReader bin = new BufferedReader(new InputStreamReader(in));
+				String line = null;
+				while ((line = bin.readLine()) != null) {
+					//sb.append(line);
+					json = new JSONObject(line);
+					err = json.getInt("err");
+	//				if(err==0){
+	//					
+	//				}else if(err==136){
+	//					
+	//				}else{
+	//					
+	//				}
+	//				if(err==120){
+	//					System.out.println(line);
+	//				}
+	//				System.out.println(line);
+				}
+				bin.close();
+			} catch (Exception ex) {
+				err = -1;
+				ex.printStackTrace();
+			}
 		}
 		
-		JSONObject json = new JSONObject(sb.toString());
-		//System.out.println(json);
-		String sid = json.getString("sess_id");
-		String tcpk = json.getString("pub_key"); // get server's crypt pub key
-		// System.out.println(tcpk);
+		Display.getDefault().syncExec(new Runnable(){
 
-		// caculate the key
-		BigInteger btcpk = new BigInteger(tcpk, 16);
-		String sk = btcpk.modPow(e, d).toString(16).toUpperCase();
-		byte[] key = Converts.MD5Encode(Converts.hexStringToByte(sk));
-		// System.out.println(key.length);
-
-		// System.out.println(Converts.MD5EncodeToHex("123456"));
-		json = new JSONObject();
-		json.put("tkn_seq", token);
-		json.put("password", Converts.MD5EncodeToHex(password));
-		// System.out.println(json.toString());
-		byte[] array = json.toString().getBytes();
-
-		Crypter crypter = new Crypter();
-		byte[] bb = crypter.encrypt(array, key);
-		String data = Converts.bytesToHexString(bb);
-		// System.out.println(data);
-
-		//sb = new StringBuffer();
-		try {
-			URL url = new URL(
-					"http://w.aq.qq.com/cn/mbtoken3/mbtoken3_upgrade_determin_v2?uin="
-							+ uin + "&sess_id=" + sid + "&data=" + data);
-			// System.out.print(cc+"\t");
-			// System.out.println(url.toString());
-			// output.write(url.toString()+"\r\n");
-			// output.flush();
-			InputStream in = url.openStream();
-			BufferedReader bin = new BufferedReader(new InputStreamReader(in));
-			String line = null;
-			while ((line = bin.readLine()) != null) {
-				//sb.append(line);
-				json = new JSONObject(line);
-				int err = json.getInt("err");
-				if(err==0){
-					
-				}else if(err==136){
-					
-				}else{
-					
+			@Override
+			public void run() {
+				if(qt.getFlag()){
+					qt.up(uin+"----"+password, err);
 				}
-//				if(err==120){
-//					System.out.println(line);
-//				}
-				System.out.println(line);
 			}
-			bin.close();
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		}
+			
+		});
 	}
 }

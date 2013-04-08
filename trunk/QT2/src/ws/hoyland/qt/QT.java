@@ -37,10 +37,44 @@ public class QT {
 	private List<String> ns = new ArrayList<String>();
 	protected boolean flag = false;
 	private Text text;
+	private ProgressBar progressBar;
+	private Label lblNewLabel_1;
+	private Label lblNewLabel_5;
+	private Label lblNewLabel_6;
+	private Label label_2;
+	
+	private long startTime = 0;
+	private List<String> sc = null;
+	private List<String> fc = null;
+	private List<String> oc = null;
 	
 	public QT(){ 
     }
 	
+	public boolean getFlag(){
+		return this.flag;
+	}
+	
+	public void up(String line, int err){
+		if(err==0){
+			sc.add(line);
+		}else if(err==132){
+			fc.add(line);
+		}else{
+			oc.add(line);
+		}
+		
+		progressBar.setSelection(progressBar.getSelection()+1);
+		lblNewLabel_5.setText(String.valueOf(sc.size()));
+		lblNewLabel_6.setText(String.valueOf(fc.size()));
+		label_2.setText(String.valueOf(oc.size()));
+		lblNewLabel_1.setText(String.valueOf(System.currentTimeMillis()-this.startTime)+" ms");
+		if(progressBar.getSelection()==progressBar.getMaximum()){
+			//
+			//lblNewLabel_1.setText(String.valueOf(System.currentTimeMillis()-this.startTime)+" ms");
+			button_1.setText("完成");
+		}
+	}
 	/**
 	 * Launch the application.
 	 * @param args
@@ -112,9 +146,21 @@ public class QT {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				if("开始".endsWith(button_1.getText())){
+					flag = true;
+
+					sc = new ArrayList<String>();
+					fc = new ArrayList<String>();
+					oc = new ArrayList<String>();
+					
+					lblNewLabel_5.setText(String.valueOf(sc.size()));
+					lblNewLabel_6.setText(String.valueOf(fc.size()));
+					label_2.setText(String.valueOf(oc.size()));
+					lblNewLabel_1.setText("0 ms");
+					progressBar.setSelection(0);
+					
 					// 线程池 数据库连接池 可联系起来
-					int corePoolSize = 5;// minPoolSize
-					int maxPoolSize = 10;
+					int corePoolSize = 2;// minPoolSize
+					int maxPoolSize = 2;
 					int maxTaskSize = 1024;//缓冲队列
 					long keepAliveTime = 10;			        
 					TimeUnit unit = TimeUnit.SECONDS;
@@ -127,24 +173,27 @@ public class QT {
 					// 创建线程池
 					pool = new ThreadPoolExecutor(corePoolSize, maxPoolSize, keepAliveTime, unit, workQueue, handler);
 					
+					startTime = System.currentTimeMillis();
 					for(int i=0;i<ns.size();i++){
 						String[] qp = ns.get(i).split("----");
-						Task task = new Task(text.getText(), qp[0], qp[1]);
+						Task task = new Task(QT.this, text.getText(), qp[0], qp[1]);
 						pool.execute(task);
 					}
-					flag = true;
-//					Display.getCurrent().asyncExec(new Runnable(){
+//					Display.getCurrent().syncExec(new Runnable(){
 //						public void run(){
 //							while(flag){
-//								System.out.println("CMP:"+pool);
 //								try{
-//									Thread.sleep(1000);
+//									if(pool.awaitTermination(2, TimeUnit.SECONDS)){
+//										System.out.println("OK");
+//										break;
+//									}
 //								}catch(Exception e){
 //									e.printStackTrace();
 //								}
 //							}
 //						}
 //					});
+					progressBar.setMaximum(ns.size());
 					btnNewButton.setEnabled(false);
 					button_1.setText("结束");
 				}else{
@@ -157,11 +206,11 @@ public class QT {
 		});
 		button_1.setEnabled(false);
 		button_1.setText("开始");
-		button_1.setBounds(411, 133, 176, 73);
+		button_1.setBounds(388, 145, 199, 61);
 		
 		Label label = new Label(shlQt, SWT.NONE);
-		label.setBounds(411, 82, 61, 17);
-		label.setText("线程设置:");
+		label.setBounds(388, 82, 103, 17);
+		label.setText("线程设置 (2~20):");
 		
 		Label lblNewLabel_3 = new Label(shlQt, SWT.NONE);
 		lblNewLabel_3.setBounds(10, 82, 61, 17);
@@ -171,11 +220,11 @@ public class QT {
 		lblNewLabel_4.setBounds(10, 117, 61, 17);
 		lblNewLabel_4.setText("密码错误:");
 		
-		Label lblNewLabel_5 = new Label(shlQt, SWT.NONE);
+		lblNewLabel_5 = new Label(shlQt, SWT.NONE);
 		lblNewLabel_5.setBounds(92, 82, 61, 17);
 		lblNewLabel_5.setText("0");
 		
-		Label lblNewLabel_6 = new Label(shlQt, SWT.NONE);
+		lblNewLabel_6 = new Label(shlQt, SWT.NONE);
 		lblNewLabel_6.setBounds(92, 117, 61, 17);
 		lblNewLabel_6.setText("0");
 		
@@ -231,16 +280,16 @@ public class QT {
 		lblNewLabel_8.setBounds(10, 150, 61, 17);
 		lblNewLabel_8.setText("未知错误:");
 		
-		ProgressBar progressBar = new ProgressBar(shlQt, SWT.SMOOTH);
+		progressBar = new ProgressBar(shlQt, SWT.SMOOTH);
 		progressBar.setBounds(10, 212, 579, 26);
 		
 		spinner = new Spinner(shlQt, SWT.BORDER);
 		spinner.setMaximum(20);
 		spinner.setMinimum(2);
-		spinner.setSelection(5);
-		spinner.setBounds(484, 79, 66, 23);
+		spinner.setSelection(3);
+		spinner.setBounds(521, 79, 66, 23);
 		
-		Label label_2 = new Label(shlQt, SWT.NONE);
+		label_2 = new Label(shlQt, SWT.NONE);
 		label_2.setBounds(92, 150, 61, 17);
 		label_2.setText("0");
 		
@@ -263,12 +312,16 @@ public class QT {
 		lblNewLabel.setText("令牌序列号:");
 		
 		text = new Text(shlQt, SWT.BORDER);
-		text.setText("1406087124841854");
+		text.setText("6980777939050726");
 		text.setBounds(92, 183, 230, 23);
 		
-		Label lblNewLabel_1 = new Label(shlQt, SWT.NONE);
-		lblNewLabel_1.setBounds(411, 105, 61, 17);
-		lblNewLabel_1.setText("(2~20)");
+		Label lblNewLabel_2 = new Label(shlQt, SWT.NONE);
+		lblNewLabel_2.setBounds(388, 117, 39, 17);
+		lblNewLabel_2.setText("耗时:");
+		
+		lblNewLabel_1 = new Label(shlQt, SWT.NONE);
+		lblNewLabel_1.setBounds(433, 117, 61, 17);
+		lblNewLabel_1.setText("0 ms");
 
 	}
 }
