@@ -216,8 +216,9 @@ public class QT {
 		progressBar.setBounds(10, 178, 579, 26);
 		
 		spinner = new Spinner(shlQt, SWT.BORDER);
-		spinner.setMinimum(10);
-		spinner.setSelection(10);
+		spinner.setMaximum(1024);
+		spinner.setMinimum(128);
+		spinner.setSelection(128);
 		spinner.setBounds(484, 79, 66, 23);
 		
 		Label label_2 = new Label(shlQt, SWT.NONE);
