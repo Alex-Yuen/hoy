@@ -164,7 +164,7 @@ public class QT {
 		label.setText("线程设置:");
 		
 		Label lblNewLabel_3 = new Label(shlQt, SWT.NONE);
-		lblNewLabel_3.setBounds(10, 77, 61, 17);
+		lblNewLabel_3.setBounds(10, 82, 61, 17);
 		lblNewLabel_3.setText("密码正确:");
 		
 		Label lblNewLabel_4 = new Label(shlQt, SWT.NONE);
@@ -172,7 +172,7 @@ public class QT {
 		lblNewLabel_4.setText("密码错误:");
 		
 		Label lblNewLabel_5 = new Label(shlQt, SWT.NONE);
-		lblNewLabel_5.setBounds(92, 77, 61, 17);
+		lblNewLabel_5.setBounds(92, 82, 61, 17);
 		lblNewLabel_5.setText("0");
 		
 		Label lblNewLabel_6 = new Label(shlQt, SWT.NONE);
@@ -235,9 +235,9 @@ public class QT {
 		progressBar.setBounds(10, 212, 579, 26);
 		
 		spinner = new Spinner(shlQt, SWT.BORDER);
-		spinner.setMaximum(1024);
-		spinner.setMinimum(1);
-		spinner.setSelection(10);
+		spinner.setMaximum(20);
+		spinner.setMinimum(5);
+		spinner.setSelection(5);
 		spinner.setBounds(484, 79, 66, 23);
 		
 		Label label_2 = new Label(shlQt, SWT.NONE);

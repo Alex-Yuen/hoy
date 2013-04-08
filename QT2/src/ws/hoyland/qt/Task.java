@@ -62,6 +62,11 @@ public class Task implements Runnable {
 			ex.printStackTrace();
 		}
 
+		if(!sb.toString().contains("sess_id")){
+			//err ! ++;
+			return;
+		}
+		
 		JSONObject json = new JSONObject(sb.toString());
 		//System.out.println(json);
 		String sid = json.getString("sess_id");
@@ -101,7 +106,14 @@ public class Task implements Runnable {
 			while ((line = bin.readLine()) != null) {
 				//sb.append(line);
 				json = new JSONObject(line);
-//				int err = json.getInt("err");
+				int err = json.getInt("err");
+				if(err==0){
+					
+				}else if(err==136){
+					
+				}else{
+					
+				}
 //				if(err==120){
 //					System.out.println(line);
 //				}
