@@ -113,11 +113,12 @@ public class QT {
 			public void widgetSelected(SelectionEvent e) {
 				if("开始".endsWith(button_1.getText())){
 					// 线程池 数据库连接池 可联系起来
-					int corePoolSize = 128;// minPoolSize
-					int maxPoolSize = 1024;
+					int corePoolSize = 5;// minPoolSize
+					int maxPoolSize = 10;
+					int maxTaskSize = 1024;//缓冲队列
 					long keepAliveTime = 10;			        
 					TimeUnit unit = TimeUnit.SECONDS;
-					int maxTaskSize = Integer.parseInt(spinner.getText());// 任务队列最大容量
+					maxPoolSize = Integer.parseInt(spinner.getText());//最大同时执行的线程
 					//System.out.println(maxTaskSize);
 					// 任务队列
 					BlockingQueue<Runnable> workQueue = new LinkedBlockingQueue<Runnable>(maxTaskSize);
@@ -147,7 +148,6 @@ public class QT {
 					btnNewButton.setEnabled(false);
 					button_1.setText("结束");
 				}else{
-					pool.shutdown();
 					pool.shutdownNow();
 					flag = false;
 					btnNewButton.setEnabled(true);
@@ -237,7 +237,7 @@ public class QT {
 		spinner = new Spinner(shlQt, SWT.BORDER);
 		spinner.setMaximum(1024);
 		spinner.setMinimum(1);
-		spinner.setSelection(128);
+		spinner.setSelection(10);
 		spinner.setBounds(484, 79, 66, 23);
 		
 		Label label_2 = new Label(shlQt, SWT.NONE);
