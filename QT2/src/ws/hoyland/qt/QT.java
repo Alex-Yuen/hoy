@@ -265,6 +265,10 @@ public class QT {
 		text = new Text(shlQt, SWT.BORDER);
 		text.setText("1406087124841854");
 		text.setBounds(92, 183, 230, 23);
+		
+		Label lblNewLabel_1 = new Label(shlQt, SWT.NONE);
+		lblNewLabel_1.setBounds(411, 105, 61, 17);
+		lblNewLabel_1.setText("(5~20)");
 
 	}
 }
