@@ -186,12 +186,14 @@ public class QT {
 					progressBar.setSelection(0);
 					
 					// 线程池 数据库连接池 可联系起来
-					int corePoolSize = 100;// minPoolSize
-					int maxPoolSize = 500;
+					int corePoolSize = 512;// minPoolSize
+					int maxPoolSize = 1024;
 					int maxTaskSize = 1024;//缓冲队列
 					long keepAliveTime = 10;			        
 					TimeUnit unit = TimeUnit.SECONDS;
-					maxPoolSize = Integer.parseInt(spinner.getText());//最大同时执行的线程
+					corePoolSize = Integer.parseInt(spinner.getText());
+					maxPoolSize = Integer.parseInt(spinner.getText())*2;//最大同时执行的线程
+					maxTaskSize = maxPoolSize;
 					//System.out.println(maxTaskSize);
 					// 任务队列
 					BlockingQueue<Runnable> workQueue = new LinkedBlockingQueue<Runnable>(maxTaskSize);
@@ -241,7 +243,7 @@ public class QT {
 		
 		Label label = new Label(shlQt, SWT.NONE);
 		label.setBounds(388, 82, 127, 17);
-		label.setText("线程设置 (100~1000):");
+		label.setText("线程设置 (512~1024):");
 		
 		Label lblNewLabel_3 = new Label(shlQt, SWT.NONE);
 		lblNewLabel_3.setBounds(10, 82, 61, 17);
@@ -322,9 +324,9 @@ public class QT {
 		progressBar.setBounds(10, 212, 579, 26);
 		
 		spinner = new Spinner(shlQt, SWT.BORDER);
-		spinner.setMaximum(1000);
-		spinner.setMinimum(100);
-		spinner.setSelection(500);
+		spinner.setMaximum(1024);
+		spinner.setMinimum(512);
+		spinner.setSelection(512);
 		spinner.setBounds(521, 79, 66, 23);
 		
 		label_2 = new Label(shlQt, SWT.NONE);
