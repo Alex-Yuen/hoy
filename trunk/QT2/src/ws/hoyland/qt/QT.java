@@ -35,7 +35,7 @@ public class QT {
 	
 	private ThreadPoolExecutor pool = null;
 	private List<String> ns = new ArrayList<String>();
-	private boolean flag = false;
+	protected boolean flag = false;
 	private Text text;
 	
 	public QT(){ 
