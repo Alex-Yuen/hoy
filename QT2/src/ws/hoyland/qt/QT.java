@@ -3,35 +3,42 @@ package ws.hoyland.qt;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.*;
+import java.util.concurrent.ThreadPoolExecutor.AbortPolicy;
 
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.widgets.TableItem;
-import org.eclipse.swt.widgets.Menu;
-import org.eclipse.swt.widgets.MenuItem;
-import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.ShellAdapter;
 import org.eclipse.swt.events.ShellEvent;
+import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.widgets.ProgressBar;
+import org.eclipse.swt.widgets.Spinner;
 
 public class QT {
 
 	protected Shell shlQt;
 	private Text txtC;
-	private Label lblNewLabel_7;
-	private Label lblNewLabel_1;
+	private Button button_1;
+	private Label label_3;
+	private Button btnNewButton;
+	private Spinner spinner;
 	
-	private Map<String, String> ns = new HashMap<String, String>();
+	private ThreadPoolExecutor pool = null;
+	private List<String> ns = new ArrayList<String>();
+	
+	public QT(){ 
+    }
+	
 	/**
 	 * Launch the application.
 	 * @param args
@@ -64,82 +71,172 @@ public class QT {
 	 * Create contents of the window.
 	 */
 	protected void createContents() {
-		shlQt = new Shell();
+		shlQt = new Shell(Display.getDefault(), SWT.SHELL_TRIM^SWT.MAX^SWT.RESIZE);
 		shlQt.addShellListener(new ShellAdapter() {
 			@Override
 			public void shellActivated(ShellEvent e) {
 				try{
-					File f = new File("c:\\num.txt");
-					if(f.exists()){
-						lblNewLabel_7.setText("文件存在");
-						InputStream is = new FileInputStream(f);
-						InputStreamReader isr = new InputStreamReader(is);
-						BufferedReader reader = new BufferedReader(isr);
-						String qq = null;
-						while((qq=reader.readLine())!=null){
-							ns.put(qq, "0");
-						}
-						reader.close();
-						is.close();
-						lblNewLabel_1.setText("0/"+String.valueOf(ns.size()));
-					}
+					//
 				}catch(Exception ex){
 					ex.printStackTrace();
 				}
 			}
+			@Override
+			public void shellClosed(ShellEvent e) {
+				pool.shutdownNow();
+			}
 		});
 		shlQt.setToolTipText("");
-		shlQt.setSize(450, 300);
+		shlQt.setSize(603, 242);
 		shlQt.setText("QT");
+		
+
+		Rectangle bounds = Display.getDefault().getPrimaryMonitor().getBounds();
+		Rectangle rect = shlQt.getBounds();
+		int x = bounds.x + (bounds.width - rect.width) / 2;
+		int y = bounds.y + (bounds.height - rect.height) / 2;
+		shlQt.setLocation(x, y);
+		
 		
 		txtC = new Text(shlQt, SWT.BORDER);
 		txtC.setEditable(false);
-		txtC.setText("c:\\num.txt");
-		txtC.setBounds(23, 10, 264, 23);
+		txtC.setText("请指定帐号文件，导入帐号");
+		txtC.setBounds(10, 31, 452, 23);
 		
-		Button button_1 = new Button(shlQt, SWT.NONE);
-		button_1.setText("验证");
-		button_1.setBounds(156, 210, 138, 27);
-		
-		Label lblNewLabel = new Label(shlQt, SWT.NONE);
-		lblNewLabel.setBounds(25, 86, 61, 17);
-		lblNewLabel.setText("进度:");
-		
-		lblNewLabel_1 = new Label(shlQt, SWT.NONE);
-		lblNewLabel_1.setBounds(92, 86, 110, 17);
-		lblNewLabel_1.setText("0/0");
+		button_1 = new Button(shlQt, SWT.NONE);
+		button_1.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				if("开始".endsWith(button_1.getText())){
+					// 线程池 数据库连接池 可联系起来
+					int corePoolSize = 128;// minPoolSize
+					int maxPoolSize = 1024;
+					long keepAliveTime = 10;			        
+					TimeUnit unit = TimeUnit.SECONDS;
+					int maxTaskSize = Integer.parseInt(spinner.getText());// 任务队列最大容量
+					//System.out.println(maxTaskSize);
+					// 任务队列
+					BlockingQueue<Runnable> workQueue = new LinkedBlockingQueue<Runnable>(maxTaskSize);
+					// 饱和处理策略
+					RejectedExecutionHandler handler = new AbortPolicy();
+					// 创建线程池
+					pool = new ThreadPoolExecutor(corePoolSize, maxPoolSize, keepAliveTime, unit, workQueue, handler);
+					
+					for(int i=0;i<ns.size();i++){
+						String[] qp = ns.get(i).split("----");
+						Task task = new Task(qp[0], qp[1]);
+						pool.execute(task);
+					}
+					btnNewButton.setEnabled(false);
+					button_1.setText("结束");
+				}else{
+					pool.shutdownNow();
+					btnNewButton.setEnabled(true);
+					button_1.setText("开始");					
+				}
+			}
+		});
+		button_1.setEnabled(false);
+		button_1.setText("开始");
+		button_1.setBounds(411, 117, 176, 50);
 		
 		Label label = new Label(shlQt, SWT.NONE);
-		label.setBounds(25, 54, 61, 17);
-		label.setText("线程:");
-		
-		Label lblNewLabel_2 = new Label(shlQt, SWT.NONE);
-		lblNewLabel_2.setBounds(92, 54, 61, 17);
-		lblNewLabel_2.setText("5");
+		label.setBounds(411, 82, 61, 17);
+		label.setText("线程设置:");
 		
 		Label lblNewLabel_3 = new Label(shlQt, SWT.NONE);
-		lblNewLabel_3.setBounds(25, 126, 61, 17);
-		lblNewLabel_3.setText("成功:");
+		lblNewLabel_3.setBounds(10, 82, 61, 17);
+		lblNewLabel_3.setText("密码正确:");
 		
 		Label lblNewLabel_4 = new Label(shlQt, SWT.NONE);
-		lblNewLabel_4.setBounds(25, 164, 61, 17);
-		lblNewLabel_4.setText("失败:");
+		lblNewLabel_4.setBounds(10, 117, 61, 17);
+		lblNewLabel_4.setText("密码错误:");
 		
 		Label lblNewLabel_5 = new Label(shlQt, SWT.NONE);
-		lblNewLabel_5.setBounds(92, 126, 61, 17);
+		lblNewLabel_5.setBounds(92, 82, 61, 17);
 		lblNewLabel_5.setText("0");
 		
 		Label lblNewLabel_6 = new Label(shlQt, SWT.NONE);
-		lblNewLabel_6.setBounds(92, 164, 61, 17);
+		lblNewLabel_6.setBounds(92, 117, 61, 17);
 		lblNewLabel_6.setText("0");
 		
 		Button button_2 = new Button(shlQt, SWT.NONE);
-		button_2.setBounds(190, 116, 80, 27);
+		button_2.setEnabled(false);
+		button_2.setBounds(190, 77, 132, 27);
 		button_2.setText("导出");
 		
-		lblNewLabel_7 = new Label(shlQt, SWT.NONE);
-		lblNewLabel_7.setBounds(333, 13, 67, 17);
-		lblNewLabel_7.setText("文件不存在");
+		Label label_1 = new Label(shlQt, SWT.NONE);
+		label_1.setBounds(10, 8, 61, 17);
+		label_1.setText("导入帐号:");
+		
+		btnNewButton = new Button(shlQt, SWT.NONE);
+		btnNewButton.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				FileDialog fileDlg=new FileDialog(shlQt, SWT.OPEN);
+				//fileDlg.setFilterExtensions(new String[]{"*.torrent"});
+				fileDlg.setFilterPath(null);
+				fileDlg.setText("选择号码文件");
+				String filePath=fileDlg.open();
+				if(filePath!=null){
+					try{
+						File ipf = new File(filePath);
+						FileInputStream is = new FileInputStream(ipf);
+						InputStreamReader isr = new InputStreamReader(is);
+						BufferedReader reader = new BufferedReader(isr);
+						String line = null;
+						while((line=reader.readLine())!=null){
+							ns.add(line);
+							//System.out.println(line);
+						}
+						reader.close();
+						isr.close();
+						is.close();
+						//System.out.println(ns.size());
+						if(ns.size()>0){
+							label_3.setText("共 "+ns.size()+" 条");
+							button_1.setEnabled(true);
+						}
+						txtC.setText(filePath);
+					}catch(Exception ex){
+						ex.printStackTrace();
+					}
+					//System.out.println("Path:"+filePath);
+				}
+			}
+		});
+		btnNewButton.setBounds(484, 29, 103, 27);
+		btnNewButton.setText("导入帐号");
+		
+		Label lblNewLabel_8 = new Label(shlQt, SWT.NONE);
+		lblNewLabel_8.setBounds(10, 150, 61, 17);
+		lblNewLabel_8.setText("未知错误:");
+		
+		ProgressBar progressBar = new ProgressBar(shlQt, SWT.SMOOTH);
+		progressBar.setBounds(10, 178, 579, 26);
+		
+		spinner = new Spinner(shlQt, SWT.BORDER);
+		spinner.setMinimum(10);
+		spinner.setSelection(10);
+		spinner.setBounds(484, 79, 66, 23);
+		
+		Label label_2 = new Label(shlQt, SWT.NONE);
+		label_2.setBounds(92, 150, 61, 17);
+		label_2.setText("0");
+		
+		Button button_3 = new Button(shlQt, SWT.NONE);
+		button_3.setEnabled(false);
+		button_3.setText("导出");
+		button_3.setBounds(190, 112, 132, 27);
+		
+		Button button_4 = new Button(shlQt, SWT.NONE);
+		button_4.setEnabled(false);
+		button_4.setText("导出");
+		button_4.setBounds(190, 145, 132, 27);
+		
+		label_3 = new Label(shlQt, SWT.NONE);
+		label_3.setBounds(77, 8, 61, 17);
+		label_3.setText("共 0 条");
 
 	}
 }
