@@ -34,7 +34,7 @@ public class QT {
 	private Spinner spinner;
 	
 	private ThreadPoolExecutor pool = null;
-	private List<String> ns = new ArrayList<String>();
+	private List<String> ns = null;
 	protected boolean flag = false;
 	private Text text;
 	private ProgressBar progressBar;
@@ -42,6 +42,10 @@ public class QT {
 	private Label lblNewLabel_5;
 	private Label lblNewLabel_6;
 	private Label label_2;
+	
+	private Button button_2;
+	private Button button_3;
+	private Button button_4;
 	
 	private long startTime = 0;
 	private List<String> sc = null;
@@ -57,10 +61,13 @@ public class QT {
 	
 	public void up(String line, int err){
 		if(err==0){
+			this.button_2.setEnabled(true);
 			sc.add(line);
 		}else if(err==132){
+			this.button_3.setEnabled(true);
 			fc.add(line);
 		}else{
+			this.button_4.setEnabled(true);
 			oc.add(line);
 		}
 		
@@ -148,6 +155,10 @@ public class QT {
 				if("开始".endsWith(button_1.getText())){
 					flag = true;
 
+					button_2.setEnabled(false);
+					button_3.setEnabled(false);
+					button_4.setEnabled(false);
+					
 					sc = new ArrayList<String>();
 					fc = new ArrayList<String>();
 					oc = new ArrayList<String>();
@@ -228,7 +239,7 @@ public class QT {
 		lblNewLabel_6.setBounds(92, 117, 61, 17);
 		lblNewLabel_6.setText("0");
 		
-		Button button_2 = new Button(shlQt, SWT.NONE);
+		button_2 = new Button(shlQt, SWT.NONE);
 		button_2.setEnabled(false);
 		button_2.setBounds(190, 77, 132, 27);
 		button_2.setText("导出");
@@ -248,6 +259,7 @@ public class QT {
 				String filePath=fileDlg.open();
 				if(filePath!=null){
 					try{
+						ns = new ArrayList<String>();
 						File ipf = new File(filePath);
 						FileInputStream is = new FileInputStream(ipf);
 						InputStreamReader isr = new InputStreamReader(is);
@@ -293,18 +305,18 @@ public class QT {
 		label_2.setBounds(92, 150, 61, 17);
 		label_2.setText("0");
 		
-		Button button_3 = new Button(shlQt, SWT.NONE);
+		button_3 = new Button(shlQt, SWT.NONE);
 		button_3.setEnabled(false);
 		button_3.setText("导出");
 		button_3.setBounds(190, 112, 132, 27);
 		
-		Button button_4 = new Button(shlQt, SWT.NONE);
+		button_4 = new Button(shlQt, SWT.NONE);
 		button_4.setEnabled(false);
 		button_4.setText("导出");
 		button_4.setBounds(190, 145, 132, 27);
 		
 		label_3 = new Label(shlQt, SWT.NONE);
-		label_3.setBounds(77, 8, 61, 17);
+		label_3.setBounds(77, 8, 103, 17);
 		label_3.setText("共 0 条");
 		
 		Label lblNewLabel = new Label(shlQt, SWT.NONE);
