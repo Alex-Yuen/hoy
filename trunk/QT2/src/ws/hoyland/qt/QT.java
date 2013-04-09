@@ -79,7 +79,7 @@ public class QT {
 		if(err==0){
 			this.button_2.setEnabled(true);
 			sc.add(line);
-		}else if(err==132){
+		}else if(err==132||err==136){
 			this.button_3.setEnabled(true);
 			fc.add(line);
 		}else{
