@@ -8,10 +8,13 @@ import java.util.concurrent.ThreadPoolExecutor;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
+import org.apache.http.NoHttpResponseException;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.conn.ConnectTimeoutException;
 import org.apache.http.conn.HttpHostConnectException;
 import org.apache.http.conn.params.ConnRoutePNames;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.params.CoreConnectionPNames;
 import org.apache.http.util.EntityUtils;
 import org.eclipse.swt.widgets.Display;
 import org.json.JSONObject;
@@ -49,6 +52,7 @@ public class Task implements Runnable {
 //      System.getProperties().setProperty("http.proxyPort", ips[1]);
         DefaultHttpClient httpclient = new DefaultHttpClient();
         HttpHost proxy = new HttpHost(ips[0], Integer.parseInt(ips[1]), "http");
+        httpclient.getParams().setParameter(CoreConnectionPNames.CONNECTION_TIMEOUT, 2500); 
         httpclient.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, proxy);
         
 		BigInteger root = new BigInteger("2");
@@ -180,6 +184,26 @@ public class Task implements Runnable {
 //				}
 //				bin.close();
 			}
+		}catch(NoHttpResponseException ex){
+			err = -4;
+			synchronized(proxies){//删除代理
+				proxies.remove(px);
+			}
+			System.out.println(-3);
+			//add new task
+			Task task = new Task(pool, proxies, qt, token, uin, password);
+			this.pool.execute(task);
+			return;//not need update
+		}catch(ConnectTimeoutException ex){
+			err = -3;
+			synchronized(proxies){//删除代理
+				proxies.remove(px);
+			}
+			System.out.println(-3);
+			//add new task
+			Task task = new Task(pool, proxies, qt, token, uin, password);
+			this.pool.execute(task);
+			return;//not need update
 		}catch(HttpHostConnectException ex){//代理超时
 			err = -2;
 			synchronized(proxies){//删除代理
@@ -196,7 +220,7 @@ public class Task implements Runnable {
 		}finally{
 			 httpclient.getConnectionManager().shutdown();
 		}
-		
+		System.out.println("ERR:"+err);
 		Display.getDefault().syncExec(new Runnable(){
 
 			@Override
