@@ -1,12 +1,15 @@
 package ws.hoyland.qt;
 
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.math.BigInteger;
-import java.net.URL;
 import java.util.Random;
 
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpHost;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.conn.params.ConnRoutePNames;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.util.EntityUtils;
 import org.eclipse.swt.widgets.Display;
 import org.json.JSONObject;
 
@@ -31,10 +34,13 @@ public class Task implements Runnable {
 	public void run() {
 		//String token = "1406087124841854"; // 手机上的令牌序列号
 		String[] ips = px.split(":");
-		System.getProperties().put("proxySet", "true");
-        System.getProperties().setProperty("http.proxyHost", ips[0]);
-        System.getProperties().setProperty("http.proxyPort", ips[1]);
-         
+//		System.getProperties().put("proxySet", "true");
+//      System.getProperties().setProperty("http.proxyHost", ips[0]);
+//      System.getProperties().setProperty("http.proxyPort", ips[1]);
+        DefaultHttpClient httpclient = new DefaultHttpClient();
+        HttpHost proxy = new HttpHost(ips[0], Integer.parseInt(ips[1]), "http");
+//        httpclient.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, proxy);
+        
 		BigInteger root = new BigInteger("2");
 		BigInteger d = new BigInteger(
 				"B8008767A628A4F53BCB84C13C961A55BF87607DAA5BE0BA3AC2E0CB778E494579BD444F699885F4968CD9028BB3FC6FA657D532F1718F581669BDC333F83DC3",
@@ -56,25 +62,38 @@ public class Task implements Runnable {
 		String fcpk = root.modPow(e, d).toString(16).toUpperCase();
 
 		// System.out.println(fcpk);
-		StringBuffer sb = new StringBuffer();
+//		StringBuffer sb = new StringBuffer();
 		try {
-			URL url = new URL(
-					"http://w.aq.qq.com/cn/mbtoken3/mbtoken3_exchange_key_v2?mobile_type=4&client_type=2&client_ver=15&local_id=0&config_ver=100&pub_key="
-							+ fcpk + "&sys_ver=2.2");
-			InputStream in = url.openStream();
-			BufferedReader bin = new BufferedReader(new InputStreamReader(in));
+//			URL url = new URL(
+//					"http://w.aq.qq.com/cn/mbtoken3/mbtoken3_exchange_key_v2?mobile_type=4&client_type=2&client_ver=15&local_id=0&config_ver=100&pub_key="
+//							+ fcpk + "&sys_ver=2.2");
+//			InputStream in = url.openStream();
+//			BufferedReader bin = new BufferedReader(new InputStreamReader(in));
 			String line = null;
-			while ((line = bin.readLine()) != null) {
-				sb.append(line);
-				// System.out.println(line);
-			}
-			bin.close();
-			if(!sb.toString().contains("sess_id")){
+//			while ((line = bin.readLine()) != null) {
+//				sb.append(line);
+//				// System.out.println(line);
+//			}
+//			bin.close();
+			
+			HttpGet httpGet = new HttpGet("http://w.aq.qq.com/cn/mbtoken3/mbtoken3_exchange_key_v2?mobile_type=4&client_type=2&client_ver=15&local_id=0&config_ver=100&pub_key="
+					+ fcpk + "&sys_ver=2.2");
+			HttpResponse response = httpclient.execute(httpGet);
+			//System.out.println(response1.getStatusLine());
+			HttpEntity entity = response.getEntity();
+			// do something useful with the response body
+			// and ensure it is fully consumed
+			line = EntityUtils.toString(entity);
+			EntityUtils.consume(entity);
+			//entity.get
+			httpGet.releaseConnection();
+			
+			if(!line.contains("sess_id")){
 				//err ! ++;
 				err = 106; //操作失败 { "uin": 2474713063, "err": 106, "info": "操作失败，请重试。" }
 			}else{
 				
-				JSONObject json = new JSONObject(sb.toString());
+				JSONObject json = new JSONObject(line);
 				//System.out.println(json);
 				String sid = json.getString("sess_id");
 				String tcpk = json.getString("pub_key"); // get server's crypt pub key
@@ -99,37 +118,54 @@ public class Task implements Runnable {
 				// System.out.println(data);
 		
 				//sb = new StringBuffer();
-				url = new URL(
-							"http://w.aq.qq.com/cn/mbtoken3/mbtoken3_upgrade_determin_v2?uin="
-									+ uin + "&sess_id=" + sid + "&data=" + data);
+				httpGet = new HttpGet("http://w.aq.qq.com/cn/mbtoken3/mbtoken3_upgrade_determin_v2?uin="
+						+ uin + "&sess_id=" + sid + "&data=" + data);
+//				url = new URL(
+//							"http://w.aq.qq.com/cn/mbtoken3/mbtoken3_upgrade_determin_v2?uin="
+//									+ uin + "&sess_id=" + sid + "&data=" + data);
 					// System.out.print(cc+"\t");
 					// System.out.println(url.toString());
 					// output.write(url.toString()+"\r\n");
 					// output.flush();
-				in = url.openStream();
-				bin = new BufferedReader(new InputStreamReader(in));
+//				in = url.openStream();
+//				bin = new BufferedReader(new InputStreamReader(in));
 				line = null;
-				while ((line = bin.readLine()) != null) {
-						//sb.append(line);
-					json = new JSONObject(line);
-					err = json.getInt("err");
-		//				if(err==0){
-		//					
-		//				}else if(err==136){
-		//					
-		//				}else{
-		//					
-		//				}
-		//				if(err==120){
-		//					System.out.println(line);
-		//				}
-		//				System.out.println(line);
-				}
-				bin.close();
+				response = httpclient.execute(httpGet);
+				//System.out.println(response1.getStatusLine());
+				entity = response.getEntity();
+				// do something useful with the response body
+				// and ensure it is fully consumed
+				line = EntityUtils.toString(entity);
+				EntityUtils.consume(entity);
+				//entity.get
+				httpGet.releaseConnection();
+				
+				json = new JSONObject(line);
+				err = json.getInt("err");
+				
+//				while ((line = bin.readLine()) != null) {
+//						//sb.append(line);
+//					json = new JSONObject(line);
+//					err = json.getInt("err");
+//		//				if(err==0){
+//		//					
+//		//				}else if(err==136){
+//		//					
+//		//				}else{
+//		//					
+//		//				}
+//		//				if(err==120){
+//		//					System.out.println(line);
+//		//				}
+//		//				System.out.println(line);
+//				}
+//				bin.close();
 			}
 		} catch (Exception ex) {
 			err = -1;
 			ex.printStackTrace();
+		}finally{
+			 httpclient.getConnectionManager().shutdown();
 		}
 		
 		Display.getDefault().syncExec(new Runnable(){
