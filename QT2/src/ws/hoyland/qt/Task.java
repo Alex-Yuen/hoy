@@ -52,7 +52,7 @@ public class Task implements Runnable {
 //      System.getProperties().setProperty("http.proxyPort", ips[1]);
         DefaultHttpClient httpclient = new DefaultHttpClient();
         HttpHost proxy = new HttpHost(ips[0], Integer.parseInt(ips[1]), "http");
-        httpclient.getParams().setParameter(CoreConnectionPNames.CONNECTION_TIMEOUT, 2500); 
+        httpclient.getParams().setParameter(CoreConnectionPNames.CONNECTION_TIMEOUT, 5000); 
         httpclient.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, proxy);
         
 		BigInteger root = new BigInteger("2");
