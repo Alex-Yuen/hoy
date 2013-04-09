@@ -63,7 +63,9 @@ public class QT {
 			BufferedReader reader = new BufferedReader(isr);
 			String line = null;
 			while((line=reader.readLine())!=null){
-				proxies.add(line);
+				if(!"".equals(line)){
+					proxies.add(line);
+				}
 				//System.out.println(line);
 			}
 		}catch(Exception e){
