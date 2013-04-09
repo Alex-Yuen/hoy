@@ -221,7 +221,7 @@ public class Task implements Runnable {
 			 httpclient.getConnectionManager().shutdown();
 		}
 		System.out.println("ERR:"+err);
-		Display.getDefault().syncExec(new Runnable(){
+		Display.getDefault().asyncExec(new Runnable(){
 
 			@Override
 			public void run() {
