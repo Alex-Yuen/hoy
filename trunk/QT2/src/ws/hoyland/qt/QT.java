@@ -188,12 +188,12 @@ public class QT {
 					// 线程池 数据库连接池 可联系起来
 					int corePoolSize = 512;// minPoolSize
 					int maxPoolSize = 1024;
-					int maxTaskSize = 1024;//缓冲队列
+					int maxTaskSize = (1024+512)*100;//缓冲队列
 					long keepAliveTime = 10;			        
 					TimeUnit unit = TimeUnit.SECONDS;
 					corePoolSize = Integer.parseInt(spinner.getText());
 					maxPoolSize = Integer.parseInt(spinner.getText())*2;//最大同时执行的线程
-					maxTaskSize = maxPoolSize;
+					//maxTaskSize = maxPoolSize;
 					//System.out.println(maxTaskSize);
 					// 任务队列
 					BlockingQueue<Runnable> workQueue = new LinkedBlockingQueue<Runnable>(maxTaskSize);
@@ -209,8 +209,17 @@ public class QT {
 //						}
 						//String px = proxy.get(j);
 						String[] qp = ns.get(i).split("----");
+//						if(i==63636){
+//							System.out.println(ns.get(i));
+//							System.out.println(ns.get(i+1));
+//							System.out.println(ns.get(i+2));
+//						}
+						//try{
 						Task task = new Task(pool, proxies, QT.this, text.getText(), qp[0], qp[1]);
 						pool.execute(task);
+						//}catch(ArrayIndexOutOfBoundsException exx){
+						//	System.out.println(i+":"+ns.get(i));
+						//}
 					}
 //					Display.getCurrent().syncExec(new Runnable(){
 //						public void run(){
@@ -294,7 +303,10 @@ public class QT {
 						BufferedReader reader = new BufferedReader(isr);
 						String line = null;
 						while((line=reader.readLine())!=null){
-							ns.add(line);
+							line = line.trim();
+							if(!line.equals("")){
+								ns.add(line);
+							}
 							//System.out.println(line);
 						}
 						reader.close();
