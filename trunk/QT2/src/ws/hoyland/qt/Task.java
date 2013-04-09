@@ -58,7 +58,7 @@ public class Task implements Runnable {
         HttpHost proxy = new HttpHost(ips[0], Integer.parseInt(ips[1]), "http");
 
         httpclient.getParams().setParameter(CoreConnectionPNames.CONNECTION_TIMEOUT, 5000); 
-//        httpclient.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, proxy);
+        httpclient.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, proxy);
         
 		BigInteger root = new BigInteger("2");
 		BigInteger d = new BigInteger(
@@ -171,6 +171,12 @@ public class Task implements Runnable {
 						}
 					}
 					//System.out.println(120);
+					return;
+				}else if(err==106){//操作错误
+					if(!this.pool.isShutdown()){
+						Task task = new Task(pool, proxies, qt, token, uin, password);			
+						this.pool.execute(task);
+					}
 					return;
 				}
 				
