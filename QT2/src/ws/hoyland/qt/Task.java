@@ -13,7 +13,6 @@ import org.apache.http.NoHttpResponseException;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.conn.ConnectTimeoutException;
-import org.apache.http.conn.HttpHostConnectException;
 import org.apache.http.conn.params.ConnRoutePNames;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.CoreConnectionPNames;
@@ -49,11 +48,15 @@ public class Task implements Runnable {
 	public void run() {
 		//String token = "1406087124841854"; // 手机上的令牌序列号
 		String[] ips = px.split(":");
+//		if(ips.length<1){
+//			System.out.println(px);
+//		}
 //		System.getProperties().put("proxySet", "true");
 //      System.getProperties().setProperty("http.proxyHost", ips[0]);
 //      System.getProperties().setProperty("http.proxyPort", ips[1]);
         DefaultHttpClient httpclient = new DefaultHttpClient();
         HttpHost proxy = new HttpHost(ips[0], Integer.parseInt(ips[1]), "http");
+
         httpclient.getParams().setParameter(CoreConnectionPNames.CONNECTION_TIMEOUT, 5000); 
         httpclient.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, proxy);
         
