@@ -45,6 +45,7 @@ public class QT {
 	private Label lblNewLabel_5;
 	private Label lblNewLabel_6;
 	private Label label_2;
+	private Label lblNewLabel_9;
 	
 	private Button button_2;
 	private Button button_3;
@@ -55,22 +56,10 @@ public class QT {
 	private List<String> fc = null;
 	private List<String> oc = null;
 	private List<String> proxies = null;
+	private int pc = 0;
 	
 	public QT(){
 		this.proxies = new ArrayList<String>();
-		try{
-			InputStreamReader isr = new InputStreamReader(QT.class.getResourceAsStream("/proxy.txt"));
-			BufferedReader reader = new BufferedReader(isr);
-			String line = null;
-			while((line=reader.readLine())!=null){
-				if(!"".equals(line)){
-					proxies.add(line);
-				}
-				//System.out.println(line);
-			}
-		}catch(Exception e){
-			e.printStackTrace();
-		}
     }
 	
 	public boolean getFlag(){
@@ -89,6 +78,7 @@ public class QT {
 			oc.add(line);
 		}
 		
+		lblNewLabel_9.setText(proxies.size()+"/"+pc);
 		progressBar.setSelection(progressBar.getSelection()+1);
 		lblNewLabel_5.setText(String.valueOf(sc.size()));
 		lblNewLabel_6.setText(String.valueOf(fc.size()));
@@ -173,6 +163,23 @@ public class QT {
 				if("开始".endsWith(button_1.getText())){
 					flag = true;
 
+					proxies.clear();
+					try{
+						InputStreamReader isr = new InputStreamReader(QT.class.getResourceAsStream("/proxy.txt"));
+						BufferedReader reader = new BufferedReader(isr);
+						String line = null;
+						while((line=reader.readLine())!=null){
+							if(!"".equals(line)){
+								proxies.add(line);
+							}
+							//System.out.println(line);
+						}
+						pc = proxies.size();
+					}catch(Exception ex){
+						ex.printStackTrace();
+					}
+					
+					lblNewLabel_9.setText(proxies.size()+"/"+pc);
 					button_2.setEnabled(false);
 					button_3.setEnabled(false);
 					button_4.setEnabled(false);
@@ -242,6 +249,7 @@ public class QT {
 					button_1.setText("结束");
 				}else{
 					pool.shutdownNow();
+					proxies.clear();
 					flag = false;
 					btnNewButton.setEnabled(true);
 					button_1.setText("开始");					
@@ -388,6 +396,14 @@ public class QT {
 		lblNewLabel_1 = new Label(shlQt, SWT.NONE);
 		lblNewLabel_1.setBounds(433, 117, 154, 17);
 		lblNewLabel_1.setText("0 ms");
+		
+		Label lblNewLabel_7 = new Label(shlQt, SWT.NONE);
+		lblNewLabel_7.setBounds(207, 8, 61, 17);
+		lblNewLabel_7.setText("代理数量:");
+		
+		lblNewLabel_9 = new Label(shlQt, SWT.NONE);
+		lblNewLabel_9.setBounds(291, 8, 127, 17);
+		lblNewLabel_9.setText("0/0");
 
 	}
 	

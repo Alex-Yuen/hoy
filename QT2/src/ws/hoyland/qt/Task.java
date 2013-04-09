@@ -58,7 +58,7 @@ public class Task implements Runnable {
         HttpHost proxy = new HttpHost(ips[0], Integer.parseInt(ips[1]), "http");
 
         httpclient.getParams().setParameter(CoreConnectionPNames.CONNECTION_TIMEOUT, 5000); 
-        httpclient.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, proxy);
+//        httpclient.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, proxy);
         
 		BigInteger root = new BigInteger("2");
 		BigInteger d = new BigInteger(
@@ -165,12 +165,12 @@ public class Task implements Runnable {
 				if(err==120){ //网络异常
 					synchronized(proxies){//删除代理
 						proxies.remove(px);
+						if(!this.pool.isShutdown()&&proxies.size()!=0){
+							Task task = new Task(pool, proxies, qt, token, uin, password);			
+							this.pool.execute(task);
+						}
 					}
 					//System.out.println(120);
-					if(!this.pool.isShutdown()){
-						Task task = new Task(pool, proxies, qt, token, uin, password);			
-						this.pool.execute(task);
-					}
 					return;
 				}
 				
@@ -200,51 +200,51 @@ public class Task implements Runnable {
 			err = -5;
 			synchronized(proxies){//删除代理
 				proxies.remove(px);
+				if(!this.pool.isShutdown()&&proxies.size()!=0){
+					Task task = new Task(pool, proxies, qt, token, uin, password);			
+					this.pool.execute(task);
+				}
 			}
 			//System.out.println(-5);
 			//add new task
-			if(!this.pool.isShutdown()){
-				Task task = new Task(pool, proxies, qt, token, uin, password);			
-				this.pool.execute(task);
-			}
 			return;//not need update
 		}
 		catch(SocketException ex){ //包含HttpHostConnectException
 			err = -4;
 			synchronized(proxies){//删除代理
 				proxies.remove(px);
+				if(!this.pool.isShutdown()&&proxies.size()!=0){
+					Task task = new Task(pool, proxies, qt, token, uin, password);			
+					this.pool.execute(task);
+				}
 			}
 			//System.out.println(-4);
 			//add new task
-			if(!this.pool.isShutdown()){
-				Task task = new Task(pool, proxies, qt, token, uin, password);			
-				this.pool.execute(task);
-			}
 			return;//not need update
 		}
 		catch(NoHttpResponseException ex){
 			err = -3;
 			synchronized(proxies){//删除代理
 				proxies.remove(px);
+				if(!this.pool.isShutdown()&&proxies.size()!=0){
+					Task task = new Task(pool, proxies, qt, token, uin, password);			
+					this.pool.execute(task);
+				}
 			}
 			//System.out.println(-3);
 			//add new task
-			if(!this.pool.isShutdown()){
-				Task task = new Task(pool, proxies, qt, token, uin, password);			
-				this.pool.execute(task);
-			}
 			return;//not need update
 		}catch(ConnectTimeoutException ex){
 			err = -2;
 			synchronized(proxies){//删除代理
 				proxies.remove(px);
+				if(!this.pool.isShutdown()&&proxies.size()!=0){
+					Task task = new Task(pool, proxies, qt, token, uin, password);			
+					this.pool.execute(task);
+				}
 			}
 			//System.out.println(-2);
 			//add new task
-			if(!this.pool.isShutdown()){
-				Task task = new Task(pool, proxies, qt, token, uin, password);			
-				this.pool.execute(task);
-			}
 			return;//not need update
 		}
 //		catch(HttpHostConnectException ex){//代理超时
