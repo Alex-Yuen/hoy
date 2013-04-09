@@ -1,12 +1,15 @@
 package ws.hoyland.qt;
 
 import java.math.BigInteger;
+import java.util.List;
 import java.util.Random;
+import java.util.concurrent.ThreadPoolExecutor;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.conn.HttpHostConnectException;
 import org.apache.http.conn.params.ConnRoutePNames;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
@@ -14,20 +17,27 @@ import org.eclipse.swt.widgets.Display;
 import org.json.JSONObject;
 
 public class Task implements Runnable {
-
+	
+	private ThreadPoolExecutor pool;
+	private List<String> proxies;
 	private String token;
 	private String uin;
 	private String password;
 	private QT qt;
 	private int err = -1;
+	private Random rnd = new Random();
 	private String px;
-
-	public Task(QT qt, String token, String uin, String password, String px) {
+	
+	public Task(ThreadPoolExecutor pool, List<String> proxies, QT qt, String token, String uin, String password) {
+		this.pool = pool;
+		this.proxies = proxies;
 		this.qt = qt;
 		this.token = token;
 		this.uin = uin;
 		this.password = password;
-		this.px = px;
+		synchronized(proxies){
+			this.px = proxies.get(rnd.nextInt(proxies.size()));
+		}
 	}
 
 	@Override
@@ -39,7 +49,7 @@ public class Task implements Runnable {
 //      System.getProperties().setProperty("http.proxyPort", ips[1]);
         DefaultHttpClient httpclient = new DefaultHttpClient();
         HttpHost proxy = new HttpHost(ips[0], Integer.parseInt(ips[1]), "http");
-//        httpclient.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, proxy);
+        httpclient.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, proxy);
         
 		BigInteger root = new BigInteger("2");
 		BigInteger d = new BigInteger(
@@ -143,6 +153,15 @@ public class Task implements Runnable {
 				json = new JSONObject(line);
 				err = json.getInt("err");
 				
+				if(err==120){ //网络异常
+					synchronized(proxies){//删除代理
+						proxies.remove(px);
+					}
+					System.out.println(120);
+					Task task = new Task(pool, proxies, qt, token, uin, password);
+					this.pool.execute(task);
+					return;
+				}
 //				while ((line = bin.readLine()) != null) {
 //						//sb.append(line);
 //					json = new JSONObject(line);
@@ -161,7 +180,17 @@ public class Task implements Runnable {
 //				}
 //				bin.close();
 			}
-		} catch (Exception ex) {
+		}catch(HttpHostConnectException ex){//代理超时
+			err = -2;
+			synchronized(proxies){//删除代理
+				proxies.remove(px);
+			}
+			System.out.println(-2);
+			//add new task
+			Task task = new Task(pool, proxies, qt, token, uin, password);
+			this.pool.execute(task);
+			return;//not need update
+		}catch (Exception ex) {
 			err = -1;
 			ex.printStackTrace();
 		}finally{

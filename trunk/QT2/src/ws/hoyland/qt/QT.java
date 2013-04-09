@@ -54,16 +54,16 @@ public class QT {
 	private List<String> sc = null;
 	private List<String> fc = null;
 	private List<String> oc = null;
-	private List<String> proxy = null;
+	private List<String> proxies = null;
 	
 	public QT(){
-		this.proxy = new ArrayList<String>();
+		this.proxies = new ArrayList<String>();
 		try{
 			InputStreamReader isr = new InputStreamReader(QT.class.getResourceAsStream("/proxy.txt"));
 			BufferedReader reader = new BufferedReader(isr);
 			String line = null;
 			while((line=reader.readLine())!=null){
-				proxy.add(line);
+				proxies.add(line);
 				//System.out.println(line);
 			}
 		}catch(Exception e){
@@ -203,13 +203,13 @@ public class QT {
 					pool = new ThreadPoolExecutor(corePoolSize, maxPoolSize, keepAliveTime, unit, workQueue, handler);
 					
 					startTime = System.currentTimeMillis();
-					for(int i=0,j=0;i<ns.size();i++,j++){
-						if(j==proxy.size()){//代理
-							j=0;
-						}
-						String px = proxy.get(j);
+					for(int i=0;i<ns.size();i++){
+//						if(j==proxy.size()){//代理
+//							j=0;
+//						}
+						//String px = proxy.get(j);
 						String[] qp = ns.get(i).split("----");
-						Task task = new Task(QT.this, text.getText(), qp[0], qp[1], px);
+						Task task = new Task(pool, proxies, QT.this, text.getText(), qp[0], qp[1]);
 						pool.execute(task);
 					}
 //					Display.getCurrent().syncExec(new Runnable(){
