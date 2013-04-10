@@ -7,6 +7,7 @@ import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.*;
@@ -16,7 +17,6 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.FileDialog;
-import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Label;
@@ -47,22 +47,25 @@ public class QT {
 	private Label lblNewLabel_6;
 	private Label label_2;
 	private Label lblNewLabel_9;
-	
-	private Button button_2;
-	private Button button_3;
-	private Button button_4;
+	private Label label_6;
 	
 	private long startTime = 0;
 	private List<String> sc = null;
 	private List<String> fc = null;
 	private List<String> oc = null;
+	private List<String> mc = null;
 	private List<String> proxies = null;
 	private int pc = 0;
+	private int nc = 0;
 	private Text text_1;
 	private Button button;
+	private Label label_4;
+	private Label label_5;
+	private SimpleDateFormat formatter = null;
+	private String ipn = null;
 	
 	public QT(){
-		
+		 formatter = new SimpleDateFormat("HH:mm:ss");//初始化Formatter的转换格式
     }
 	
 	public boolean getFlag(){
@@ -71,13 +74,16 @@ public class QT {
 	
 	public void up(String line, int err){
 		if(err==0){
-			this.button_2.setEnabled(true);
+			//this.button_2.setEnabled(true);
 			sc.add(line);
-		}else if(err==132||err==136){
-			this.button_3.setEnabled(true);
+		}else if(err==132){
+			//this.button_3.setEnabled(true);
 			fc.add(line);
+		}else if(err==136){
+			//this.button_3.setEnabled(true);
+			mc.add(line);
 		}else{
-			this.button_4.setEnabled(true);
+			//this.button_4.setEnabled(true);
 			oc.add(line);
 		}
 		
@@ -85,8 +91,13 @@ public class QT {
 		progressBar.setSelection(progressBar.getSelection()+1);
 		lblNewLabel_5.setText(String.valueOf(sc.size()));
 		lblNewLabel_6.setText(String.valueOf(fc.size()));
+		label_5.setText(String.valueOf(mc.size()));
 		label_2.setText(String.valueOf(oc.size()));
-		lblNewLabel_1.setText(String.valueOf(System.currentTimeMillis()-this.startTime)+" ms");
+		int total = sc.size()+fc.size()+mc.size()+oc.size();
+		label_6.setText(total+"/"+(nc-total));
+		
+		lblNewLabel_1.setText(formatter.format(System.currentTimeMillis()-this.startTime));
+		
 		if(progressBar.getSelection()==progressBar.getMaximum()){
 			//
 			//lblNewLabel_1.setText(String.valueOf(System.currentTimeMillis()-this.startTime)+" ms");
@@ -143,12 +154,14 @@ public class QT {
 				
 				File fff = null;
 				List<String> list = null;
-				String[] fn = {"正确.txt", "错误.txt", "异常.txt"};
+				String[] fn = {"正确.txt", "错误.txt", "过多.txt", "异常.txt"};
 				for(int i=0;i<fn.length;i++){
 					if(i==0){
 						list = sc;
 					}else if(i==1){
 						list = fc;
+					}else if(i==2){
+						list = mc;
 					}else{
 						list = oc;
 					}
@@ -158,7 +171,7 @@ public class QT {
 					if(list!=null&&list.size()>0){
 						try{
 							//System.out.println(path);						
-							fff = new File(path+fn[i]);
+							fff = new File(path+ipn+"-"+fn[i]);
 							if(!fff.exists()){
 								fff.createNewFile();
 							}
@@ -179,7 +192,7 @@ public class QT {
 			}
 		});
 		shlQt.setToolTipText("");
-		shlQt.setSize(603, 276);
+		shlQt.setSize(603, 251);
 		shlQt.setText("QT");
 		
 
@@ -202,18 +215,20 @@ public class QT {
 				if("开始".endsWith(button_1.getText())){
 					flag = true;
 
-					button_2.setEnabled(false);
-					button_3.setEnabled(false);
-					button_4.setEnabled(false);
+//					button_2.setEnabled(false);
+//					button_3.setEnabled(false);
+//					button_4.setEnabled(false);
 					
 					sc = new ArrayList<String>();
 					fc = new ArrayList<String>();
+					mc = new ArrayList<String>();
 					oc = new ArrayList<String>();
 					
 					lblNewLabel_5.setText(String.valueOf(sc.size()));
 					lblNewLabel_6.setText(String.valueOf(fc.size()));
+					label_5.setText(String.valueOf(mc.size()));
 					label_2.setText(String.valueOf(oc.size()));
-					lblNewLabel_1.setText("0 ms");
+					lblNewLabel_1.setText("00:00:00");
 					progressBar.setSelection(0);
 										
 					
@@ -294,7 +309,7 @@ public class QT {
 		});
 		button_1.setEnabled(false);
 		button_1.setText("开始");
-		button_1.setBounds(388, 145, 199, 61);
+		button_1.setBounds(388, 128, 199, 61);
 		
 		Label label = new Label(shlQt, SWT.NONE);
 		label.setBounds(388, 82, 127, 17);
@@ -305,7 +320,7 @@ public class QT {
 		lblNewLabel_3.setText("密码正确:");
 		
 		Label lblNewLabel_4 = new Label(shlQt, SWT.NONE);
-		lblNewLabel_4.setBounds(10, 117, 61, 17);
+		lblNewLabel_4.setBounds(10, 105, 61, 17);
 		lblNewLabel_4.setText("密码错误:");
 		
 		lblNewLabel_5 = new Label(shlQt, SWT.NONE);
@@ -313,19 +328,8 @@ public class QT {
 		lblNewLabel_5.setText("0");
 		
 		lblNewLabel_6 = new Label(shlQt, SWT.NONE);
-		lblNewLabel_6.setBounds(92, 117, 61, 17);
+		lblNewLabel_6.setBounds(92, 105, 61, 17);
 		lblNewLabel_6.setText("0");
-		
-		button_2 = new Button(shlQt, SWT.NONE);
-		button_2.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				op(0);
-			}
-		});
-		button_2.setEnabled(false);
-		button_2.setBounds(190, 77, 132, 27);
-		button_2.setText("导出");
 		
 		Label label_1 = new Label(shlQt, SWT.NONE);
 		label_1.setBounds(10, 10, 61, 17);
@@ -343,6 +347,7 @@ public class QT {
 				if(filePath!=null){
 					try{
 						ns = new ArrayList<String>();
+						ipn = fileDlg.getFileName();
 						File ipf = new File(filePath);
 						FileInputStream is = new FileInputStream(ipf);
 						InputStreamReader isr = new InputStreamReader(is);
@@ -355,12 +360,14 @@ public class QT {
 							}
 							//System.out.println(line);
 						}
+						nc = ns.size();
 						reader.close();
 						isr.close();
 						is.close();
 						//System.out.println(ns.size());
 						if(ns.size()>0){
 							label_3.setText("共 "+ns.size()+" 条");
+							label_6.setText("0/"+nc);
 							if(proxies!=null&&proxies.size()>0){
 								button_1.setEnabled(true);
 							}
@@ -378,11 +385,11 @@ public class QT {
 		btnNewButton.setText("导入帐号");
 		
 		Label lblNewLabel_8 = new Label(shlQt, SWT.NONE);
-		lblNewLabel_8.setBounds(10, 150, 61, 17);
+		lblNewLabel_8.setBounds(192, 105, 61, 17);
 		lblNewLabel_8.setText("未知错误:");
 		
 		progressBar = new ProgressBar(shlQt, SWT.SMOOTH);
-		progressBar.setBounds(10, 212, 579, 26);
+		progressBar.setBounds(10, 195, 579, 26);
 		
 		spinner = new Spinner(shlQt, SWT.BORDER);
 		spinner.setMaximum(1024);
@@ -391,50 +398,28 @@ public class QT {
 		spinner.setBounds(521, 79, 66, 23);
 		
 		label_2 = new Label(shlQt, SWT.NONE);
-		label_2.setBounds(92, 150, 61, 17);
+		label_2.setBounds(273, 105, 61, 17);
 		label_2.setText("0");
-		
-		button_3 = new Button(shlQt, SWT.NONE);
-		button_3.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				op(1);
-			}
-		});
-		button_3.setEnabled(false);
-		button_3.setText("导出");
-		button_3.setBounds(190, 112, 132, 27);
-		
-		button_4 = new Button(shlQt, SWT.NONE);
-		button_4.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				op(2);
-			}
-		});
-		button_4.setEnabled(false);
-		button_4.setText("导出");
-		button_4.setBounds(190, 145, 132, 27);
 		
 		label_3 = new Label(shlQt, SWT.NONE);
 		label_3.setBounds(77, 10, 103, 17);
 		label_3.setText("共 0 条");
 		
 		Label lblNewLabel = new Label(shlQt, SWT.NONE);
-		lblNewLabel.setBounds(10, 183, 75, 17);
+		lblNewLabel.setBounds(10, 167, 75, 17);
 		lblNewLabel.setText("令牌序列号:");
 		
 		text = new Text(shlQt, SWT.BORDER);
 		text.setText("6980777939050726");
-		text.setBounds(92, 183, 230, 23);
+		text.setBounds(92, 164, 230, 23);
 		
 		Label lblNewLabel_2 = new Label(shlQt, SWT.NONE);
-		lblNewLabel_2.setBounds(388, 117, 39, 17);
+		lblNewLabel_2.setBounds(388, 105, 39, 17);
 		lblNewLabel_2.setText("耗时:");
 		
 		lblNewLabel_1 = new Label(shlQt, SWT.NONE);
-		lblNewLabel_1.setBounds(433, 117, 154, 17);
-		lblNewLabel_1.setText("0 ms");
+		lblNewLabel_1.setBounds(433, 105, 154, 17);
+		lblNewLabel_1.setText("00:00:00");
 		
 		Label lblNewLabel_7 = new Label(shlQt, SWT.NONE);
 		lblNewLabel_7.setBounds(10, 39, 61, 17);
@@ -496,68 +481,22 @@ public class QT {
 		});
 		button.setText("导入代理");
 		button.setBounds(484, 34, 103, 27);
+		
+		label_4 = new Label(shlQt, SWT.NONE);
+		label_4.setText("次数过多:");
+		label_4.setBounds(192, 82, 61, 17);
+		
+		label_5 = new Label(shlQt, SWT.NONE);
+		label_5.setText("0");
+		label_5.setBounds(273, 82, 61, 17);
+		
+		Label lblNewLabel_10 = new Label(shlQt, SWT.NONE);
+		lblNewLabel_10.setBounds(10, 128, 61, 17);
+		lblNewLabel_10.setText("处理进度:");
+		
+		label_6 = new Label(shlQt, SWT.NONE);
+		label_6.setText("0/0");
+		label_6.setBounds(92, 128, 187, 17);
 
-	}
-	
-	private void op(int type){
-		String fn = null;
-		List<String> list = null;
-		switch(type){
-		case 0:
-			fn = "正确.txt";
-			list = sc;
-			break;
-		case 1:
-			fn = "错误.txt";
-			list = fc;
-			break;
-		case 2:
-			fn = "异常.txt";
-			list = oc;
-			break;
-		}
-		FileDialog fileDlg=new FileDialog(shlQt, SWT.SAVE);
-		//fileDlg.setFilterExtensions(new String[]{"*.torrent"});
-		fileDlg.setFileName(fn);
-		fileDlg.setFilterPath(null);
-		fileDlg.setText("导出文件");
-		String filePath=fileDlg.open();
-		if(filePath!=null){
-			try{
-				File f = new File(filePath);
-				boolean ff = false;
-				if(f.exists()){
-					int style = SWT.APPLICATION_MODAL | SWT.YES | SWT.CANCEL;
-	                MessageBox messageBox = new MessageBox(shlQt, style);  
-	                messageBox.setText("警告");  
-	                messageBox.setMessage("文件已经存在，是否覆盖？");  
-	                if(messageBox.open()==SWT.YES){
-	                	ff = true;
-	                }else{
-	                	ff = false;
-	                }
-				}else{
-					ff = true;
-				}
-				
-				if(ff){
-					BufferedWriter output = new BufferedWriter(new FileWriter(f));
-					for(String line:list){
-						output.write(line+"\r\n");
-					}
-					output.flush();
-					output.close();
-					
-					int style = SWT.APPLICATION_MODAL | SWT.YES;
-	                MessageBox messageBox = new MessageBox(shlQt, style);  
-	                messageBox.setText("提示");  
-	                messageBox.setMessage("文件保存成功！");  
-	                messageBox.open();
-				}
-				//System.out.println(filePath);
-			}catch(Exception e){
-				e.printStackTrace();
-			}
-		}
 	}
 }
