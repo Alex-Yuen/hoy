@@ -224,7 +224,7 @@ public class QT {
 							// 线程池 数据库连接池 可联系起来
 							int corePoolSize = 512;// minPoolSize
 							int maxPoolSize = 1024;
-							int maxTaskSize = (1024+512)*100;//缓冲队列
+							int maxTaskSize = (1024+512)*100*40;//缓冲队列
 							long keepAliveTime = 10;			        
 							TimeUnit unit = TimeUnit.SECONDS;
 							corePoolSize = Integer.parseInt(spinner.getText());
@@ -239,7 +239,7 @@ public class QT {
 							pool = new ThreadPoolExecutor(corePoolSize, maxPoolSize, keepAliveTime, unit, workQueue, handler);
 							
 							startTime = System.currentTimeMillis();
-							
+							//System.out.println(ns.size());
 							for(int i=0;i<ns.size();i++){
 //								if(j==proxy.size()){//代理
 //									j=0;
@@ -251,12 +251,14 @@ public class QT {
 //									System.out.println(ns.get(i+1));
 //									System.out.println(ns.get(i+2));
 //								}
-								//try{
-								Task task = new Task(pool, proxies, QT.this, text.getText(), qp[0], qp[1]);
-								pool.execute(task);
-								//}catch(ArrayIndexOutOfBoundsException exx){
-								//	System.out.println(i+":"+ns.get(i));
-								//}
+								try{
+									if(qp.length==2){
+										Task task = new Task(pool, proxies, QT.this, text.getText(), qp[0], qp[1]);
+										pool.execute(task);
+									}
+								}catch(ArrayIndexOutOfBoundsException exx){
+									System.out.println(i+":"+ns.get(i));
+								}
 							}
 						}
 						
