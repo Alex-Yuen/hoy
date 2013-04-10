@@ -57,6 +57,8 @@ public class QT {
 	private List<String> oc = null;
 	private List<String> proxies = null;
 	private int pc = 0;
+	private Text text_1;
+	private Button button;
 	
 	public QT(){
 		this.proxies = new ArrayList<String>();
@@ -153,8 +155,8 @@ public class QT {
 		
 		txtC = new Text(shlQt, SWT.BORDER);
 		txtC.setEditable(false);
-		txtC.setText("请指定帐号文件，导入帐号");
-		txtC.setBounds(10, 31, 452, 23);
+		txtC.setText("请指定文件，导入帐号");
+		txtC.setBounds(219, 7, 246, 23);
 		
 		button_1 = new Button(shlQt, SWT.NONE);
 		button_1.addSelectionListener(new SelectionAdapter() {
@@ -163,23 +165,6 @@ public class QT {
 				if("开始".endsWith(button_1.getText())){
 					flag = true;
 
-					proxies.clear();
-					try{
-						InputStreamReader isr = new InputStreamReader(QT.class.getResourceAsStream("/proxy.txt"));
-						BufferedReader reader = new BufferedReader(isr);
-						String line = null;
-						while((line=reader.readLine())!=null){
-							if(!"".equals(line)){
-								proxies.add(line);
-							}
-							//System.out.println(line);
-						}
-						pc = proxies.size();
-					}catch(Exception ex){
-						ex.printStackTrace();
-					}
-					
-					lblNewLabel_9.setText(proxies.size()+"/"+pc);
 					button_2.setEnabled(false);
 					button_3.setEnabled(false);
 					button_4.setEnabled(false);
@@ -212,24 +197,33 @@ public class QT {
 					pool = new ThreadPoolExecutor(corePoolSize, maxPoolSize, keepAliveTime, unit, workQueue, handler);
 					
 					startTime = System.currentTimeMillis();
-					for(int i=0;i<ns.size();i++){
-//						if(j==proxy.size()){//代理
-//							j=0;
-//						}
-						//String px = proxy.get(j);
-						String[] qp = ns.get(i).split("----");
-//						if(i==63636){
-//							System.out.println(ns.get(i));
-//							System.out.println(ns.get(i+1));
-//							System.out.println(ns.get(i+2));
-//						}
-						//try{
-						Task task = new Task(pool, proxies, QT.this, text.getText(), qp[0], qp[1]);
-						pool.execute(task);
-						//}catch(ArrayIndexOutOfBoundsException exx){
-						//	System.out.println(i+":"+ns.get(i));
-						//}
-					}
+					
+					Display.getDefault().asyncExec(new Runnable(){
+
+						@Override
+						public void run() {
+							for(int i=0;i<ns.size();i++){
+//								if(j==proxy.size()){//代理
+//									j=0;
+//								}
+								//String px = proxy.get(j);
+								String[] qp = ns.get(i).split("----");
+//								if(i==63636){
+//									System.out.println(ns.get(i));
+//									System.out.println(ns.get(i+1));
+//									System.out.println(ns.get(i+2));
+//								}
+								//try{
+								Task task = new Task(pool, proxies, QT.this, text.getText(), qp[0], qp[1]);
+								pool.execute(task);
+								//}catch(ArrayIndexOutOfBoundsException exx){
+								//	System.out.println(i+":"+ns.get(i));
+								//}
+							}
+						}
+						
+					});
+
 //					Display.getCurrent().syncExec(new Runnable(){
 //						public void run(){
 //							while(flag){
@@ -246,12 +240,14 @@ public class QT {
 //					});
 					progressBar.setMaximum(ns.size());
 					btnNewButton.setEnabled(false);
+					button.setEnabled(false);
 					button_1.setText("结束");
 				}else{
 					pool.shutdownNow();
 					proxies.clear();
 					flag = false;
 					btnNewButton.setEnabled(true);
+					button.setEnabled(true);
 					button_1.setText("开始");					
 				}
 			}
@@ -292,7 +288,7 @@ public class QT {
 		button_2.setText("导出");
 		
 		Label label_1 = new Label(shlQt, SWT.NONE);
-		label_1.setBounds(10, 8, 61, 17);
+		label_1.setBounds(10, 10, 61, 17);
 		label_1.setText("导入帐号:");
 		
 		btnNewButton = new Button(shlQt, SWT.NONE);
@@ -325,7 +321,7 @@ public class QT {
 						//System.out.println(ns.size());
 						if(ns.size()>0){
 							label_3.setText("共 "+ns.size()+" 条");
-							button_1.setEnabled(true);
+							//button_1.setEnabled(true);
 						}
 						txtC.setText(filePath);
 					}catch(Exception ex){
@@ -335,7 +331,7 @@ public class QT {
 				}
 			}
 		});
-		btnNewButton.setBounds(484, 29, 103, 27);
+		btnNewButton.setBounds(484, 5, 103, 27);
 		btnNewButton.setText("导入帐号");
 		
 		Label lblNewLabel_8 = new Label(shlQt, SWT.NONE);
@@ -378,7 +374,7 @@ public class QT {
 		button_4.setBounds(190, 145, 132, 27);
 		
 		label_3 = new Label(shlQt, SWT.NONE);
-		label_3.setBounds(77, 8, 103, 17);
+		label_3.setBounds(77, 10, 103, 17);
 		label_3.setText("共 0 条");
 		
 		Label lblNewLabel = new Label(shlQt, SWT.NONE);
@@ -398,12 +394,63 @@ public class QT {
 		lblNewLabel_1.setText("0 ms");
 		
 		Label lblNewLabel_7 = new Label(shlQt, SWT.NONE);
-		lblNewLabel_7.setBounds(207, 8, 61, 17);
+		lblNewLabel_7.setBounds(10, 39, 61, 17);
 		lblNewLabel_7.setText("代理数量:");
 		
 		lblNewLabel_9 = new Label(shlQt, SWT.NONE);
-		lblNewLabel_9.setBounds(291, 8, 127, 17);
+		lblNewLabel_9.setBounds(77, 39, 127, 17);
 		lblNewLabel_9.setText("0/0");
+		
+		text_1 = new Text(shlQt, SWT.BORDER);
+		text_1.setText("请指定文件，导入代理");
+		text_1.setEditable(false);
+		text_1.setBounds(219, 36, 246, 23);
+		
+		button = new Button(shlQt, SWT.NONE);
+		button.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				FileDialog fileDlg=new FileDialog(shlQt, SWT.OPEN);
+				//fileDlg.setFilterExtensions(new String[]{"*.torrent"});
+				fileDlg.setFilterPath(null);
+				fileDlg.setText("选择代理文件");
+				String filePath=fileDlg.open();
+				if(filePath!=null){
+					try{
+						proxies.clear();
+						File ipf = new File(filePath);
+						FileInputStream is = new FileInputStream(ipf);
+						InputStreamReader isr = new InputStreamReader(is);
+						BufferedReader reader = new BufferedReader(isr);
+						String line = null;
+						while((line=reader.readLine())!=null){
+							line = line.trim();
+							if(!line.equals("")){
+								proxies.add(line);
+							}
+							//System.out.println(line);
+						}
+						pc = proxies.size();
+						
+						
+						reader.close();
+						isr.close();
+						is.close();
+						//System.out.println(ns.size());
+						if(ns.size()>0&&pc>0){
+							lblNewLabel_9.setText(proxies.size()+"/"+pc);
+							button_1.setEnabled(true);
+						}
+						text_1.setText(filePath);
+					}catch(Exception ex){
+						ex.printStackTrace();
+					}
+					//System.out.println("Path:"+filePath);
+				}
+			}
+		});
+		button.setText("导入代理");
+		button.setBounds(484, 34, 103, 27);
 
 	}
 	
