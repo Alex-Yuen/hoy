@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.InputStreamReader;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.*;
@@ -61,7 +62,7 @@ public class QT {
 	private Button button;
 	
 	public QT(){
-		this.proxies = new ArrayList<String>();
+		
     }
 	
 	public boolean getFlag(){
@@ -139,6 +140,42 @@ public class QT {
 				if(pool!=null){
 					pool.shutdownNow();
 				}
+				
+				File fff = null;
+				List<String> list = null;
+				String[] fn = {"正确.txt", "错误.txt", "异常.txt"};
+				for(int i=0;i<fn.length;i++){
+					if(i==0){
+						list = sc;
+					}else if(i==1){
+						list = fc;
+					}else{
+						list = oc;
+					}
+					URL url = QT.class.getClassLoader().getResource(""); 
+					String path = url.getPath();
+					
+					if(list!=null&&list.size()>0){
+						try{
+							//System.out.println(path);						
+							fff = new File(path+fn[i]);
+							if(!fff.exists()){
+								fff.createNewFile();
+							}
+							//System.out.println(fff.exists());
+							BufferedWriter output = new BufferedWriter(new FileWriter(fff));
+							for(String line:list){
+								output.write(line+"\r\n");
+							}
+							output.flush();
+							output.close();
+						}catch(Exception ex){
+							ex.printStackTrace();
+						}
+					}
+				}				
+				
+				System.exit(0);
 			}
 		});
 		shlQt.setToolTipText("");
@@ -178,30 +215,31 @@ public class QT {
 					label_2.setText(String.valueOf(oc.size()));
 					lblNewLabel_1.setText("0 ms");
 					progressBar.setSelection(0);
-					
-					// 线程池 数据库连接池 可联系起来
-					int corePoolSize = 512;// minPoolSize
-					int maxPoolSize = 1024;
-					int maxTaskSize = (1024+512)*100;//缓冲队列
-					long keepAliveTime = 10;			        
-					TimeUnit unit = TimeUnit.SECONDS;
-					corePoolSize = Integer.parseInt(spinner.getText());
-					maxPoolSize = Integer.parseInt(spinner.getText())*2;//最大同时执行的线程
-					//maxTaskSize = maxPoolSize;
-					//System.out.println(maxTaskSize);
-					// 任务队列
-					BlockingQueue<Runnable> workQueue = new LinkedBlockingQueue<Runnable>(maxTaskSize);
-					// 饱和处理策略
-					RejectedExecutionHandler handler = new AbortPolicy();
-					// 创建线程池
-					pool = new ThreadPoolExecutor(corePoolSize, maxPoolSize, keepAliveTime, unit, workQueue, handler);
-					
-					startTime = System.currentTimeMillis();
+										
 					
 					Display.getDefault().asyncExec(new Runnable(){
 
 						@Override
 						public void run() {
+							// 线程池 数据库连接池 可联系起来
+							int corePoolSize = 512;// minPoolSize
+							int maxPoolSize = 1024;
+							int maxTaskSize = (1024+512)*100;//缓冲队列
+							long keepAliveTime = 10;			        
+							TimeUnit unit = TimeUnit.SECONDS;
+							corePoolSize = Integer.parseInt(spinner.getText());
+							maxPoolSize = Integer.parseInt(spinner.getText())*2;//最大同时执行的线程
+							//maxTaskSize = maxPoolSize;
+							//System.out.println(maxTaskSize);
+							// 任务队列
+							BlockingQueue<Runnable> workQueue = new LinkedBlockingQueue<Runnable>(maxTaskSize);
+							// 饱和处理策略
+							RejectedExecutionHandler handler = new AbortPolicy();
+							// 创建线程池
+							pool = new ThreadPoolExecutor(corePoolSize, maxPoolSize, keepAliveTime, unit, workQueue, handler);
+							
+							startTime = System.currentTimeMillis();
+							
 							for(int i=0;i<ns.size();i++){
 //								if(j==proxy.size()){//代理
 //									j=0;
@@ -321,7 +359,10 @@ public class QT {
 						//System.out.println(ns.size());
 						if(ns.size()>0){
 							label_3.setText("共 "+ns.size()+" 条");
-							//button_1.setEnabled(true);
+							if(proxies!=null&&proxies.size()>0){
+								button_1.setEnabled(true);
+							}
+							//
 						}
 						txtC.setText(filePath);
 					}catch(Exception ex){
@@ -417,7 +458,7 @@ public class QT {
 				String filePath=fileDlg.open();
 				if(filePath!=null){
 					try{
-						proxies.clear();
+						proxies = new ArrayList<String>();
 						File ipf = new File(filePath);
 						FileInputStream is = new FileInputStream(ipf);
 						InputStreamReader isr = new InputStreamReader(is);
@@ -437,9 +478,11 @@ public class QT {
 						isr.close();
 						is.close();
 						//System.out.println(ns.size());
-						if(ns.size()>0&&pc>0){
+						if(pc>0){
 							lblNewLabel_9.setText(proxies.size()+"/"+pc);
-							button_1.setEnabled(true);
+							if(ns!=null&&ns.size()>0){
+								button_1.setEnabled(true);
+							}
 						}
 						text_1.setText(filePath);
 					}catch(Exception ex){
@@ -480,18 +523,35 @@ public class QT {
 		if(filePath!=null){
 			try{
 				File f = new File(filePath);
-				BufferedWriter output = new BufferedWriter(new FileWriter(f));
-				for(String line:list){
-					output.write(line+"\r\n");
+				boolean ff = false;
+				if(f.exists()){
+					int style = SWT.APPLICATION_MODAL | SWT.YES | SWT.CANCEL;
+	                MessageBox messageBox = new MessageBox(shlQt, style);  
+	                messageBox.setText("警告");  
+	                messageBox.setMessage("文件已经存在，是否覆盖？");  
+	                if(messageBox.open()==SWT.YES){
+	                	ff = true;
+	                }else{
+	                	ff = false;
+	                }
+				}else{
+					ff = true;
 				}
-				output.flush();
-				output.close();
 				
-				int style = SWT.APPLICATION_MODAL | SWT.YES;
-                MessageBox messageBox = new MessageBox(shlQt, style);  
-                messageBox.setText("提示");  
-                messageBox.setMessage("保存成功!");  
-                messageBox.open();
+				if(ff){
+					BufferedWriter output = new BufferedWriter(new FileWriter(f));
+					for(String line:list){
+						output.write(line+"\r\n");
+					}
+					output.flush();
+					output.close();
+					
+					int style = SWT.APPLICATION_MODAL | SWT.YES;
+	                MessageBox messageBox = new MessageBox(shlQt, style);  
+	                messageBox.setText("提示");  
+	                messageBox.setMessage("文件保存成功！");  
+	                messageBox.open();
+				}
 				//System.out.println(filePath);
 			}catch(Exception e){
 				e.printStackTrace();
