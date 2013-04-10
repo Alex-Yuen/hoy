@@ -31,6 +31,7 @@ public class Task implements Runnable {
 	private int err = -1;
 	private Random rnd = new Random();
 	private String px;
+	private String line;
 	
 	public Task(ThreadPoolExecutor pool, List<String> proxies, QT qt, String token, String uin, String password) {
 		this.pool = pool;
@@ -88,7 +89,6 @@ public class Task implements Runnable {
 //							+ fcpk + "&sys_ver=2.2");
 //			InputStream in = url.openStream();
 //			BufferedReader bin = new BufferedReader(new InputStreamReader(in));
-			String line = null;
 //			while ((line = bin.readLine()) != null) {
 //				sb.append(line);
 //				// System.out.println(line);
@@ -180,9 +180,6 @@ public class Task implements Runnable {
 					return;
 				}
 				
-				if(err!=132&&err!=0&&err!=136){
-					System.out.println(err+"->"+line);
-				}
 //				while ((line = bin.readLine()) != null) {
 //						//sb.append(line);
 //					json = new JSONObject(line);
@@ -276,9 +273,15 @@ public class Task implements Runnable {
 
 			@Override
 			public void run() {
+				//if(qt.getFlag()){
+
+//				if(err!=132&&err!=0&&err!=136){
+//					System.out.println(err+"->"+line);
+//				}
 				if(qt.getFlag()){
 					qt.up(uin+"----"+password, err);
 				}
+				//}
 			}
 			
 		});
