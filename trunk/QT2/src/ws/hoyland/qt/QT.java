@@ -209,7 +209,12 @@ public class QT {
 							// System.out.println(path);
 							fff = new File(path + ipn + "-" + fn[i]);
 							if (!fff.exists()) {
-								fff.createNewFile();
+								try{
+									fff.createNewFile();
+								}catch(Exception ex){
+									System.out.println(path + ipn + "-" + fn[i]);
+									ex.printStackTrace();
+								}
 							}
 							// System.out.println(fff.exists());
 							BufferedWriter output = new BufferedWriter(
