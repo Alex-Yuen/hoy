@@ -104,6 +104,11 @@ public class QT {
 		return (sh + ":" + sm + ":" + ss);
 	}
 
+	public void uppx() {
+		lblNewLabel_9.setText(proxies.size() + "/" + pc);
+		lblNewLabel_1.setText(ct(System.currentTimeMillis() - this.startTime));
+	}
+	
 	public void up(String line, int err) {
 		if (err == 0) {
 			// this.button_2.setEnabled(true);
@@ -344,12 +349,7 @@ public class QT {
 					button.setEnabled(false);
 					button_1.setText("结束");
 				} else {
-					pool.shutdownNow();
-					proxies.clear();
-					flag = false;
-					btnNewButton.setEnabled(true);
-					button.setEnabled(true);
-					button_1.setText("开始");
+					shutdown();
 				}
 			}
 		});
@@ -543,5 +543,15 @@ public class QT {
 		label_6.setText("0/0");
 		label_6.setBounds(92, 128, 187, 17);
 
+	}
+
+	public void shutdown() {
+		pool.shutdownNow();
+		proxies.clear();
+		flag = false;
+		btnNewButton.setEnabled(true);
+		button.setEnabled(true);
+		button_1.setText("开始");
+		
 	}
 }
