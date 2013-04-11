@@ -109,7 +109,15 @@ public class Task implements Runnable {
 			
 			if(!line.contains("sess_id")){
 				//err ! ++;
-				err = 106; //操作失败 { "uin": 2474713063, "err": 106, "info": "操作失败，请重试。" }
+				// err = 106; //操作失败 { "uin": 2474713063, "err": 106, "info": "操作失败，请重试。" }
+				synchronized(proxies){//删除代理
+					proxies.remove(px);
+					if(!this.pool.isShutdown()&&proxies.size()!=0){
+						Task task = new Task(pool, proxies, qt, token, uin, password);			
+						this.pool.execute(task);
+					}
+				}
+				return;
 			}else{
 				
 				JSONObject json = new JSONObject(line);
@@ -173,10 +181,13 @@ public class Task implements Runnable {
 					//System.out.println(120);
 					return;
 				}else if(err==106){//操作错误
+					//System.out.println("[106]A");
 					if(!this.pool.isShutdown()){
+						//System.out.println("[106]B");
 						Task task = new Task(pool, proxies, qt, token, uin, password);			
 						this.pool.execute(task);
 					}
+					//System.out.println("[106]C");
 					return;
 				}
 				
@@ -275,9 +286,9 @@ public class Task implements Runnable {
 			public void run() {
 				//if(qt.getFlag()){
 
-//				if(err!=132&&err!=0&&err!=136){
-//					System.out.println(err+"->"+line);
-//				}
+				if(err!=132&&err!=0&&err!=136){
+					System.out.println(err+"->"+uin+":"+password+"->"+px+"->"+line);
+				}
 //				if(err==136){
 //					System.out.println(line);
 //				}

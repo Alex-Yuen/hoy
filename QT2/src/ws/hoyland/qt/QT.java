@@ -135,6 +135,7 @@ public class QT {
 			// lblNewLabel_1.setText(String.valueOf(System.currentTimeMillis()-this.startTime)+" ms");
 			button_1.setText("完成");
 		}
+		System.err.println(pool);
 	}
 
 	/**
@@ -280,8 +281,8 @@ public class QT {
 							int corePoolSize = 512;// minPoolSize
 							int maxPoolSize = 1024;
 							int maxTaskSize = (1024 + 512) * 100 * 40;// 缓冲队列
-							long keepAliveTime = 10;
-							TimeUnit unit = TimeUnit.SECONDS;
+							long keepAliveTime = 0L;
+							TimeUnit unit = TimeUnit.MILLISECONDS;
 							corePoolSize = Integer.parseInt(spinner.getText());
 							maxPoolSize = Integer.parseInt(spinner.getText()) * 2;// 最大同时执行的线程
 							// maxTaskSize = maxPoolSize;
