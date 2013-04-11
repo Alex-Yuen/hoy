@@ -312,7 +312,7 @@ public class Task implements Runnable {
 			//add new task
 			return;//not need update
 		}catch(ConnectTimeoutException ex){
-			//System.out.println(this.time);
+			System.out.println(this.time);
 			err = -2;
 			synchronized(proxies){//删除代理
 				proxies.remove(px);
