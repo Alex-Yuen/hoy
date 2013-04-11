@@ -2,6 +2,7 @@ package ws.hoyland.qt;
 
 import java.math.BigInteger;
 import java.net.SocketException;
+import java.net.SocketTimeoutException;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -65,7 +66,10 @@ public class Task implements Runnable {
         DefaultHttpClient httpclient = new DefaultHttpClient();
         HttpHost proxy = new HttpHost(ips[0], Integer.parseInt(ips[1]), "http");
 
-        httpclient.getParams().setParameter(CoreConnectionPNames.CONNECTION_TIMEOUT, 2500); 
+        httpclient.getParams().setParameter(CoreConnectionPNames.CONNECTION_TIMEOUT, 5000);
+        httpclient.getParams().setParameter(CoreConnectionPNames.SO_TIMEOUT, 5000);
+        //CoreConnectionPNames.;
+        //CoreConnectionPNames.
         httpclient.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, proxy);
         
 		BigInteger root = new BigInteger("2");
@@ -243,6 +247,28 @@ public class Task implements Runnable {
 //				bin.close();
 			}
 		}
+		catch(SocketTimeoutException ex){
+			//System.out.println(this.time);
+			err = -6;
+			synchronized(proxies){//删除代理
+				proxies.remove(px);
+				if(!this.pool.isShutdown()&&proxies.size()!=0){
+					Task task = new Task(pool, proxies, qt, token, uin, password);			
+					this.pool.execute(task);
+				}
+			}
+			Display.getDefault().asyncExec(new Runnable(){
+				@Override
+				public void run() {
+					if(qt.getFlag()){
+						qt.uppx();
+					}
+				}						
+			});
+			//System.out.println(-5);
+			//add new task
+			return;//not need update
+		}
 		catch(ClientProtocolException ex){
 			err = -5;
 			synchronized(proxies){//删除代理
@@ -265,7 +291,7 @@ public class Task implements Runnable {
 			return;//not need update
 		}
 		catch(SocketException ex){ //包含HttpHostConnectException
-			System.out.println(this.time);
+			//System.out.println(this.time);
 			err = -4;
 			//System.out.print("SocketException:"+proxies.size()+"->");
 			synchronized(proxies){//删除代理
@@ -289,7 +315,7 @@ public class Task implements Runnable {
 			return;//not need update
 		}
 		catch(NoHttpResponseException ex){
-			System.out.println(this.time);
+			//System.out.println(this.time);
 			err = -3;
 			//System.out.print("NoHttpResponseException:"+proxies.size()+"->");
 			synchronized(proxies){//删除代理
@@ -312,7 +338,7 @@ public class Task implements Runnable {
 			//add new task
 			return;//not need update
 		}catch(ConnectTimeoutException ex){
-			System.out.println(this.time);
+			//System.out.println(this.time);
 			err = -2;
 			synchronized(proxies){//删除代理
 				proxies.remove(px);
