@@ -41,7 +41,11 @@ public class Task implements Runnable {
 		this.uin = uin;
 		this.password = password;
 		synchronized(proxies){
-			this.px = proxies.get(rnd.nextInt(proxies.size()));
+//			if(proxies.size()==0){
+//				qt.shutdown();
+//			}else{
+				this.px = proxies.get(rnd.nextInt(proxies.size()));
+//			}
 		}
 	}
 
@@ -58,7 +62,7 @@ public class Task implements Runnable {
         DefaultHttpClient httpclient = new DefaultHttpClient();
         HttpHost proxy = new HttpHost(ips[0], Integer.parseInt(ips[1]), "http");
 
-        httpclient.getParams().setParameter(CoreConnectionPNames.CONNECTION_TIMEOUT, 5000); 
+        httpclient.getParams().setParameter(CoreConnectionPNames.CONNECTION_TIMEOUT, 2500); 
         httpclient.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, proxy);
         
 		BigInteger root = new BigInteger("2");
@@ -117,6 +121,14 @@ public class Task implements Runnable {
 						this.pool.execute(task);
 					}
 				}
+				Display.getDefault().asyncExec(new Runnable(){
+					@Override
+					public void run() {
+						if(qt.getFlag()){
+							qt.uppx();
+						}
+					}						
+				});
 				return;
 			}else{
 				
@@ -178,15 +190,33 @@ public class Task implements Runnable {
 							this.pool.execute(task);
 						}
 					}
+					Display.getDefault().asyncExec(new Runnable(){
+						@Override
+						public void run() {
+							if(qt.getFlag()){
+								qt.uppx();
+							}
+						}						
+					});
 					//System.out.println(120);
 					return;
 				}else if(err==106){//操作错误
 					//System.out.println("[106]A");
-					if(!this.pool.isShutdown()){
-						//System.out.println("[106]B");
-						Task task = new Task(pool, proxies, qt, token, uin, password);			
-						this.pool.execute(task);
+					synchronized(proxies){
+						if(!this.pool.isShutdown()&&proxies.size()!=0){
+							//System.out.println("[106]B");
+							Task task = new Task(pool, proxies, qt, token, uin, password);			
+							this.pool.execute(task);
+						}
 					}
+					Display.getDefault().asyncExec(new Runnable(){
+						@Override
+						public void run() {
+							if(qt.getFlag()){
+								qt.uppx();
+							}
+						}						
+					});
 					//System.out.println("[106]C");
 					return;
 				}
@@ -219,32 +249,60 @@ public class Task implements Runnable {
 					this.pool.execute(task);
 				}
 			}
+			Display.getDefault().asyncExec(new Runnable(){
+				@Override
+				public void run() {
+					if(qt.getFlag()){
+						qt.uppx();
+					}
+				}						
+			});
 			//System.out.println(-5);
 			//add new task
 			return;//not need update
 		}
 		catch(SocketException ex){ //包含HttpHostConnectException
 			err = -4;
+			//System.out.print("SocketException:"+proxies.size()+"->");
 			synchronized(proxies){//删除代理
 				proxies.remove(px);
+				//System.out.print(proxies.size());
 				if(!this.pool.isShutdown()&&proxies.size()!=0){
 					Task task = new Task(pool, proxies, qt, token, uin, password);			
 					this.pool.execute(task);
 				}
 			}
+			Display.getDefault().asyncExec(new Runnable(){
+				@Override
+				public void run() {
+					if(qt.getFlag()){
+						qt.uppx();
+					}
+				}						
+			});
 			//System.out.println(-4);
 			//add new task
 			return;//not need update
 		}
 		catch(NoHttpResponseException ex){
 			err = -3;
+			//System.out.print("NoHttpResponseException:"+proxies.size()+"->");
 			synchronized(proxies){//删除代理
 				proxies.remove(px);
+				//System.out.print(proxies.size());
 				if(!this.pool.isShutdown()&&proxies.size()!=0){
 					Task task = new Task(pool, proxies, qt, token, uin, password);			
 					this.pool.execute(task);
 				}
 			}
+			Display.getDefault().asyncExec(new Runnable(){
+				@Override
+				public void run() {
+					if(qt.getFlag()){
+						qt.uppx();
+					}
+				}						
+			});
 			//System.out.println(-3);
 			//add new task
 			return;//not need update
@@ -257,6 +315,14 @@ public class Task implements Runnable {
 					this.pool.execute(task);
 				}
 			}
+			Display.getDefault().asyncExec(new Runnable(){
+				@Override
+				public void run() {
+					if(qt.getFlag()){
+						qt.uppx();
+					}
+				}						
+			});
 			//System.out.println(-2);
 			//add new task
 			return;//not need update
