@@ -382,8 +382,10 @@ public class QT {
 					                		lblNewLabel_1.setText(ct(System.currentTimeMillis() - startTime));
 					                		System.out.println(pool);
 					                		
-					                		if(total==progressBar.getSelection()){
+					                		if(total==progressBar.getMaximum()){
 					                			button_1.setText("完成");
+					                			timerTask.cancel();
+					                		}else if(!flag){
 					                			timerTask.cancel();
 					                		}
 					                    } 
@@ -614,7 +616,7 @@ public class QT {
 
 	public void shutdown() {
 		pool.shutdownNow();
-		proxies.clear();
+		//proxies.clear();
 		flag = false;
 		btnNewButton.setEnabled(true);
 		button.setEnabled(true);

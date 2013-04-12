@@ -44,11 +44,11 @@ public class Task implements Runnable {
 		this.uin = uin;
 		this.password = password;
 		synchronized(proxies){
-//			if(proxies.size()==0){
-//				qt.shutdown();
-//			}else{
+			if(proxies.size()==0){
+				qt.shutdown();
+			}else{
 				this.px = proxies.get(rnd.nextInt(proxies.size()));
-//			}
+			}
 		}
 	}
 
