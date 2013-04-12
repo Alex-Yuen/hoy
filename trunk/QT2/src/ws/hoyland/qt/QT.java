@@ -70,6 +70,7 @@ public class QT {
 	private URL url = QT.class.getClassLoader().getResource("");
 	private String path = url.getPath();
 	private File fff = null;
+	private TimerTask timerTask;
 	
 	public QT() {
 		// formatter = new SimpleDateFormat("HH:mm:ss");//初始化Formatter的转换格式
@@ -199,11 +200,16 @@ public class QT {
 			ex.printStackTrace();
 		}
 		
-		if (progressBar.getSelection() == progressBar.getMaximum()) {
-			//
-			// lblNewLabel_1.setText(String.valueOf(System.currentTimeMillis()-this.startTime)+" ms");
-			button_1.setText("完成");
-		}
+//		int total = sc.size() + fc.size() + mc.size() + oc.size();
+//		
+//		if (total == progressBar.getMaximum()) {
+//			//
+//			// lblNewLabel_1.setText(String.valueOf(System.currentTimeMillis()-this.startTime)+" ms");
+//			button_1.setText("完成");
+//			if(timerTask!=null){
+//				timerTask.cancel();
+//			}
+//		}
 		//System.err.println(pool);
 	}
 
@@ -260,7 +266,9 @@ public class QT {
 
 				for (int i=0; i < output.length; i++) {
 					try{
-						output[i].close();
+						if(output[i]!=null){
+							output[i].close();
+						}
 					}catch(Exception ex){
 						ex.printStackTrace();
 					}
@@ -356,30 +364,35 @@ public class QT {
 								}
 							}
 							
-						    TimerTask timerTask = new TimerTask() { 					             
+						    timerTask = new TimerTask() { 					             
 					            @Override 
 					            public void run() { 
 					                Display.getDefault().asyncExec(new Runnable() { 					                     
 					                    @Override 
 					                    public void run() { 
+					                		int total = sc.size() + fc.size() + mc.size() + oc.size();
 					                		lblNewLabel_9.setText(proxies.size() + "/" + pc);
-					                		progressBar.setSelection(progressBar.getSelection() + 1);
+					                		progressBar.setSelection(total);
 					                		lblNewLabel_5.setText(String.valueOf(sc.size()));
 					                		lblNewLabel_6.setText(String.valueOf(fc.size()));
 					                		label_5.setText(String.valueOf(mc.size()));
 					                		label_2.setText(String.valueOf(oc.size()));
-					                		int total = sc.size() + fc.size() + mc.size() + oc.size();
 					                		label_6.setText(total + "/" + (nc - total));
 					                		// System.out.println(System.currentTimeMillis()-this.startTime);
 					                		lblNewLabel_1.setText(ct(System.currentTimeMillis() - startTime));
 					                		System.out.println(pool);
+					                		
+					                		if(total==progressBar.getSelection()){
+					                			button_1.setText("完成");
+					                			timerTask.cancel();
+					                		}
 					                    } 
 					                });  
 					            } 
 					        }; 
 							
 					        Timer timer = new Timer();
-					        timer.schedule(timerTask, 1000);
+					        timer.schedule(timerTask, 0, 1000);
 						}
 
 					});
