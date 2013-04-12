@@ -9,6 +9,8 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.*;
 import java.util.concurrent.ThreadPoolExecutor.AbortPolicy;
 
@@ -62,9 +64,17 @@ public class QT {
 	private Label label_5;
 	// private SimpleDateFormat formatter = null;
 	private String ipn = null;
-
+	private String[] fn = { "正确.txt", "错误.txt", "过多.txt", "异常.txt" };
+	BufferedWriter[] output = new BufferedWriter[4];
+	BufferedWriter bw = null;
+	private URL url = QT.class.getClassLoader().getResource("");
+	private String path = url.getPath();
+	private File fff = null;
+	
 	public QT() {
 		// formatter = new SimpleDateFormat("HH:mm:ss");//初始化Formatter的转换格式
+		url = QT.class.getClassLoader().getResource("");
+		path = url.getPath();
 	}
 
 	public boolean getFlag() {
@@ -104,43 +114,97 @@ public class QT {
 		return (sh + ":" + sm + ":" + ss);
 	}
 
-	public void uppx() {
-		lblNewLabel_9.setText(proxies.size() + "/" + pc);
-		lblNewLabel_1.setText(ct(System.currentTimeMillis() - this.startTime));
-	}
+//	public void uppx() {
+//		lblNewLabel_9.setText(proxies.size() + "/" + pc);
+//		lblNewLabel_1.setText(ct(System.currentTimeMillis() - this.startTime));
+//	}
 	
 	public void up(String line, int err) {
+		
 		if (err == 0) {
 			// this.button_2.setEnabled(true);
+			if(output[0]==null){
+				fff = new File(path + ipn + "-" + fn[0]);
+				try {
+					if (!fff.exists()) {
+						fff.createNewFile();
+					}
+					
+					output[0] = new BufferedWriter(
+							new FileWriter(fff));
+				} catch (Exception ex) {
+					ex.printStackTrace();
+				}
+			}
+			bw = output[0];
 			sc.add(line);
 		} else if (err == 132) {
 			// this.button_3.setEnabled(true);
+			if(output[1]==null){
+				fff = new File(path + ipn + "-" + fn[1]);
+				try {
+					if (!fff.exists()) {
+						fff.createNewFile();
+					}
+					
+					output[1] = new BufferedWriter(
+							new FileWriter(fff));
+				} catch (Exception ex) {
+					ex.printStackTrace();
+				}
+			}
+			bw = output[1];
 			fc.add(line);
 		} else if (err == 136) {
 			// this.button_3.setEnabled(true);
+			if(output[2]==null){
+				fff = new File(path + ipn + "-" + fn[2]);
+				try {
+					if (!fff.exists()) {
+						fff.createNewFile();
+					}
+					
+					output[2] = new BufferedWriter(
+							new FileWriter(fff));
+				} catch (Exception ex) {
+					ex.printStackTrace();
+				}
+			}
+			bw = output[2];
 			mc.add(line);
 		} else {
 			// this.button_4.setEnabled(true);
+			if(output[3]==null){
+				fff = new File(path + ipn + "-" + fn[3]);
+				try {
+					if (!fff.exists()) {
+						fff.createNewFile();
+					}
+					
+					output[3] = new BufferedWriter(
+							new FileWriter(fff));
+				} catch (Exception ex) {
+					ex.printStackTrace();
+				}
+			}
+			bw = output[3];
 			oc.add(line);
 		}
-
-		lblNewLabel_9.setText(proxies.size() + "/" + pc);
-		progressBar.setSelection(progressBar.getSelection() + 1);
-		lblNewLabel_5.setText(String.valueOf(sc.size()));
-		lblNewLabel_6.setText(String.valueOf(fc.size()));
-		label_5.setText(String.valueOf(mc.size()));
-		label_2.setText(String.valueOf(oc.size()));
-		int total = sc.size() + fc.size() + mc.size() + oc.size();
-		label_6.setText(total + "/" + (nc - total));
-		// System.out.println(System.currentTimeMillis()-this.startTime);
-		lblNewLabel_1.setText(ct(System.currentTimeMillis() - this.startTime));
-
+		//append?
+		try{
+			bw.write(line + "\r\n");
+			bw.flush();
+			//bw.close();
+		}catch(Exception ex){
+			ex.printStackTrace();
+		}
+		
 		if (progressBar.getSelection() == progressBar.getMaximum()) {
 			//
 			// lblNewLabel_1.setText(String.valueOf(System.currentTimeMillis()-this.startTime)+" ms");
 			button_1.setText("完成");
 		}
-		System.err.println(pool);
+		//System.err.println(pool);
 	}
 
 	/**
@@ -194,46 +258,11 @@ public class QT {
 					pool.shutdownNow();
 				}
 
-				File fff = null;
-				List<String> list = null;
-				String[] fn = { "正确.txt", "错误.txt", "过多.txt", "异常.txt" };
-				for (int i = 0; i < fn.length; i++) {
-					if (i == 0) {
-						list = sc;
-					} else if (i == 1) {
-						list = fc;
-					} else if (i == 2) {
-						list = mc;
-					} else {
-						list = oc;
-					}
-					URL url = QT.class.getClassLoader().getResource("");
-					String path = url.getPath();
-
-					if (list != null && list.size() > 0) {
-						try {
-							// System.out.println(path);
-							fff = new File(path + ipn + "-" + fn[i]);
-							if (!fff.exists()) {
-								fff.createNewFile();
-//								try{
-//									fff.createNewFile();
-//								}catch(Exception ex){
-//									System.out.println(path + ipn + "-" + fn[i]);
-//									ex.printStackTrace();
-//								}
-							}
-							// System.out.println(fff.exists());
-							BufferedWriter output = new BufferedWriter(
-									new FileWriter(fff));
-							for (String line : list) {
-								output.write(line + "\r\n");
-							}
-							output.flush();
-							output.close();
-						} catch (Exception ex) {
-							ex.printStackTrace();
-						}
+				for (int i=0; i < output.length; i++) {
+					try{
+						output[i].close();
+					}catch(Exception ex){
+						ex.printStackTrace();
 					}
 				}
 
@@ -326,6 +355,31 @@ public class QT {
 									System.out.println(i + ":" + ns.get(i));
 								}
 							}
+							
+						    TimerTask timerTask = new TimerTask() { 					             
+					            @Override 
+					            public void run() { 
+					                Display.getDefault().asyncExec(new Runnable() { 					                     
+					                    @Override 
+					                    public void run() { 
+					                		lblNewLabel_9.setText(proxies.size() + "/" + pc);
+					                		progressBar.setSelection(progressBar.getSelection() + 1);
+					                		lblNewLabel_5.setText(String.valueOf(sc.size()));
+					                		lblNewLabel_6.setText(String.valueOf(fc.size()));
+					                		label_5.setText(String.valueOf(mc.size()));
+					                		label_2.setText(String.valueOf(oc.size()));
+					                		int total = sc.size() + fc.size() + mc.size() + oc.size();
+					                		label_6.setText(total + "/" + (nc - total));
+					                		// System.out.println(System.currentTimeMillis()-this.startTime);
+					                		lblNewLabel_1.setText(ct(System.currentTimeMillis() - startTime));
+					                		System.out.println(pool);
+					                    } 
+					                });  
+					            } 
+					        }; 
+							
+					        Timer timer = new Timer();
+					        timer.schedule(timerTask, 1000);
 						}
 
 					});
