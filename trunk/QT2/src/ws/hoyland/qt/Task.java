@@ -128,14 +128,14 @@ public class Task implements Runnable {
 						this.pool.execute(task);
 					}
 				}
-				Display.getDefault().asyncExec(new Runnable(){
-					@Override
-					public void run() {
-						if(qt.getFlag()){
-							qt.uppx();
-						}
-					}						
-				});
+//				Display.getDefault().asyncExec(new Runnable(){
+//					@Override
+//					public void run() {
+//						if(qt.getFlag()){
+//							qt.uppx();
+//						}
+//					}						
+//				});
 				return;
 			}else{
 				
@@ -197,14 +197,14 @@ public class Task implements Runnable {
 							this.pool.execute(task);
 						}
 					}
-					Display.getDefault().asyncExec(new Runnable(){
-						@Override
-						public void run() {
-							if(qt.getFlag()){
-								qt.uppx();
-							}
-						}						
-					});
+//					Display.getDefault().asyncExec(new Runnable(){
+//						@Override
+//						public void run() {
+//							if(qt.getFlag()){
+//								qt.uppx();
+//							}
+//						}						
+//					});
 					//System.out.println(120);
 					return;
 				}else if(err==106){//操作错误
@@ -216,14 +216,14 @@ public class Task implements Runnable {
 							this.pool.execute(task);
 						}
 					}
-					Display.getDefault().asyncExec(new Runnable(){
-						@Override
-						public void run() {
-							if(qt.getFlag()){
-								qt.uppx();
-							}
-						}						
-					});
+//					Display.getDefault().asyncExec(new Runnable(){
+//						@Override
+//						public void run() {
+//							if(qt.getFlag()){
+//								qt.uppx();
+//							}
+//						}						
+//					});
 					//System.out.println("[106]C");
 					return;
 				}
@@ -257,14 +257,14 @@ public class Task implements Runnable {
 					this.pool.execute(task);
 				}
 			}
-			Display.getDefault().asyncExec(new Runnable(){
-				@Override
-				public void run() {
-					if(qt.getFlag()){
-						qt.uppx();
-					}
-				}						
-			});
+//			Display.getDefault().asyncExec(new Runnable(){
+//				@Override
+//				public void run() {
+//					if(qt.getFlag()){
+//						qt.uppx();
+//					}
+//				}						
+//			});
 			//System.out.println(-5);
 			//add new task
 			return;//not need update
@@ -278,14 +278,14 @@ public class Task implements Runnable {
 					this.pool.execute(task);
 				}
 			}
-			Display.getDefault().asyncExec(new Runnable(){
-				@Override
-				public void run() {
-					if(qt.getFlag()){
-						qt.uppx();
-					}
-				}						
-			});
+//			Display.getDefault().asyncExec(new Runnable(){
+//				@Override
+//				public void run() {
+//					if(qt.getFlag()){
+//						qt.uppx();
+//					}
+//				}						
+//			});
 			//System.out.println(-5);
 			//add new task
 			return;//not need update
@@ -302,14 +302,14 @@ public class Task implements Runnable {
 					this.pool.execute(task);
 				}
 			}
-			Display.getDefault().asyncExec(new Runnable(){
-				@Override
-				public void run() {
-					if(qt.getFlag()){
-						qt.uppx();
-					}
-				}						
-			});
+//			Display.getDefault().asyncExec(new Runnable(){
+//				@Override
+//				public void run() {
+//					if(qt.getFlag()){
+//						qt.uppx();
+//					}
+//				}						
+//			});
 			//System.out.println(-4);
 			//add new task
 			return;//not need update
@@ -326,14 +326,14 @@ public class Task implements Runnable {
 					this.pool.execute(task);
 				}
 			}
-			Display.getDefault().asyncExec(new Runnable(){
-				@Override
-				public void run() {
-					if(qt.getFlag()){
-						qt.uppx();
-					}
-				}						
-			});
+//			Display.getDefault().asyncExec(new Runnable(){
+//				@Override
+//				public void run() {
+//					if(qt.getFlag()){
+//						qt.uppx();
+//					}
+//				}						
+//			});
 			//System.out.println(-3);
 			//add new task
 			return;//not need update
@@ -347,14 +347,14 @@ public class Task implements Runnable {
 					this.pool.execute(task);
 				}
 			}
-			Display.getDefault().asyncExec(new Runnable(){
-				@Override
-				public void run() {
-					if(qt.getFlag()){
-						qt.uppx();
-					}
-				}						
-			});
+//			Display.getDefault().asyncExec(new Runnable(){
+//				@Override
+//				public void run() {
+//					if(qt.getFlag()){
+//						qt.uppx();
+//					}
+//				}						
+//			});
 			//System.out.println(-2);
 			//add new task
 			return;//not need update
