@@ -24,6 +24,7 @@ public class T5 {
 	public static void main(String[] args) throws Exception{
 		//int cc = 0;
 		String token = "1406087124841854";	//手机上的令牌序列号
+		token = "6980777939050726";
 		BigInteger root = new BigInteger("2");
 		BigInteger d = new BigInteger("B8008767A628A4F53BCB84C13C961A55BF87607DAA5BE0BA3AC2E0CB778E494579BD444F699885F4968CD9028BB3FC6FA657D532F1718F581669BDC333F83DC3", 16);
 
@@ -115,14 +116,14 @@ public class T5 {
 				System.out.println(url.toString());
 				//output.write(url.toString()+"\r\n");
 				//output.flush();
-	//			InputStream in = url.openStream();
-	//			BufferedReader bin = new BufferedReader(new InputStreamReader(in));
-	//			String line = null;
-	//			while((line=bin.readLine())!=null){
-	//				sb.append(line);
-	//				//System.out.println(line);
-	//			}
-	//			bin.close();
+				InputStream in = url.openStream();
+				BufferedReader bin = new BufferedReader(new InputStreamReader(in));
+				String line = null;
+				while((line=bin.readLine())!=null){
+					sb.append(line);
+					System.out.println(line);
+				}
+				bin.close();
 			}catch(Exception ex){
 				ex.printStackTrace();
 			}
