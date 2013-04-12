@@ -33,6 +33,7 @@ public class Task implements Runnable {
 	private Random rnd = new Random();
 	private String px;
 	private String line;
+	private final String UAG = "Dalvik/1.2.0 (Linux; U; Android 2.2; sdk Build/FRF91)";
 //	private long st;
 //	private String time;
 	
@@ -41,6 +42,7 @@ public class Task implements Runnable {
 		this.proxies = proxies;
 		this.qt = qt;
 		this.token = token;
+		//this.token = "1406087124841854";
 		this.uin = uin;
 		this.password = password;
 		synchronized(proxies){
@@ -68,6 +70,7 @@ public class Task implements Runnable {
 
         httpclient.getParams().setParameter(CoreConnectionPNames.CONNECTION_TIMEOUT, 5000);
         httpclient.getParams().setParameter(CoreConnectionPNames.SO_TIMEOUT, 5000);
+//        HttpMethodParams
         //CoreConnectionPNames.;
         //CoreConnectionPNames.
         httpclient.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, proxy);
@@ -108,6 +111,9 @@ public class Task implements Runnable {
 			
 			HttpGet httpGet = new HttpGet("http://w.aq.qq.com/cn/mbtoken3/mbtoken3_exchange_key_v2?mobile_type=4&client_type=2&client_ver=15&local_id=0&config_ver=100&pub_key="
 					+ fcpk + "&sys_ver=2.2");
+			httpGet.setHeader("User-Agent", UAG);
+			httpGet.setHeader("Connection", "Keep-Alive");
+			
 			HttpResponse response = httpclient.execute(httpGet);
 			//System.out.println(response1.getStatusLine());
 			HttpEntity entity = response.getEntity();
@@ -138,7 +144,7 @@ public class Task implements Runnable {
 //				});
 				return;
 			}else{
-				
+				Thread.sleep(5*1000);
 				JSONObject json = new JSONObject(line);
 				//System.out.println(json);
 				String sid = json.getString("sess_id");
@@ -166,6 +172,10 @@ public class Task implements Runnable {
 				//sb = new StringBuffer();
 				httpGet = new HttpGet("http://w.aq.qq.com/cn/mbtoken3/mbtoken3_upgrade_determin_v2?uin="
 						+ uin + "&sess_id=" + sid + "&data=" + data);
+				httpGet.setHeader("User-Agent", UAG);
+				httpGet.setHeader("Connection", "Keep-Alive");
+//				httpGet.removeHeaders("Proxy-Connection");
+				
 //				url = new URL(
 //							"http://w.aq.qq.com/cn/mbtoken3/mbtoken3_upgrade_determin_v2?uin="
 //									+ uin + "&sess_id=" + sid + "&data=" + data);
@@ -203,12 +213,12 @@ public class Task implements Runnable {
 //							if(qt.getFlag()){
 //								qt.uppx();
 //							}
-//						}						
+//						}
 //					});
 					//System.out.println(120);
 					return;
-				}else if(err==106){//操作错误
-					//System.out.println("[106]A");
+				}else if(err==106||err==142){//操作错误, 网络波动
+					System.out.println("ERR="+err+":"+line);
 					synchronized(proxies){
 						if(!this.pool.isShutdown()&&proxies.size()!=0){
 							//System.out.println("[106]B");
