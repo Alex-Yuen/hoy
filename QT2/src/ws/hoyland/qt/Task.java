@@ -33,8 +33,8 @@ public class Task implements Runnable {
 	private Random rnd = new Random();
 	private String px;
 	private String line;
-	private long st;
-	private String time;
+//	private long st;
+//	private String time;
 	
 	public Task(ThreadPoolExecutor pool, List<String> proxies, QT qt, String token, String uin, String password) {
 		this.pool = pool;
@@ -54,7 +54,7 @@ public class Task implements Runnable {
 
 	@Override
 	public void run() {
-		this.st = System.currentTimeMillis();
+//		this.st = System.currentTimeMillis();
 		//String token = "1406087124841854"; // 手机上的令牌序列号
 		String[] ips = px.split(":");
 //		if(ips.length<1){
@@ -91,7 +91,7 @@ public class Task implements Runnable {
 
 		// generate my crypt-pub-key
 		String fcpk = root.modPow(e, d).toString(16).toUpperCase();
-		time = "[1]"+(System.currentTimeMillis()-this.st)+"->";
+		//time = "[1]"+(System.currentTimeMillis()-this.st)+"->";
 		// System.out.println(fcpk);
 //		StringBuffer sb = new StringBuffer();
 		try {
@@ -117,7 +117,7 @@ public class Task implements Runnable {
 			EntityUtils.consume(entity);
 			//entity.get
 			httpGet.releaseConnection();
-			time += "[2]"+(System.currentTimeMillis()-this.st)+"->";
+			//time += "[2]"+(System.currentTimeMillis()-this.st)+"->";
 			if(!line.contains("sess_id")){
 				//err ! ++;
 				// err = 106; //操作失败 { "uin": 2474713063, "err": 106, "info": "操作失败，请重试。" }
@@ -162,7 +162,7 @@ public class Task implements Runnable {
 				byte[] bb = crypter.encrypt(array, key);
 				String data = Converts.bytesToHexString(bb);
 				// System.out.println(data);
-				time += "[3]"+(System.currentTimeMillis()-this.st)+"->";
+				//time += "[3]"+(System.currentTimeMillis()-this.st)+"->";
 				//sb = new StringBuffer();
 				httpGet = new HttpGet("http://w.aq.qq.com/cn/mbtoken3/mbtoken3_upgrade_determin_v2?uin="
 						+ uin + "&sess_id=" + sid + "&data=" + data);
@@ -185,7 +185,7 @@ public class Task implements Runnable {
 				EntityUtils.consume(entity);
 				//entity.get
 				httpGet.releaseConnection();
-				time += "[4]"+(System.currentTimeMillis()-this.st)+"->";
+				//time += "[4]"+(System.currentTimeMillis()-this.st)+"->";
 				json = new JSONObject(line);
 				err = json.getInt("err");
 				
@@ -377,7 +377,7 @@ public class Task implements Runnable {
 		}finally{
 			httpclient.getConnectionManager().shutdown();
 		}
-		time += "[5]"+(System.currentTimeMillis()-this.st)+"->";
+		//time += "[5]"+(System.currentTimeMillis()-this.st)+"->";
 		//System.out.println("ERR:"+err);
 		Display.getDefault().asyncExec(new Runnable(){
 
@@ -392,7 +392,7 @@ public class Task implements Runnable {
 //					System.out.println(line);
 //				}
 				if(qt.getFlag()){
-					System.err.print(time);
+					//System.err.print(time);
 					qt.up(uin+"----"+password, err);
 				}
 				//}
