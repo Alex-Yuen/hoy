@@ -43,6 +43,8 @@ public class Task implements Runnable {
 		this.qt = qt;
 		this.token = token;
 		//this.token = "1406087124841854";
+		this.token = "1475688552139964";
+		//this.token = "6980777939050726";
 		this.uin = uin;
 		this.password = password;
 		synchronized(proxies){
@@ -144,7 +146,7 @@ public class Task implements Runnable {
 //				});
 				return;
 			}else{
-				Thread.sleep(5*1000);
+				//Thread.sleep(5*1000);
 				JSONObject json = new JSONObject(line);
 				//System.out.println(json);
 				String sid = json.getString("sess_id");
