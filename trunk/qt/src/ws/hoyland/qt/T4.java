@@ -124,23 +124,23 @@ public class T4 {
 		md.update(Converts.hexStringToByte(sk));
 		byte[] tk = md.digest();	//32 return 的处理
 
-		System.out.println(tk.length);
+//		System.out.println(tk.length);
 		//System.out.println(tks.length);
 
 		
 		int[] token = new int[16];
-		md = MessageDigest.getInstance("SHA-256");
+		//md = MessageDigest.getInstance("SHA-256");
 		md.update(tk);           
 		byte[] tks = md.digest();	//32
-		md = MessageDigest.getInstance("SHA-256");
-		md.update(tk); 
+		//md = MessageDigest.getInstance("SHA-256");
+		md.update(tks); 
 		tks = md.digest();	//32
 //		System.out.println(tks.length);
 		
 		byte[] tklist = new byte[tks.length * 2];	//64
 //		System.out.println(tokenkey.length);
 //		System.out.println(tklist.length);
-		for(int i=0;i<token.length;i++){
+		for(int i=0;i<tks.length;i++){
 			tklist[i*2] = (byte)((tks[i]&0xFF) >>> 4);
 			tklist[i*2+1] = (byte)(tks[i]&0xF);
 		}
