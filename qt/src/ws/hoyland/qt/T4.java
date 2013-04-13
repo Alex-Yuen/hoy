@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.math.BigInteger;
 import java.net.URL;
+import java.security.MessageDigest;
 import java.util.Random;
 
 import org.json.JSONObject;
@@ -66,7 +67,7 @@ public class T4 {
 		byte[] key = Converts.MD5Encode(Converts.hexStringToByte(sk));
 		// System.out.println(key.length);
 
-		String imei = "353426056046022";
+		String imei = "012419002637419";
 		imei = Converts.bytesToHexString(Converts.MD5Encode(imei.getBytes()));
 		// System.out.println(imei);
 
@@ -106,7 +107,7 @@ public class T4 {
 			String line = null;
 			while ((line = bin.readLine()) != null) {
 				sb.append(line);
-				// System.out.println(line);
+				System.out.println(line);
 			}
 			bin.close();
 		} catch (Exception ex) {
@@ -118,17 +119,30 @@ public class T4 {
 
 		btcpk = new BigInteger(spk, 16);
 		sk = btcpk.modPow(e, d).toString(16).toUpperCase();
-		byte[] tokenkey = Converts.MD5Encode(Converts.hexStringToByte(sk));
 
+		MessageDigest md = MessageDigest.getInstance("SHA-256");
+		md.update(Converts.hexStringToByte(sk));
+		byte[] tk = md.digest();	//32 return 的处理
+
+		System.out.println(tk.length);
 		//System.out.println(tks.length);
 
-		int[] token = new int[16];
-		tokenkey = Converts.MD5Encode(Converts.MD5Encode(tokenkey));
-		byte[] tklist = new byte[tokenkey.length * 2];
 		
+		int[] token = new int[16];
+		md = MessageDigest.getInstance("SHA-256");
+		md.update(tk);           
+		byte[] tks = md.digest();	//32
+		md = MessageDigest.getInstance("SHA-256");
+		md.update(tk); 
+		tks = md.digest();	//32
+//		System.out.println(tks.length);
+		
+		byte[] tklist = new byte[tks.length * 2];	//64
+//		System.out.println(tokenkey.length);
+//		System.out.println(tklist.length);
 		for(int i=0;i<token.length;i++){
-			tklist[i*2] = (byte)((tokenkey[i]&0xFF) >>> 4);
-			tklist[i*2+1] = (byte)(tokenkey[i]&0xF);
+			tklist[i*2] = (byte)((tks[i]&0xFF) >>> 4);
+			tklist[i*2+1] = (byte)(tks[i]&0xF);
 		}
 		//System.out.println(tklist.length);
 		int k = 0;
@@ -136,7 +150,7 @@ public class T4 {
 		for(int i=0;i<token.length;i++){
 			k = 0;
 			for(int j=0;j<4;j++){
-				k += tklist[i*2+j];
+				k += tklist[j*16+i];
 			}
 			token[i] = k%10;
 		}
