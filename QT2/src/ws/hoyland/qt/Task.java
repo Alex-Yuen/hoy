@@ -3,6 +3,7 @@ package ws.hoyland.qt;
 import java.math.BigInteger;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
+import java.security.MessageDigest;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -25,6 +26,7 @@ public class Task implements Runnable {
 	
 	private ThreadPoolExecutor pool;
 	private List<String> proxies;
+	private List<String> tokens;
 	private String token;
 	private String uin;
 	private String password;
@@ -37,13 +39,13 @@ public class Task implements Runnable {
 //	private long st;
 //	private String time;
 	
-	public Task(ThreadPoolExecutor pool, List<String> proxies, QT qt, String token, String uin, String password) {
+	public Task(ThreadPoolExecutor pool, List<String> proxies, List<String> tokens, QT qt, String uin, String password) {
 		this.pool = pool;
 		this.proxies = proxies;
 		this.qt = qt;
-		this.token = token;
+		this.tokens = tokens;
 		//this.token = "1406087124841854";
-		this.token = "1475688552139964";
+//		this.token = "1475688552139964";
 		//this.token = "6980777939050726";
 		this.uin = uin;
 		this.password = password;
@@ -110,15 +112,178 @@ public class Task implements Runnable {
 //				// System.out.println(line);
 //			}
 //			bin.close();
+			boolean gt = false;
+			synchronized(tokens){
+				if(tokens.size()!=0){
+					token = tokens.get(rnd.nextInt(tokens.size()));
+				}else{
+					gt = true;
+				}
+			}
 			
-			HttpGet httpGet = new HttpGet("http://w.aq.qq.com/cn/mbtoken3/mbtoken3_exchange_key_v2?mobile_type=4&client_type=2&client_ver=15&local_id=0&config_ver=100&pub_key="
+			Crypter crypter = new Crypter();
+			HttpGet httpGet = null;
+			HttpResponse response = null;
+			HttpEntity entity = null;
+			JSONObject json = null;
+			
+			if(gt){ //need get a new token
+				httpGet = new HttpGet("http://w.aq.qq.com/cn/mbtoken3/mbtoken3_exchange_key_v2?mobile_type=4&client_type=2&client_ver=15&local_id=0&config_ver=100&pub_key="
+						+ fcpk + "&sys_ver=2.2");
+				httpGet.setHeader("User-Agent", UAG);
+				httpGet.setHeader("Connection", "Keep-Alive");
+				
+				response = httpclient.execute(httpGet);
+				entity = response.getEntity();
+				// do something useful with the response body
+				// and ensure it is fully consumed
+				line = EntityUtils.toString(entity);
+				EntityUtils.consume(entity);
+				httpGet.releaseConnection();
+				
+				if(!line.contains("sess_id")){
+					//err ! ++;
+					// err = 106; //操作失败 { "uin": 2474713063, "err": 106, "info": "操作失败，请重试。" }
+					synchronized(proxies){//删除代理
+						proxies.remove(px);
+						if(!this.pool.isShutdown()&&proxies.size()!=0){
+							Task task = new Task(pool, proxies, tokens, qt, uin, password);			
+							this.pool.execute(task);
+						}
+					}
+					return;
+				}else{
+					json = new JSONObject(line);
+					String sid = json.getString("sess_id");
+					String tcpk = json.getString("pub_key"); // get server's crypt pub key
+					// System.out.println(tcpk);
+	
+					// caculate the key
+					BigInteger btcpk = new BigInteger(tcpk, 16);
+					String sk = btcpk.modPow(e, d).toString(16).toUpperCase();
+					byte[] key = Converts.MD5Encode(Converts.hexStringToByte(sk));
+					// System.out.println(key.length);
+	
+					String imei = "012419002637419";
+					imei = Converts.bytesToHexString(Converts.MD5Encode(imei.getBytes()));
+					// System.out.println(imei);
+	
+					// System.out.println(Converts.MD5EncodeToHex("123456"));
+					json = new JSONObject();
+					json.put("imei", imei);
+					// System.out.println(json.toString());
+					byte[] array = json.toString().getBytes();
+	
+					byte[] bb = crypter.encrypt(array, key);
+					String data = Converts.bytesToHexString(bb);
+					// System.out.println(data);
+	
+					//gen client-pub-key
+					bs = new byte[14];
+	
+					bs[0] = (byte) (Math.abs(r.nextInt()) % 64);
+					for (int i = 0; i < bs.length; i++) {
+						bs[i] = (byte) (Math.abs(r.nextInt()) % 256);
+					}
+	
+					line = null;
+					e = new BigInteger(bs);
+					String cpk = root.modPow(e, d).toString(16).toUpperCase();
+					
+					httpGet = new HttpGet("http://w.aq.qq.com/cn/mbtoken3/mbtoken3_activate_token?aq_base_sid="
+							+ sid + "&data=" + data + "&clt_pub_key=" + cpk);
+					httpGet.setHeader("User-Agent", UAG);
+					httpGet.setHeader("Connection", "Keep-Alive");
+					
+					response = httpclient.execute(httpGet);
+					//System.out.println(response1.getStatusLine());
+					entity = response.getEntity();
+					// do something useful with the response body
+					// and ensure it is fully consumed
+					line = EntityUtils.toString(entity);
+					EntityUtils.consume(entity);
+					//entity.get
+					httpGet.releaseConnection();
+					
+					if(!line.contains("svc_pub_key")){
+						//err ! ++;
+						// err = 106; //操作失败 { "uin": 2474713063, "err": 106, "info": "操作失败，请重试。" }
+						synchronized(proxies){//删除代理
+							proxies.remove(px);
+							if(!this.pool.isShutdown()&&proxies.size()!=0){
+								Task task = new Task(pool, proxies, tokens, qt, uin, password);			
+								this.pool.execute(task);
+							}
+						}
+						return;
+					}else{
+						json = new JSONObject(line);
+						String spk = json.getString("svc_pub_key");
+		
+						btcpk = new BigInteger(spk, 16);
+						sk = btcpk.modPow(e, d).toString(16).toUpperCase();
+		
+						MessageDigest md = MessageDigest.getInstance("SHA-256");
+						md.update(Converts.hexStringToByte(sk));
+						byte[] tk = md.digest();	//32 return 的处理
+		
+		//				System.out.println(tk.length);
+						//System.out.println(tks.length);
+						
+						int[] tokenx = new int[16];
+						//md = MessageDigest.getInstance("SHA-256");
+						md.update(tk);           
+						byte[] tks = md.digest();	//32
+						//md = MessageDigest.getInstance("SHA-256");
+						md.update(tks); 
+						tks = md.digest();	//32
+		//				System.out.println(tks.length);
+						
+						byte[] tklist = new byte[tks.length * 2];	//64
+		//				System.out.println(tokenkey.length);
+		//				System.out.println(tklist.length);
+						for(int i=0;i<tks.length;i++){
+							tklist[i*2] = (byte)((tks[i]&0xFF) >>> 4);
+							tklist[i*2+1] = (byte)(tks[i]&0xF);
+						}
+						//System.out.println(tklist.length);
+						int k = 0;
+						
+						for(int i=0;i<tokenx.length;i++){
+							k = 0;
+							for(int j=0;j<4;j++){
+								k += tklist[j*16+i];
+							}
+							tokenx[i] = k%10;
+						}
+						
+						if(tokenx[0]==0){
+							tokenx[0]=1;
+						}
+						
+						token = "";
+						for(int i=0;i<tokenx.length;i++){
+							token += tokenx[i];
+							//System.out.print(tokenx[i]);
+						}
+						
+						synchronized(tokens){
+							tokens.add(token);
+						}
+					}
+				}
+			}//end get token
+			
+			line = null;
+			e = new BigInteger(bs);
+			httpGet = new HttpGet("http://w.aq.qq.com/cn/mbtoken3/mbtoken3_exchange_key_v2?mobile_type=4&client_type=2&client_ver=15&local_id=0&config_ver=100&pub_key="
 					+ fcpk + "&sys_ver=2.2");
 			httpGet.setHeader("User-Agent", UAG);
 			httpGet.setHeader("Connection", "Keep-Alive");
 			
-			HttpResponse response = httpclient.execute(httpGet);
+			response = httpclient.execute(httpGet);
 			//System.out.println(response1.getStatusLine());
-			HttpEntity entity = response.getEntity();
+			entity = response.getEntity();
 			// do something useful with the response body
 			// and ensure it is fully consumed
 			line = EntityUtils.toString(entity);
@@ -132,7 +297,7 @@ public class Task implements Runnable {
 				synchronized(proxies){//删除代理
 					proxies.remove(px);
 					if(!this.pool.isShutdown()&&proxies.size()!=0){
-						Task task = new Task(pool, proxies, qt, token, uin, password);			
+						Task task = new Task(pool, proxies, tokens, qt, uin, password);			
 						this.pool.execute(task);
 					}
 				}
@@ -147,7 +312,7 @@ public class Task implements Runnable {
 				return;
 			}else{
 				//Thread.sleep(5*1000);
-				JSONObject json = new JSONObject(line);
+				json = new JSONObject(line);
 				//System.out.println(json);
 				String sid = json.getString("sess_id");
 				String tcpk = json.getString("pub_key"); // get server's crypt pub key
@@ -166,7 +331,6 @@ public class Task implements Runnable {
 				// System.out.println(json.toString());
 				byte[] array = json.toString().getBytes();
 		
-				Crypter crypter = new Crypter();
 				byte[] bb = crypter.encrypt(array, key);
 				String data = Converts.bytesToHexString(bb);
 				// System.out.println(data);
@@ -205,7 +369,7 @@ public class Task implements Runnable {
 					synchronized(proxies){//删除代理
 						proxies.remove(px);
 						if(!this.pool.isShutdown()&&proxies.size()!=0){
-							Task task = new Task(pool, proxies, qt, token, uin, password);			
+							Task task = new Task(pool, proxies, tokens, qt, uin, password);			
 							this.pool.execute(task);
 						}
 					}
@@ -219,12 +383,12 @@ public class Task implements Runnable {
 //					});
 					//System.out.println(120);
 					return;
-				}else if(err==106||err==142){//操作错误, 网络波动
-					System.out.println("ERR="+err+":"+line);
+				}else if(err==106){//操作错误, 网络波动 IP重复
+					//System.out.println("ERR="+err+":"+line);
 					synchronized(proxies){
 						if(!this.pool.isShutdown()&&proxies.size()!=0){
 							//System.out.println("[106]B");
-							Task task = new Task(pool, proxies, qt, token, uin, password);			
+							Task task = new Task(pool, proxies, tokens, qt, uin, password);			
 							this.pool.execute(task);
 						}
 					}
@@ -234,9 +398,23 @@ public class Task implements Runnable {
 //							if(qt.getFlag()){
 //								qt.uppx();
 //							}
-//						}						
+//						}
 //					});
 					//System.out.println("[106]C");
+					return;
+				}else if(err==142||err==201){//操作错误, 网络波动 token重复, 201 操作失败
+					//System.out.println("ERR="+err+":"+line);
+					synchronized(tokens){
+						tokens.remove(token); //删除当前token
+					}
+					
+					synchronized(proxies){
+						if(!this.pool.isShutdown()&&proxies.size()!=0){
+							//System.out.println("[106]B");
+							Task task = new Task(pool, proxies, tokens, qt, uin, password);			
+							this.pool.execute(task);
+						}
+					}
 					return;
 				}
 				
@@ -265,7 +443,7 @@ public class Task implements Runnable {
 			synchronized(proxies){//删除代理
 				proxies.remove(px);
 				if(!this.pool.isShutdown()&&proxies.size()!=0){
-					Task task = new Task(pool, proxies, qt, token, uin, password);			
+					Task task = new Task(pool, proxies, tokens, qt, uin, password);			
 					this.pool.execute(task);
 				}
 			}
@@ -286,7 +464,7 @@ public class Task implements Runnable {
 			synchronized(proxies){//删除代理
 				proxies.remove(px);
 				if(!this.pool.isShutdown()&&proxies.size()!=0){
-					Task task = new Task(pool, proxies, qt, token, uin, password);			
+					Task task = new Task(pool, proxies, tokens, qt, uin, password);			
 					this.pool.execute(task);
 				}
 			}
@@ -310,7 +488,7 @@ public class Task implements Runnable {
 				proxies.remove(px);
 				//System.out.print(proxies.size());
 				if(!this.pool.isShutdown()&&proxies.size()!=0){
-					Task task = new Task(pool, proxies, qt, token, uin, password);			
+					Task task = new Task(pool, proxies, tokens, qt, uin, password);			
 					this.pool.execute(task);
 				}
 			}
@@ -334,7 +512,7 @@ public class Task implements Runnable {
 				proxies.remove(px);
 				//System.out.print(proxies.size());
 				if(!this.pool.isShutdown()&&proxies.size()!=0){
-					Task task = new Task(pool, proxies, qt, token, uin, password);			
+					Task task = new Task(pool, proxies, tokens, qt, uin, password);			
 					this.pool.execute(task);
 				}
 			}
@@ -355,7 +533,7 @@ public class Task implements Runnable {
 			synchronized(proxies){//删除代理
 				proxies.remove(px);
 				if(!this.pool.isShutdown()&&proxies.size()!=0){
-					Task task = new Task(pool, proxies, qt, token, uin, password);			
+					Task task = new Task(pool, proxies, tokens, qt, uin, password);			
 					this.pool.execute(task);
 				}
 			}
