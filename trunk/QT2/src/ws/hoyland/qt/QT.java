@@ -41,7 +41,6 @@ public class QT {
 	private ThreadPoolExecutor pool = null;
 	private List<String> ns = null;
 	protected boolean flag = false;
-	private Text text;
 	private ProgressBar progressBar;
 	private Label lblNewLabel_1;
 	private Label lblNewLabel_5;
@@ -49,6 +48,7 @@ public class QT {
 	private Label label_2;
 	private Label lblNewLabel_9;
 	private Label label_6;
+	private Label label_7;
 
 	private long startTime = 0;
 	private List<String> sc = null;
@@ -56,6 +56,7 @@ public class QT {
 	private List<String> oc = null;
 	private List<String> mc = null;
 	private List<String> proxies = null;
+	private List<String> tokens = null;
 	private int pc = 0;
 	private int nc = 0;
 	private Text text_1;
@@ -74,6 +75,7 @@ public class QT {
 	
 	public QT() {
 		// formatter = new SimpleDateFormat("HH:mm:ss");//初始化Formatter的转换格式
+		this.tokens = new ArrayList<String>();
 		url = QT.class.getClassLoader().getResource("");
 		path = url.getPath();
 	}
@@ -278,7 +280,7 @@ public class QT {
 			}
 		});
 		shlQt.setToolTipText("");
-		shlQt.setSize(603, 251);
+		shlQt.setSize(567, 263);
 		shlQt.setText("QT");
 
 		Rectangle bounds = Display.getDefault().getPrimaryMonitor().getBounds();
@@ -290,7 +292,7 @@ public class QT {
 		txtC = new Text(shlQt, SWT.BORDER);
 		txtC.setEditable(false);
 		txtC.setText("请指定文件，导入帐号");
-		txtC.setBounds(219, 7, 246, 23);
+		txtC.setBounds(187, 7, 246, 23);
 
 		button_1 = new Button(shlQt, SWT.NONE);
 		button_1.addSelectionListener(new SelectionAdapter() {
@@ -354,8 +356,8 @@ public class QT {
 								// }
 								try {
 									if (qp.length == 2) {
-										Task task = new Task(pool, proxies,
-												QT.this, text.getText(), qp[0],
+										Task task = new Task(pool, proxies, tokens,
+												QT.this, qp[0],
 												qp[1]);
 										pool.execute(task);
 									}
@@ -372,6 +374,7 @@ public class QT {
 					                    public void run() { 
 					                		int total = sc.size() + fc.size() + mc.size() + oc.size();
 					                		lblNewLabel_9.setText(proxies.size() + "/" + pc);
+					                		label_7.setText(String.valueOf(tokens.size()));
 					                		progressBar.setSelection(total);
 					                		lblNewLabel_5.setText(String.valueOf(sc.size()));
 					                		lblNewLabel_6.setText(String.valueOf(fc.size()));
@@ -424,26 +427,26 @@ public class QT {
 		});
 		button_1.setEnabled(false);
 		button_1.setText("开始");
-		button_1.setBounds(388, 128, 199, 61);
+		button_1.setBounds(337, 104, 218, 82);
 
 		Label label = new Label(shlQt, SWT.NONE);
-		label.setBounds(388, 82, 127, 17);
+		label.setBounds(337, 71, 127, 17);
 		label.setText("线程设置 (512~1024):");
 
 		Label lblNewLabel_3 = new Label(shlQt, SWT.NONE);
-		lblNewLabel_3.setBounds(10, 82, 61, 17);
+		lblNewLabel_3.setBounds(10, 104, 61, 17);
 		lblNewLabel_3.setText("密码正确:");
 
 		Label lblNewLabel_4 = new Label(shlQt, SWT.NONE);
-		lblNewLabel_4.setBounds(10, 105, 61, 17);
+		lblNewLabel_4.setBounds(10, 138, 61, 17);
 		lblNewLabel_4.setText("密码错误:");
 
 		lblNewLabel_5 = new Label(shlQt, SWT.NONE);
-		lblNewLabel_5.setBounds(92, 82, 61, 17);
+		lblNewLabel_5.setBounds(77, 104, 61, 17);
 		lblNewLabel_5.setText("0");
 
 		lblNewLabel_6 = new Label(shlQt, SWT.NONE);
-		lblNewLabel_6.setBounds(92, 105, 61, 17);
+		lblNewLabel_6.setBounds(77, 138, 61, 17);
 		lblNewLabel_6.setText("0");
 
 		Label label_1 = new Label(shlQt, SWT.NONE);
@@ -496,44 +499,36 @@ public class QT {
 				}
 			}
 		});
-		btnNewButton.setBounds(484, 5, 103, 27);
+		btnNewButton.setBounds(452, 5, 103, 27);
 		btnNewButton.setText("导入帐号");
 
 		Label lblNewLabel_8 = new Label(shlQt, SWT.NONE);
-		lblNewLabel_8.setBounds(192, 105, 61, 17);
+		lblNewLabel_8.setBounds(187, 138, 61, 17);
 		lblNewLabel_8.setText("未知错误:");
 
 		progressBar = new ProgressBar(shlQt, SWT.SMOOTH);
-		progressBar.setBounds(10, 195, 579, 26);
+		progressBar.setBounds(10, 203, 545, 26);
 
 		spinner = new Spinner(shlQt, SWT.BORDER);
 		spinner.setMaximum(1024);
 		spinner.setMinimum(512);
 		spinner.setSelection(512);
-		spinner.setBounds(521, 79, 66, 23);
+		spinner.setBounds(489, 68, 66, 23);
 
 		label_2 = new Label(shlQt, SWT.NONE);
-		label_2.setBounds(273, 105, 61, 17);
+		label_2.setBounds(273, 138, 61, 17);
 		label_2.setText("0");
 
 		label_3 = new Label(shlQt, SWT.NONE);
 		label_3.setBounds(77, 10, 103, 17);
 		label_3.setText("共 0 条");
 
-		Label lblNewLabel = new Label(shlQt, SWT.NONE);
-		lblNewLabel.setBounds(10, 167, 75, 17);
-		lblNewLabel.setText("令牌序列号:");
-
-		text = new Text(shlQt, SWT.BORDER);
-		text.setText("6980777939050726");
-		text.setBounds(92, 164, 230, 23);
-
 		Label lblNewLabel_2 = new Label(shlQt, SWT.NONE);
-		lblNewLabel_2.setBounds(388, 105, 39, 17);
+		lblNewLabel_2.setBounds(187, 71, 39, 17);
 		lblNewLabel_2.setText("耗时:");
 
 		lblNewLabel_1 = new Label(shlQt, SWT.NONE);
-		lblNewLabel_1.setBounds(433, 105, 154, 17);
+		lblNewLabel_1.setBounds(231, 71, 103, 17);
 		lblNewLabel_1.setText("00:00:00");
 
 		Label lblNewLabel_7 = new Label(shlQt, SWT.NONE);
@@ -541,13 +536,13 @@ public class QT {
 		lblNewLabel_7.setText("代理数量:");
 
 		lblNewLabel_9 = new Label(shlQt, SWT.NONE);
-		lblNewLabel_9.setBounds(77, 39, 127, 17);
+		lblNewLabel_9.setBounds(77, 39, 103, 17);
 		lblNewLabel_9.setText("0/0");
 
 		text_1 = new Text(shlQt, SWT.BORDER);
 		text_1.setText("请指定文件，导入代理");
 		text_1.setEditable(false);
-		text_1.setBounds(219, 36, 246, 23);
+		text_1.setBounds(187, 36, 246, 23);
 
 		button = new Button(shlQt, SWT.NONE);
 		button.addSelectionListener(new SelectionAdapter() {
@@ -594,23 +589,31 @@ public class QT {
 			}
 		});
 		button.setText("导入代理");
-		button.setBounds(484, 34, 103, 27);
+		button.setBounds(452, 34, 103, 27);
 
 		label_4 = new Label(shlQt, SWT.NONE);
 		label_4.setText("次数过多:");
-		label_4.setBounds(192, 82, 61, 17);
+		label_4.setBounds(187, 104, 61, 17);
 
 		label_5 = new Label(shlQt, SWT.NONE);
 		label_5.setText("0");
-		label_5.setBounds(273, 82, 61, 17);
+		label_5.setBounds(273, 104, 61, 17);
 
 		Label lblNewLabel_10 = new Label(shlQt, SWT.NONE);
-		lblNewLabel_10.setBounds(10, 128, 61, 17);
+		lblNewLabel_10.setBounds(10, 172, 61, 17);
 		lblNewLabel_10.setText("处理进度:");
 
 		label_6 = new Label(shlQt, SWT.NONE);
 		label_6.setText("0/0");
-		label_6.setBounds(92, 128, 187, 17);
+		label_6.setBounds(77, 172, 187, 17);
+		
+		Label lblNewLabel = new Label(shlQt, SWT.NONE);
+		lblNewLabel.setBounds(10, 71, 61, 17);
+		lblNewLabel.setText("令牌数量:");
+		
+		label_7 = new Label(shlQt, SWT.NONE);
+		label_7.setText("0");
+		label_7.setBounds(77, 71, 127, 17);
 
 	}
 
