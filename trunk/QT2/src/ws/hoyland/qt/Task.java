@@ -578,6 +578,9 @@ public class Task implements Runnable {
 				if(err!=132&&err!=0&&err!=136){
 					System.out.println(err+"->"+uin+":"+password+"->"+px+"->"+line);
 				}
+				//if(err==0){
+					System.out.println(line);
+				//}
 //				if(err==136){
 //					System.out.println(line);
 //				}
