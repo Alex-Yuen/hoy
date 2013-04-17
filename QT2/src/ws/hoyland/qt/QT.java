@@ -40,6 +40,7 @@ public class QT {
 
 	private ThreadPoolExecutor pool = null;
 	private List<String> ns = null;
+	private List<String> nsx = null;
 	protected boolean flag = false;
 	private ProgressBar progressBar;
 	private Label lblNewLabel_1;
@@ -193,6 +194,7 @@ public class QT {
 			bw = output[3];
 			oc.add(line);
 		}
+		nsx.remove(line);
 		//append?
 		try{
 			bw.write(line + "\r\n");
@@ -309,7 +311,8 @@ public class QT {
 					fc = new ArrayList<String>();
 					mc = new ArrayList<String>();
 					oc = new ArrayList<String>();
-
+					nsx =  new ArrayList<String>(ns);
+					
 					lblNewLabel_5.setText(String.valueOf(sc.size()));
 					lblNewLabel_6.setText(String.valueOf(fc.size()));
 					label_5.setText(String.valueOf(mc.size()));
@@ -625,5 +628,22 @@ public class QT {
 		button.setEnabled(true);
 		button_1.setText("开始");
 		
+		fff = new File(path + ipn + "-剩余.txt" );
+		try {
+			if (!fff.exists()) {
+				fff.createNewFile();
+			}
+			
+			bw = new BufferedWriter(
+					new FileWriter(fff));
+			for(int i=0;i<nsx.size();i++){		
+					bw.write(nsx.get(i) + "\r\n");
+					bw.flush();
+					//bw.close();
+			}
+			bw.close();			
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}		
 	}
 }
