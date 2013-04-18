@@ -22,7 +22,7 @@ public class QQMailUI extends javax.swing.JFrame {
     
     private void loadQQList() {
     	tableQQList.setModel(new DefaultTableModel());
-    	String[] tableHeads = new String[]{"QQºÅ","ÃÜÂë","ÈºÊıÁ¿", "ÒÑ·¢ËÍ"};
+    	String[] tableHeads = new String[]{"QQå·","å¯†ç ","ç¾¤æ•°é‡", "å·²å‘é€"};
         DefaultTableModel dtm = (DefaultTableModel)tableQQList.getModel();
         dtm.setColumnIdentifiers(tableHeads);
     	for(Account account : QQMail.getAccountList()) {
@@ -59,7 +59,7 @@ public class QQMailUI extends javax.swing.JFrame {
     		QQMail.setCountToSendPerAccount(Integer.parseInt(tbxGroupCountPerSend.getText()));
     	
     	this.tbxInfo.setText("");
-    	btnStart.setText("·¢ËÍÖĞ...");
+    	btnStart.setText("å‘é€ä¸­...");
         btnStart.setEnabled(false);
     	QQMail.startSend();        
     }          
@@ -88,13 +88,13 @@ public class QQMailUI extends javax.swing.JFrame {
     }
     
     public void doFinishSend() {
-    	this.btnStart.setText("¿ªÊ¼·¢ËÍ");
+    	this.btnStart.setText("å¼€å§‹å‘é€");
     	this.btnStart.setEnabled(true);
     	
     	loadQQList();
     }
     
-    //×·¼ÓÌáÊ¾ĞÅÏ¢
+    //è¿½åŠ æç¤ºä¿¡æ¯
     public void appendLog(String info) {
     	this.tbxInfo.append(info + '\12');
     	this.tbxInfo.setCaretPosition(this.tbxInfo.getText().length());
@@ -138,15 +138,15 @@ public class QQMailUI extends javax.swing.JFrame {
         labelCaptcha = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setTitle("QQÈºÓÊ¼ş·¢ËÍÆ÷");
+        setTitle("QQç¾¤é‚®ä»¶å‘é€å™¨");
         setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         setResizable(false);
 
-        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("QQÁĞ±í"));
+        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("QQåˆ—è¡¨"));
 
         jScrollPane1.setViewportView(tableQQList);
 
-        jLabel1.setText("×ÜÊı£º");
+        jLabel1.setText("æ€»æ•°ï¼š");
 
         tbxTotalQQCount.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -154,7 +154,7 @@ public class QQMailUI extends javax.swing.JFrame {
             }
         });
 
-        jLabel2.setText("³É¹¦£º");
+        jLabel2.setText("æˆåŠŸï¼š");
 
         tbxSuccessCount.setText(" ");
         tbxSuccessCount.addActionListener(new java.awt.event.ActionListener() {
@@ -163,7 +163,7 @@ public class QQMailUI extends javax.swing.JFrame {
             }
         });
 
-        jLabel3.setText("Ê§°Ü£º");
+        jLabel3.setText("å¤±è´¥ï¼š");
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -202,9 +202,9 @@ public class QQMailUI extends javax.swing.JFrame {
                 .addGap(0, 0, Short.MAX_VALUE))
         );
 
-        jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder("ÓÊ¼şÄ£°å"));
+        jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder("é‚®ä»¶æ¨¡æ¿"));
 
-        jLabel4.setText("±êÌâ£º");
+        jLabel4.setText("æ ‡é¢˜ï¼š");
 
         tbxMailTitle.setEditable(false);
         tbxMailTitle.addActionListener(new java.awt.event.ActionListener() {
@@ -213,7 +213,7 @@ public class QQMailUI extends javax.swing.JFrame {
             }
         });
 
-        jLabel5.setText("ÕıÎÄ£º");
+        jLabel5.setText("æ­£æ–‡ï¼š");
 
         tbxMailContent.setColumns(20);
         tbxMailContent.setRows(5);
@@ -248,16 +248,16 @@ public class QQMailUI extends javax.swing.JFrame {
                 .addComponent(jScrollPane2))
         );
 
-        jPanel3.setBorder(javax.swing.BorderFactory.createTitledBorder("²Ù×÷Çø"));
+        jPanel3.setBorder(javax.swing.BorderFactory.createTitledBorder("æ“ä½œåŒº"));
 
-        btnStart.setText("¿ªÊ¼·¢ËÍ");
+        btnStart.setText("å¼€å§‹å‘é€");
         btnStart.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mousePressed(java.awt.event.MouseEvent evt) {
                 btnStartMousePressed(evt);
             }
         });
 
-        jLabel6.setText("ÑéÖ¤Âë£º");
+        jLabel6.setText("éªŒè¯ç ï¼š");
 
         tbxCaptcha.setEnabled(false);
         tbxCaptcha.addActionListener(new java.awt.event.ActionListener() {
@@ -266,7 +266,7 @@ public class QQMailUI extends javax.swing.JFrame {
             }
         });
 
-        btnConfirmCaptcha.setText("È·¶¨");
+        btnConfirmCaptcha.setText("ç¡®å®š");
         btnConfirmCaptcha.setEnabled(false);
         btnConfirmCaptcha.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mousePressed(java.awt.event.MouseEvent evt) {
@@ -278,14 +278,14 @@ public class QQMailUI extends javax.swing.JFrame {
         tbxInfo.setRows(5);
         jScrollPane3.setViewportView(tbxInfo);
 
-        jLabel7.setText("ÌáÊ¾ĞÅÏ¢£º");
+        jLabel7.setText("æç¤ºä¿¡æ¯ï¼š");
 
-        jLabel8.setText("Ã¿´Î·¢ËÍÈºÊı£º");
+        jLabel8.setText("æ¯æ¬¡å‘é€ç¾¤æ•°ï¼š");
 
         tbxGroupCountPerSend.setEnabled(false);
 
         rbAllGroup.setSelected(true);
-        rbAllGroup.setText("È«²¿");
+        rbAllGroup.setText("å…¨éƒ¨");
         rbAllGroup.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 rbAllGroupActionPerformed(evt);

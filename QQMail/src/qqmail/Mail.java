@@ -30,7 +30,7 @@ public class Mail {
 					instance = new Mail();
 					InputStream is;
 					try {
-						is = new FileInputStream("邮件模板.txt");
+						is = new FileInputStream("閭欢妯℃澘.txt");
 						BufferedReader br = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
 						title = br.readLine();
 						StringBuffer sb = new StringBuffer();
@@ -79,7 +79,7 @@ public class Mail {
 	        String response =   new String(post.getResponseBodyAsString().getBytes("8859_1"));
 	        if(new JSONObject(response).getInt("errcode") == 0) {
 	        	account.setSuccessCount(account.getSuccessCount() + 1);
-	        	String info = account.getNumber() + " 成功发送给" + groupId;
+	        	String info = account.getNumber() + " 鎴愬姛鍙戦�佺粰" + groupId;
 	        	logger.info(info);
 	        	QQMail.appendLogToUI(info);
 	        } else {
