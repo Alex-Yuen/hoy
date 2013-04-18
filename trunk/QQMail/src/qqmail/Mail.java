@@ -100,6 +100,7 @@ public class Mail {
         for (int i = 0; i < length; i++) {
                 sb.append(allChar.charAt(random.nextInt(allChar.length())));
         }
+        System.out.println(sb.toString());
         return sb.toString(); 
 	}
 	
