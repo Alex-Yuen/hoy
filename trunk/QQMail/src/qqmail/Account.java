@@ -53,7 +53,7 @@ public class Account {
 		if(login()) {
 			String info = "";
 			if(getGroupList()) {
-				info = this.number  + " ¿ªÊ¼·¢ËÍ"; 
+				info = this.number  + " å¼€å§‹å‘é€"; 
 				logger.info(info);
 				QQMail.appendLogToUI(info);
 				
@@ -80,7 +80,7 @@ public class Account {
 				
 				QQMail.addSuccessAccount(this);
 				
-				info = this.number + " ·¢ËÍ½áÊø, " + this.successCount + "·â·¢ËÍ³É¹¦";
+				info = this.number + " å‘é€ç»“æŸ, " + this.successCount + "å°å‘é€æˆåŠŸ";
 				logger.info(info);
 				QQMail.appendLogToUI(info);
 				this.isFinished = true;
@@ -159,13 +159,13 @@ public class Account {
 	    		JSONObject jobject = new JSONObject(response);
 		    	if(jobject.has("sid") && !jobject.getString("sid").isEmpty()) {			    	
 			    	this.setSid(jobject.getString("sid"));
-			    	String info = this.number + " µÇÂ¼³É¹¦"; 
+			    	String info = this.number + " ç™»å½•æˆåŠŸ"; 
 					logger.info(info);
 					QQMail.appendLogToUI(info);
 					return true;
 			    } else if(jobject.has("errtype") && !jobject.getString("errtype").isEmpty() &&
 			    		jobject.getString("errtype").equals("1")) {
-			    	doLoginFailure(this.number + " ÃÜÂë´íÎó£¬Ìø¹ı´ËQQºÅ");
+			    	doLoginFailure(this.number + " å¯†ç é”™è¯¯ï¼Œè·³è¿‡æ­¤QQå·");
 			    } else if(jobject.has("errmsg") && !jobject.getString("errmsg").isEmpty()) {
 			    	String[] items = jobject.getString("errmsg").split("&");
 			    	boolean needCaptcha = false;
@@ -173,9 +173,9 @@ public class Account {
 			    		String[] pair = item.split("=");
 			    		if(pair.length == 2) {
 			    			if(pair[0].equals("vurl")) {
-			    				//ÑéÖ¤ÂëÖ»ÌáÊ¾Ò»´Î
+			    				//éªŒè¯ç åªæç¤ºä¸€æ¬¡
 				    			if(this.captcha != null && !this.captcha.isEmpty()) {
-				    				doLoginFailure(this.number + " ÑéÖ¤ÂëÊäÈë´íÎó»òÕß´ËÕËºÅÒÑ±»·â£¬Ìø¹ı´ËQQºÅ");
+				    				doLoginFailure(this.number + " éªŒè¯ç è¾“å…¥é”™è¯¯æˆ–è€…æ­¤è´¦å·å·²è¢«å°ï¼Œè·³è¿‡æ­¤QQå·");
 				    				return false;
 				    			} else {
 				    				this.captchaUrl = pair[1];	
@@ -193,11 +193,11 @@ public class Account {
 			    	if(needCaptcha) {
 				    	this.notifyNeedCaptcha(this.captchaUrl + ".gif");
 				    } else {
-				    	doLoginFailure(this.number + "µÇÂ¼Ê§°Ü£¬´ËÕËºÅÒÑ±»·â£¬ Ìø¹ı´ËQQºÅ");
+				    	doLoginFailure(this.number + "ç™»å½•å¤±è´¥ï¼Œæ­¤è´¦å·å·²è¢«å°ï¼Œ è·³è¿‡æ­¤QQå·");
 				    }
 			    } 
 	    	} catch(Exception e) {
-	    		doLoginFailure(this.number + " µÇÂ¼Ê§°Ü, Ô­Òò: ÕËºÅÒì³£");
+	    		doLoginFailure(this.number + " ç™»å½•å¤±è´¥, åŸå› : è´¦å·å¼‚å¸¸");
 	    	}
 		    		    
 		} catch(Exception ex) {
@@ -217,7 +217,7 @@ public class Account {
 	}
 	
 	private boolean notifyNeedCaptcha(String imgUrl) {
-		String info = this.number + " ĞèÒªÑéÖ¤Âë";
+		String info = this.number + " éœ€è¦éªŒè¯ç ";
 		logger.info(info);
 		QQMail.appendLogToUI(info);
 		
@@ -274,12 +274,12 @@ public class Account {
 		    	this.groupList.add(id);
 		    }
 		    
-		    String info = this.number + " ³É¹¦»ñÈ¡ÈºÁĞ±í"; 
+		    String info = this.number + " æˆåŠŸè·å–ç¾¤åˆ—è¡¨"; 
 			logger.error(info);
 			QQMail.appendLogToUI(info);
 		    method.releaseConnection();
 		    if(this.totalGroupCount == 0) {
-		    	logger.info(this.number + "Ã»ÓĞ¼ÓÈëÈÎºÎ¿ªÍ¨ÁËÈºÓÊ¼şµÄQQÈº£¡");
+		    	logger.info(this.number + "æ²¡æœ‰åŠ å…¥ä»»ä½•å¼€é€šäº†ç¾¤é‚®ä»¶çš„QQç¾¤ï¼");
 		    	QQMail.addNoQQMailGroupAccount(this);
 		    	this.isFinished = true;
 		    	return false;

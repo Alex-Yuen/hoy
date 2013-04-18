@@ -58,7 +58,7 @@ public class QQMail {
 
 			mailTask = new QQMailTask();
 			
-			InputStream is = new FileInputStream("QQÁĞ±í.txt");
+			InputStream is = new FileInputStream("QQåˆ—è¡¨.txt");
 			BufferedReader br = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
 			String line;
 			while ((line = br.readLine()) != null) {
@@ -79,7 +79,7 @@ public class QQMail {
 	}
 	
 	public static void startSend() {
-		String info = "Æô¶¯";
+		String info = "å¯åŠ¨";
 		logger.info(info);
 		QQMail.appendLogToUI(info);
 		mailTask.start();
@@ -87,30 +87,30 @@ public class QQMail {
 	
 	private static void doResult() {
 		updateQQList();
-		writeFailureToFile(logginErrorAccountList, "µÇÂ¼Ê§°Ü.txt");
-		writeFailureToFile(noQQMailGroupAccountList, "Ã»ÓĞÈºÓÊ¼ş.txt");
+		writeFailureToFile(logginErrorAccountList, "ç™»å½•å¤±è´¥.txt");
+		writeFailureToFile(noQQMailGroupAccountList, "æ²¡æœ‰ç¾¤é‚®ä»¶.txt");
 		
-		String info = "½áÊø!";
+		String info = "ç»“æŸ!";
 		logger.info(info);
 		QQMail.appendLogToUI(info);
 		logger.info("=======================================================");
 		
-		info = "×Ü¹² " + accountList.size() + " ¸öQQ!";
+		info = "æ€»å…± " + accountList.size() + " ä¸ªQQ!";
 		logger.info(info);
 		QQMail.appendLogToUI(info);
 		
-		info = accountList.size() - logginErrorAccountList.size() - noQQMailGroupAccountList.size() + "¸ö·¢ËÍ³É¹¦!";
+		info = accountList.size() - logginErrorAccountList.size() - noQQMailGroupAccountList.size() + "ä¸ªå‘é€æˆåŠŸ!";
 		logger.info(info);
 		QQMail.appendLogToUI(info);
 		
 		if(logginErrorAccountList.size() > 0) {
-			info = logginErrorAccountList.size() + "¸öµÇÂ¼Ê§°Ü , ÏêÏ¸ĞÅÏ¢²é¿´ µÇÂ¼Ê§°Ü.txt";
+			info = logginErrorAccountList.size() + "ä¸ªç™»å½•å¤±è´¥ , è¯¦ç»†ä¿¡æ¯æŸ¥çœ‹ ç™»å½•å¤±è´¥.txt";
 			logger.info(info);
 			QQMail.appendLogToUI(info);
 		}
 		
 		if(noQQMailGroupAccountList.size() > 0) {
-			info = noQQMailGroupAccountList.size() + "¸öÃ»ÓĞÈºÓÊ¼ş, ÏêÏ¸ĞÅÏ¢²é¿´ Ã»ÓĞÈºÓÊ¼ş.txt";
+			info = noQQMailGroupAccountList.size() + "ä¸ªæ²¡æœ‰ç¾¤é‚®ä»¶, è¯¦ç»†ä¿¡æ¯æŸ¥çœ‹ æ²¡æœ‰ç¾¤é‚®ä»¶.txt";
 			logger.info(info);
 			QQMail.appendLogToUI(info);
 		}
@@ -121,7 +121,7 @@ public class QQMail {
 	
 	private static void updateQQList() {
 		try {
-			BufferedWriter writer = new BufferedWriter(new FileWriter("QQÁĞ±í.txt"));
+			BufferedWriter writer = new BufferedWriter(new FileWriter("QQåˆ—è¡¨.txt"));
 			for(int i = 0; i < accountList.size(); i++) {
 				Account account =accountList.get(i); 
 				writer.write(account.getNumber() + "----" + account.getPassword()  + "----"
@@ -173,7 +173,7 @@ public class QQMail {
 		}
 	}
 	
-	//´¦ÀíÓÃ»§ÊäÈëµÄÑéÖ¤Âë
+	//å¤„ç†ç”¨æˆ·è¾“å…¥çš„éªŒè¯ç 
 	public static void notifyPostCaptcha(String captcha) {
 		mailTask.currentAccount.setCaptcha(captcha);
 		mailTask.reStart();
