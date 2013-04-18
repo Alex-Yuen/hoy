@@ -33,6 +33,7 @@ public class Task implements Runnable {
 	private QT qt;
 	private int err = -1;
 	private int tkn_usable = -1;
+	private int isdna = -1;
 	private Random rnd = new Random();
 	private String px;
 	private String line;
@@ -365,7 +366,6 @@ public class Task implements Runnable {
 				//time += "[4]"+(System.currentTimeMillis()-this.st)+"->";
 				json = new JSONObject(line);
 				err = json.getInt("err");
-				tkn_usable = json.getInt("tkn_usable");
 				
 				if(err==120){ //网络异常
 					synchronized(proxies){//删除代理
@@ -419,6 +419,9 @@ public class Task implements Runnable {
 					}
 					return;
 				}else if(err==0){
+					tkn_usable = json.getInt("tkn_usable");
+					isdna = json.getInt("isdna");
+					
 					if(tkn_usable==0){ //令牌无效
 						synchronized(tokens){
 							tokens.remove(token); //删除当前token
@@ -603,7 +606,7 @@ public class Task implements Runnable {
 //				}
 				if(qt.getFlag()){
 					//System.err.print(time);
-					qt.up(uin+"----"+password, err);
+					qt.up(uin+"----"+password, err, isdna);
 				}
 				//}
 			}
