@@ -52,7 +52,8 @@ public class QT {
 	private Label label_7;
 
 	private long startTime = 0;
-	private List<String> sc = null;
+	private List<String> sc0 = null;
+	private List<String> sc1 = null;
 	private List<String> fc = null;
 	private List<String> oc = null;
 	private List<String> mc = null;
@@ -66,8 +67,8 @@ public class QT {
 	private Label label_5;
 	// private SimpleDateFormat formatter = null;
 	private String ipn = null;
-	private String[] fn = { "正确.txt", "错误.txt", "过多.txt", "异常.txt" };
-	BufferedWriter[] output = new BufferedWriter[4];
+	private String[] fn = { "正确-二代.txt", "正确-无保一代.txt", "错误.txt", "过多.txt", "异常.txt" };
+	BufferedWriter[] output = new BufferedWriter[5];
 	BufferedWriter bw = null;
 	private URL url = QT.class.getClassLoader().getResource("");
 	private String path = url.getPath();
@@ -123,43 +124,44 @@ public class QT {
 //		lblNewLabel_1.setText(ct(System.currentTimeMillis() - this.startTime));
 //	}
 	
-	public void up(String line, int err) {
+	public void up(String line, int err, int isdna) {
 		
 		if (err == 0) {
 			// this.button_2.setEnabled(true);
-			if(output[0]==null){
-				fff = new File(path + ipn + "-" + fn[0]);
-				try {
-					if (!fff.exists()) {
-						fff.createNewFile();
+			if(isdna==1){
+				if(output[0]==null){
+					fff = new File(path + ipn + "-" + fn[0]);
+					try {
+						if (!fff.exists()) {
+							fff.createNewFile();
+						}
+						
+						output[0] = new BufferedWriter(
+								new FileWriter(fff));
+					} catch (Exception ex) {
+						ex.printStackTrace();
 					}
-					
-					output[0] = new BufferedWriter(
-							new FileWriter(fff));
-				} catch (Exception ex) {
-					ex.printStackTrace();
 				}
+				bw = output[0];
+				sc0.add(line);
+			}else if(isdna==0){
+				if(output[1]==null){
+					fff = new File(path + ipn + "-" + fn[1]);
+					try {
+						if (!fff.exists()) {
+							fff.createNewFile();
+						}
+						
+						output[1] = new BufferedWriter(
+								new FileWriter(fff));
+					} catch (Exception ex) {
+						ex.printStackTrace();
+					}
+				}
+				bw = output[1];
+				sc1.add(line);
 			}
-			bw = output[0];
-			sc.add(line);
 		} else if (err == 132) {
-			// this.button_3.setEnabled(true);
-			if(output[1]==null){
-				fff = new File(path + ipn + "-" + fn[1]);
-				try {
-					if (!fff.exists()) {
-						fff.createNewFile();
-					}
-					
-					output[1] = new BufferedWriter(
-							new FileWriter(fff));
-				} catch (Exception ex) {
-					ex.printStackTrace();
-				}
-			}
-			bw = output[1];
-			fc.add(line);
-		} else if (err == 136) {
 			// this.button_3.setEnabled(true);
 			if(output[2]==null){
 				fff = new File(path + ipn + "-" + fn[2]);
@@ -175,9 +177,9 @@ public class QT {
 				}
 			}
 			bw = output[2];
-			mc.add(line);
-		} else {
-			// this.button_4.setEnabled(true);
+			fc.add(line);
+		} else if (err == 136) {
+			// this.button_3.setEnabled(true);
 			if(output[3]==null){
 				fff = new File(path + ipn + "-" + fn[3]);
 				try {
@@ -192,6 +194,23 @@ public class QT {
 				}
 			}
 			bw = output[3];
+			mc.add(line);
+		} else {
+			// this.button_4.setEnabled(true);
+			if(output[4]==null){
+				fff = new File(path + ipn + "-" + fn[4]);
+				try {
+					if (!fff.exists()) {
+						fff.createNewFile();
+					}
+					
+					output[4] = new BufferedWriter(
+							new FileWriter(fff));
+				} catch (Exception ex) {
+					ex.printStackTrace();
+				}
+			}
+			bw = output[4];
 			oc.add(line);
 		}
 		nsx.remove(line);
@@ -283,7 +302,7 @@ public class QT {
 		});
 		shlQt.setToolTipText("");
 		shlQt.setSize(567, 263);
-		shlQt.setText("QT");
+		shlQt.setText("QT(DNA)");
 
 		Rectangle bounds = Display.getDefault().getPrimaryMonitor().getBounds();
 		Rectangle rect = shlQt.getBounds();
@@ -307,13 +326,14 @@ public class QT {
 					// button_3.setEnabled(false);
 					// button_4.setEnabled(false);
 
-					sc = new ArrayList<String>();
+					sc0 = new ArrayList<String>();
+					sc1 = new ArrayList<String>();
 					fc = new ArrayList<String>();
 					mc = new ArrayList<String>();
 					oc = new ArrayList<String>();
 					nsx =  new ArrayList<String>(ns);
 					
-					lblNewLabel_5.setText(String.valueOf(sc.size()));
+					lblNewLabel_5.setText(String.valueOf(sc0.size()+sc1.size()));
 					lblNewLabel_6.setText(String.valueOf(fc.size()));
 					label_5.setText(String.valueOf(mc.size()));
 					label_2.setText(String.valueOf(oc.size()));
@@ -375,11 +395,11 @@ public class QT {
 					                Display.getDefault().asyncExec(new Runnable() { 					                     
 					                    @Override 
 					                    public void run() { 
-					                		int total = sc.size() + fc.size() + mc.size() + oc.size();
+					                		int total = sc0.size() + sc1.size() + fc.size() + mc.size() + oc.size();
 					                		lblNewLabel_9.setText(proxies.size() + "/" + pc);
 					                		label_7.setText(String.valueOf(tokens.size()));
 					                		progressBar.setSelection(total);
-					                		lblNewLabel_5.setText(String.valueOf(sc.size()));
+					                		lblNewLabel_5.setText(String.valueOf(sc0.size()+sc1.size()));
 					                		lblNewLabel_6.setText(String.valueOf(fc.size()));
 					                		label_5.setText(String.valueOf(mc.size()));
 					                		label_2.setText(String.valueOf(oc.size()));
