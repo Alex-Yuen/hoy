@@ -32,6 +32,7 @@ public class Task implements Runnable {
 	private String password;
 	private QT qt;
 	private int err = -1;
+	private int tkn_usable = -1;
 	private Random rnd = new Random();
 	private String px;
 	private String line;
@@ -364,6 +365,7 @@ public class Task implements Runnable {
 				//time += "[4]"+(System.currentTimeMillis()-this.st)+"->";
 				json = new JSONObject(line);
 				err = json.getInt("err");
+				tkn_usable = json.getInt("tkn_usable");
 				
 				if(err==120){ //网络异常
 					synchronized(proxies){//删除代理
@@ -416,6 +418,21 @@ public class Task implements Runnable {
 						}
 					}
 					return;
+				}else if(err==0){
+					if(tkn_usable==0){ //令牌无效
+						synchronized(tokens){
+							tokens.remove(token); //删除当前token
+						}
+						
+						synchronized(proxies){
+							if(!this.pool.isShutdown()&&proxies.size()!=0){
+								//System.out.println("[106]B");
+								Task task = new Task(pool, proxies, tokens, qt, uin, password);			
+								this.pool.execute(task);
+							}
+						}
+						return;
+					}
 				}
 				
 //				while ((line = bin.readLine()) != null) {
@@ -579,7 +596,7 @@ public class Task implements Runnable {
 					System.out.println(err+"->"+uin+":"+password+"->"+px+"->"+line);
 				}
 				//if(err==0){
-					System.out.println(line);
+				//System.out.println(line);
 				//}
 //				if(err==136){
 //					System.out.println(line);
