@@ -114,13 +114,23 @@ public class Task implements Runnable {
 //			}
 //			bin.close();
 			boolean gt = false;
-			synchronized(tokens){
-				if(tokens.size()!=0){
-					token = tokens.get(rnd.nextInt(tokens.size()));
+			String ctk = null;
+			
+			synchronized(qt){
+				if((ctk=qt.getCTK())!=null){
+					token = ctk;
 				}else{
 					gt = true;
 				}
 			}
+			
+//			synchronized(tokens){
+//				if(tokens.size()!=0){
+//					token = tokens.get(rnd.nextInt(tokens.size()));
+//				}else{
+//					gt = true;
+//				}
+//			}
 			
 			Crypter crypter = new Crypter();
 			HttpGet httpGet = null;
@@ -268,9 +278,12 @@ public class Task implements Runnable {
 							//System.out.print(tokenx[i]);
 						}
 						
-						synchronized(tokens){
-							tokens.add(token);
+						synchronized(qt){
+							qt.setCTK(token);
 						}
+//						synchronized(tokens){
+//							tokens.add(token);
+//						}
 					}
 				}
 			}//end get token
