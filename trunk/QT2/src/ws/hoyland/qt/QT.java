@@ -643,7 +643,7 @@ public class QT {
 		lblNewLabel.setText("当前令牌:");
 		
 		label_7 = new Label(shlQt, SWT.NONE);
-		label_7.setText("0");
+		label_7.setText("空");
 		label_7.setBounds(77, 205, 207, 17);
 		
 		Label lblNewLabel_11 = new Label(shlQt, SWT.NONE);
