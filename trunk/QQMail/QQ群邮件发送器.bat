@@ -1,0 +1,1 @@
+jre\bin\java -Xms256m -Xmx512m -cp conf;lib/commons-codec-1.4.jar;lib/commons-httpclient-3.1.jar;lib/commons-logging-1.1.1.jar;lib/hamcrest-all-1.3.jar;lib/json.jar;lib/junit-dep-4.10.jar;lib/log4j-1.2.14.jar;lib/welcomeactivity_release_signed_11_dex2jar-remap.jar;lib/qqmail.jar qqmail.QQMailUI
