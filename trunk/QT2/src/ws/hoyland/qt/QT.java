@@ -58,6 +58,8 @@ public class QT {
 	private List<String> mc = null;
 	private List<String> proxies = null;
 	private List<String> tokens = null;
+	private String ctk = null;
+	private int cctk = 0;
 	private int pc = 0;
 	private int nc = 0;
 	private Text text_1;
@@ -73,6 +75,8 @@ public class QT {
 	private String path = url.getPath();
 	private File fff = null;
 	private TimerTask timerTask;
+	private Spinner spinner_1;
+	private int mctk = 0;
 	
 	public QT() {
 		// formatter = new SimpleDateFormat("HH:mm:ss");//初始化Formatter的转换格式
@@ -81,6 +85,24 @@ public class QT {
 		path = url.getPath();
 	}
 
+	public void setCTK(String ctk){
+		this.ctk = ctk;
+		this.cctk = 0;
+	}
+		
+	public String getCTK(){
+		if(cctk<=mctk&&this.ctk!=null){
+			cctk++;
+			return this.ctk;
+		}else{
+			return null;
+		}
+	}
+	
+//	public int getCCTK(){
+//		return this.cctk;
+//	}
+		
 	public boolean getFlag() {
 		return this.flag;
 	}
@@ -282,7 +304,7 @@ public class QT {
 			}
 		});
 		shlQt.setToolTipText("");
-		shlQt.setSize(567, 263);
+		shlQt.setSize(567, 291);
 		shlQt.setText("QT");
 
 		Rectangle bounds = Display.getDefault().getPrimaryMonitor().getBounds();
@@ -313,6 +335,7 @@ public class QT {
 					oc = new ArrayList<String>();
 					nsx =  new ArrayList<String>(ns);
 					
+					mctk = Integer.parseInt(spinner_1.getText());
 					lblNewLabel_5.setText(String.valueOf(sc.size()));
 					lblNewLabel_6.setText(String.valueOf(fc.size()));
 					label_5.setText(String.valueOf(mc.size()));
@@ -377,7 +400,12 @@ public class QT {
 					                    public void run() { 
 					                		int total = sc.size() + fc.size() + mc.size() + oc.size();
 					                		lblNewLabel_9.setText(proxies.size() + "/" + pc);
-					                		label_7.setText(String.valueOf(tokens.size()));
+					                		//label_7.setText(String.valueOf(tokens.size()));
+					                		if(ctk!=null){
+					                			label_7.setText(ctk);
+					                		}else{
+					                			label_7.setText("空");
+					                		}
 					                		progressBar.setSelection(total);
 					                		lblNewLabel_5.setText(String.valueOf(sc.size()));
 					                		lblNewLabel_6.setText(String.valueOf(fc.size()));
@@ -430,7 +458,7 @@ public class QT {
 		});
 		button_1.setEnabled(false);
 		button_1.setText("开始");
-		button_1.setBounds(337, 104, 218, 82);
+		button_1.setBounds(337, 140, 218, 82);
 
 		Label label = new Label(shlQt, SWT.NONE);
 		label.setBounds(337, 71, 127, 17);
@@ -510,7 +538,7 @@ public class QT {
 		lblNewLabel_8.setText("未知错误:");
 
 		progressBar = new ProgressBar(shlQt, SWT.SMOOTH);
-		progressBar.setBounds(10, 203, 545, 26);
+		progressBar.setBounds(10, 235, 545, 26);
 
 		spinner = new Spinner(shlQt, SWT.BORDER);
 		spinner.setMaximum(1024);
@@ -527,11 +555,11 @@ public class QT {
 		label_3.setText("共 0 条");
 
 		Label lblNewLabel_2 = new Label(shlQt, SWT.NONE);
-		lblNewLabel_2.setBounds(187, 71, 39, 17);
+		lblNewLabel_2.setBounds(10, 71, 39, 17);
 		lblNewLabel_2.setText("耗时:");
 
 		lblNewLabel_1 = new Label(shlQt, SWT.NONE);
-		lblNewLabel_1.setBounds(231, 71, 103, 17);
+		lblNewLabel_1.setBounds(77, 71, 207, 17);
 		lblNewLabel_1.setText("00:00:00");
 
 		Label lblNewLabel_7 = new Label(shlQt, SWT.NONE);
@@ -608,15 +636,25 @@ public class QT {
 
 		label_6 = new Label(shlQt, SWT.NONE);
 		label_6.setText("0/0");
-		label_6.setBounds(77, 172, 187, 17);
+		label_6.setBounds(77, 172, 103, 17);
 		
 		Label lblNewLabel = new Label(shlQt, SWT.NONE);
-		lblNewLabel.setBounds(10, 71, 61, 17);
-		lblNewLabel.setText("令牌数量:");
+		lblNewLabel.setBounds(10, 205, 61, 17);
+		lblNewLabel.setText("当前令牌:");
 		
 		label_7 = new Label(shlQt, SWT.NONE);
 		label_7.setText("0");
-		label_7.setBounds(77, 71, 127, 17);
+		label_7.setBounds(77, 205, 207, 17);
+		
+		Label lblNewLabel_11 = new Label(shlQt, SWT.NONE);
+		lblNewLabel_11.setBounds(337, 104, 103, 17);
+		lblNewLabel_11.setText("令牌复用(1~20):");
+		
+		spinner_1 = new Spinner(shlQt, SWT.BORDER);
+		spinner_1.setMaximum(20);
+		spinner_1.setMinimum(1);
+		spinner_1.setSelection(10);
+		spinner_1.setBounds(516, 101, 39, 23);
 
 	}
 
@@ -626,6 +664,8 @@ public class QT {
 		flag = false;
 		btnNewButton.setEnabled(true);
 		button.setEnabled(true);
+		setCTK(null);
+		mctk = 0;
 		button_1.setText("开始");
 		
 		fff = new File(path + ipn + "-剩余.txt" );
