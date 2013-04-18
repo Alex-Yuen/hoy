@@ -365,7 +365,6 @@ public class Task implements Runnable {
 				//time += "[4]"+(System.currentTimeMillis()-this.st)+"->";
 				json = new JSONObject(line);
 				err = json.getInt("err");
-				tkn_usable = json.getInt("tkn_usable");
 				
 				if(err==120){ //网络异常
 					synchronized(proxies){//删除代理
@@ -419,6 +418,7 @@ public class Task implements Runnable {
 					}
 					return;
 				}else if(err==0){
+					tkn_usable = json.getInt("tkn_usable");
 					if(tkn_usable==0){ //令牌无效
 						synchronized(tokens){
 							tokens.remove(token); //删除当前token
