@@ -416,7 +416,7 @@ public class Task implements Runnable {
 //					});
 					//System.out.println("[106]C");
 					return;
-				}else if(err==142||err==201){//操作错误, 网络波动 token重复, 201 操作失败
+				}else if(err==142||err==201||err==122){//操作错误, 网络波动 token重复, 201 操作失败,122安全中心绑定失败
 					//System.out.println("ERR="+err+":"+line);
 //					synchronized(tokens){
 //						tokens.remove(token); //删除当前token

@@ -50,6 +50,7 @@ public class QT {
 	private Label lblNewLabel_9;
 	private Label label_6;
 	private Label label_7;
+	private Label lblNewLabel_13;
 
 	private long startTime = 0;
 	private List<String> sc = null;
@@ -77,6 +78,10 @@ public class QT {
 	private TimerTask timerTask;
 	private Spinner spinner_1;
 	private int mctk = 0;
+	private Label lblNewLabel_2;
+	private int ctimes = 0;
+	private int mtimes = 0;
+	private Spinner spinner_2;
 	
 	public QT() {
 		// formatter = new SimpleDateFormat("HH:mm:ss");//初始化Formatter的转换格式
@@ -304,7 +309,7 @@ public class QT {
 			}
 		});
 		shlQt.setToolTipText("");
-		shlQt.setSize(567, 291);
+		shlQt.setSize(567, 253);
 		shlQt.setText("QT");
 
 		Rectangle bounds = Display.getDefault().getPrimaryMonitor().getBounds();
@@ -342,6 +347,8 @@ public class QT {
 					label_2.setText(String.valueOf(oc.size()));
 					lblNewLabel_1.setText("00:00:00");
 					progressBar.setSelection(0);
+					ctimes = 1;
+					mtimes = Integer.parseInt(spinner_2.getText());
 
 					Display.getDefault().asyncExec(new Runnable() {
 
@@ -414,11 +421,42 @@ public class QT {
 					                		label_6.setText(total + "/" + (nc - total));
 					                		// System.out.println(System.currentTimeMillis()-this.startTime);
 					                		lblNewLabel_1.setText(ct(System.currentTimeMillis() - startTime));
-					                		System.out.println(pool);
+					                		lblNewLabel_13.setText(ctimes+" of");
+					                		//System.out.println(pool);
 					                		
 					                		if(total==progressBar.getMaximum()){
-					                			button_1.setText("完成");
-					                			timerTask.cancel();
+					                			if(ctimes==mtimes){
+						                			button_1.setText("完成");
+						                			timerTask.cancel();
+					                			}else{
+					                				ctimes++;
+					                				ns = new ArrayList<String>(sc);
+					                				sc.clear();
+//					                				progressBar.setMaximum(ns.size());
+//					                				progressBar.setSelection(0);
+					                				for (int i = 0; i < ns.size(); i++) {
+					    								// if(j==proxy.size()){//代理
+					    								// j=0;
+					    								// }
+					    								// String px = proxy.get(j);
+					    								String[] qp = ns.get(i).split("----");
+					    								// if(i==63636){
+					    								// System.out.println(ns.get(i));
+					    								// System.out.println(ns.get(i+1));
+					    								// System.out.println(ns.get(i+2));
+					    								// }
+					    								try {
+					    									if (qp.length == 2) {
+					    										Task task = new Task(pool, proxies, tokens,
+					    												QT.this, qp[0],
+					    												qp[1]);
+					    										pool.execute(task);
+					    									}
+					    								} catch (ArrayIndexOutOfBoundsException exx) {
+					    									System.out.println(i + ":" + ns.get(i));
+					    								}
+					    							}
+					                			}
 					                		}else if(!flag){
 					                			timerTask.cancel();
 					                		}
@@ -458,10 +496,10 @@ public class QT {
 		});
 		button_1.setEnabled(false);
 		button_1.setText("开始");
-		button_1.setBounds(337, 140, 218, 82);
+		button_1.setBounds(327, 127, 228, 63);
 
 		Label label = new Label(shlQt, SWT.NONE);
-		label.setBounds(337, 71, 127, 17);
+		label.setBounds(10, 71, 127, 17);
 		label.setText("线程设置 (512~1024):");
 
 		Label lblNewLabel_3 = new Label(shlQt, SWT.NONE);
@@ -534,32 +572,28 @@ public class QT {
 		btnNewButton.setText("导入帐号");
 
 		Label lblNewLabel_8 = new Label(shlQt, SWT.NONE);
-		lblNewLabel_8.setBounds(187, 138, 61, 17);
+		lblNewLabel_8.setBounds(163, 138, 61, 17);
 		lblNewLabel_8.setText("未知错误:");
 
 		progressBar = new ProgressBar(shlQt, SWT.SMOOTH);
-		progressBar.setBounds(10, 235, 545, 26);
+		progressBar.setBounds(10, 196, 545, 26);
 
 		spinner = new Spinner(shlQt, SWT.BORDER);
 		spinner.setMaximum(1024);
 		spinner.setMinimum(512);
 		spinner.setSelection(512);
-		spinner.setBounds(489, 68, 66, 23);
+		spinner.setBounds(143, 68, 66, 23);
 
 		label_2 = new Label(shlQt, SWT.NONE);
-		label_2.setBounds(273, 138, 61, 17);
+		label_2.setBounds(249, 138, 74, 17);
 		label_2.setText("0");
 
 		label_3 = new Label(shlQt, SWT.NONE);
 		label_3.setBounds(77, 10, 103, 17);
 		label_3.setText("共 0 条");
 
-		Label lblNewLabel_2 = new Label(shlQt, SWT.NONE);
-		lblNewLabel_2.setBounds(10, 71, 39, 17);
-		lblNewLabel_2.setText("耗时:");
-
 		lblNewLabel_1 = new Label(shlQt, SWT.NONE);
-		lblNewLabel_1.setBounds(77, 71, 207, 17);
+		lblNewLabel_1.setBounds(249, 173, 61, 17);
 		lblNewLabel_1.setText("00:00:00");
 
 		Label lblNewLabel_7 = new Label(shlQt, SWT.NONE);
@@ -624,11 +658,11 @@ public class QT {
 
 		label_4 = new Label(shlQt, SWT.NONE);
 		label_4.setText("次数过多:");
-		label_4.setBounds(187, 104, 61, 17);
+		label_4.setBounds(163, 104, 61, 17);
 
 		label_5 = new Label(shlQt, SWT.NONE);
 		label_5.setText("0");
-		label_5.setBounds(273, 104, 61, 17);
+		label_5.setBounds(249, 104, 74, 17);
 
 		Label lblNewLabel_10 = new Label(shlQt, SWT.NONE);
 		lblNewLabel_10.setBounds(10, 172, 61, 17);
@@ -636,25 +670,44 @@ public class QT {
 
 		label_6 = new Label(shlQt, SWT.NONE);
 		label_6.setText("0/0");
-		label_6.setBounds(77, 172, 103, 17);
+		label_6.setBounds(77, 172, 80, 17);
 		
 		Label lblNewLabel = new Label(shlQt, SWT.NONE);
-		lblNewLabel.setBounds(10, 205, 61, 17);
+		lblNewLabel.setBounds(327, 104, 61, 17);
 		lblNewLabel.setText("当前令牌:");
 		
 		label_7 = new Label(shlQt, SWT.NONE);
 		label_7.setText("空");
-		label_7.setBounds(77, 205, 207, 17);
+		label_7.setBounds(394, 104, 157, 17);
 		
 		Label lblNewLabel_11 = new Label(shlQt, SWT.NONE);
-		lblNewLabel_11.setBounds(337, 104, 103, 17);
+		lblNewLabel_11.setBounds(225, 71, 96, 17);
 		lblNewLabel_11.setText("令牌复用(1~20):");
 		
 		spinner_1 = new Spinner(shlQt, SWT.BORDER);
 		spinner_1.setMaximum(20);
 		spinner_1.setMinimum(1);
 		spinner_1.setSelection(10);
-		spinner_1.setBounds(516, 101, 39, 23);
+		spinner_1.setBounds(327, 68, 39, 23);
+		
+		Label lblNewLabel_12 = new Label(shlQt, SWT.NONE);
+		lblNewLabel_12.setBounds(380, 71, 96, 17);
+		lblNewLabel_12.setText("循环次数(1~20):");
+		
+		spinner_2 = new Spinner(shlQt, SWT.BORDER);
+		spinner_2.setMaximum(20);
+		spinner_2.setMinimum(1);
+		spinner_2.setSelection(2);
+		spinner_2.setBounds(516, 68, 39, 23);
+		
+		lblNewLabel_13 = new Label(shlQt, SWT.NONE);
+		lblNewLabel_13.setAlignment(SWT.RIGHT);
+		lblNewLabel_13.setBounds(471, 71, 39, 17);
+		lblNewLabel_13.setText("0 of ");
+		
+		lblNewLabel_2 = new Label(shlQt, SWT.NONE);
+		lblNewLabel_2.setBounds(163, 173, 61, 17);
+		lblNewLabel_2.setText("耗时:");
 
 	}
 
