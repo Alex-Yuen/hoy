@@ -418,8 +418,12 @@ public class Task implements Runnable {
 					return;
 				}else if(err==142||err==201){//操作错误, 网络波动 token重复, 201 操作失败
 					//System.out.println("ERR="+err+":"+line);
-					synchronized(tokens){
-						tokens.remove(token); //删除当前token
+//					synchronized(tokens){
+//						tokens.remove(token); //删除当前token
+//					}
+					
+					synchronized(qt){
+						qt.setCTK(null);
 					}
 					
 					synchronized(proxies){
@@ -433,8 +437,12 @@ public class Task implements Runnable {
 				}else if(err==0){
 					tkn_usable = json.getInt("tkn_usable");
 					if(tkn_usable==0){ //令牌无效
-						synchronized(tokens){
-							tokens.remove(token); //删除当前token
+//						synchronized(tokens){
+//							tokens.remove(token); //删除当前token
+//						}
+						
+						synchronized(qt){
+							qt.setCTK(null);
 						}
 						
 						synchronized(proxies){
