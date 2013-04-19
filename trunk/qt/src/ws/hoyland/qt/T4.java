@@ -67,7 +67,8 @@ public class T4 {
 		byte[] key = Converts.MD5Encode(Converts.hexStringToByte(sk));
 		// System.out.println(key.length);
 
-		String imei = "012419002637419";
+		//String imei = "012419002637419";
+		String imei = "4615336679060341";
 		imei = Converts.bytesToHexString(Converts.MD5Encode(imei.getBytes()));
 		// System.out.println(imei);
 

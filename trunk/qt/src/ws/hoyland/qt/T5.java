@@ -26,7 +26,7 @@ public class T5 {
 		//String token = "1406087124841854";	//手机上的令牌序列号
 		String token = "1508699085860441";
 		token = "7058222321099474";
-		token = "1080925108305881";
+		token = "6630566601880940";
 		//1161481585011854
 		//7509235189224527
 //		/2919474605578726
@@ -117,6 +117,7 @@ public class T5 {
 			
 			sb = new StringBuffer();
 			try{
+				long ss = System.currentTimeMillis();
 				URL url = new URL("http://w.aq.qq.com/cn/mbtoken3/mbtoken3_upgrade_determin_v2?uin="+uin+"&sess_id="+sid+"&data="+data);
 				System.out.print(cc+"\t");
 				System.out.println(url.toString());
@@ -129,6 +130,7 @@ public class T5 {
 					sb.append(line);
 					System.out.println(line);
 				}
+				System.out.println(System.currentTimeMillis()-ss);
 				bin.close();
 			}catch(Exception ex){
 				ex.printStackTrace();
