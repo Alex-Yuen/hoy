@@ -14,5 +14,15 @@
 	<classpathentry kind="lib" path="D:/Eclipse/plugins/org.eclipse.ui.workbench_3.103.0.v20120530-1824.jar" sourcepath="D:/Eclipse/plugins/org.eclipse.ui.workbench.source_3.103.0.v20120530-1824.jar"/>
 	<classpathentry kind="lib" path="D:/Eclipse/plugins/com.ibm.icu_4.4.2.v20110823.jar" sourcepath="D:/Eclipse/plugins/com.ibm.icu.source_4.4.2.v20110823.jar"/>
 	<classpathentry kind="lib" path="D:/Eclipse/plugins/org.eclipse.ui.forms_3.5.200.v20120521-2329.jar" sourcepath="D:/Eclipse/plugins/org.eclipse.ui.forms.source_3.5.200.v20120521-2329.jar"/>
+	<classpathentry kind="lib" path="lib/commons-codec-1.6.jar"/>
+	<classpathentry kind="lib" path="lib/commons-logging-1.1.1.jar"/>
+	<classpathentry kind="lib" path="lib/fluent-hc-4.2.3.jar"/>
+	<classpathentry kind="lib" path="lib/hamcrest-all-1.3.jar"/>
+	<classpathentry kind="lib" path="lib/httpclient-4.2.3.jar"/>
+	<classpathentry kind="lib" path="lib/httpclient-cache-4.2.3.jar"/>
+	<classpathentry kind="lib" path="lib/httpcore-4.2.2.jar"/>
+	<classpathentry kind="lib" path="lib/httpmime-4.2.3.jar"/>
+	<classpathentry kind="lib" path="lib/json.jar"/>
+	<classpathentry kind="lib" path="lib/welcomeactivity_release_signed_11_dex2jar-remap.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

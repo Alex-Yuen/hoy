@@ -1,10 +1,17 @@
 package ws.hoyland.qm;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Button;
@@ -16,6 +23,7 @@ import org.eclipse.wb.swt.SWTResourceManager;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.widgets.TableItem;
 
 public class QM {
 
@@ -31,8 +39,24 @@ public class QM {
 	private Link link_2;
 	private Button button;
 	private Label label_1;
-	private Text text;
 	private Link link_3;
+	private Button button_1;
+	private Link link_1;
+	private Label lblMaxOfMax;
+	private Label label_10;
+	private Label lblOfMax;
+	private Label label_12;
+	private Label label_13;
+	private Label label_15;
+	private Label lblNewLabel;
+	private Text text;
+	private boolean flag = false;
+	private Button btnCheckButton;
+	private Label label_6;
+	private List<String> ns = null;
+	private List<String> proxies = null;
+	private int pc = 0;
+	private Label label;
 	
 	/**
 	 * Launch the application.
@@ -77,7 +101,7 @@ public class QM {
 		int y = bounds.y + (bounds.height - rect.height) / 2;
 		shlQqmail.setLocation(x, y);
 		
-		Label label = new Label(shlQqmail, SWT.NONE);
+		label = new Label(shlQqmail, SWT.NONE);
 		label.setBounds(10, 10, 164, 17);
 		label.setText("帐号列表 (共 0 条):");
 		
@@ -115,13 +139,86 @@ public class QM {
 		tblclmnNewColumn_3.setText("索引");
 		
 		link = new Link(shlQqmail, SWT.NONE);
+		link.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				FileDialog fileDlg = new FileDialog(shlQqmail, SWT.OPEN);
+				// fileDlg.setFilterExtensions(new String[]{"*.torrent"});
+				fileDlg.setFilterPath(null);
+				fileDlg.setText("选择帐号文件");
+				String filePath = fileDlg.open();
+				if (filePath != null) {
+					try {
+						ns = new ArrayList<String>();
+						File ipf = new File(filePath);
+						FileInputStream is = new FileInputStream(ipf);
+						InputStreamReader isr = new InputStreamReader(is);
+						BufferedReader reader = new BufferedReader(isr);
+						String line = null;
+						int i = 1;
+						while ((line = reader.readLine()) != null) {
+							line = line.trim();
+							if (!line.equals("")) {
+								ns.add(line);
+								line = i+"----"+line;
+								String[] items = line.split("----");	
+								TableItem tableItem = new TableItem(table, SWT.NONE);
+								tableItem.setText(items);
+							}
+							i++;
+							// System.out.println(line);
+						}
+						//pc = proxies.size();
+
+						reader.close();
+						isr.close();
+						is.close();
+						// System.out.println(ns.size());
+						if (ns.size() > 0) {
+							label.setText("帐号列表 (共 "+ns.size()+" 条):");
+							if (!"".equals(text_2.getText())&&((btnCheckButton.getSelection()&&proxies!=null&&proxies.size()>0)||!btnCheckButton.getSelection())) {
+								button_1.setEnabled(true);
+							}
+						}
+						lblNewLabel.setText(filePath);
+						
+						reader.close();
+						isr.close();
+						is.close();
+					} catch (Exception ex) {
+						ex.printStackTrace();
+					}
+					// System.out.println("Path:"+filePath);
+				}
+			}
+		});
 		link.setBounds(447, 10, 36, 17);
 		link.setText("<a>导入...</a>");
 		
-		Label lblNewLabel = new Label(shlQqmail, SWT.BORDER | SWT.WRAP);
+		lblNewLabel = new Label(shlQqmail, SWT.BORDER | SWT.WRAP);
 		lblNewLabel.setBounds(180, 10, 254, 17);
 		
-		Button btnCheckButton = new Button(shlQqmail, SWT.CHECK);
+		btnCheckButton = new Button(shlQqmail, SWT.CHECK);
+		btnCheckButton.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				if(btnCheckButton.getSelection()){
+					label_3.setEnabled(true);
+					label_4.setEnabled(true);
+					link_2.setEnabled(true);
+					if(pc<0){
+						button_1.setEnabled(false);
+					}
+				}else{
+					label_3.setEnabled(false);
+					label_4.setEnabled(false);
+					link_2.setEnabled(false);
+					if (ns != null && ns.size() > 0 &&!"".equals(text_2.getText())) {
+						button_1.setEnabled(true);
+					}
+				}
+			}
+		});
 		btnCheckButton.setBounds(499, 290, 117, 17);
 		btnCheckButton.setText("使用代理发送邮件");
 		
@@ -135,6 +232,53 @@ public class QM {
 		label_4.setBounds(566, 313, 254, 17);
 		
 		link_2 = new Link(shlQqmail, 0);
+		link_2.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				FileDialog fileDlg = new FileDialog(shlQqmail, SWT.OPEN);
+				// fileDlg.setFilterExtensions(new String[]{"*.torrent"});
+				fileDlg.setFilterPath(null);
+				fileDlg.setText("选择代理文件");
+				String filePath = fileDlg.open();
+				if (filePath != null) {
+					try {
+						proxies = new ArrayList<String>();
+						File ipf = new File(filePath);
+						FileInputStream is = new FileInputStream(ipf);
+						InputStreamReader isr = new InputStreamReader(is);
+						BufferedReader reader = new BufferedReader(isr);
+						String line = null;
+						while ((line = reader.readLine()) != null) {
+							line = line.trim();
+							if (!line.equals("")) {
+								proxies.add(line);
+							}
+							// System.out.println(line);
+						}
+						pc = proxies.size();
+
+						reader.close();
+						isr.close();
+						is.close();
+						// System.out.println(ns.size());
+						if (pc > 0) {
+							lblMaxOfMax.setText(proxies.size() + "/" + pc);
+							if (ns != null && ns.size() > 0 &&!"".equals(text_2.getText())) {
+								button_1.setEnabled(true);
+							}
+						}
+						label_4.setText(filePath);
+						
+						reader.close();
+						isr.close();
+						is.close();
+					} catch (Exception ex) {
+						ex.printStackTrace();
+					}
+					// System.out.println("Path:"+filePath);
+				}
+			}
+		});
 		link_2.setEnabled(false);
 		link_2.setText("<a>导入...</a>");
 		link_2.setBounds(826, 313, 36, 17);
@@ -158,10 +302,49 @@ public class QM {
 		label_1.setBounds(10, 103, 149, 73);
 		
 		text = new Text(group, SWT.BORDER | SWT.CENTER);
+		text.setEnabled(false);
 		text.setFont(SWTResourceManager.getFont("微软雅黑", 18, SWT.NORMAL));
 		text.setBounds(174, 103, 149, 73);
 		
-		Button button_1 = new Button(group, SWT.NONE);
+		button_1 = new Button(group, SWT.NONE);
+		button_1.setEnabled(false);
+		button_1.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				if("开始".equals(button_1.getText())){
+					flag = true;
+					link.setEnabled(false);
+					link_4.setEnabled(false);
+					link_1.setEnabled(false);
+					btnCheckButton.setEnabled(false);
+					
+					lblMaxOfMax.setText("0");
+					lblOfMax.setText("0");
+					label_13.setText("0");
+					label_10.setText("0");
+					label_12.setText("0");
+					label_15.setText("0");
+					
+					text.setEnabled(true);
+					link_2.setEnabled(false);
+					
+					button_1.setText("结束");
+				}else{
+					flag = false;
+					link.setEnabled(true);
+					link_4.setEnabled(true);
+					link_1.setEnabled(true);
+					btnCheckButton.setEnabled(true);
+					
+					text.setEnabled(false);
+					if(btnCheckButton.getSelection()){
+						link_2.setEnabled(true);
+					}
+					
+					button_1.setText("开始");
+				}
+			}
+		});
 		button_1.setText("开始");
 		button_1.setBounds(340, 103, 149, 73);
 		
@@ -169,17 +352,17 @@ public class QM {
 		lblNewLabel_1.setBounds(10, 37, 41, 17);
 		lblNewLabel_1.setText("代理:");
 		
-		Label lblMaxOfMax = new Label(group, SWT.NONE);
+		lblMaxOfMax = new Label(group, SWT.NONE);
 		lblMaxOfMax.setAlignment(SWT.RIGHT);
 		lblMaxOfMax.setBackground(SWTResourceManager.getColor(SWT.COLOR_GRAY));
-		lblMaxOfMax.setText("0");
+		lblMaxOfMax.setText("0/0");
 		lblMaxOfMax.setBounds(63, 37, 96, 17);
 		
 		Label label_7 = new Label(group, SWT.NONE);
 		label_7.setText("登录:");
 		label_7.setBounds(174, 37, 41, 17);
 		
-		Label lblOfMax = new Label(group, SWT.NONE);
+		lblOfMax = new Label(group, SWT.NONE);
 		lblOfMax.setAlignment(SWT.RIGHT);
 		lblOfMax.setBackground(SWTResourceManager.getColor(SWT.COLOR_GRAY));
 		lblOfMax.setText("0:0");
@@ -189,7 +372,7 @@ public class QM {
 		label_9.setText("成功:");
 		label_9.setBounds(10, 60, 41, 17);
 		
-		Label label_10 = new Label(group, SWT.NONE);
+		label_10 = new Label(group, SWT.NONE);
 		label_10.setText("0");
 		label_10.setBackground(SWTResourceManager.getColor(SWT.COLOR_GRAY));
 		label_10.setAlignment(SWT.RIGHT);
@@ -199,7 +382,7 @@ public class QM {
 		label_11.setText("失败:");
 		label_11.setBounds(174, 60, 41, 17);
 		
-		Label label_12 = new Label(group, SWT.NONE);
+		label_12 = new Label(group, SWT.NONE);
 		label_12.setText("0");
 		label_12.setBackground(SWTResourceManager.getColor(SWT.COLOR_GRAY));
 		label_12.setAlignment(SWT.RIGHT);
@@ -209,7 +392,7 @@ public class QM {
 		label_8.setText("群数:");
 		label_8.setBounds(340, 37, 41, 17);
 		
-		Label label_13 = new Label(group, SWT.NONE);
+		label_13 = new Label(group, SWT.NONE);
 		label_13.setText("0");
 		label_13.setBackground(SWTResourceManager.getColor(SWT.COLOR_GRAY));
 		label_13.setAlignment(SWT.RIGHT);
@@ -219,13 +402,13 @@ public class QM {
 		label_14.setText("保留:");
 		label_14.setBounds(340, 60, 41, 17);
 		
-		Label label_15 = new Label(group, SWT.NONE);
+		label_15 = new Label(group, SWT.NONE);
 		label_15.setText("0");
 		label_15.setBackground(SWTResourceManager.getColor(SWT.COLOR_GRAY));
 		label_15.setAlignment(SWT.RIGHT);
 		label_15.setBounds(393, 60, 96, 17);
 		
-		Link link_1 = new Link(shlQqmail, SWT.NONE);
+		link_1 = new Link(shlQqmail, SWT.NONE);
 		link_1.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
@@ -262,10 +445,51 @@ public class QM {
 		label_5.setText("模板文件:");
 		label_5.setBounds(10, 360, 61, 17);
 		
-		Label label_6 = new Label(shlQqmail, SWT.BORDER | SWT.WRAP);
+		label_6 = new Label(shlQqmail, SWT.BORDER | SWT.WRAP);
 		label_6.setBounds(77, 359, 241, 17);
 		
 		link_4 = new Link(shlQqmail, 0);
+		link_4.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				FileDialog fileDlg = new FileDialog(shlQqmail, SWT.OPEN);
+				// fileDlg.setFilterExtensions(new String[]{"*.torrent"});
+				fileDlg.setFilterPath(null);
+				fileDlg.setText("选择模板文件");
+				String filePath = fileDlg.open();
+				if (filePath != null) {
+					label_6.setText(filePath);
+					try {
+						File ipf = new File(filePath);
+						FileInputStream is = new FileInputStream(ipf);
+						InputStreamReader isr = new InputStreamReader(is);
+						BufferedReader reader = new BufferedReader(isr);
+						String line = null;
+						StringBuffer sb = new StringBuffer();
+						while ((line = reader.readLine()) != null) {
+							//line = line.trim();
+							sb.append(line+"\r\n");
+						}
+
+						text_2.setText(sb.toString());
+						
+						if(!"".equals(text_2.getText())){
+							if (ns != null && ns.size() > 0 &&((btnCheckButton.getSelection()&&proxies!=null&&proxies.size()>0)||!btnCheckButton.getSelection())) {
+								button_1.setEnabled(true);
+							}
+						}
+						
+						reader.close();
+						isr.close();
+						is.close();
+					} catch (Exception ex) {
+						ex.printStackTrace();
+					}
+					// System.out.println("Path:"+filePath);
+				}
+				
+			}
+		});
 		link_4.setText("<a>导入...</a>");
 		link_4.setBounds(331, 360, 36, 17);
 		
