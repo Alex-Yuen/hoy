@@ -1,5 +1,12 @@
 package ws.hoyland.qm;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.URL;
+import java.util.Properties;
+
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Dialog;
 import org.eclipse.swt.widgets.Display;
@@ -25,6 +32,14 @@ public class Option extends Dialog {
 	private Text text;
 	private Text text_1;
 	private boolean flag = false;
+	private Properties configuration = new Properties();
+	private Spinner spinner;
+	private Spinner spinner_1;
+	private Button btnCheckButton;
+	private Button btnCheckButton_1;
+	private Spinner spinner_2;
+	private Spinner spinner_3;
+	private Combo combo;
 
 	/**
 	 * Create the dialog.
@@ -35,14 +50,79 @@ public class Option extends Dialog {
 		super(parent, style);
 		setText("SWT Dialog");
 	}
+	
+	private void load(){
+		//load & show
+		try{
+			InputStream is = Option.class.getResourceAsStream("/qm.ini");
+			this.configuration.load(is);
+			is.close();
+			
+			if(this.configuration.size()>0){
+				spinner.setSelection(Integer.parseInt(this.configuration.getProperty("GROUP_QUANTITY")));
+				spinner_1.setSelection(Integer.parseInt(this.configuration.getProperty("TOKEN_QUANTITY")));
+				if(Integer.parseInt(this.configuration.getProperty("RECONN_GROUP_QUANTITY_FLAG"))==1){
+					btnCheckButton.setSelection(true);
+					spinner_2.setEnabled(true);
+					spinner_2.setSelection(Integer.parseInt(this.configuration.getProperty("RECONN_GROUP_QUANTITY")));
+				}else{
+					btnCheckButton.setSelection(false);
+					spinner_2.setEnabled(false);
+				}
+				
+				if(Integer.parseInt(this.configuration.getProperty("RECONN_ACCOUNT_QUANTITY_FLAG"))==1){
+					btnCheckButton_1.setSelection(true);
+					spinner_3.setEnabled(true);
+					spinner_3.setSelection(Integer.parseInt(this.configuration.getProperty("RECONN_ACCOUNT_QUANTITY")));
+				}else{
+					btnCheckButton_1.setSelection(false);
+					spinner_3.setEnabled(false);
+				}
+				
+				text.setText(this.configuration.getProperty("ADSL_ACCOUNT"));
+				text_1.setText(this.configuration.getProperty("ADSL_PASSWORD"));
+				
+			}
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+	}
+	
+	private void save(){
+		this.configuration.put("GROUP_QUANTITY", spinner.getText());
+		this.configuration.put("TOKEN_QUANTITY", spinner_1.getText());
+		this.configuration.put("RECONN_GROUP_QUANTITY_FLAG", btnCheckButton.getSelection()?"1":"0");
+		this.configuration.put("RECONN_GROUP_QUANTITY", spinner_2.getText());
+		this.configuration.put("RECONN_ACCOUNT_QUANTITY_FLAG", btnCheckButton_1.getSelection()?"1":"0");
+		this.configuration.put("RECONN_ACCOUNT_QUANTITY", spinner_3.getText());
+		this.configuration.put("ADSL_ACCOUNT", text.getText());
+		this.configuration.put("ADSL_PASSWORD", text_1.getText());
+		
+		try{
+			URL url = ClassLoader.getSystemResource("qm.ini");
+			File file = new File(url.toURI());
+			OutputStream os = new FileOutputStream(file);
+			this.configuration.store(os, null);
+			os.flush();
+			os.close();
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+	}
 
+	public Properties getConf(){
+		return this.configuration;
+	}
+	
 	public void show(){
 		if(!flag){			
-			flag = true;
+			flag = true;			
 			open();
 		}else{
 			this.shell.setVisible(true);
+			load();
 		}
+
 	}
 	/**
 	 * Open the dialog.
@@ -50,6 +130,7 @@ public class Option extends Dialog {
 	 */
 	public Object open() {
 		createContents();
+		load();
 		shell.open();		
 		shell.layout();
 		Display display = getParent().getDisplay();
@@ -99,7 +180,7 @@ public class Option extends Dialog {
 		lblNewLabel.setBounds(10, 38, 112, 17);
 		lblNewLabel.setText("每个号码发送群数:");
 		
-		Spinner spinner = new Spinner(composite, SWT.BORDER);
+		spinner = new Spinner(composite, SWT.BORDER);
 		spinner.setMaximum(10);
 		spinner.setMinimum(1);
 		spinner.setSelection(2);
@@ -109,7 +190,7 @@ public class Option extends Dialog {
 		label.setText("每个令牌发送群数:");
 		label.setBounds(10, 73, 112, 17);
 		
-		Spinner spinner_1 = new Spinner(composite, SWT.BORDER);
+		spinner_1 = new Spinner(composite, SWT.BORDER);
 		spinner_1.setMaximum(10);
 		spinner_1.setMinimum(1);
 		spinner_1.setSelection(2);
@@ -121,21 +202,21 @@ public class Option extends Dialog {
 		Composite composite_1 = new Composite(tabFolder, SWT.NONE);
 		tbtmNewItem_1.setControl(composite_1);
 		
-		Button btnCheckButton = new Button(composite_1, SWT.CHECK);
+		btnCheckButton = new Button(composite_1, SWT.CHECK);
 		btnCheckButton.setBounds(10, 24, 69, 17);
 		btnCheckButton.setText("群数重拨");
 		
-		Button btnCheckButton_1 = new Button(composite_1, SWT.CHECK);
+		btnCheckButton_1 = new Button(composite_1, SWT.CHECK);
 		btnCheckButton_1.setBounds(10, 54, 69, 17);
 		btnCheckButton_1.setText("帐号重拨");
 		
-		Spinner spinner_2 = new Spinner(composite_1, SWT.BORDER);
+		spinner_2 = new Spinner(composite_1, SWT.BORDER);
 		spinner_2.setMinimum(1);
 		spinner_2.setSelection(10);
 		spinner_2.setEnabled(false);
 		spinner_2.setBounds(92, 21, 47, 23);
 		
-		Spinner spinner_3 = new Spinner(composite_1, SWT.BORDER);
+		spinner_3 = new Spinner(composite_1, SWT.BORDER);
 		spinner_3.setMinimum(1);
 		spinner_3.setSelection(10);
 		spinner_3.setEnabled(false);
@@ -146,9 +227,10 @@ public class Option extends Dialog {
 		lblNewLabel_1.setBounds(10, 84, 61, 17);
 		lblNewLabel_1.setText("宽带连接:");
 		
-		Combo combo = new Combo(composite_1, SWT.NONE);
+		combo = new Combo(composite_1, SWT.NONE);
 		combo.setEnabled(false);
 		combo.setBounds(91, 80, 88, 25);
+		combo.setText("宽带连接");
 		
 		Label lblNewLabel_2 = new Label(composite_1, SWT.NONE);
 		lblNewLabel_2.setBounds(10, 110, 61, 17);
@@ -168,6 +250,8 @@ public class Option extends Dialog {
 		btnNewButton.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
+				//save configuration
+				save();
 				Option.this.close();
 			}
 		});
