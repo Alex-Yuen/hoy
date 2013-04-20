@@ -24,6 +24,8 @@ import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.events.ShellAdapter;
 import org.eclipse.swt.events.ShellEvent;
+import org.eclipse.swt.events.DisposeListener;
+import org.eclipse.swt.events.DisposeEvent;
 
 public class Option extends Dialog {
 
@@ -118,7 +120,6 @@ public class Option extends Dialog {
 	
 	public void show(){
 		if(!flag){			
-			flag = true;			
 			open();
 		}else{
 			this.shell.setVisible(true);
@@ -133,6 +134,7 @@ public class Option extends Dialog {
 	public Object open() {
 		createContents();
 		load();
+		flag = true;
 		shell.open();		
 		shell.layout();
 		Display display = getParent().getDisplay();
@@ -155,11 +157,12 @@ public class Option extends Dialog {
 		shell = new Shell(getParent(), getStyle());
 		shell.addShellListener(new ShellAdapter() {
 			@Override
-			public void shellActivated(ShellEvent e) {
-				//load adsl list
-				
+			public void shellClosed(ShellEvent e) {
+				shell.setVisible(false);
+				e.doit = false;
 			}
 		});
+		
 		shell.setSize(450, 300);
 		shell.setText("设置");
 		
