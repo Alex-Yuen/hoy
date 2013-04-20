@@ -155,7 +155,7 @@ public class QT {
 		if (err == 0) {
 			// this.button_2.setEnabled(true);
 			if(output[0]==null){
-				fff = new File(path + ipn + "-" + fn[0]);
+				fff = new File(path + ipn + "-" + ctimes + "-" + fn[0]);
 				try {
 					if (!fff.exists()) {
 						fff.createNewFile();
@@ -429,6 +429,13 @@ public class QT {
 						                			button_1.setText("完成");
 						                			timerTask.cancel();
 					                			}else{
+					                				try{
+						                				output[0].flush();
+						                				output[0].close();
+						                				output[0] = null;
+					                				}catch(Exception exx){
+					                					exx.printStackTrace();
+					                				}
 					                				ctimes++;
 					                				ns = new ArrayList<String>(sc);
 					                				sc.clear();
