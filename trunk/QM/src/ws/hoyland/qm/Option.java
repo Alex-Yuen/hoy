@@ -54,9 +54,11 @@ public class Option extends Dialog {
 	private void load(){
 		//load & show
 		try{
-			InputStream is = Option.class.getResourceAsStream("/qm.ini");
-			this.configuration.load(is);
-			is.close();
+			if(!flag){
+				InputStream is = Option.class.getResourceAsStream("/qm.ini");
+				this.configuration.load(is);
+				is.close();
+			}
 			
 			if(this.configuration.size()>0){
 				spinner.setSelection(Integer.parseInt(this.configuration.getProperty("GROUP_QUANTITY")));
