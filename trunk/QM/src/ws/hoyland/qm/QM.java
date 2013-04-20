@@ -7,6 +7,14 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.TimerTask;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.RejectedExecutionHandler;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.ThreadPoolExecutor.AbortPolicy;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Rectangle;
@@ -57,6 +65,8 @@ public class QM {
 	private List<String> proxies = null;
 	private int pc = 0;
 	private Label label;
+	private ThreadPoolExecutor pool;
+	private TimerTask timerTask;
 	
 	/**
 	 * Launch the application.
@@ -124,19 +134,19 @@ public class QM {
 		
 		TableColumn tblclmnNewColumn = new TableColumn(table, SWT.NONE);
 		tblclmnNewColumn.setWidth(70);
-		tblclmnNewColumn.setText("状态");
+		tblclmnNewColumn.setText("索引");
 		
 		TableColumn tblclmnNewColumn_1 = new TableColumn(table, SWT.NONE);
 		tblclmnNewColumn_1.setWidth(70);
-		tblclmnNewColumn_1.setText("群数");
+		tblclmnNewColumn_1.setText("状态");
 		
 		TableColumn tblclmnNewColumn_2 = new TableColumn(table, SWT.NONE);
 		tblclmnNewColumn_2.setWidth(70);
-		tblclmnNewColumn_2.setText("成功");
+		tblclmnNewColumn_2.setText("群数");
 		
 		TableColumn tblclmnNewColumn_3 = new TableColumn(table, SWT.NONE);
 		tblclmnNewColumn_3.setWidth(70);
-		tblclmnNewColumn_3.setText("索引");
+		tblclmnNewColumn_3.setText("成功");
 		
 		link = new Link(shlQqmail, SWT.NONE);
 		link.addSelectionListener(new SelectionAdapter() {
@@ -161,7 +171,13 @@ public class QM {
 							if (!line.equals("")) {
 								ns.add(line);
 								line = i+"----"+line;
-								String[] items = line.split("----");	
+								String[] items = line.split("----");
+								if(items.length==3){
+									line += "----0----初始化";
+								}else{
+									line += "----初始化";
+								}
+								items = line.split("----");
 								TableItem tableItem = new TableItem(table, SWT.NONE);
 								tableItem.setText(items);
 							}
@@ -317,6 +333,7 @@ public class QM {
 					link_4.setEnabled(false);
 					link_1.setEnabled(false);
 					btnCheckButton.setEnabled(false);
+					button.setEnabled(false);
 					
 					lblMaxOfMax.setText("0");
 					lblOfMax.setText("0");
@@ -324,17 +341,71 @@ public class QM {
 					label_10.setText("0");
 					label_12.setText("0");
 					label_15.setText("0");
-					
+										
 					text.setEnabled(true);
-					link_2.setEnabled(false);
+					link_2.setEnabled(false);					
+
+					Display.getDefault().asyncExec(new Runnable() {
+
+						@Override
+						public void run() {
+							// 线程池 数据库连接池 可联系起来
+							int corePoolSize = 3;// minPoolSize
+							int maxPoolSize = 3;
+							int maxTaskSize = 1024*10;// 缓冲队列
+							long keepAliveTime = 0L;
+							TimeUnit unit = TimeUnit.MILLISECONDS;
+							//corePoolSize = Integer.parseInt(spinner.getText());
+							//maxPoolSize = Integer.parseInt(spinner.getText()) * 2;// 最大同时执行的线程
+							// maxTaskSize = maxPoolSize;
+							// System.out.println(maxTaskSize);
+							// 任务队列
+							BlockingQueue<Runnable> workQueue = new ArrayBlockingQueue<Runnable>(
+									maxTaskSize);
+							// 饱和处理策略
+							RejectedExecutionHandler handler = new AbortPolicy();
+							// 创建线程池
+							pool = new ThreadPoolExecutor(corePoolSize,
+									maxPoolSize, keepAliveTime, unit,
+									workQueue, handler);
+							
+							for (int i = 0; i < table.getItemCount(); i++) {
+								//String[] qp = ns.get(i).split("----");
+								try {
+									//if (qp.length == 3) {
+										Task task = new Task(pool, proxies, table.getItem(i), null,
+												QM.this);
+										pool.execute(task);
+									//}
+								} catch (ArrayIndexOutOfBoundsException exx) {
+									System.out.println(i + ":" + ns.get(i));
+								}
+							}
+							
+							timerTask = new TimerTask() { 					             
+					            @Override 
+					            public void run() { 
+					                Display.getDefault().asyncExec(new Runnable() { 					                     
+					                    @Override 
+					                    public void run() { 
+					                    	//刷新
+					                    }
+					                });
+					            }
+						    };
+						}
+					});
 					
 					button_1.setText("结束");
 				}else{
+					pool.shutdownNow();
+					
 					flag = false;
 					link.setEnabled(true);
 					link_4.setEnabled(true);
 					link_1.setEnabled(true);
 					btnCheckButton.setEnabled(true);
+					button.setEnabled(true);
 					
 					text.setEnabled(false);
 					if(btnCheckButton.getSelection()){
