@@ -13,9 +13,10 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.events.ShellAdapter;
+import org.eclipse.swt.events.ShellEvent;
 
 public class Option extends Dialog {
 
@@ -23,6 +24,7 @@ public class Option extends Dialog {
 	protected Shell shell;
 	private Text text;
 	private Text text_1;
+	private boolean flag = false;
 
 	/**
 	 * Create the dialog.
@@ -34,6 +36,14 @@ public class Option extends Dialog {
 		setText("SWT Dialog");
 	}
 
+	public void show(){
+		if(!flag){			
+			flag = true;
+			open();
+		}else{
+			this.shell.setVisible(true);
+		}
+	}
 	/**
 	 * Open the dialog.
 	 * @return the result
@@ -48,7 +58,6 @@ public class Option extends Dialog {
 				display.sleep();
 			}
 		}
-
 		return result;
 	}
 
@@ -61,6 +70,13 @@ public class Option extends Dialog {
 	 */
 	private void createContents() {
 		shell = new Shell(getParent(), getStyle());
+		shell.addShellListener(new ShellAdapter() {
+			@Override
+			public void shellActivated(ShellEvent e) {
+				//load adsl list
+				
+			}
+		});
 		shell.setSize(450, 300);
 		shell.setText("设置");
 		
@@ -126,10 +142,12 @@ public class Option extends Dialog {
 		spinner_3.setBounds(92, 51, 47, 23);
 		
 		Label lblNewLabel_1 = new Label(composite_1, SWT.NONE);
+		lblNewLabel_1.setEnabled(false);
 		lblNewLabel_1.setBounds(10, 84, 61, 17);
 		lblNewLabel_1.setText("宽带连接:");
 		
 		Combo combo = new Combo(composite_1, SWT.NONE);
+		combo.setEnabled(false);
 		combo.setBounds(91, 80, 88, 25);
 		
 		Label lblNewLabel_2 = new Label(composite_1, SWT.NONE);
@@ -143,7 +161,7 @@ public class Option extends Dialog {
 		label_1.setText("宽带密码:");
 		label_1.setBounds(10, 136, 61, 17);
 		
-		text_1 = new Text(composite_1, SWT.BORDER);
+		text_1 = new Text(composite_1, SWT.BORDER | SWT.PASSWORD);
 		text_1.setBounds(92, 133, 139, 23);
 		
 		Button btnNewButton = new Button(shell, SWT.NONE);

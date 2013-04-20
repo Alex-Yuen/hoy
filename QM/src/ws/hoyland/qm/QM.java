@@ -1,5 +1,7 @@
 package ws.hoyland.qm;
 
+import java.io.IOException;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Display;
@@ -30,7 +32,8 @@ public class QM {
 	private Button button;
 	private Label label_1;
 	private Text text;
-
+	private Link link_3;
+	
 	/**
 	 * Launch the application.
 	 * @param args
@@ -210,14 +213,28 @@ public class QM {
 		link_1.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				option.open();
+				option.show();
 				//System.out.println(e.text);
 			}
 		});
 		link_1.setBounds(809, 337, 53, 17);
 		link_1.setText("<a>高级设置</a>");
 		
-		Link link_3 = new Link(shlQqmail, SWT.NONE);
+		link_3 = new Link(shlQqmail, SWT.NONE);
+		link_3.setToolTipText("http://www.hoyland.ws");
+		link_3.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				String cmd = "rundll32 url.dll, FileProtocolHandler "  
+                         + link_3.getToolTipText();
+				 //System.out.println(cmd);
+                 try {
+                	 Runtime.getRuntime().exec(cmd);
+                 } catch (IOException ex) {
+                	 ex.printStackTrace();
+                 }
+			}
+		});
 		link_3.setBounds(10, 541, 852, 17);
 		link_3.setText("<a>http://www.hoyland.ws</a>");
 		
