@@ -91,12 +91,28 @@ public class QM {
 		tblclmnId.setText("ID");
 		
 		TableColumn tblclmnAccount = new TableColumn(table, SWT.NONE);
-		tblclmnAccount.setWidth(67);
-		tblclmnAccount.setText("Account");
+		tblclmnAccount.setWidth(70);
+		tblclmnAccount.setText("帐号");
 		
 		TableColumn tblclmnPassword = new TableColumn(table, SWT.NONE);
-		tblclmnPassword.setWidth(74);
-		tblclmnPassword.setText("Password");
+		tblclmnPassword.setWidth(70);
+		tblclmnPassword.setText("密码");
+		
+		TableColumn tblclmnNewColumn = new TableColumn(table, SWT.NONE);
+		tblclmnNewColumn.setWidth(70);
+		tblclmnNewColumn.setText("状态");
+		
+		TableColumn tblclmnNewColumn_1 = new TableColumn(table, SWT.NONE);
+		tblclmnNewColumn_1.setWidth(70);
+		tblclmnNewColumn_1.setText("群数");
+		
+		TableColumn tblclmnNewColumn_2 = new TableColumn(table, SWT.NONE);
+		tblclmnNewColumn_2.setWidth(70);
+		tblclmnNewColumn_2.setText("成功");
+		
+		TableColumn tblclmnNewColumn_3 = new TableColumn(table, SWT.NONE);
+		tblclmnNewColumn_3.setWidth(70);
+		tblclmnNewColumn_3.setText("索引");
 		
 		link = new Link(shlQqmail, SWT.NONE);
 		link.setBounds(447, 10, 36, 17);
