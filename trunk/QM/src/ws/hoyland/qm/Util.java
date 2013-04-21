@@ -1,6 +1,5 @@
 package ws.hoyland.qm;
 
-import java.io.FileInputStream;
 import java.io.InputStream;
 import java.security.PublicKey;
 import java.security.cert.Certificate;
@@ -15,8 +14,7 @@ public class Util {
 		try {
 			CertificateFactory localCertificateFactory = CertificateFactory
 					.getInstance("X.509");
-			InputStream localInputStream = new FileInputStream(
-					"/Theoservice.cer");
+			InputStream localInputStream = Util.class.getResourceAsStream("/Theoservice.cer");
 			Certificate localCertificate = localCertificateFactory
 					.generateCertificate(localInputStream);
 			localInputStream.close();

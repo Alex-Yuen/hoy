@@ -1,31 +1,54 @@
 package ws.hoyland.qm;
 
+import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ThreadPoolExecutor;
 
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.NameValuePair;
-import org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.http.NameValuePair;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.params.CoreConnectionPNames;
+import org.apache.http.util.EntityUtils;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.TableItem;
 import org.json.JSONObject;
-
-import qqmail.QQMail;
 
 public class Task implements Runnable {
 
 	protected QM qm;
 	private TableItem item;
-	
+	private String line;
+	private final String UAG = "Dalvik/1.2.0 (Linux; U; Android 2.2; sdk Build/FRF91)";
+	private String captcha;
+	protected String sid;
+	private Image image;
+	private String uin;
+	private String password;
+
 	public Task(ThreadPoolExecutor pool, List<String> proxies, TableItem item,
 			Object object, QM qm) {
 		this.qm = qm;
 		this.item = item;
+		this.uin = item.getText(1);
+		this.password = item.getText(2);
 	}
-
+	
+	public void setCaptcha(String captcha){
+		this.captcha = captcha;
+	}
+	
+	public Image getImage(){
+		return this.image;
+	}
+	
 	@Override
 	public void run() {
 		
@@ -38,83 +61,168 @@ public class Task implements Runnable {
 		client.getParams().setParameter(CoreConnectionPNames.SO_TIMEOUT, 5000);
 		//client.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, proxy);
 		
-		PostMethod post = new PostMethod("http://i.mail.qq.com/cgi-bin/login");
-		try {
-	        client.getHostConfiguration().setHost("i.mail.qq.com", 80, "http");
-	        NameValuePair uin = new NameValuePair("uin", this.number);
-	        NameValuePair pwd = new NameValuePair("pwd", encrypt(this.password + "\r\n" + new Date().getTime()));
-	        NameValuePair aliastype = new NameValuePair("aliastype", "@qq.com");
-	        NameValuePair t = new NameValuePair("t", "login_json");
-	        NameValuePair dnsstamp = new NameValuePair("dnsstamp", "2012010901");
-	        NameValuePair os = new NameValuePair("os", "android");
-	        NameValuePair error = new NameValuePair("error", "app");
-	        NameValuePair f = new NameValuePair("f", "xhtml");
-	        NameValuePair apv = new NameValuePair("apv", "0.9.5.2");
-	        if(this.captcha != null && !this.captcha.isEmpty()) {
-	        	NameValuePair verifycode = new NameValuePair("verifycode", this.captcha);
-	        	NameValuePair vid = new NameValuePair("vid", this.captchaId);
-	        	NameValuePair vuin = new NameValuePair("vuin", this.captchaUin);	
-	        	NameValuePair vurl = new NameValuePair("vurl", this.captchaUrl);
-	        	NameValuePair authtype = new NameValuePair("authtype", this.authtype);
-	        	post.setRequestBody(new NameValuePair[] { uin, pwd, aliastype, t, dnsstamp, os, error, f, apv, verifycode, vid, vuin, vurl, authtype});
-	        } else {
-	        	post.setRequestBody(new NameValuePair[] { uin, pwd, aliastype, t, dnsstamp, os, error, f, apv});
-	        }	        
-		    
-	        client.executeMethod(post);
-		    String response = new String(post.getResponseBodyAsString().getBytes("8859_1"));
-	    	try {
-	    		JSONObject jobject = new JSONObject(response);
-		    	if(jobject.has("sid") && !jobject.getString("sid").isEmpty()) {			    	
-			    	this.setSid(jobject.getString("sid"));
-			    	String info = this.number + " 登录成功"; 
-					logger.info(info);
-					QQMail.appendLogToUI(info);
-					return true;
-			    } else if(jobject.has("errtype") && !jobject.getString("errtype").isEmpty() &&
-			    		jobject.getString("errtype").equals("1")) {
-			    	doLoginFailure(this.number + " 密码错误，跳过此QQ号");
-			    } else if(jobject.has("errmsg") && !jobject.getString("errmsg").isEmpty()) {
-			    	String[] items = jobject.getString("errmsg").split("&");
-			    	boolean needCaptcha = false;
-			    	for(String item : items) {
-			    		String[] pair = item.split("=");
-			    		if(pair.length == 2) {
-			    			if(pair[0].equals("vurl")) {
-			    				//验证码只提示一次
-				    			if(this.captcha != null && !this.captcha.isEmpty()) {
-				    				doLoginFailure(this.number + " 验证码输入错误或者此账号已被封，跳过此QQ号");
-				    				return false;
-				    			} else {
-				    				this.captchaUrl = pair[1];	
-				    				needCaptcha = true;
-				    			}	
-			    			} else if(pair[0].equals("vid")) {
-			    				this.captchaId = pair[1];
-			    			} else if(pair[0].equals("vuin")) {
-			    				this.captchaUin = pair[1];
-			    			} else if(pair[0].equals("authtype")) {
-			    				this.authtype = pair[1];
-			    			} 
-			    		}			    		
-			    	}
-			    	if(needCaptcha) {
-				    	this.notifyNeedCaptcha(this.captchaUrl + ".gif");
-				    } else {
-				    	doLoginFailure(this.number + "登录失败，此账号已被封， 跳过此QQ号");
-				    }
-			    } 
-	    	} catch(Exception e) {
-	    		doLoginFailure(this.number + " 登录失败, 原因: 账号异常");
-	    	}
-		    		    
-		} catch(Exception ex) {
-			ex.printStackTrace();
-		} finally {
-			post.releaseConnection();
-		}		
+		HttpResponse response = null;
+		HttpEntity entity = null;
+		JSONObject json = null;
+		HttpPost post = null;
 		
-		info("完成", false);		
+		try{
+			post = new HttpPost("http://i.mail.qq.com/cgi-bin/login");
+			post.setHeader("User-Agent", UAG);
+			post.setHeader("Connection", "Keep-Alive");
+			
+			List <NameValuePair> nvps = new ArrayList <NameValuePair>();
+            nvps.add(new BasicNameValuePair("uin", this.uin));
+            
+            nvps.add(new BasicNameValuePair("pwd", Util.encrypt(this.password + "\r\n" + new Date().getTime())));
+            nvps.add(new BasicNameValuePair("aliastype", "@qq.com"));
+            nvps.add(new BasicNameValuePair("t", "login_json"));
+            nvps.add(new BasicNameValuePair("dnsstamp", "2012010901"));
+            nvps.add(new BasicNameValuePair("os", "android"));
+            nvps.add(new BasicNameValuePair("error", "app"));
+            nvps.add(new BasicNameValuePair("f", "xhtml"));
+            nvps.add(new BasicNameValuePair("apv", "0.9.5.2"));
+
+            post.setEntity(new UrlEncodedFormEntity(nvps));            
+			response = client.execute(post);
+			entity = response.getEntity();
+
+			line = EntityUtils.toString(entity);
+			EntityUtils.consume(entity);
+		}catch(Exception e){
+			info("连接异常", false);
+			e.printStackTrace();
+		}finally {
+			post.releaseConnection();
+			//client.getConnectionManager().shutdown();
+        }
+		
+		String captchaId = null;
+		String captchaUin = null;
+		String authtype = null;
+		String captchaUrl = null;
+		
+		try {
+			json = new JSONObject(line);
+	    	if(json.has("sid") && !json.getString("sid").isEmpty()) {			    	
+		    	sid = json.getString("sid");
+		    	info("登录成功", false);
+		    } else if(json.has("errtype") && !json.getString("errtype").isEmpty() &&
+		    		json.getString("errtype").equals("1")) {
+		    	info("登录失败:密码错误", false);
+		    } else if(json.has("errmsg") && !json.getString("errmsg").isEmpty()) {
+		    	String[] items = json.getString("errmsg").split("&");
+		    	boolean needCaptcha = false;
+		    	for(String item : items) {
+		    		String[] pair = item.split("=");
+		    		if(pair.length == 2) {
+		    			if(pair[0].equals("vurl")) {
+		    				needCaptcha = true;
+			    			captchaUrl = pair[1];	
+		    			} else if(pair[0].equals("vid")) {
+		    				captchaId = pair[1];
+		    			} else if(pair[0].equals("vuin")) {
+		    				captchaUin = pair[1];
+		    			} else if(pair[0].equals("authtype")) {
+		    				authtype = pair[1];
+		    			}
+		    		}
+		    	}
+		    	
+		    	if(needCaptcha) {
+		    		try{
+//		    			Display.getDefault().asyncExec(new Runnable(){
+//		    				@Override
+//		    				public void run() {
+//				    			qm.help(Task.this);
+//		    				}
+//		    			});
+		    			HttpGet get = null;
+
+		    			try {
+		    				get = new HttpGet("http://vc.gtimg.com/" + captchaUrl
+		    						+ ".gif");
+		    				get.setHeader("Connection", "Keep-Alive");
+
+		    				response = client.execute(get);
+		    				entity = response.getEntity();
+
+		    				InputStream input = entity.getContent();
+		    				image = new Image(Display.getDefault(), input);
+		    				EntityUtils.consume(entity);
+		    			} catch (Exception e) {
+		    				e.printStackTrace();
+		    			} finally {
+		    				get.releaseConnection();
+		    			}
+		    			
+		    			Display.getDefault().asyncExec(new Runnable(){
+		    				@Override
+		    				public void run() {
+				    			qm.showImage(Task.this);
+		    				}
+		    			});
+		    			
+		    			this.wait();
+		    			
+		    			post = new HttpPost("http://i.mail.qq.com/cgi-bin/login");
+		    			post.setHeader("User-Agent", UAG);
+		    			post.setHeader("Connection", "Keep-Alive");
+		    			
+		    			List <NameValuePair> nvps = new ArrayList <NameValuePair>();
+		                nvps.add(new BasicNameValuePair("uin", item.getText(1)));
+		                
+		                nvps.add(new BasicNameValuePair("pwd", Util.encrypt(item.getText(2) + "\r\n" + new Date().getTime())));
+		                nvps.add(new BasicNameValuePair("aliastype", "@qq.com"));
+		                nvps.add(new BasicNameValuePair("t", "login_json"));
+		                nvps.add(new BasicNameValuePair("dnsstamp", "2012010901"));
+		                nvps.add(new BasicNameValuePair("os", "android"));
+		                nvps.add(new BasicNameValuePair("error", "app"));
+		                nvps.add(new BasicNameValuePair("f", "xhtml"));
+		                nvps.add(new BasicNameValuePair("apv", "0.9.5.2"));
+		                
+		                nvps.add(new BasicNameValuePair("verifycode", captcha));
+		                nvps.add(new BasicNameValuePair("vid", captchaId));
+		                nvps.add(new BasicNameValuePair("vuin", captchaUin));	
+		                nvps.add(new BasicNameValuePair("vurl", captchaUrl));
+		                nvps.add(new BasicNameValuePair("authtype", authtype));
+			        	
+		                post.setEntity(new UrlEncodedFormEntity(nvps));            
+		    			response = client.execute(post);
+		    			entity = response.getEntity();
+
+		    			line = EntityUtils.toString(entity);
+		    			EntityUtils.consume(entity);
+		    			
+		    			json = new JSONObject(line);
+		    	    	if(json.has("sid") && !json.getString("sid").isEmpty()) {			    	
+		    		    	sid = json.getString("sid");
+		    		    	info("登录成功", false);
+		    		    } else if(json.has("errtype") && !json.getString("errtype").isEmpty() &&
+		    		    		json.getString("errtype").equals("1")) {
+		    		    	info("登录失败:密码错误", false);
+		    		    } else if(json.has("errmsg") && !json.getString("errmsg").isEmpty()) {
+		    		    	info("登录失败:验证码错误或者帐号被封", false);
+		    		    }else{
+		    		    	info("登录失败:异常3", false);
+		    		    }
+		    		}catch(Exception e){
+		    			info("登录失败:连接异常", false);
+		    			e.printStackTrace();
+		    		}finally {
+		    			post.releaseConnection();
+		            }
+			    } else {
+			    	info("登录失败:账号被封", false);
+			    }
+		    }else{
+		    	info("登录失败:异常2", false);
+		    }
+    	} catch(Exception e) {
+    		info("登录失败:异常1", false);
+    	}
+		
+		client.getConnectionManager().shutdown();
 	}
 	
 	private void info(final String status, final boolean flag){
@@ -129,5 +237,4 @@ public class Task implements Runnable {
 			}
 		});
 	}
-
 }
