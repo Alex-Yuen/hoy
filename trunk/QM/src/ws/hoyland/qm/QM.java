@@ -345,13 +345,17 @@ public class QM {
 			@Override
 			public void keyReleased(KeyEvent e) {
 				if(text.getText().length()==4&&ctask!=null){
+					//System.out.println(ctask+"->A");
 					ctask.setCaptcha(text.getText());
 					//解锁ctask
 					synchronized(ctask){
+						//System.out.println(ctask+"->B");
 						ctask.notify();
 					}
+					//System.out.println(ctask+"->C");
 					//生产者
 					basket.push();
+					//System.out.println(ctask+"->D");
 					text.setText("");
 				}
 			}
@@ -641,6 +645,10 @@ public class QM {
 
 	public Basket getBasket(){
 		return this.basket;
+	}
+	
+	public boolean useProxy(){
+		return btnCheckButton.getSelection();
 	}
 //	public void help(Task task) {
 //		DefaultHttpClient client = new DefaultHttpClient();

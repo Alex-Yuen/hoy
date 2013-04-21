@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ThreadPoolExecutor;
 
+import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.http.NameValuePair;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -21,6 +22,8 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.TableItem;
 import org.json.JSONObject;
 
+import qqmail.Mail;
+
 public class Task implements Runnable {
 
 	protected QM qm;
@@ -33,6 +36,7 @@ public class Task implements Runnable {
 	private String uin;
 	private String password;
 	private Basket basket;
+	private int index;
 
 	public Task(ThreadPoolExecutor pool, List<String> proxies, TableItem item,
 			Object object, QM qm, Basket basket) {
@@ -41,6 +45,7 @@ public class Task implements Runnable {
 		this.item = item;
 		this.uin = item.getText(1);
 		this.password = item.getText(2);
+		this.index = Integer.parseInt(item.getText(3));
 	}
 	
 	public void setCaptcha(String captcha){
@@ -67,6 +72,7 @@ public class Task implements Runnable {
 		HttpEntity entity = null;
 		JSONObject json = null;
 		HttpPost post = null;
+		HttpGet get = null;
 		
 		try{
 			post = new HttpPost("http://i.mail.qq.com/cgi-bin/login");
@@ -92,7 +98,7 @@ public class Task implements Runnable {
 			line = EntityUtils.toString(entity);
 			EntityUtils.consume(entity);
 		}catch(Exception e){
-			info("连接异常", false);
+			info("登录失败:异常1", false);
 			e.printStackTrace();
 		}finally {
 			post.releaseConnection();
@@ -139,7 +145,7 @@ public class Task implements Runnable {
 //				    			qm.help(Task.this);
 //		    				}
 //		    			});
-		    			HttpGet get = null;
+		    			info("需验证码", false);
 
 		    			try {
 		    				get = new HttpGet("http://vc.gtimg.com/" + captchaUrl
@@ -158,8 +164,9 @@ public class Task implements Runnable {
 		    				get.releaseConnection();
 		    			}
 
+		    			//System.out.println(this+"->1");
 						basket.pop();//消费者
-						
+						//System.out.println(this+"->2");
 		    			Display.getDefault().asyncExec(new Runnable(){
 		    				@Override
 		    				public void run() {
@@ -175,8 +182,10 @@ public class Task implements Runnable {
 		    			});
 		    			
 		    			synchronized(this){
+		    				//System.out.println(this+"->3");
 		    				//System.out.println(this+" wait");
 		    				this.wait();
+		    				//System.out.println(this+"->4");
 		    			}
 		    			
 		    			post = new HttpPost("http://i.mail.qq.com/cgi-bin/login");
@@ -218,10 +227,10 @@ public class Task implements Runnable {
 		    		    } else if(json.has("errmsg") && !json.getString("errmsg").isEmpty()) {
 		    		    	info("登录失败:验证码错误或者帐号被封", false);
 		    		    }else{
-		    		    	info("登录失败:异常3", false);
+		    		    	info("登录失败:异常5", false);
 		    		    }
 		    		}catch(Exception e){
-		    			info("登录失败:连接异常", false);
+		    			info("登录失败:异常4", false);
 		    			e.printStackTrace();
 		    		}finally {
 		    			post.releaseConnection();
@@ -230,11 +239,81 @@ public class Task implements Runnable {
 			    	info("登录失败:账号被封", false);
 			    }
 		    }else{
-		    	info("登录失败:异常2", false);
+		    	info("登录失败:异常3", false);
 		    }
     	} catch(Exception e) {
-    		info("登录失败:异常1", false);
+    		info("登录失败:异常2", false);
     	}
+
+		line = null;
+		List<String> group = new ArrayList<String>();
+		int gc = 0;
+		
+		try{
+			//获取群列表
+			get = new HttpGet("http://i.mail.qq.com/cgi-bin/grouplist?sid="+ this.sid + "&t=grouplist_json&error=app&f=xhtml&apv=0.9.5.2&os=android");
+			response = client.execute(get);
+			entity = response.getEntity();
+						
+			line = EntityUtils.toString(entity);
+			EntityUtils.consume(entity);
+			    
+		    JSONObject items =  new JSONObject(line).getJSONObject("items");
+		    gc = items.getInt("opcnt");
+		    String groupStr = items.getString("item").replace("[", "").replace("]", ",");		    
+		    
+		    String[] groups = groupStr.split("},");
+		    for(int i = 0; i < groups.length; i++) {
+		    	String id = new JSONObject(groups[i] + "}").getString("id");
+		    	group.add(id);
+		    }
+		    
+		    info("取群列表", false);
+		    
+		    if(gc == 0) {
+		    	info("无可用群", false);
+		    }else{
+		    	//发送
+		    	for(int i=0;i<group.size();i++){
+		    		try{
+		    			post = new HttpPost("http://i.mail.qq.com/cgi-bin/groupmail_send");
+			 	        NameValuePair ssid = new NameValuePair("sid", account.getSid());
+			 	        NameValuePair t = new NameValuePair("t", "mobile_mgr.json");
+			 	        NameValuePair s = new NameValuePair("s", "groupsend");
+			 	        NameValuePair qqgroupid = new NameValuePair("qqgroupid", groupId);
+			 	        NameValuePair fmailid = new NameValuePair("fmailid", "$id$");
+			 	        NameValuePair content__html = new NameValuePair("content__html", Mail.content);
+			 	        NameValuePair subject = new NameValuePair("subject", Mail.title);
+			 	        NameValuePair signadded = new NameValuePair("signadded", "yes");
+			 	        NameValuePair fattachlist = new NameValuePair("fattachlist", "");
+			 	        NameValuePair cattachelist = new NameValuePair("cattachelist", "$cattLst$");
+			 	        NameValuePair devicetoken = new NameValuePair("devicetoken", getRandomToken(187));
+			 	        NameValuePair os = new NameValuePair("os", "android");
+			 	        NameValuePair ReAndFw = new NameValuePair("ReAndFw", "forward");
+			 	        NameValuePair ReAndFwMailid = new NameValuePair("ReAndFwMailid", "");
+			 	        NameValuePair error = new NameValuePair("error", "app");
+			 	        NameValuePair f = new NameValuePair("f", "xhtml");
+			 	        NameValuePair apv = new NameValuePair("os", "0.9.5.2");
+			 	        
+			 	        post.setRequestBody(new NameValuePair[] { ssid, t,s,qqgroupid,fmailid, content__html, subject, signadded,
+			 	        		fattachlist, cattachelist,devicetoken, os, ReAndFw, ReAndFwMailid, error, f, apv });
+			 	        client.executeMethod(post);
+			 	        
+			 	        String response =   new String(post.getResponseBodyAsString().getBytes("8859_1"));
+		    		}catch(Exception e){
+		    			info("发送失败:异常", false);
+		    			e.printStackTrace();
+		    		}finally{
+		    			post.releaseConnection();
+		    		}
+		    	}
+		    }
+		}catch(Exception e){
+			e.printStackTrace();
+			info("取群列表失败", false);
+		}finally{
+			get.releaseConnection();
+		}
 		
 		client.getConnectionManager().shutdown();
 	}
