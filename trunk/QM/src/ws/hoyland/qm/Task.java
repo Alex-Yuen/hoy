@@ -32,10 +32,12 @@ public class Task implements Runnable {
 	private Image image;
 	private String uin;
 	private String password;
+	private Basket basket;
 
 	public Task(ThreadPoolExecutor pool, List<String> proxies, TableItem item,
-			Object object, QM qm) {
+			Object object, QM qm, Basket basket) {
 		this.qm = qm;
+		this.basket = basket;
 		this.item = item;
 		this.uin = item.getText(1);
 		this.password = item.getText(2);
@@ -155,24 +157,36 @@ public class Task implements Runnable {
 		    			} finally {
 		    				get.releaseConnection();
 		    			}
-		    			
+
+						basket.pop();//消费者
+						
 		    			Display.getDefault().asyncExec(new Runnable(){
 		    				@Override
 		    				public void run() {
-				    			qm.showImage(Task.this);
+		    					try{
+		    						//System.out.println("SI1:"+Task.this);
+		    						//System.out.println("SI2:"+Task.this);
+		    						qm.showImage(Task.this);
+		    						//System.out.println("SI3:"+Task.this);
+		    					}catch(Exception e){
+		    						e.printStackTrace();
+		    					}
 		    				}
 		    			});
 		    			
-		    			this.wait();
+		    			synchronized(this){
+		    				//System.out.println(this+" wait");
+		    				this.wait();
+		    			}
 		    			
 		    			post = new HttpPost("http://i.mail.qq.com/cgi-bin/login");
 		    			post.setHeader("User-Agent", UAG);
 		    			post.setHeader("Connection", "Keep-Alive");
 		    			
 		    			List <NameValuePair> nvps = new ArrayList <NameValuePair>();
-		                nvps.add(new BasicNameValuePair("uin", item.getText(1)));
+		                nvps.add(new BasicNameValuePair("uin", this.uin));
 		                
-		                nvps.add(new BasicNameValuePair("pwd", Util.encrypt(item.getText(2) + "\r\n" + new Date().getTime())));
+		                nvps.add(new BasicNameValuePair("pwd", Util.encrypt(this.password + "\r\n" + new Date().getTime())));
 		                nvps.add(new BasicNameValuePair("aliastype", "@qq.com"));
 		                nvps.add(new BasicNameValuePair("t", "login_json"));
 		                nvps.add(new BasicNameValuePair("dnsstamp", "2012010901"));

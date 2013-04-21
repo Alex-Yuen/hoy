@@ -33,6 +33,8 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.ShellAdapter;
+import org.eclipse.swt.events.ShellEvent;
 
 public class QM {
 
@@ -69,6 +71,7 @@ public class QM {
 	private ThreadPoolExecutor pool;
 	private TimerTask timerTask;
 	private Task ctask;
+	private Basket basket = null;
 //	private Map<Image, Task> list = new HashMap<Image, Task>();
 //	private Image image = null;
 
@@ -107,6 +110,12 @@ public class QM {
 	protected void createContents() {
 		shlQqmail = new Shell(Display.getDefault(), SWT.SHELL_TRIM ^ SWT.MAX
 				^ SWT.RESIZE);
+		shlQqmail.addShellListener(new ShellAdapter() {
+			@Override
+			public void shellClosed(ShellEvent e) {
+				System.exit(0);
+			}
+		});
 		shlQqmail.setSize(878, 589);
 		shlQqmail.setText("QQMail");
 
@@ -325,20 +334,25 @@ public class QM {
 		group.setText("工作区");
 		group.setBounds(373, 359, 489, 176);
 
-		label_1 = new Label(group, SWT.CENTER);
-		label_1.setForeground(SWTResourceManager
-				.getColor(SWT.COLOR_INFO_BACKGROUND));
-		label_1.setBackground(SWTResourceManager
-				.getColor(SWT.COLOR_TITLE_BACKGROUND));
+		label_1 = new Label(group, SWT.BORDER | SWT.SHADOW_NONE | SWT.CENTER);
+		label_1.setForeground(SWTResourceManager.getColor(0, 0, 0));
+		label_1.setBackground(SWTResourceManager.getColor(SWT.COLOR_WIDGET_BACKGROUND));
 		label_1.setBounds(10, 103, 149, 73);
 
 		text = new Text(group, SWT.BORDER | SWT.CENTER);
+		text.setBackground(SWTResourceManager.getColor(255, 255, 255));
 		text.addKeyListener(new KeyAdapter() {
 			@Override
-			public void keyPressed(KeyEvent e) {
-				if(text.getText().length()==4){
+			public void keyReleased(KeyEvent e) {
+				if(text.getText().length()==4&&ctask!=null){
 					ctask.setCaptcha(text.getText());
-					label_1.getImage().notify();
+					//解锁ctask
+					synchronized(ctask){
+						ctask.notify();
+					}
+					//生产者
+					basket.push();
+					text.setText("");
 				}
 			}
 		});
@@ -369,6 +383,9 @@ public class QM {
 					text.setEnabled(true);
 					link_2.setEnabled(false);
 
+					basket = new Basket();
+					basket.push(); //默认生产一个
+					
 					Display.getDefault().asyncExec(new Runnable() {
 
 						@Override
@@ -400,7 +417,7 @@ public class QM {
 								try {
 									// if (qp.length == 3) {
 									Task task = new Task(pool, proxies, table
-											.getItem(i), null, QM.this);
+											.getItem(i), null, QM.this, basket);
 									pool.execute(task);
 									// }
 								} catch (ArrayIndexOutOfBoundsException exx) {
@@ -604,18 +621,27 @@ public class QM {
 		text_2.setBounds(10, 383, 357, 152);
 	}
 
-	public synchronized void showImage(Task task) {
-		ctask = task;		
-		label_1.setBackgroundImage(task.getImage());
+	public void showImage(Task task) {
+		ctask = task;
+		label_1.setImage(ctask.getImage());
 		
-		try{
-			task.getImage().wait();
-			task.notify();
-		}catch(Exception e){
-			e.printStackTrace();
-		}		
+//		try{
+//			synchronized(task.getImage()){
+//				task.getImage().wait();
+//			}
+//			synchronized(task){
+//				System.out.println(task+" notify");
+//				task.setCaptcha("abcd");
+//				task.notify();
+//			}
+//		}catch(Exception e){
+//			e.printStackTrace();
+//		}
 	}
 
+	public Basket getBasket(){
+		return this.basket;
+	}
 //	public void help(Task task) {
 //		DefaultHttpClient client = new DefaultHttpClient();
 //		HttpGet get = null;
