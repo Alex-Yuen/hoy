@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -79,6 +80,8 @@ public class QM {
 	private Random rnd = new Random();
 	private final String cs = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 	private Label label_16;
+	private String token;
+	private int tc; //token count
 //	private Map<Image, Task> list = new HashMap<Image, Task>();
 //	private Image image = null;
 
@@ -665,11 +668,11 @@ public class QM {
 	
 	
 	public String getTitle(){
-		return this.title.replaceAll("{*}", randomString());
+		return this.title.replaceAll("{\\*}", randomString());
 	}
 	
 	public String getContent(){
-		return this.content.replaceAll("{*}", randomString());
+		return this.content.replaceAll("{\\*}", randomString());
 	}
 	
 	private String randomString(){
@@ -681,13 +684,24 @@ public class QM {
 		return sb.toString();
 	}
 	
-	public String getRandomToken(){
-		StringBuffer sb = new StringBuffer();
-		int len = 187;
-		for(int i=0;i<len;i++){
-			sb.append(cs.charAt(rnd.nextInt(cs.length())));
+	public synchronized String getRandomToken(){
+		int mtc = 2;
+		if(getConf()!=null){
+			mtc = Integer.parseInt(getConf().getProperty("TOKEN_QUANTITY"));
 		}
-		return sb.toString();
+		
+		if(tc<mtc){
+			tc++;
+		}else{
+			StringBuffer sb = new StringBuffer();
+			int len = 187;
+			for(int i=0;i<len;i++){
+				sb.append(cs.charAt(rnd.nextInt(cs.length())));
+			}
+			tc = 1;
+			token = sb.toString();
+		}
+		return token;
 	}
 	
 	public void shutdown(){
@@ -706,6 +720,14 @@ public class QM {
 		}
 
 		button_1.setText("开始");
+	}
+	
+	public Properties getConf(){
+		if(this.option!=null&&this.option.getConf()!=null){
+			return this.option.getConf();
+		}else{
+			return null;
+		}
 	}
 //	public void help(Task task) {
 //		DefaultHttpClient client = new DefaultHttpClient();

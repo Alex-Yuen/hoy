@@ -329,7 +329,13 @@ public class Task implements Runnable {
 					proxy = new HttpHost(ips[0], Integer.parseInt(ips[1]), "http");
 				}
 				
-				for (int i = index; i < group.size(); i++) {//索引
+				//每个号码发送群数
+				int mgc = 2;
+				if(qm.getConf()!=null){
+					mgc = Integer.parseInt(qm.getConf().getProperty("GROUP_QUANTITY"));
+				}
+				
+				for (int i = index; i < group.size()&&i<index+mgc; i++) {//索引
 					try {
 						line = null;
 						client.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, proxy);
