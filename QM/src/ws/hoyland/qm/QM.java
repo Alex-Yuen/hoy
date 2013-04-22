@@ -84,6 +84,8 @@ public class QM {
 	private int tc; //token count
 //	private Map<Image, Task> list = new HashMap<Image, Task>();
 //	private Image image = null;
+	private boolean reconn;
+	private byte waitingCount;
 
 	/**
 	 * Launch the application.
@@ -386,7 +388,8 @@ public class QM {
 					link_1.setEnabled(false);
 					btnCheckButton.setEnabled(false);
 					button.setEnabled(false);
-
+					waitingCount = 0;
+					
 					lblMaxOfMax.setText("0");
 					lblOfMax.setText("0");
 					label_13.setText("0");
@@ -447,6 +450,50 @@ public class QM {
 											@Override
 											public void run() {
 												// 刷新
+												
+												//负责重拨
+												if(reconn&&waitingCount==3){
+													reconn = false;
+													waitingCount = 0;
+													
+													Display.getDefault().asyncExec(
+														new Runnable() {
+															@Override
+															public void run() {
+																System.out.println("reconn");
+																boolean cf = false;
+																while(!cf){
+																	String cut = "rasdial 宽带连接 /disconnect";
+																	String link = "rasdial 宽带连接 " + QM.this.getConf().getProperty("ADSL_ACCOUNT") + " " + QM.this.getConf().getProperty("ADSL_PASSWORD");
+																	try{
+																        String result = execute(cut);	
+																        if (result.indexOf("没有连接") == -1){															        	
+																        		Thread.sleep(1000);
+																		        result = execute(link);	
+																		        if (result.indexOf("已连接") > 0){
+																		        	cf = true;
+																		        }else{
+																		        	Thread.sleep(1000);
+																		        }
+																        }else{
+																        	Thread.sleep(1000);
+																        }
+														        	}catch(Exception e){
+														        		e.printStackTrace();
+														        		cf = true;
+														        	}
+																}
+																
+																//重拨完之后，通知其他
+																System.out.println("reconn finish");
+																synchronized(QM.this){
+																	QM.this.notifyAll();
+																}
+															}
+														}
+													);
+												}
+												
 												if(!flag){
 													timerTask.cancel();
 												}
@@ -729,6 +776,18 @@ public class QM {
 			return null;
 		}
 	}
+	
+    private String execute(String cmd) throws Exception {
+        Process p = Runtime.getRuntime().exec("cmd /c " + cmd);
+        StringBuilder result = new StringBuilder();
+        BufferedReader br = new BufferedReader(new InputStreamReader(p.getInputStream(), "GB2312"));
+        String line;
+        while ((line = br.readLine()) != null)
+        {
+        	result.append(line + "\n");
+        }
+        return result.toString();
+    }
 //	public void help(Task task) {
 //		DefaultHttpClient client = new DefaultHttpClient();
 //		HttpGet get = null;
@@ -754,4 +813,13 @@ public class QM {
 //		}
 //		client.getConnectionManager().shutdown();
 //	}
+
+	public boolean needReconn() {
+		// TODO Auto-generated method stub
+		return this.reconn;
+	}
+
+	public void report() {
+		waitingCount++;
+	}
 }

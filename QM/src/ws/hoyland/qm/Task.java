@@ -70,6 +70,19 @@ public class Task implements Runnable {
 
 		info("正在登录", true);
 
+		if(qm.needReconn()){
+			info("等待重拨", false);
+			qm.report();
+			synchronized(qm){
+				try{
+					qm.wait();
+				}catch(Exception e){
+					e.printStackTrace();
+				}
+			}
+			info("重拨结束", false);
+		}
+		
 		DefaultHttpClient client = new DefaultHttpClient();
 		// HttpHost proxy = new HttpHost(ips[0], Integer.parseInt(ips[1]),
 		// "http");
