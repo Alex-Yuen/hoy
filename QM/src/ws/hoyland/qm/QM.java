@@ -86,6 +86,12 @@ public class QM {
 //	private Image image = null;
 	private boolean reconn;
 	private byte waitingCount;
+	private int ls;
+	private int lf;
+	private int gc;
+	private int gs;
+	private int gf;
+	private int gr;//保留
 
 	/**
 	 * Launch the application.
@@ -389,6 +395,12 @@ public class QM {
 					btnCheckButton.setEnabled(false);
 					button.setEnabled(false);
 					waitingCount = 0;
+					lf = 0;
+					ls = 0;
+					gc = 0;
+					gs = 0;
+					gf = 0;
+					gr = 0;
 					
 					lblMaxOfMax.setText("0");
 					lblOfMax.setText("0");
@@ -450,6 +462,12 @@ public class QM {
 											@Override
 											public void run() {
 												// 刷新
+												lblMaxOfMax.setText(proxies.size()+"/"+pc);
+												lblOfMax.setText(ls+":"+lf);
+												label_13.setText(String.valueOf(gc));
+												label_10.setText(String.valueOf(gs));
+												label_12.setText(String.valueOf(gf));
+												label_15.setText(String.valueOf(gr));
 												
 												//负责重拨
 												if(reconn&&waitingCount==3){
@@ -821,5 +839,42 @@ public class QM {
 
 	public void report() {
 		waitingCount++;
+	}
+	
+	public void update(int type){
+		if(type==0){
+			ls++;
+		}else if(type==1){
+			lf++;
+		}else if(type==2){
+			gc++;
+		}else if(type==3){
+			gs++;
+		}else if(type==4){
+			gf++;
+		}else if(type==5){
+			gr++;
+		}
+	}
+	
+	public void update(int type, int count){
+		if(type==0){
+			ls += count;
+		}else if(type==1){
+			lf += count;
+		}else if(type==2){
+			gc += count;
+		}else if(type==3){
+			gs += count;
+		}else if(type==4){
+			gf += count;
+		}else if(type==5){
+			gr += count;
+		}
+	}
+
+	public boolean getFlag() {
+		// TODO Auto-generated method stub
+		return this.flag;
 	}
 }

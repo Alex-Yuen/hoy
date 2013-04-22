@@ -125,6 +125,7 @@ public class Task implements Runnable {
 			EntityUtils.consume(entity);
 		} catch (Exception e) {
 			info("登录失败:异常1", false);
+			update(1);
 			e.printStackTrace();
 			return;
 		} finally {
@@ -142,10 +143,12 @@ public class Task implements Runnable {
 			if (json.has("sid") && !json.getString("sid").isEmpty()) {
 				sid = json.getString("sid");
 				info("登录成功", false);
+				update(0);
 			} else if (json.has("errtype")
 					&& !json.getString("errtype").isEmpty()
 					&& json.getString("errtype").equals("1")) {
 				info("登录失败:密码错误", false);
+				update(1);
 				return;
 			} else if (json.has("errmsg")
 					&& !json.getString("errmsg").isEmpty()) {
@@ -259,21 +262,26 @@ public class Task implements Runnable {
 						json = new JSONObject(line);
 						if (json.has("sid") && !json.getString("sid").isEmpty()) {
 							sid = json.getString("sid");
+							update(0);
 							info("登录成功", false);
 						} else if (json.has("errtype")
 								&& !json.getString("errtype").isEmpty()
 								&& json.getString("errtype").equals("1")) {
+							update(1);
 							info("登录失败:密码错误", false);
 							return;
 						} else if (json.has("errmsg")
 								&& !json.getString("errmsg").isEmpty()) {
+							update(1);
 							info("登录失败:验证码错误或者帐号被封", false);
 							return;
 						} else {
+							update(1);
 							info("登录失败:异常5", false);
 							return;
 						}
 					} catch (Exception e) {
+						update(1);
 						info("登录失败:异常4", false);
 						e.printStackTrace();
 						return;
@@ -281,14 +289,17 @@ public class Task implements Runnable {
 						post.releaseConnection();
 					}
 				} else {
+					update(1);
 					info("登录失败:账号被封", false);
 					return;
 				}
 			} else {
+				update(1);
 				info("登录失败:异常3", false);
 				return;
 			}
 		} catch (Exception e) {
+			update(1);
 			info("登录失败:异常2", false);
 			return;
 		}
@@ -325,7 +336,16 @@ public class Task implements Runnable {
 
 			if (gc == 0) {
 				info("无可用群", false);
-			} else {
+			} else {				
+				//每个号码发送群数
+				int mgc = 2;
+				if(qm.getConf()!=null){
+					mgc = Integer.parseInt(qm.getConf().getProperty("GROUP_QUANTITY"));
+				}
+				
+				update(2, gc>index?(gc-index):0);//在索引后的
+				update(5, (gc-index)>mgc?(gc-index-mgc):0);//未发送的
+				
 				// 发送
 				HttpHost proxy = null;
 				//判断是否用代理
@@ -340,12 +360,6 @@ public class Task implements Runnable {
 					}
 					String[] ips = px.split(":");
 					proxy = new HttpHost(ips[0], Integer.parseInt(ips[1]), "http");
-				}
-				
-				//每个号码发送群数
-				int mgc = 2;
-				if(qm.getConf()!=null){
-					mgc = Integer.parseInt(qm.getConf().getProperty("GROUP_QUANTITY"));
 				}
 				
 				for (int i = index; i < group.size()&&i<index+mgc; i++) {//索引
@@ -392,8 +406,10 @@ public class Task implements Runnable {
 
 						if (json.getInt("errcode") == 0) {
 							index++;
+							update(3);
 							info("发送成功", false);
 						} else {
+							update(4);
 							info("发送失败:" + json.getInt("errcode"), false);
 							return;
 						}
@@ -406,6 +422,7 @@ public class Task implements Runnable {
 						synchronized(proxies){//删除代理
 							proxies.remove(px);
 						}
+						update(4);
 						info("发送失败:异常1", false);
 						return;
 					}
@@ -413,6 +430,7 @@ public class Task implements Runnable {
 						synchronized(proxies){//删除代理
 							proxies.remove(px);
 						}
+						update(4);
 						info("发送失败:异常2", false);
 						return;
 					}
@@ -420,6 +438,7 @@ public class Task implements Runnable {
 						synchronized(proxies){//删除代理
 							proxies.remove(px);
 						}
+						update(4);
 						info("发送失败:异常3", false);
 						return;
 					}
@@ -427,16 +446,19 @@ public class Task implements Runnable {
 						synchronized(proxies){//删除代理
 							proxies.remove(px);
 						}
+						update(4);
 						info("发送失败:异常4", false);
 						return;
 					}catch(ConnectTimeoutException ex){
 						synchronized(proxies){
 							proxies.remove(px);
 						}
+						update(4);
 						info("发送失败:异常5", false);
 						return;
 					}
 					catch (Exception e) {
+						update(4);
 						info("发送失败:异常6", false);
 						e.printStackTrace();
 						return;
@@ -485,4 +507,25 @@ public class Task implements Runnable {
 		});
 	}
 
+	private void update(final int type){
+		Display.getDefault().asyncExec(new Runnable() {
+			@Override
+			public void run() {
+				if(qm.getFlag()){
+					qm.update(type);
+				}
+			}
+		});
+	}
+	
+	private void update(final int type, final int count){
+		Display.getDefault().asyncExec(new Runnable() {
+			@Override
+			public void run() {
+				if(qm.getFlag()){
+					qm.update(type, count);
+				}
+			}
+		});
+	}
 }
