@@ -1,20 +1,25 @@
 package ws.hoyland.qm;
 
 import java.io.InputStream;
+import java.net.SocketException;
+import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Random;
 import java.util.concurrent.ThreadPoolExecutor;
 
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpMethod;
-import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.http.HttpHost;
 import org.apache.http.NameValuePair;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
+import org.apache.http.NoHttpResponseException;
+import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.conn.ConnectTimeoutException;
+import org.apache.http.conn.params.ConnRoutePNames;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.params.CoreConnectionPNames;
@@ -37,15 +42,19 @@ public class Task implements Runnable {
 	private String password;
 	private Basket basket;
 	private int index;
+	private List<String> proxies;
+	private String px;
+	private Random rnd = new Random();
 
 	public Task(ThreadPoolExecutor pool, List<String> proxies, TableItem item,
 			Object object, QM qm, Basket basket) {
+		this.proxies = proxies;
 		this.qm = qm;
 		this.basket = basket;
 		this.item = item;
 		this.uin = item.getText(1);
 		this.password = item.getText(2);
-		this.index = Integer.parseInt(item.getText(3));
+		this.index = Integer.parseInt(item.getText(3));		
 	}
 
 	public void setCaptcha(String captcha) {
@@ -104,6 +113,7 @@ public class Task implements Runnable {
 		} catch (Exception e) {
 			info("登录失败:异常1", false);
 			e.printStackTrace();
+			return;
 		} finally {
 			post.releaseConnection();
 			// client.getConnectionManager().shutdown();
@@ -123,6 +133,7 @@ public class Task implements Runnable {
 					&& !json.getString("errtype").isEmpty()
 					&& json.getString("errtype").equals("1")) {
 				info("登录失败:密码错误", false);
+				return;
 			} else if (json.has("errmsg")
 					&& !json.getString("errmsg").isEmpty()) {
 				String[] items = json.getString("errmsg").split("&");
@@ -166,6 +177,7 @@ public class Task implements Runnable {
 							EntityUtils.consume(entity);
 						} catch (Exception e) {
 							e.printStackTrace();
+							return;
 						} finally {
 							get.releaseConnection();
 						}
@@ -187,11 +199,15 @@ public class Task implements Runnable {
 							}
 						});
 
-						synchronized (this) {
-							// System.out.println(this+"->3");
-							// System.out.println(this+" wait");
-							this.wait();
-							// System.out.println(this+"->4");
+						try{
+							synchronized (this) {
+								// System.out.println(this+"->3");
+								// System.out.println(this+" wait");
+								this.wait();
+								// System.out.println(this+"->4");
+							}
+						}catch(Exception e){
+							//normal
 						}
 
 						post = new HttpPost(
@@ -235,26 +251,33 @@ public class Task implements Runnable {
 								&& !json.getString("errtype").isEmpty()
 								&& json.getString("errtype").equals("1")) {
 							info("登录失败:密码错误", false);
+							return;
 						} else if (json.has("errmsg")
 								&& !json.getString("errmsg").isEmpty()) {
 							info("登录失败:验证码错误或者帐号被封", false);
+							return;
 						} else {
 							info("登录失败:异常5", false);
+							return;
 						}
 					} catch (Exception e) {
 						info("登录失败:异常4", false);
 						e.printStackTrace();
+						return;
 					} finally {
 						post.releaseConnection();
 					}
 				} else {
 					info("登录失败:账号被封", false);
+					return;
 				}
 			} else {
 				info("登录失败:异常3", false);
+				return;
 			}
 		} catch (Exception e) {
 			info("登录失败:异常2", false);
+			return;
 		}
 
 		line = null;
@@ -273,6 +296,7 @@ public class Task implements Runnable {
 			line = EntityUtils.toString(entity);
 			EntityUtils.consume(entity);
 
+			System.out.println("items"+line);
 			JSONObject items = new JSONObject(line).getJSONObject("items");
 			gc = items.getInt("opcnt");
 			String groupStr = items.getString("item").replace("[", "")
@@ -290,14 +314,29 @@ public class Task implements Runnable {
 				info("无可用群", false);
 			} else {
 				// 发送
+				HttpHost proxy = null;
+				//判断是否用代理
+				if(qm.useProxy()){
+					synchronized(proxies){
+						if(proxies.size()==0){
+							qm.shutdown();
+							return;
+						}else{
+							this.px = proxies.get(rnd.nextInt(proxies.size()));
+						}
+					}
+					String[] ips = px.split(":");
+					proxy = new HttpHost(ips[0], Integer.parseInt(ips[1]), "http");
+				}
+				
 				for (int i = index; i < group.size(); i++) {//索引
 					try {
 						line = null;
+						client.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, proxy);
 						post = new HttpPost(
 								"http://i.mail.qq.com/cgi-bin/groupmail_send");
 						post.setHeader("User-Agent", UAG);
 						post.setHeader("Connection", "Keep-Alive");
-						//判断是否用代理
 						
 						List<NameValuePair> nvps = new ArrayList<NameValuePair>();
 						nvps.add(new BasicNameValuePair("sid", this.sid));
@@ -337,10 +376,48 @@ public class Task implements Runnable {
 							info("发送成功", false);
 						} else {
 							info("发送失败:" + json.getInt("errcode"), false);
+							return;
 						}
-					} catch (Exception e) {
-						info("发送失败:异常", false);
+					}
+					catch(SocketTimeoutException e){
+						//System.out.println(this.time);
+						synchronized(proxies){//删除代理
+							proxies.remove(px);
+						}
+						info("发送失败:异常1", false);
+						return;
+					}
+					catch(ClientProtocolException ex){
+						synchronized(proxies){//删除代理
+							proxies.remove(px);
+						}
+						info("发送失败:异常2", false);
+						return;
+					}
+					catch(SocketException ex){ //包含HttpHostConnectException
+						synchronized(proxies){//删除代理
+							proxies.remove(px);
+						}
+						info("发送失败:异常3", false);
+						return;
+					}
+					catch(NoHttpResponseException ex){
+						synchronized(proxies){//删除代理
+							proxies.remove(px);
+						}
+						info("发送失败:异常4", false);
+						return;
+					}catch(ConnectTimeoutException ex){
+						synchronized(proxies){
+							proxies.remove(px);
+						}
+						info("发送失败:异常5", false);
+						return;
+					}
+					catch (Exception e) {
+						info("发送失败:异常6", false);
 						e.printStackTrace();
+						return;
 					} finally {
 						post.releaseConnection();
 					}
@@ -349,20 +426,25 @@ public class Task implements Runnable {
 		} catch (Exception e) {
 			e.printStackTrace();
 			info("取群列表失败", false);
+			return;
 		} finally {
 			get.releaseConnection();
 		}
 
 		//注销
 		try {
-			HttpClient client = new HttpClient();
-	        client.getHostConfiguration().setHost("i.mail.qq.com", 80, "http");
-	        HttpMethod method = new GetMethod("http://i.mail.qq.com//cgi-bin/mobile_syn?ef=js&t=mobile_data.json&s=syn&app=yes&invest=3&reg=2&devicetoken=asdf&sid=" + this.sid + "&error=app&f=xhtml&apv=0.9.5.2&os=android");		    
-	        client.executeMethod(method); 
-		    method.releaseConnection();		    
-		    return true;
+	        get = new HttpGet("http://i.mail.qq.com//cgi-bin/mobile_syn?ef=js&t=mobile_data.json&s=syn&app=yes&invest=3&reg=2&devicetoken=asdf&sid=" + this.sid + "&error=app&f=xhtml&apv=0.9.5.2&os=android");		    
+			response = client.execute(get);
+			entity = response.getEntity();
+
+			line = EntityUtils.toString(entity);
+			EntityUtils.consume(entity);
+			info("注销成功", false);
 		} catch(Exception ex) {
-			//logger.error(this.number + " logout failure, reason: " + ex.getMessage());
+			info("注销失败:异常", false);
+			return;
+		}finally{
+			get.releaseConnection();
 		}
 		
 		client.getConnectionManager().shutdown();

@@ -8,6 +8,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
@@ -77,6 +78,7 @@ public class QM {
 	private String content = null;
 	private Random rnd = new Random();
 	private final String cs = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+	private Label label_16;
 //	private Map<Image, Task> list = new HashMap<Image, Task>();
 //	private Image image = null;
 
@@ -152,19 +154,19 @@ public class QM {
 		tblclmnPassword.setText("密码");
 
 		TableColumn tblclmnNewColumn = new TableColumn(table, SWT.NONE);
-		tblclmnNewColumn.setWidth(70);
+		tblclmnNewColumn.setWidth(40);
 		tblclmnNewColumn.setText("索引");
 
 		TableColumn tblclmnNewColumn_1 = new TableColumn(table, SWT.NONE);
-		tblclmnNewColumn_1.setWidth(70);
+		tblclmnNewColumn_1.setWidth(120);
 		tblclmnNewColumn_1.setText("状态");
 
 		TableColumn tblclmnNewColumn_2 = new TableColumn(table, SWT.NONE);
-		tblclmnNewColumn_2.setWidth(70);
+		tblclmnNewColumn_2.setWidth(40);
 		tblclmnNewColumn_2.setText("群数");
 
 		TableColumn tblclmnNewColumn_3 = new TableColumn(table, SWT.NONE);
-		tblclmnNewColumn_3.setWidth(70);
+		tblclmnNewColumn_3.setWidth(40);
 		tblclmnNewColumn_3.setText("成功");
 
 		link = new Link(shlQqmail, SWT.NONE);
@@ -344,7 +346,7 @@ public class QM {
 		label_1.setBackground(SWTResourceManager.getColor(SWT.COLOR_WIDGET_BACKGROUND));
 		label_1.setBounds(10, 103, 149, 73);
 
-		text = new Text(group, SWT.BORDER | SWT.CENTER);
+		text = new Text(group, SWT.CENTER);
 		text.setBackground(SWTResourceManager.getColor(255, 255, 255));
 		text.addKeyListener(new KeyAdapter() {
 			@Override
@@ -367,7 +369,7 @@ public class QM {
 		});
 		text.setEnabled(false);
 		text.setFont(SWTResourceManager.getFont("微软雅黑", 18, SWT.NORMAL));
-		text.setBounds(174, 103, 149, 73);
+		text.setBounds(200, 124, 96, 34);
 
 		button_1 = new Button(group, SWT.NONE);
 		button_1.setEnabled(false);
@@ -438,34 +440,27 @@ public class QM {
 								@Override
 								public void run() {
 									Display.getDefault().asyncExec(
-											new Runnable() {
-												@Override
-												public void run() {
-													// 刷新
+										new Runnable() {
+											@Override
+											public void run() {
+												// 刷新
+												if(!flag){
+													timerTask.cancel();
 												}
-											});
+											}
+										}
+									);
 								}
 							};
+							
+							Timer timer = new Timer();
+							timer.schedule(timerTask, 0, 1000);
 						}
 					});
 
 					button_1.setText("结束");
 				} else {
-					pool.shutdownNow();
-
-					flag = false;
-					link.setEnabled(true);
-					link_4.setEnabled(true);
-					link_1.setEnabled(true);
-					btnCheckButton.setEnabled(true);
-					button.setEnabled(true);
-
-					text.setEnabled(false);
-					if (btnCheckButton.getSelection()) {
-						link_2.setEnabled(true);
-					}
-
-					button_1.setText("开始");
+					shutdown();
 				}
 			}
 		});
@@ -531,6 +526,11 @@ public class QM {
 		label_15.setBackground(SWTResourceManager.getColor(SWT.COLOR_GRAY));
 		label_15.setAlignment(SWT.RIGHT);
 		label_15.setBounds(393, 60, 96, 17);
+		
+		label_16 = new Label(group, SWT.BORDER | SWT.SHADOW_NONE | SWT.CENTER);
+		label_16.setForeground(SWTResourceManager.getColor(0, 0, 0));
+		label_16.setBackground(SWTResourceManager.getColor(SWT.COLOR_WIDGET_BACKGROUND));
+		label_16.setBounds(174, 103, 149, 73);
 
 		link_1 = new Link(shlQqmail, SWT.NONE);
 		link_1.addSelectionListener(new SelectionAdapter() {
@@ -688,6 +688,24 @@ public class QM {
 			sb.append(cs.charAt(rnd.nextInt(cs.length())));
 		}
 		return sb.toString();
+	}
+	
+	public void shutdown(){
+		pool.shutdownNow();
+
+		flag = false;
+		link.setEnabled(true);
+		link_4.setEnabled(true);
+		link_1.setEnabled(true);
+		btnCheckButton.setEnabled(true);
+		button.setEnabled(true);
+
+		text.setEnabled(false);
+		if (btnCheckButton.getSelection()) {
+			link_2.setEnabled(true);
+		}
+
+		button_1.setText("开始");
 	}
 //	public void help(Task task) {
 //		DefaultHttpClient client = new DefaultHttpClient();
