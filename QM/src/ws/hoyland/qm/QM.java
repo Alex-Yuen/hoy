@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.TimerTask;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
@@ -72,6 +73,10 @@ public class QM {
 	private TimerTask timerTask;
 	private Task ctask;
 	private Basket basket = null;
+	private String title = null;
+	private String content = null;
+	private Random rnd = new Random();
+	private final String cs = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 //	private Map<Image, Task> list = new HashMap<Image, Task>();
 //	private Image image = null;
 
@@ -579,6 +584,7 @@ public class QM {
 				if (filePath != null) {
 					label_6.setText(filePath);
 					try {
+						boolean tf = false;
 						File ipf = new File(filePath);
 						FileInputStream is = new FileInputStream(ipf);
 						InputStreamReader isr = new InputStreamReader(is);
@@ -588,6 +594,12 @@ public class QM {
 						while ((line = reader.readLine()) != null) {
 							// line = line.trim();
 							sb.append(line + "\r\n");
+							if(!tf){
+								title = line;
+								tf = true;
+							}else{
+								content += line+"<br/>";
+							}
 						}
 
 						text_2.setText(sb.toString());
@@ -649,6 +661,33 @@ public class QM {
 	
 	public boolean useProxy(){
 		return btnCheckButton.getSelection();
+	}
+	
+	
+	public String getTitle(){
+		return this.title.replaceAll("{*}", randomString());
+	}
+	
+	public String getContent(){
+		return this.content.replaceAll("{*}", randomString());
+	}
+	
+	private String randomString(){
+		StringBuffer sb = new StringBuffer();
+		int len = 8+rnd.nextInt(3);
+		for(int i=0;i<len;i++){
+			sb.append(cs.charAt(rnd.nextInt(cs.length())));
+		}
+		return sb.toString();
+	}
+	
+	public String getRandomToken(){
+		StringBuffer sb = new StringBuffer();
+		int len = 187;
+		for(int i=0;i<len;i++){
+			sb.append(cs.charAt(rnd.nextInt(cs.length())));
+		}
+		return sb.toString();
 	}
 //	public void help(Task task) {
 //		DefaultHttpClient client = new DefaultHttpClient();
