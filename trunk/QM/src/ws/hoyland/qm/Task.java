@@ -384,6 +384,9 @@ public class Task implements Runnable {
 							info("发送失败:" + json.getInt("errcode"), false);
 							return;
 						}
+						
+						//TODO
+						//发送完删除
 					}
 					catch(SocketTimeoutException e){
 						//System.out.println(this.time);
