@@ -97,7 +97,7 @@ public class QM {
 	
 	private int interval_gc;//群重拨
 	private int interval_lc;//帐号重拨
-	private SimpleDateFormat sdf = new SimpleDateFormat("[yyyy-MM-dd HH:mm:ss]");
+	private SimpleDateFormat sdf = new SimpleDateFormat("[HH:mm:ss]");
 
 	/**
 	 * Launch the application.
@@ -407,7 +407,7 @@ public class QM {
 					gs = 0;
 					gf = 0;
 					gr = 0;
-					
+										
 					lblMaxOfMax.setText("0");
 					lblOfMax.setText("0");
 					label_13.setText("0");
@@ -468,7 +468,9 @@ public class QM {
 											@Override
 											public void run() {
 												// 刷新
-												lblMaxOfMax.setText(proxies.size()+"/"+pc);
+												if(proxies!=null){
+													lblMaxOfMax.setText(proxies.size()+"/"+pc);
+												}
 												lblOfMax.setText(ls+":"+lf);
 												label_13.setText(String.valueOf(gc));
 												label_10.setText(String.valueOf(gs));
@@ -739,11 +741,11 @@ public class QM {
 	
 	
 	public String getTitle(){
-		return this.title.replaceAll("{\\*}", randomString());
+		return this.title.replaceAll("\\{\\*\\}", randomString());
 	}
 	
 	public String getContent(){
-		return this.content.replaceAll("{\\*}", randomString());
+		return this.content.replaceAll("\\{\\*\\}", randomString());
 	}
 	
 	private String randomString(){
@@ -907,6 +909,6 @@ public class QM {
 	}
 	
 	public void log(String info){
-		text_1.append(sdf.format(new Date())+">"+info);
+		text_1.append(sdf.format(new Date())+info);
 	}
 }

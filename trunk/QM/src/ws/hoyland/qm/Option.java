@@ -49,17 +49,23 @@ public class Option extends Dialog {
 	public Option(Shell parent, int style) {
 		super(parent, style);
 		setText("SWT Dialog");
+		try{
+			InputStream is = Option.class.getResourceAsStream("/qm.ini");
+			this.configuration.load(is);
+			is.close();
+		}catch(Exception e){
+			e.printStackTrace();
+		}
 	}
 	
 	private void load(){
 		//load & show
 		try{
-			if(!flag){
-				InputStream is = Option.class.getResourceAsStream("/qm.ini");
-				this.configuration.load(is);
-				is.close();
-			}
-			
+//			if(!flag){
+//				InputStream is = Option.class.getResourceAsStream("/qm.ini");
+//				this.configuration.load(is);
+//				is.close();
+//			}			
 			if(this.configuration.size()>0){
 				spinner.setSelection(Integer.parseInt(this.configuration.getProperty("GROUP_QUANTITY")));
 				spinner_1.setSelection(Integer.parseInt(this.configuration.getProperty("TOKEN_QUANTITY")));
