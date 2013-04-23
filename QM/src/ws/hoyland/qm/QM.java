@@ -5,7 +5,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 import java.util.Random;
@@ -95,6 +97,7 @@ public class QM {
 	
 	private int interval_gc;//群重拨
 	private int interval_lc;//帐号重拨
+	private SimpleDateFormat sdf = new SimpleDateFormat("[yyyy-MM-dd HH:mm:ss]");
 
 	/**
 	 * Launch the application.
@@ -901,5 +904,9 @@ public class QM {
 	public boolean getFlag() {
 		// TODO Auto-generated method stub
 		return this.flag;
+	}
+	
+	public void log(String info){
+		text_1.append(sdf.format(new Date())+">"+info);
 	}
 }
