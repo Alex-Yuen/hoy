@@ -92,6 +92,9 @@ public class QM {
 	private int gs;
 	private int gf;
 	private int gr;//保留
+	
+	private int interval_gc;//群重拨
+	private int interval_lc;//帐号重拨
 
 	/**
 	 * Launch the application.
@@ -854,6 +857,28 @@ public class QM {
 			gf++;
 		}else if(type==5){
 			gr++;
+		}
+		
+		if("1".equals(getConf().getProperty("RECONN_ACCOUNT_QUANTITY_FLAG"))){
+			if(type==0||type==1){
+				interval_lc++;
+				if(Integer.parseInt(getConf().getProperty("RECONN_ACCOUNT_QUANTITY"))==interval_lc){
+					reconn = true;
+					interval_lc = 0;
+					interval_gc = 0;
+				}
+			}
+		}
+		
+		if("1".equals(getConf().getProperty("RECONN_GROUP_QUANTITY_FLAG"))){
+			if(type==3||type==4){
+				interval_gc++;
+				if(Integer.parseInt(getConf().getProperty("RECONN_GROUP_QUANTITY"))==interval_gc){
+					reconn = true;
+					interval_lc = 0;
+					interval_gc = 0;
+				}
+			}
 		}
 	}
 	
