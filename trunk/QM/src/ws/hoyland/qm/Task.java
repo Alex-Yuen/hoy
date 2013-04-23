@@ -170,8 +170,10 @@ public class Task implements Runnable {
 					}
 				}
 
-				if (needCaptcha) {
+				boolean fnc = false;
+				while(needCaptcha) {
 					try {
+						fnc = true;
 						// Display.getDefault().asyncExec(new Runnable(){
 						// @Override
 						// public void run() {
@@ -264,6 +266,7 @@ public class Task implements Runnable {
 							sid = json.getString("sid");
 							update(0);
 							info("登录成功", false);
+							break;
 						} else if (json.has("errtype")
 								&& !json.getString("errtype").isEmpty()
 								&& json.getString("errtype").equals("1")) {
@@ -273,8 +276,12 @@ public class Task implements Runnable {
 						} else if (json.has("errmsg")
 								&& !json.getString("errmsg").isEmpty()) {
 							update(1);
+							//TODO
+							//这里是否哈有包含vurl，有的话，重新请求验证码
+							System.out.println("1:"+json);
 							info("登录失败:验证码错误或者帐号被封", false);
-							return;
+							continue;
+							//return;
 						} else {
 							update(1);
 							info("登录失败:异常5", false);
@@ -288,8 +295,12 @@ public class Task implements Runnable {
 					} finally {
 						post.releaseConnection();
 					}
-				} else {
+				} 
+				
+				if(!fnc){
 					update(1);
+					//TODO
+					System.out.println("2:"+json);
 					info("登录失败:账号被封", false);
 					return;
 				}
@@ -499,6 +510,7 @@ public class Task implements Runnable {
 		Display.getDefault().asyncExec(new Runnable() {
 			@Override
 			public void run() {
+				qm.log(uin+"^"+status+"\r\n");
 				item.setText(4, status);
 				if (flag) {
 					item.getParent().setSelection(item);
