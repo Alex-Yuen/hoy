@@ -45,6 +45,7 @@ public class Task implements Runnable {
 	private List<String> proxies;
 	private String px;
 	private Random rnd = new Random();
+	private boolean useProxy;
 
 	public Task(ThreadPoolExecutor pool, List<String> proxies, TableItem item,
 			Object object, QM qm, Basket basket) {
@@ -54,7 +55,8 @@ public class Task implements Runnable {
 		this.item = item;
 		this.uin = item.getText(1);
 		this.password = item.getText(2);
-		this.index = Integer.parseInt(item.getText(3));		
+		this.index = Integer.parseInt(item.getText(3));
+		this.useProxy = qm.useProxy();
 	}
 
 	public void setCaptcha(String captcha) {
@@ -338,12 +340,16 @@ public class Task implements Runnable {
 					.replace("]", ",");
 
 			String[] groups = groupStr.split("},");
+			//System.out.println(groupStr);
 			for (int i = 0; i < groups.length; i++) {
-				String id = new JSONObject(groups[i] + "}").getString("id");
-				group.add(id);
+				//System.out.println(groups[i] + "}");
+				if(groups[i].startsWith("{")){
+					String id = new JSONObject(groups[i] + "}").getString("id");
+					group.add(id);
+				}
 			}
 
-			info("取群列表", false);
+			info("取群列表成功", false);
 
 			if (gc == 0) {
 				info("无可用群", false);
@@ -360,7 +366,7 @@ public class Task implements Runnable {
 				// 发送
 				HttpHost proxy = null;
 				//判断是否用代理
-				if(qm.useProxy()){
+				if(useProxy){
 					synchronized(proxies){
 						if(proxies.size()==0){
 							qm.shutdown();
@@ -510,7 +516,7 @@ public class Task implements Runnable {
 		Display.getDefault().asyncExec(new Runnable() {
 			@Override
 			public void run() {
-				qm.log(uin+"^"+status+"\r\n");
+				qm.log(uin+"->"+status+"\r\n");
 				item.setText(4, status);
 				if (flag) {
 					item.getParent().setSelection(item);
