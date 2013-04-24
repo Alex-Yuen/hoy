@@ -212,10 +212,30 @@ public class Option extends Dialog {
 		tbtmNewItem_1.setControl(composite_1);
 		
 		btnCheckButton = new Button(composite_1, SWT.CHECK);
+		btnCheckButton.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				if(btnCheckButton.getSelection()){
+					spinner_2.setEnabled(true);
+				}else{
+					spinner_2.setEnabled(false);
+				}
+			}
+		});
 		btnCheckButton.setBounds(10, 24, 69, 17);
 		btnCheckButton.setText("群数重拨");
 		
 		btnCheckButton_1 = new Button(composite_1, SWT.CHECK);
+		btnCheckButton_1.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				if(btnCheckButton_1.getSelection()){
+					spinner_3.setEnabled(true);
+				}else{
+					spinner_3.setEnabled(false);
+				}				
+			}
+		});
 		btnCheckButton_1.setBounds(10, 54, 69, 17);
 		btnCheckButton_1.setText("帐号重拨");
 		
