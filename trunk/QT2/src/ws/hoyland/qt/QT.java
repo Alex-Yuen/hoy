@@ -688,14 +688,14 @@ public class QT {
 		label_7.setBounds(394, 104, 157, 17);
 		
 		Label lblNewLabel_11 = new Label(shlQt, SWT.NONE);
-		lblNewLabel_11.setBounds(225, 71, 96, 17);
-		lblNewLabel_11.setText("令牌复用(1~20):");
+		lblNewLabel_11.setBounds(225, 71, 61, 17);
+		lblNewLabel_11.setText("令牌复用:");
 		
 		spinner_1 = new Spinner(shlQt, SWT.BORDER);
-		spinner_1.setMaximum(20);
+		spinner_1.setMaximum(10000);
 		spinner_1.setMinimum(1);
 		spinner_1.setSelection(10);
-		spinner_1.setBounds(327, 68, 39, 23);
+		spinner_1.setBounds(297, 68, 66, 23);
 		
 		Label lblNewLabel_12 = new Label(shlQt, SWT.NONE);
 		lblNewLabel_12.setBounds(380, 71, 96, 17);
