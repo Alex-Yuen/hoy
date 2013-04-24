@@ -372,9 +372,11 @@ public class Task implements Runnable {
 				if(qm.getConf()!=null){
 					mgc = Integer.parseInt(qm.getConf().getProperty("GROUP_QUANTITY"));
 				}
-				
+
 				update(2, gc>index?(gc-index):0);//在索引后的
-				update(5, (gc-index)>mgc?(gc-index-mgc):0);//未发送的
+				if(mgc!=-1){
+					update(5, (gc-index)>mgc?(gc-index-mgc):0);//未发送的
+				}
 				
 				// 发送
 				HttpHost proxy = null;
@@ -397,7 +399,7 @@ public class Task implements Runnable {
 //				System.out.println("mgc:"+mgc);
 				int idx = index;
 				
-				for (int i = idx; (i<group.size())&&(i<(idx+mgc)); i++) {//索引
+				for (int i = idx; (mgc!=-1&&i<group.size()&&i<(idx+mgc))||(mgc==-1&&i<group.size()); i++) {//索引
 					try {
 //						System.out.println(i);
 //						System.out.println(group.size());
