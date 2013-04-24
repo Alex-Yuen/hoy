@@ -82,9 +82,9 @@ public class QM {
 	private final String cs = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 	private Label label_16;
 	private String token;
-	private int tc; //token count
-//	private Map<Image, Task> list = new HashMap<Image, Task>();
-//	private Image image = null;
+	private int tc; // token count
+	// private Map<Image, Task> list = new HashMap<Image, Task>();
+	// private Image image = null;
 	private boolean reconn;
 	private byte waitingCount;
 	private int ls;
@@ -92,10 +92,10 @@ public class QM {
 	private int gc;
 	private int gs;
 	private int gf;
-	private int gr;//保留
-	
-	private int interval_gc;//群重拨
-	private int interval_lc;//帐号重拨
+	private int gr;// 保留
+
+	private int interval_gc;// 群重拨
+	private int interval_lc;// 帐号重拨
 	private SimpleDateFormat sdf = new SimpleDateFormat("[HH:mm:ss]");
 
 	/**
@@ -193,60 +193,72 @@ public class QM {
 				// fileDlg.setFilterExtensions(new String[]{"*.torrent"});
 				fileDlg.setFilterPath(null);
 				fileDlg.setText("选择帐号文件");
-				String filePath = fileDlg.open();
+				final String filePath = fileDlg.open();
 				if (filePath != null) {
-					try {
-						table.removeAll();
-						ns = new ArrayList<String>();
-						File ipf = new File(filePath);
-						FileInputStream is = new FileInputStream(ipf);
-						InputStreamReader isr = new InputStreamReader(is);
-						BufferedReader reader = new BufferedReader(isr);
-						String line = null;
-						int i = 1;
-						while ((line = reader.readLine()) != null) {
-							line = line.trim();
-							if (!line.equals("")) {
-								ns.add(line);
-								line = i + "----" + line;
-								String[] items = line.split("----");
-								if (items.length == 3) {
-									line += "----0----初始化";
-								} else {
-									line += "----初始化";
+					Display.getDefault().asyncExec(new Runnable() {
+						@Override
+						public void run() {
+							try {
+								table.removeAll();
+								ns = new ArrayList<String>();
+								File ipf = new File(filePath);
+								FileInputStream is = new FileInputStream(ipf);
+								InputStreamReader isr = new InputStreamReader(
+										is);
+								BufferedReader reader = new BufferedReader(isr);
+								String line = null;
+								int i = 1;
+								while ((line = reader.readLine()) != null) {
+									line = line.trim();
+									if (!line.equals("")) {
+										ns.add(line);
+										line = i + "----" + line;
+										if (line.split("----").length == 3) {
+											line += "----0----初始化";
+										} else {
+											line += "----初始化";
+										}
+										final String[] items = line.split("----");
+										Display.getDefault().asyncExec(new Runnable() {
+											@Override
+											public void run() {
+												TableItem tableItem = new TableItem(
+														table, SWT.NONE);
+												tableItem.setText(items);
+												//table.setSelection(tableItem);
+											}
+										});
+									}
+									i++;
+									// System.out.println(line);
 								}
-								items = line.split("----");
-								TableItem tableItem = new TableItem(table,
-										SWT.NONE);
-								tableItem.setText(items);
-							}
-							i++;
-							// System.out.println(line);
-						}
-						// pc = proxies.size();
+								// pc = proxies.size();
 
-						reader.close();
-						isr.close();
-						is.close();
-						// System.out.println(ns.size());
-						if (ns.size() > 0) {
-							label.setText("帐号列表 (共 " + ns.size() + " 条):");
-							if (!"".equals(text_2.getText())
-									&& ((btnCheckButton.getSelection()
-											&& proxies != null && proxies
-											.size() > 0) || !btnCheckButton
-											.getSelection())) {
-								button_1.setEnabled(true);
+								reader.close();
+								isr.close();
+								is.close();
+								// System.out.println(ns.size());
+								if (ns.size() > 0) {
+									label.setText("帐号列表 (共 " + ns.size()
+											+ " 条):");
+									if (!"".equals(text_2.getText())
+											&& ((btnCheckButton.getSelection()
+													&& proxies != null && proxies
+													.size() > 0) || !btnCheckButton
+													.getSelection())) {
+										button_1.setEnabled(true);
+									}
+								}
+								lblNewLabel.setText(filePath);
+
+								reader.close();
+								isr.close();
+								is.close();
+							} catch (Exception ex) {
+								ex.printStackTrace();
 							}
 						}
-						lblNewLabel.setText(filePath);
-
-						reader.close();
-						isr.close();
-						is.close();
-					} catch (Exception ex) {
-						ex.printStackTrace();
-					}
+					});
 					// System.out.println("Path:"+filePath);
 				}
 			}
@@ -360,7 +372,8 @@ public class QM {
 
 		label_1 = new Label(group, SWT.BORDER | SWT.SHADOW_NONE | SWT.CENTER);
 		label_1.setForeground(SWTResourceManager.getColor(0, 0, 0));
-		label_1.setBackground(SWTResourceManager.getColor(SWT.COLOR_WIDGET_BACKGROUND));
+		label_1.setBackground(SWTResourceManager
+				.getColor(SWT.COLOR_WIDGET_BACKGROUND));
 		label_1.setBounds(10, 103, 149, 73);
 
 		text = new Text(group, SWT.CENTER);
@@ -368,18 +381,18 @@ public class QM {
 		text.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyReleased(KeyEvent e) {
-				if(text.getText().length()==4&&ctask!=null){
-					//System.out.println(ctask+"->A");
+				if (text.getText().length() == 4 && ctask != null) {
+					// System.out.println(ctask+"->A");
 					ctask.setCaptcha(text.getText());
-					//解锁ctask
-					synchronized(ctask){
-						//System.out.println(ctask+"->B");
+					// 解锁ctask
+					synchronized (ctask) {
+						// System.out.println(ctask+"->B");
 						ctask.notify();
 					}
-					//System.out.println(ctask+"->C");
-					//生产者
+					// System.out.println(ctask+"->C");
+					// 生产者
 					basket.push();
-					//System.out.println(ctask+"->D");
+					// System.out.println(ctask+"->D");
 					text.setText("");
 				}
 			}
@@ -407,7 +420,7 @@ public class QM {
 					gs = 0;
 					gf = 0;
 					gr = 0;
-										
+
 					lblMaxOfMax.setText("0");
 					lblOfMax.setText("0");
 					label_13.setText("0");
@@ -419,8 +432,8 @@ public class QM {
 					link_2.setEnabled(false);
 
 					basket = new Basket();
-					basket.push(); //默认生产一个
-					
+					basket.push(); // 默认生产一个
+
 					Display.getDefault().asyncExec(new Runnable() {
 
 						@Override
@@ -464,72 +477,93 @@ public class QM {
 								@Override
 								public void run() {
 									Display.getDefault().asyncExec(
-										new Runnable() {
-											@Override
-											public void run() {
-												// 刷新
-												if(proxies!=null){
-													lblMaxOfMax.setText(proxies.size()+"/"+pc);
+											new Runnable() {
+												@Override
+												public void run() {
+													// 刷新
+													if (proxies != null) {
+														lblMaxOfMax.setText(proxies
+																.size()
+																+ "/"
+																+ pc);
+													}
+													lblOfMax.setText(ls + ":"
+															+ lf);
+													label_13.setText(String
+															.valueOf(gc));
+													label_10.setText(String
+															.valueOf(gs));
+													label_12.setText(String
+															.valueOf(gf));
+													label_15.setText(String
+															.valueOf(gr));
+
+													// 负责重拨
+													if (reconn
+															&& waitingCount == 3) {
+														reconn = false;
+														waitingCount = 0;
+
+														Display.getDefault()
+																.asyncExec(
+																		new Runnable() {
+																			@Override
+																			public void run() {
+																				System.out
+																						.println("reconn");
+																				boolean cf = false;
+																				while (!cf) {
+																					String cut = "rasdial 宽带连接 /disconnect";
+																					String link = "rasdial 宽带连接 "
+																							+ QM.this
+																									.getConf()
+																									.getProperty(
+																											"ADSL_ACCOUNT")
+																							+ " "
+																							+ QM.this
+																									.getConf()
+																									.getProperty(
+																											"ADSL_PASSWORD");
+																					try {
+																						String result = execute(cut);
+																						if (result
+																								.indexOf("没有连接") == -1) {
+																							Thread.sleep(1000);
+																							result = execute(link);
+																							if (result
+																									.indexOf("已连接") > 0) {
+																								cf = true;
+																							} else {
+																								Thread.sleep(1000);
+																							}
+																						} else {
+																							// Thread.sleep(1000);
+																							break;
+																						}
+																					} catch (Exception e) {
+																						e.printStackTrace();
+																						cf = true;
+																					}
+																				}
+
+																				// 重拨完之后，通知其他
+																				System.out
+																						.println("reconn finish");
+																				synchronized (QM.this) {
+																					QM.this.notifyAll();
+																				}
+																			}
+																		});
+													}
+
+													if (!flag) {
+														timerTask.cancel();
+													}
 												}
-												lblOfMax.setText(ls+":"+lf);
-												label_13.setText(String.valueOf(gc));
-												label_10.setText(String.valueOf(gs));
-												label_12.setText(String.valueOf(gf));
-												label_15.setText(String.valueOf(gr));
-												
-												//负责重拨
-												if(reconn&&waitingCount==3){
-													reconn = false;
-													waitingCount = 0;
-													
-													Display.getDefault().asyncExec(
-														new Runnable() {
-															@Override
-															public void run() {
-																System.out.println("reconn");
-																boolean cf = false;
-																while(!cf){
-																	String cut = "rasdial 宽带连接 /disconnect";
-																	String link = "rasdial 宽带连接 " + QM.this.getConf().getProperty("ADSL_ACCOUNT") + " " + QM.this.getConf().getProperty("ADSL_PASSWORD");
-																	try{
-																        String result = execute(cut);	
-																        if (result.indexOf("没有连接") == -1){															        	
-																        		Thread.sleep(1000);
-																		        result = execute(link);	
-																		        if (result.indexOf("已连接") > 0){
-																		        	cf = true;
-																		        }else{
-																		        	Thread.sleep(1000);
-																		        }
-																        }else{
-																        	//Thread.sleep(1000);
-																        	break;
-																        }
-														        	}catch(Exception e){
-														        		e.printStackTrace();
-														        		cf = true;
-														        	}
-																}
-																
-																//重拨完之后，通知其他
-																System.out.println("reconn finish");
-																synchronized(QM.this){
-																	QM.this.notifyAll();
-																}
-															}
-														}
-													);
-												}
-												
-												if(!flag){
-													timerTask.cancel();
-												}
-											}
-										}
-									);
+											});
 								}
 							};
-							
+
 							Timer timer = new Timer();
 							timer.schedule(timerTask, 0, 1000);
 						}
@@ -603,10 +637,11 @@ public class QM {
 		label_15.setBackground(SWTResourceManager.getColor(SWT.COLOR_GRAY));
 		label_15.setAlignment(SWT.RIGHT);
 		label_15.setBounds(393, 60, 96, 17);
-		
+
 		label_16 = new Label(group, SWT.BORDER | SWT.SHADOW_NONE | SWT.CENTER);
 		label_16.setForeground(SWTResourceManager.getColor(0, 0, 0));
-		label_16.setBackground(SWTResourceManager.getColor(SWT.COLOR_WIDGET_BACKGROUND));
+		label_16.setBackground(SWTResourceManager
+				.getColor(SWT.COLOR_WIDGET_BACKGROUND));
 		label_16.setBounds(174, 103, 149, 73);
 
 		link_1 = new Link(shlQqmail, SWT.NONE);
@@ -646,18 +681,19 @@ public class QM {
 						boolean tf = false;
 						File ipf = new File(filePath);
 						FileInputStream is = new FileInputStream(ipf);
-						InputStreamReader isr = new InputStreamReader(is, Charset.forName("UTF-8"));
+						InputStreamReader isr = new InputStreamReader(is,
+								Charset.forName("UTF-8"));
 						BufferedReader reader = new BufferedReader(isr);
 						String line = null;
 						StringBuffer sb = new StringBuffer();
 						while ((line = reader.readLine()) != null) {
 							// line = line.trim();
 							sb.append(line + "\r\n");
-							if(!tf){
+							if (!tf) {
 								title = line;
 								tf = true;
-							}else{
-								content += line+"<br/>";
+							} else {
+								content += line + "<br/>";
 							}
 						}
 
@@ -694,7 +730,7 @@ public class QM {
 				| SWT.V_SCROLL);
 		text_2.setEditable(false);
 		text_2.setBounds(10, 383, 357, 152);
-		
+
 		Label lblNewLabel_2 = new Label(shlQqmail, SWT.BORDER);
 		lblNewLabel_2.setBounds(0, 544, 872, 17);
 	}
@@ -702,50 +738,49 @@ public class QM {
 	public void showImage(Task task) {
 		ctask = task;
 		label_1.setImage(ctask.getImage());
-		
-//		try{
-//			synchronized(task.getImage()){
-//				task.getImage().wait();
-//			}
-//			synchronized(task){
-//				System.out.println(task+" notify");
-//				task.setCaptcha("abcd");
-//				task.notify();
-//			}
-//		}catch(Exception e){
-//			e.printStackTrace();
-//		}
+
+		// try{
+		// synchronized(task.getImage()){
+		// task.getImage().wait();
+		// }
+		// synchronized(task){
+		// System.out.println(task+" notify");
+		// task.setCaptcha("abcd");
+		// task.notify();
+		// }
+		// }catch(Exception e){
+		// e.printStackTrace();
+		// }
 	}
 
-	public Basket getBasket(){
+	public Basket getBasket() {
 		return this.basket;
 	}
-	
-	public boolean useProxy(){
+
+	public boolean useProxy() {
 		return btnCheckButton.getSelection();
 	}
-	
-	
-	public String getTitle(){
+
+	public String getTitle() {
 		return this.title;
 	}
-	
-	public String getContent(){
+
+	public String getContent() {
 		return this.content;
 	}
-		
-	public synchronized String getRandomToken(){
+
+	public synchronized String getRandomToken() {
 		int mtc = 2;
-		if(getConf()!=null){
+		if (getConf() != null) {
 			mtc = Integer.parseInt(getConf().getProperty("TOKEN_QUANTITY"));
 		}
-		
-		if(tc<mtc){
+
+		if (tc < mtc) {
 			tc++;
-		}else{
+		} else {
 			StringBuffer sb = new StringBuffer();
 			int len = 187;
-			for(int i=0;i<len;i++){
+			for (int i = 0; i < len; i++) {
 				sb.append(cs.charAt(rnd.nextInt(cs.length())));
 			}
 			tc = 1;
@@ -753,8 +788,8 @@ public class QM {
 		}
 		return token;
 	}
-	
-	public void shutdown(){
+
+	public void shutdown() {
 		pool.shutdownNow();
 
 		flag = false;
@@ -771,51 +806,52 @@ public class QM {
 
 		button_1.setText("开始");
 	}
-	
-	public Properties getConf(){
-		if(this.option!=null&&this.option.getConf()!=null){
+
+	public Properties getConf() {
+		if (this.option != null && this.option.getConf() != null) {
 			return this.option.getConf();
-		}else{
+		} else {
 			return null;
 		}
 	}
-	
-    private String execute(String cmd) throws Exception {
-        Process p = Runtime.getRuntime().exec("cmd /c " + cmd);
-        StringBuilder result = new StringBuilder();
-        BufferedReader br = new BufferedReader(new InputStreamReader(p.getInputStream(), "GB2312"));
-        String line;
-        while ((line = br.readLine()) != null)
-        {
-        	result.append(line + "\n");
-        }
-        return result.toString();
-    }
-//	public void help(Task task) {
-//		DefaultHttpClient client = new DefaultHttpClient();
-//		HttpGet get = null;
-//		HttpResponse response = null;
-//		HttpEntity entity = null;
-//
-//		try {
-//			get = new HttpGet("http://vc.gtimg.com/" + task.getCaptchaUrl()
-//					+ ".gif");
-//			get.setHeader("Connection", "Keep-Alive");
-//
-//			response = client.execute(get);
-//			entity = response.getEntity();
-//
-//			InputStream input = entity.getContent();
-//			image = new Image(Display.getDefault(), input);
-//			list.put(image, task);
-//			EntityUtils.consume(entity);
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		} finally {
-//			get.releaseConnection();
-//		}
-//		client.getConnectionManager().shutdown();
-//	}
+
+	private String execute(String cmd) throws Exception {
+		Process p = Runtime.getRuntime().exec("cmd /c " + cmd);
+		StringBuilder result = new StringBuilder();
+		BufferedReader br = new BufferedReader(new InputStreamReader(
+				p.getInputStream(), "GB2312"));
+		String line;
+		while ((line = br.readLine()) != null) {
+			result.append(line + "\n");
+		}
+		return result.toString();
+	}
+
+	// public void help(Task task) {
+	// DefaultHttpClient client = new DefaultHttpClient();
+	// HttpGet get = null;
+	// HttpResponse response = null;
+	// HttpEntity entity = null;
+	//
+	// try {
+	// get = new HttpGet("http://vc.gtimg.com/" + task.getCaptchaUrl()
+	// + ".gif");
+	// get.setHeader("Connection", "Keep-Alive");
+	//
+	// response = client.execute(get);
+	// entity = response.getEntity();
+	//
+	// InputStream input = entity.getContent();
+	// image = new Image(Display.getDefault(), input);
+	// list.put(image, task);
+	// EntityUtils.consume(entity);
+	// } catch (Exception e) {
+	// e.printStackTrace();
+	// } finally {
+	// get.releaseConnection();
+	// }
+	// client.getConnectionManager().shutdown();
+	// }
 
 	public boolean needReconn() {
 		// TODO Auto-generated method stub
@@ -825,37 +861,39 @@ public class QM {
 	public void report() {
 		waitingCount++;
 	}
-	
-	public void update(int type){
-		if(type==0){
+
+	public void update(int type) {
+		if (type == 0) {
 			ls++;
-		}else if(type==1){
+		} else if (type == 1) {
 			lf++;
-		}else if(type==2){
+		} else if (type == 2) {
 			gc++;
-		}else if(type==3){
+		} else if (type == 3) {
 			gs++;
-		}else if(type==4){
+		} else if (type == 4) {
 			gf++;
-		}else if(type==5){
+		} else if (type == 5) {
 			gr++;
 		}
-		
-		if("1".equals(getConf().getProperty("RECONN_ACCOUNT_QUANTITY_FLAG"))){
-			if(type==0||type==1){
+
+		if ("1".equals(getConf().getProperty("RECONN_ACCOUNT_QUANTITY_FLAG"))) {
+			if (type == 0 || type == 1) {
 				interval_lc++;
-				if(Integer.parseInt(getConf().getProperty("RECONN_ACCOUNT_QUANTITY"))==interval_lc){
+				if (Integer.parseInt(getConf().getProperty(
+						"RECONN_ACCOUNT_QUANTITY")) == interval_lc) {
 					reconn = true;
 					interval_lc = 0;
 					interval_gc = 0;
 				}
 			}
 		}
-		
-		if("1".equals(getConf().getProperty("RECONN_GROUP_QUANTITY_FLAG"))){
-			if(type==3||type==4){
+
+		if ("1".equals(getConf().getProperty("RECONN_GROUP_QUANTITY_FLAG"))) {
+			if (type == 3 || type == 4) {
 				interval_gc++;
-				if(Integer.parseInt(getConf().getProperty("RECONN_GROUP_QUANTITY"))==interval_gc){
+				if (Integer.parseInt(getConf().getProperty(
+						"RECONN_GROUP_QUANTITY")) == interval_gc) {
 					reconn = true;
 					interval_lc = 0;
 					interval_gc = 0;
@@ -863,19 +901,19 @@ public class QM {
 			}
 		}
 	}
-	
-	public void update(int type, int count){
-		if(type==0){
+
+	public void update(int type, int count) {
+		if (type == 0) {
 			ls += count;
-		}else if(type==1){
+		} else if (type == 1) {
 			lf += count;
-		}else if(type==2){
+		} else if (type == 2) {
 			gc += count;
-		}else if(type==3){
+		} else if (type == 3) {
 			gs += count;
-		}else if(type==4){
+		} else if (type == 4) {
 			gf += count;
-		}else if(type==5){
+		} else if (type == 5) {
 			gr += count;
 		}
 	}
@@ -884,8 +922,8 @@ public class QM {
 		// TODO Auto-generated method stub
 		return this.flag;
 	}
-	
-	public void log(String info){
-		text_1.append(sdf.format(new Date())+info);
+
+	public void log(String info) {
+		text_1.append(sdf.format(new Date()) + info);
 	}
 }
