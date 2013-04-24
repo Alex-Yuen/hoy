@@ -190,9 +190,9 @@ public class Option extends Dialog {
 		lblNewLabel.setText("每个号码发送群数:");
 		
 		spinner = new Spinner(composite, SWT.BORDER);
-		spinner.setMaximum(10);
-		spinner.setMinimum(1);
-		spinner.setSelection(2);
+		spinner.setMaximum(50);
+		spinner.setMinimum(-1);
+		spinner.setSelection(-1);
 		spinner.setBounds(128, 35, 47, 23);
 		
 		Label label = new Label(composite, SWT.NONE);
@@ -200,9 +200,9 @@ public class Option extends Dialog {
 		label.setBounds(10, 73, 112, 17);
 		
 		spinner_1 = new Spinner(composite, SWT.BORDER);
-		spinner_1.setMaximum(10);
-		spinner_1.setMinimum(1);
-		spinner_1.setSelection(2);
+		spinner_1.setMaximum(50);
+		spinner_1.setMinimum(-1);
+		spinner_1.setSelection(-1);
 		spinner_1.setBounds(128, 70, 47, 23);
 		
 		TabItem tbtmNewItem_1 = new TabItem(tabFolder, SWT.NONE);
