@@ -46,6 +46,9 @@ public class Task implements Runnable {
 	private String px;
 	private Random rnd = new Random();
 	private boolean useProxy;
+	private String title;
+	private String content;
+	private final String cs = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
 	public Task(ThreadPoolExecutor pool, List<String> proxies, TableItem item,
 			Object object, QM qm, Basket basket) {
@@ -57,6 +60,8 @@ public class Task implements Runnable {
 		this.password = item.getText(2);
 		this.index = Integer.parseInt(item.getText(3));
 		this.useProxy = qm.useProxy();
+		this.title = qm.getTitle();
+		this.content = qm.getContent();
 	}
 
 	public void setCaptcha(String captcha) {
@@ -272,17 +277,25 @@ public class Task implements Runnable {
 						} else if (json.has("errtype")
 								&& !json.getString("errtype").isEmpty()
 								&& json.getString("errtype").equals("1")) {
+							//System.err.println(json);
 							update(1);
 							info("登录失败:密码错误", false);
 							return;
 						} else if (json.has("errmsg")
 								&& !json.getString("errmsg").isEmpty()) {
-							update(1);
-							//TODO
-							//这里是否哈有包含vurl，有的话，重新请求验证码
-							System.out.println("1:"+json);
-							info("登录失败:验证码错误或者帐号被封", false);
-							continue;
+							if("-100".equals(json.getString("app_code"))){
+								update(1);
+								info("登录失败:帐号被封", false);
+								return;
+							}else{
+								info("登录失败:验证码错误", false);
+								continue;
+							}
+//							update(1);
+//							//这里是否哈有包含vurl，有的话，重新请求验证码
+//							System.out.println("1:"+json);
+//							info("登录失败:验证码错误或者帐号被封", false);
+//							continue;
 							//return;
 						} else {
 							update(1);
@@ -302,7 +315,7 @@ public class Task implements Runnable {
 				if(!fnc){
 					update(1);
 					//TODO
-					System.out.println("2:"+json);
+					//System.out.println("2:"+json);
 					info("登录失败:账号被封", false);
 					return;
 				}
@@ -333,7 +346,7 @@ public class Task implements Runnable {
 			line = EntityUtils.toString(entity);
 			EntityUtils.consume(entity);
 
-			System.out.println("items"+line);
+			//System.out.println("items"+line);
 			JSONObject items = new JSONObject(line).getJSONObject("items");
 			gc = items.getInt("opcnt");
 			String groupStr = items.getString("item").replace("[", "")
@@ -342,7 +355,7 @@ public class Task implements Runnable {
 			String[] groups = groupStr.split("},");
 			//System.out.println(groupStr);
 			for (int i = 0; i < groups.length; i++) {
-				//System.out.println(groups[i] + "}");
+				//System.err.println(groups[i] + "}");
 				if(groups[i].startsWith("{")){
 					String id = new JSONObject(groups[i] + "}").getString("id");
 					group.add(id);
@@ -378,9 +391,21 @@ public class Task implements Runnable {
 					String[] ips = px.split(":");
 					proxy = new HttpHost(ips[0], Integer.parseInt(ips[1]), "http");
 				}
+//				System.out.println("gc:"+gc);
+//				System.out.println("size"+group.size());
+//				System.out.println("index:"+index);
+//				System.out.println("mgc:"+mgc);
+				int idx = index;
 				
-				for (int i = index; i < group.size()&&i<index+mgc; i++) {//索引
+				for (int i = idx; (i<group.size())&&(i<(idx+mgc)); i++) {//索引
 					try {
+//						System.out.println(i);
+//						System.out.println(group.size());
+//						System.out.println(index);
+//						System.out.println(index+mgc);
+//						
+//						System.out.println(randomString(this.title));
+//						System.out.println(randomString(this.content));
 						line = null;
 						client.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, proxy);
 						post = new HttpPost(
@@ -395,10 +420,8 @@ public class Task implements Runnable {
 						nvps.add(new BasicNameValuePair("qqgroupid", group
 								.get(i)));
 						nvps.add(new BasicNameValuePair("fmailid", "$id$"));
-						nvps.add(new BasicNameValuePair("content__html", qm
-								.getContent()));
-						nvps.add(new BasicNameValuePair("subject", qm
-								.getTitle()));
+						nvps.add(new BasicNameValuePair("content__html", randomString(this.content)));
+						nvps.add(new BasicNameValuePair("subject", randomString(this.title)));
 						nvps.add(new BasicNameValuePair("signadded", "yes"));
 						nvps.add(new BasicNameValuePair("fattachlist", ""));
 						nvps.add(new BasicNameValuePair("cattachelist",
@@ -424,7 +447,8 @@ public class Task implements Runnable {
 						if (json.getInt("errcode") == 0) {
 							index++;
 							update(3);
-							info("发送成功", false);
+							info("发送成功:\r\n\t"+group
+									.get(i), false);
 						} else {
 							update(4);
 							info("发送失败:" + json.getInt("errcode"), false);
@@ -545,5 +569,21 @@ public class Task implements Runnable {
 				}
 			}
 		});
+	}
+	
+	private String randomString(String ss){
+		StringBuffer sb = null;
+		int len = 0;
+		
+		String result = ss;		
+		while(result.contains("{*}")){
+			sb = new StringBuffer();
+			len = 8+rnd.nextInt(3);
+			for(int i=0;i<len;i++){
+				sb.append(cs.charAt(rnd.nextInt(cs.length())));
+			}
+			result = result.replaceFirst("\\{\\*\\}", sb.toString());
+		}
+		return result;
 	}
 }

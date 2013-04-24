@@ -3,8 +3,8 @@ package ws.hoyland.qm;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -55,7 +55,6 @@ public class QM {
 	private Link link_2;
 	private Button button;
 	private Label label_1;
-	private Link link_3;
 	private Button button_1;
 	private Link link_1;
 	private Label lblMaxOfMax;
@@ -78,7 +77,7 @@ public class QM {
 	private Task ctask;
 	private Basket basket = null;
 	private String title = null;
-	private String content = null;
+	private String content = "";
 	private Random rnd = new Random();
 	private final String cs = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 	private Label label_16;
@@ -197,6 +196,7 @@ public class QM {
 				String filePath = fileDlg.open();
 				if (filePath != null) {
 					try {
+						table.removeAll();
 						ns = new ArrayList<String>();
 						File ipf = new File(filePath);
 						FileInputStream is = new FileInputStream(ipf);
@@ -502,7 +502,8 @@ public class QM {
 																		        	Thread.sleep(1000);
 																		        }
 																        }else{
-																        	Thread.sleep(1000);
+																        	//Thread.sleep(1000);
+																        	break;
 																        }
 														        	}catch(Exception e){
 														        		e.printStackTrace();
@@ -619,24 +620,6 @@ public class QM {
 		link_1.setBounds(809, 337, 53, 17);
 		link_1.setText("<a>高级设置</a>");
 
-		link_3 = new Link(shlQqmail, SWT.NONE);
-		link_3.setToolTipText("http://www.hoyland.ws");
-		link_3.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				String cmd = "rundll32 url.dll, FileProtocolHandler "
-						+ link_3.getToolTipText();
-				// System.out.println(cmd);
-				try {
-					Runtime.getRuntime().exec(cmd);
-				} catch (IOException ex) {
-					ex.printStackTrace();
-				}
-			}
-		});
-		link_3.setBounds(10, 541, 852, 17);
-		link_3.setText("<a>http://www.hoyland.ws</a>");
-
 		Label label_2 = new Label(shlQqmail, SWT.NONE);
 		label_2.setText("系统日志:");
 		label_2.setBounds(499, 10, 363, 17);
@@ -663,7 +646,7 @@ public class QM {
 						boolean tf = false;
 						File ipf = new File(filePath);
 						FileInputStream is = new FileInputStream(ipf);
-						InputStreamReader isr = new InputStreamReader(is);
+						InputStreamReader isr = new InputStreamReader(is, Charset.forName("UTF-8"));
 						BufferedReader reader = new BufferedReader(isr);
 						String line = null;
 						StringBuffer sb = new StringBuffer();
@@ -711,6 +694,9 @@ public class QM {
 				| SWT.V_SCROLL);
 		text_2.setEditable(false);
 		text_2.setBounds(10, 383, 357, 152);
+		
+		Label lblNewLabel_2 = new Label(shlQqmail, SWT.BORDER);
+		lblNewLabel_2.setBounds(0, 544, 872, 17);
 	}
 
 	public void showImage(Task task) {
@@ -741,22 +727,13 @@ public class QM {
 	
 	
 	public String getTitle(){
-		return this.title.replaceAll("\\{\\*\\}", randomString());
+		return this.title;
 	}
 	
 	public String getContent(){
-		return this.content.replaceAll("\\{\\*\\}", randomString());
+		return this.content;
 	}
-	
-	private String randomString(){
-		StringBuffer sb = new StringBuffer();
-		int len = 8+rnd.nextInt(3);
-		for(int i=0;i<len;i++){
-			sb.append(cs.charAt(rnd.nextInt(cs.length())));
-		}
-		return sb.toString();
-	}
-	
+		
 	public synchronized String getRandomToken(){
 		int mtc = 2;
 		if(getConf()!=null){
