@@ -6,6 +6,7 @@ using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
 using System.Runtime.InteropServices;
+using System.Configuration;
 
 namespace xplayer
 {
@@ -196,5 +197,13 @@ namespace xplayer
         {
             this.xPlayer.showBackground();
         }
+
+        /**
+        private void Screen_Load(object sender, EventArgs e)
+        {
+            this.Location = new Point(Int32.Parse(ConfigurationManager.AppSettings["SX"]), Int32.Parse(ConfigurationManager.AppSettings["SY"]));
+            this.setSize(new Size(Int32.Parse(ConfigurationManager.AppSettings["SW"]), Int32.Parse(ConfigurationManager.AppSettings["SH"])));
+        }
+         * **/
     }
 }

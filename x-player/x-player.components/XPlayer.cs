@@ -110,6 +110,9 @@ namespace xplayer
         private MenuItem menuItem15;
         private MenuItem menuItem16;
         private MenuItem menuItem17;
+        private MenuItem menuItem18;
+        private MenuItem menuItem19;
+        private MenuItem menuItem20;
         private string md5 = null;
 
         public XPlayer(Form pf, string md5)
@@ -210,6 +213,9 @@ namespace xplayer
             this.menuItem15 = new System.Windows.Forms.MenuItem();
             this.menuItem16 = new System.Windows.Forms.MenuItem();
             this.menuItem17 = new System.Windows.Forms.MenuItem();
+            this.menuItem18 = new System.Windows.Forms.MenuItem();
+            this.menuItem19 = new System.Windows.Forms.MenuItem();
+            this.menuItem20 = new System.Windows.Forms.MenuItem();
             this.menuItem8 = new System.Windows.Forms.MenuItem();
             this.menuItem11 = new System.Windows.Forms.MenuItem();
             this.menuItem2 = new System.Windows.Forms.MenuItem();
@@ -269,27 +275,26 @@ namespace xplayer
             this.menuItem1,
             this.menuItem5,
             this.menuItem6});
-            resources.ApplyResources(this.mainMenu1, "mainMenu1");
             // 
             // menuItem1
             // 
-            resources.ApplyResources(this.menuItem1, "menuItem1");
             this.menuItem1.Index = 0;
             this.menuItem1.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
             this.menuItem4});
+            resources.ApplyResources(this.menuItem1, "menuItem1");
             // 
             // menuItem4
             // 
-            resources.ApplyResources(this.menuItem4, "menuItem4");
             this.menuItem4.Index = 0;
+            resources.ApplyResources(this.menuItem4, "menuItem4");
             this.menuItem4.Click += new System.EventHandler(this.menuItem4_Click);
             // 
             // menuItem5
             // 
-            resources.ApplyResources(this.menuItem5, "menuItem5");
             this.menuItem5.Index = 1;
             this.menuItem5.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
             this.menuItem14,
+            this.menuItem18,
             this.menuItem8,
             this.menuItem11,
             this.menuItem2,
@@ -297,93 +302,117 @@ namespace xplayer
             this.menuItem9,
             this.menuItem10,
             this.menuItem12});
+            resources.ApplyResources(this.menuItem5, "menuItem5");
             // 
             // menuItem14
             // 
-            resources.ApplyResources(this.menuItem14, "menuItem14");
             this.menuItem14.Index = 0;
             this.menuItem14.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
             this.menuItem15,
             this.menuItem16,
             this.menuItem17});
+            resources.ApplyResources(this.menuItem14, "menuItem14");
             // 
             // menuItem15
             // 
-            resources.ApplyResources(this.menuItem15, "menuItem15");
             this.menuItem15.Index = 0;
+            resources.ApplyResources(this.menuItem15, "menuItem15");
             this.menuItem15.Click += new System.EventHandler(this.menuItem15_Click);
             // 
             // menuItem16
             // 
-            resources.ApplyResources(this.menuItem16, "menuItem16");
             this.menuItem16.Index = 1;
+            resources.ApplyResources(this.menuItem16, "menuItem16");
             this.menuItem16.Click += new System.EventHandler(this.menuItem16_Click);
             // 
             // menuItem17
             // 
-            resources.ApplyResources(this.menuItem17, "menuItem17");
             this.menuItem17.Index = 2;
+            resources.ApplyResources(this.menuItem17, "menuItem17");
             this.menuItem17.Click += new System.EventHandler(this.menuItem17_Click);
+            // 
+            // menuItem18
+            // 
+            this.menuItem18.Index = 1;
+            this.menuItem18.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+            this.menuItem19,
+            this.menuItem20});
+            resources.ApplyResources(this.menuItem18, "menuItem18");
+            // 
+            // menuItem19
+            // 
+            this.menuItem19.Checked = true;
+            this.menuItem19.Index = 0;
+            this.menuItem19.RadioCheck = true;
+            resources.ApplyResources(this.menuItem19, "menuItem19");
+            this.menuItem19.Click += new System.EventHandler(this.menuItem19_Click);
+            // 
+            // menuItem20
+            // 
+            this.menuItem20.Index = 1;
+            this.menuItem20.RadioCheck = true;
+            resources.ApplyResources(this.menuItem20, "menuItem20");
+            this.menuItem20.Click += new System.EventHandler(this.menuItem20_Click);
             // 
             // menuItem8
             // 
+            this.menuItem8.Index = 2;
             resources.ApplyResources(this.menuItem8, "menuItem8");
-            this.menuItem8.Index = 1;
             // 
             // menuItem11
             // 
+            this.menuItem11.Index = 3;
             resources.ApplyResources(this.menuItem11, "menuItem11");
-            this.menuItem11.Index = 2;
             this.menuItem11.Click += new System.EventHandler(this.menuItem11_Click);
             // 
             // menuItem2
             // 
+            this.menuItem2.Index = 4;
             resources.ApplyResources(this.menuItem2, "menuItem2");
-            this.menuItem2.Index = 3;
             this.menuItem2.Click += new System.EventHandler(this.menuItem2_Click);
             // 
             // menuItem3
             // 
+            this.menuItem3.Index = 5;
             resources.ApplyResources(this.menuItem3, "menuItem3");
-            this.menuItem3.Index = 4;
             this.menuItem3.Click += new System.EventHandler(this.menuItem3_Click);
             // 
             // menuItem9
             // 
+            this.menuItem9.Index = 6;
             resources.ApplyResources(this.menuItem9, "menuItem9");
-            this.menuItem9.Index = 5;
             this.menuItem9.Click += new System.EventHandler(this.menuItem9_Click);
             // 
             // menuItem10
             // 
+            this.menuItem10.Index = 7;
             resources.ApplyResources(this.menuItem10, "menuItem10");
-            this.menuItem10.Index = 6;
             this.menuItem10.Click += new System.EventHandler(this.menuItem10_Click);
             // 
             // menuItem12
             // 
+            this.menuItem12.Index = 8;
             resources.ApplyResources(this.menuItem12, "menuItem12");
-            this.menuItem12.Index = 7;
             this.menuItem12.Click += new System.EventHandler(this.menuItem12_Click);
             // 
             // menuItem6
             // 
-            resources.ApplyResources(this.menuItem6, "menuItem6");
             this.menuItem6.Index = 2;
             this.menuItem6.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
             this.menuItem13,
             this.menuItem7});
+            resources.ApplyResources(this.menuItem6, "menuItem6");
             // 
             // menuItem13
             // 
-            resources.ApplyResources(this.menuItem13, "menuItem13");
             this.menuItem13.Index = 0;
+            resources.ApplyResources(this.menuItem13, "menuItem13");
             this.menuItem13.Click += new System.EventHandler(this.menuItem13_Click);
             // 
             // menuItem7
             // 
-            resources.ApplyResources(this.menuItem7, "menuItem7");
             this.menuItem7.Index = 1;
+            resources.ApplyResources(this.menuItem7, "menuItem7");
             this.menuItem7.Click += new System.EventHandler(this.menuItem7_Click);
             // 
             // imageList1
@@ -413,9 +442,9 @@ namespace xplayer
             // 
             // statusBarPanel1
             // 
-            resources.ApplyResources(this.statusBarPanel1, "statusBarPanel1");
             this.statusBarPanel1.AutoSize = System.Windows.Forms.StatusBarPanelAutoSize.Spring;
             this.statusBarPanel1.BorderStyle = System.Windows.Forms.StatusBarPanelBorderStyle.None;
+            resources.ApplyResources(this.statusBarPanel1, "statusBarPanel1");
             // 
             // statusBarPanel2
             // 
@@ -541,7 +570,6 @@ namespace xplayer
             // 
             // toolBarButton13
             // 
-            resources.ApplyResources(this.toolBarButton13, "toolBarButton13");
             this.toolBarButton13.Name = "toolBarButton13";
             this.toolBarButton13.Style = System.Windows.Forms.ToolBarButtonStyle.Separator;
             // 
@@ -558,16 +586,16 @@ namespace xplayer
             // 
             // panel1
             // 
-            resources.ApplyResources(this.panel1, "panel1");
             this.panel1.Controls.Add(this.panel4);
             this.panel1.Controls.Add(this.panel3);
+            resources.ApplyResources(this.panel1, "panel1");
             this.panel1.Name = "panel1";
             // 
             // panel4
             // 
-            resources.ApplyResources(this.panel4, "panel4");
             this.panel4.Controls.Add(this.listView1);
             this.panel4.Controls.Add(this.panel5);
+            resources.ApplyResources(this.panel4, "panel4");
             this.panel4.Name = "panel4";
             // 
             // listView1
@@ -597,9 +625,9 @@ namespace xplayer
             // 
             // panel5
             // 
-            resources.ApplyResources(this.panel5, "panel5");
             this.panel5.BackColor = System.Drawing.SystemColors.ScrollBar;
             this.panel5.Controls.Add(this.propertyGrid1);
+            resources.ApplyResources(this.panel5, "panel5");
             this.panel5.Name = "panel5";
             // 
             // propertyGrid1
@@ -609,8 +637,8 @@ namespace xplayer
             // 
             // panel3
             // 
-            resources.ApplyResources(this.panel3, "panel3");
             this.panel3.Controls.Add(this.trackBar1);
+            resources.ApplyResources(this.panel3, "panel3");
             this.panel3.Name = "panel3";
             // 
             // trackBar1
@@ -778,58 +806,66 @@ namespace xplayer
                         // If this is the end of the clip, reset to beginning
                         if (lEventCode == EventCode.Complete)
                         {
-                            CleanUp();
-                            //m_objMediaControl.Stop();
-
-                            //DsLong pos = new DsLong(0);
-                            // Reset to first frame of movie
-                            /**
-                        hr = this.mediaSeeking.SetPositions(pos, AMSeekingSeekingFlags.AbsolutePositioning, 
-                          null, AMSeekingSeekingFlags.NoPositioning);
-                             * */
-                            /**
-                            hr = m_objMediaPosition.put_CurrentPosition(0.0);
-                            if (hr < 0)
+                            
+                            if (menuItem20.Checked)
                             {
-                                // Some custom filters (like the Windows CE MIDI filter)
-                                // may not implement seeking interfaces (IMediaSeeking)
-                                // to allow seeking to the start.  In that case, just stop
-                                // and restart for the same effect.  This should not be
-                                // necessary in most cases.
-                                hr = this.m_objMediaControl.Stop();
-                                hr = this.m_objMediaControl.Run();
-                            }**/
-
-                            //m_CurrentStatus = MediaStatus.None;
-
-                            bool sp = false;
-                            string ssp = ConfigurationManager.AppSettings["SP"];
-                            if (ssp != null)
-                            {
-                                sp = Boolean.Parse(ssp);
-                            }
-
-                            string path = null;
-                            if (sp)
-                            {
-                                path = ConfigurationManager.AppSettings["PATH"];
-                                //load image
-                                try
-                                {
-                                    Image bi = Image.FromFile(path);
-                                    this.screen.BackgroundImage = bi;
-                                }
-                                catch (Exception)
-                                {
-                                    this.screen.BackColor = Color.Black;
-                                }
+                                play(this.listView1.Items[this.currentLVI.Index]);
                             }
                             else
                             {
-                                this.screen.BackColor = Color.Black;
+                                CleanUp();
+                                //m_objMediaControl.Stop();
+
+                                //DsLong pos = new DsLong(0);
+                                // Reset to first frame of movie
+                                /**
+                            hr = this.mediaSeeking.SetPositions(pos, AMSeekingSeekingFlags.AbsolutePositioning, 
+                              null, AMSeekingSeekingFlags.NoPositioning);
+                                 * */
+                                /**
+                                hr = m_objMediaPosition.put_CurrentPosition(0.0);
+                                if (hr < 0)
+                                {
+                                    // Some custom filters (like the Windows CE MIDI filter)
+                                    // may not implement seeking interfaces (IMediaSeeking)
+                                    // to allow seeking to the start.  In that case, just stop
+                                    // and restart for the same effect.  This should not be
+                                    // necessary in most cases.
+                                    hr = this.m_objMediaControl.Stop();
+                                    hr = this.m_objMediaControl.Run();
+                                }**/
+
+                                //m_CurrentStatus = MediaStatus.None;
+
+                                bool sp = false;
+                                string ssp = ConfigurationManager.AppSettings["SP"];
+                                if (ssp != null)
+                                {
+                                    sp = Boolean.Parse(ssp);
+                                }
+
+                                string path = null;
+                                if (sp)
+                                {
+                                    path = ConfigurationManager.AppSettings["PATH"];
+                                    //load image
+                                    try
+                                    {
+                                        Image bi = Image.FromFile(path);
+                                        this.screen.BackgroundImage = bi;
+                                    }
+                                    catch (Exception)
+                                    {
+                                        this.screen.BackColor = Color.Black;
+                                    }
+                                }
+                                else
+                                {
+                                    this.screen.BackColor = Color.Black;
+                                }
+                                UpdateStatusBar();
+                                UpdateToolBar();
                             }
-                            UpdateStatusBar();
-                            UpdateToolBar();
                         }
                     }
 
@@ -1781,6 +1817,15 @@ namespace xplayer
         private void XPlayer_FormClosing(object sender, FormClosingEventArgs e)
         {
             /**
+            Configuration config = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
+            config.AppSettings.Settings["SX"].Value = this.screen.Location.X.ToString();
+            config.AppSettings.Settings["SY"].Value = this.screen.Location.Y.ToString();
+            config.AppSettings.Settings["SW"].Value = this.screen.Size.Width.ToString();
+            config.AppSettings.Settings["SH"].Value = this.screen.Size.Height.ToString();
+
+            config.Save(ConfigurationSaveMode.Modified);
+             * **/
+            /**
             if (this.client != null && this.client.IsBusy)
             {
                 e.Cancel = true;
@@ -2146,6 +2191,19 @@ namespace xplayer
 
             //Console.WriteLine("msg=" + msg);
         }
+
+        private void menuItem20_Click(object sender, EventArgs e)
+        {
+            menuItem19.Checked = false;
+            menuItem20.Checked = true;
+        }
+
+        private void menuItem19_Click(object sender, EventArgs e)
+        {
+            menuItem19.Checked = true;
+            menuItem20.Checked = false;
+        }
+
     }
     
     internal class Capture : ISampleGrabberCB
