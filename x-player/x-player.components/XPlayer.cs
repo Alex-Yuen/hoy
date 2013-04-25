@@ -1950,6 +1950,8 @@ namespace xplayer
                     hardcode += strid[i];
                 }
 
+                //Console.WriteLine(hardcode);
+
                 //regcode
                 string regcode = "";
                 if (hardcode != "")
