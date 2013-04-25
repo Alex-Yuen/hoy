@@ -52,16 +52,20 @@ public class Task implements Runnable {
 
 	public Task(ThreadPoolExecutor pool, List<String> proxies, TableItem item,
 			Object object, QM qm, Basket basket) {
-		this.proxies = proxies;
-		this.qm = qm;
-		this.basket = basket;
-		this.item = item;
-		this.uin = item.getText(1);
-		this.password = item.getText(2);
-		this.index = Integer.parseInt(item.getText(3));
-		this.useProxy = qm.useProxy();
-		this.title = qm.getTitle();
-		this.content = qm.getContent();
+			this.proxies = proxies;
+			this.qm = qm;
+			this.basket = basket;
+			this.item = item;
+			this.uin = item.getText(1);
+			this.password = item.getText(2);
+			try{
+				this.index = Integer.parseInt(item.getText(3));
+			}catch(Exception e){
+				this.index = 0;
+			}
+			this.useProxy = qm.useProxy();
+			this.title = qm.getTitle();
+			this.content = qm.getContent();
 	}
 
 	public void setCaptcha(String captcha) {
@@ -437,7 +441,7 @@ public class Task implements Runnable {
 						nvps.add(new BasicNameValuePair("f", "xhtml"));
 						nvps.add(new BasicNameValuePair("os", "0.9.5.2"));
 
-						post.setEntity(new UrlEncodedFormEntity(nvps));
+						post.setEntity(new UrlEncodedFormEntity(nvps, "GBK"));
 						response = client.execute(post);
 						entity = response.getEntity();
 
@@ -446,12 +450,19 @@ public class Task implements Runnable {
 
 						json = new JSONObject(line);
 
-						if (json.getInt("errcode") == 0) {
-							index++;
-							update(3);
-							info("发送成功:\r\n\t"+group
-									.get(i), false);
-						} else {
+						try{
+							if (json.getInt("errcode") == 0) {
+								index++;
+								update(3);
+								info("发送成功:\r\n\t"+group
+										.get(i), false);
+							} else {
+								update(4);
+								info("发送失败:" + json.getInt("errcode"), false);
+								return;
+							}
+						}catch(Exception e){
+							e.printStackTrace();
 							update(4);
 							info("发送失败:" + json.getInt("errcode"), false);
 							return;

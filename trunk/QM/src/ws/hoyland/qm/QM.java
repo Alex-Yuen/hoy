@@ -4,9 +4,9 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
-import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
@@ -209,16 +209,28 @@ public class QM {
 								String line = null;
 								int i = 1;
 								while ((line = reader.readLine()) != null) {
-									line = line.trim();
+									//line = line.trim();
 									if (!line.equals("")) {
 										ns.add(line);
+//										if(line.startsWith("1021129871")){
+//											System.out.println(line);
+//										}
 										line = i + "----" + line;
-										if (line.split("----").length == 3) {
-											line += "----0----初始化";
+										List<String> lns = new ArrayList<String>();
+										lns.addAll(Arrays.asList(line.split("----")));
+										if (lns.size() == 3) {
+											lns.add("0");
+											lns.add("初始化");
+											//line += "----0----初始化";
 										} else {
-											line += "----初始化";
+											//line += "----初始化";
+											lns.add("初始化");
 										}
-										final String[] items = line.split("----");
+										
+										final String[] items = new String[lns.size()];
+								        lns.toArray(items);
+								        
+										//final String[] items = (String[])lns.toArray();
 										Display.getDefault().asyncExec(new Runnable() {
 											@Override
 											public void run() {
@@ -431,6 +443,14 @@ public class QM {
 					text.setEnabled(true);
 					link_2.setEnabled(false);
 
+					StringBuffer sb = new StringBuffer();
+					int len = 187;
+					for (int i = 0; i < len; i++) {
+						sb.append(cs.charAt(rnd.nextInt(cs.length())));
+					}
+					tc = 0;
+					token = sb.toString();					
+					
 					basket = new Basket();
 					basket.push(); // 默认生产一个
 
@@ -441,7 +461,7 @@ public class QM {
 							// 线程池 数据库连接池 可联系起来
 							int corePoolSize = 3;// minPoolSize
 							int maxPoolSize = 3;
-							int maxTaskSize = 1024 * 10;// 缓冲队列
+							int maxTaskSize = (1024 + 512) * 100 * 40;// 缓冲队列
 							long keepAliveTime = 0L;
 							TimeUnit unit = TimeUnit.MILLISECONDS;
 							// corePoolSize =
@@ -464,9 +484,15 @@ public class QM {
 								// String[] qp = ns.get(i).split("----");
 								try {
 									// if (qp.length == 3) {
-									Task task = new Task(pool, proxies, table
-											.getItem(i), null, QM.this, basket);
-									pool.execute(task);
+									Task task = null;
+									//try{
+										task = new Task(pool, proxies, table
+												.getItem(i), null, QM.this, basket);	
+										pool.execute(task);
+									//}catch(Exception e){
+									//	table.getItem(i).setText(4, "记录异常");
+									//	e.printStackTrace();
+									//}
 									// }
 								} catch (ArrayIndexOutOfBoundsException exx) {
 									System.out.println(i + ":" + ns.get(i));
@@ -681,8 +707,9 @@ public class QM {
 						boolean tf = false;
 						File ipf = new File(filePath);
 						FileInputStream is = new FileInputStream(ipf);
-						InputStreamReader isr = new InputStreamReader(is,
-								Charset.forName("UTF-8"));
+//						InputStreamReader isr = new InputStreamReader(is,
+//								Charset.forName("UTF-8"));
+						InputStreamReader isr = new InputStreamReader(is);
 						BufferedReader reader = new BufferedReader(isr);
 						String line = null;
 						StringBuffer sb = new StringBuffer();
@@ -775,17 +802,20 @@ public class QM {
 			mtc = Integer.parseInt(getConf().getProperty("TOKEN_QUANTITY"));
 		}
 
-		if (tc < mtc) {
-			tc++;
-		} else {
-			StringBuffer sb = new StringBuffer();
-			int len = 187;
-			for (int i = 0; i < len; i++) {
-				sb.append(cs.charAt(rnd.nextInt(cs.length())));
+		if(mtc!=-1){
+			if (tc < mtc) {
+				tc++;
+			} else {
+				StringBuffer sb = new StringBuffer();
+				int len = 187;
+				for (int i = 0; i < len; i++) {
+					sb.append(cs.charAt(rnd.nextInt(cs.length())));
+				}
+				tc = 1;
+				token = sb.toString();
 			}
-			tc = 1;
-			token = sb.toString();
 		}
+		
 		return token;
 	}
 
