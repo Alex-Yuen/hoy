@@ -100,6 +100,7 @@ public class QT {
 			cctk++;
 			return this.ctk;
 		}else{
+			System.out.println(cctk+":"+mctk);
 			return null;
 		}
 	}
