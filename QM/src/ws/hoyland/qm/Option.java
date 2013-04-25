@@ -190,20 +190,20 @@ public class Option extends Dialog {
 		lblNewLabel.setText("每个号码发送群数:");
 		
 		spinner = new Spinner(composite, SWT.BORDER);
-		spinner.setMaximum(50);
+		spinner.setMaximum(99999);
 		spinner.setMinimum(-1);
 		spinner.setSelection(-1);
-		spinner.setBounds(128, 35, 47, 23);
+		spinner.setBounds(128, 35, 69, 23);
 		
 		Label label = new Label(composite, SWT.NONE);
 		label.setText("每个令牌发送群数:");
 		label.setBounds(10, 73, 112, 17);
 		
 		spinner_1 = new Spinner(composite, SWT.BORDER);
-		spinner_1.setMaximum(50);
+		spinner_1.setMaximum(99999);
 		spinner_1.setMinimum(-1);
 		spinner_1.setSelection(-1);
-		spinner_1.setBounds(128, 70, 47, 23);
+		spinner_1.setBounds(128, 70, 69, 23);
 		
 		TabItem tbtmNewItem_1 = new TabItem(tabFolder, SWT.NONE);
 		tbtmNewItem_1.setText("高级");
@@ -240,16 +240,18 @@ public class Option extends Dialog {
 		btnCheckButton_1.setText("帐号重拨");
 		
 		spinner_2 = new Spinner(composite_1, SWT.BORDER);
+		spinner_2.setMaximum(99999);
 		spinner_2.setMinimum(1);
 		spinner_2.setSelection(10);
 		spinner_2.setEnabled(false);
-		spinner_2.setBounds(92, 21, 47, 23);
+		spinner_2.setBounds(92, 21, 87, 23);
 		
 		spinner_3 = new Spinner(composite_1, SWT.BORDER);
+		spinner_3.setMaximum(99999);
 		spinner_3.setMinimum(1);
 		spinner_3.setSelection(10);
 		spinner_3.setEnabled(false);
-		spinner_3.setBounds(92, 51, 47, 23);
+		spinner_3.setBounds(92, 51, 87, 23);
 		
 		Label lblNewLabel_1 = new Label(composite_1, SWT.NONE);
 		lblNewLabel_1.setEnabled(false);
