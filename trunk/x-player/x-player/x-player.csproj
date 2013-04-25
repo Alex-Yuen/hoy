@@ -107,7 +107,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\close.png" />
-    <None Include="Resources\splash.png" />
+    <Content Include="Resources\splash.png" />
     <Content Include="x-player.ico" />
   </ItemGroup>
   <ItemGroup>
