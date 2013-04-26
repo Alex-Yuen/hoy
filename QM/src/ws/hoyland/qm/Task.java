@@ -360,13 +360,13 @@ public class Task implements Runnable {
 			} catch (Exception e) {
 				info("取群列表失败:异常", false);
 				// update(1);
-				return;
+				//return;
 			}
 
 			// 发送邮件，删除邮件
 			if (gc == 0) {
 				info("无可用群", false);
-				return;
+				//return;
 			} else {
 				// 每个号码发送群数
 				int mgc = 2;

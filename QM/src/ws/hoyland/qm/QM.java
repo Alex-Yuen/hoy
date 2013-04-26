@@ -290,7 +290,7 @@ public class QM {
 					label_3.setEnabled(true);
 					label_4.setEnabled(true);
 					link_2.setEnabled(true);
-					if (pc < 0) {
+					if (pc <= 0) {
 						button_1.setEnabled(false);
 					}
 				} else {
