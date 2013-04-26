@@ -40,6 +40,7 @@ public class Option extends Dialog {
 	private Spinner spinner_2;
 	private Spinner spinner_3;
 	private Combo combo;
+	private Spinner spinner_4;
 
 	/**
 	 * Create the dialog.
@@ -90,6 +91,7 @@ public class Option extends Dialog {
 				text.setText(this.configuration.getProperty("ADSL_ACCOUNT"));
 				text_1.setText(this.configuration.getProperty("ADSL_PASSWORD"));
 				
+				spinner_4.setSelection(Integer.parseInt(this.configuration.getProperty("THREAD_COUNT")));
 			}
 		}catch(Exception e){
 			e.printStackTrace();
@@ -105,6 +107,7 @@ public class Option extends Dialog {
 		this.configuration.put("RECONN_ACCOUNT_QUANTITY", spinner_3.getText());
 		this.configuration.put("ADSL_ACCOUNT", text.getText());
 		this.configuration.put("ADSL_PASSWORD", text_1.getText());
+		this.configuration.put("THREAD_COUNT", spinner_4.getText());
 		
 		try{
 			URL url = ClassLoader.getSystemResource("qm.ini");
@@ -204,6 +207,16 @@ public class Option extends Dialog {
 		spinner_1.setMinimum(-1);
 		spinner_1.setSelection(-1);
 		spinner_1.setBounds(128, 70, 69, 23);
+		
+		Label label_2 = new Label(composite, SWT.NONE);
+		label_2.setText("线程数量：");
+		label_2.setBounds(10, 111, 112, 17);
+		
+		spinner_4 = new Spinner(composite, SWT.BORDER);
+		spinner_4.setMaximum(10);
+		spinner_4.setMinimum(3);
+		spinner_4.setSelection(3);
+		spinner_4.setBounds(128, 108, 40, 23);
 		
 		TabItem tbtmNewItem_1 = new TabItem(tabFolder, SWT.NONE);
 		tbtmNewItem_1.setText("高级");
