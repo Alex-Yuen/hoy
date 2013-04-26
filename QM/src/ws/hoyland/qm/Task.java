@@ -222,9 +222,9 @@ public class Task implements Runnable {
 							EntityUtils.consume(entity);
 							get.releaseConnection();
 
-							// System.out.println(this+"->1");
+							//System.out.println(this+"->1");
 							basket.pop();// 消费者
-							// System.out.println(this+"->2");
+							//System.out.println(this+"->2");
 							Display.getDefault().asyncExec(new Runnable() {
 								@Override
 								public void run() {
@@ -317,6 +317,7 @@ public class Task implements Runnable {
 								// continue;
 								// return;
 							} else {
+								System.out.println(line);
 								info("登录失败:异常3", false);
 								update(1);
 								return;
@@ -335,6 +336,7 @@ public class Task implements Runnable {
 						return;
 					}
 				} catch (Exception e) {
+					e.printStackTrace();
 					info("登录失败:异常1", false);
 					update(1);
 					return;
