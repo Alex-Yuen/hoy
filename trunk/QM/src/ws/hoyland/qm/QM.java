@@ -532,7 +532,15 @@ public class QM {
 															&& waitingCount == ps) {
 														reconn = false;
 														waitingCount = 0;
-
+														final String account = QM.this
+																.getConf()
+																.getProperty(
+																		"ADSL_ACCOUNT");
+														final String password = QM.this
+																.getConf()
+																.getProperty(
+																		"ADSL_PASSWORD");
+														
 														Display.getDefault()
 																.asyncExec(
 																		new Runnable() {
@@ -540,40 +548,36 @@ public class QM {
 																			public void run() {
 																				System.out
 																						.println("reconn");
-																				boolean cf = false;
-																				while (!cf) {
+																				//boolean cf = false;
+																				//while (!cf) {
 																					String cut = "rasdial 宽带连接 /disconnect";
 																					String link = "rasdial 宽带连接 "
-																							+ QM.this
-																									.getConf()
-																									.getProperty(
-																											"ADSL_ACCOUNT")
+																							+ account
 																							+ " "
-																							+ QM.this
-																									.getConf()
-																									.getProperty(
-																											"ADSL_PASSWORD");
+																							+ password;
 																					try {
 																						String result = execute(cut);
 																						if (result
 																								.indexOf("没有连接") == -1) {
-																							Thread.sleep(1000);
+																							//Thread.sleep(1000);
 																							result = execute(link);
 																							if (result
 																									.indexOf("已连接") > 0) {
-																								cf = true;
+																								//cf = true;
 																							} else {
-																								Thread.sleep(1000);
+																								//Thread.sleep(1000);
+																								System.out.println("连接失败");
 																							}
 																						} else {
 																							// Thread.sleep(1000);
-																							break;
+																							//break;
+																							System.out.println("没有连接");
 																						}
 																					} catch (Exception e) {
 																						e.printStackTrace();
-																						cf = true;
+																						//cf = true;
 																					}
-																				}
+																				//}
 
 																				// 重拨完之后，通知其他
 																				System.out
@@ -887,7 +891,6 @@ public class QM {
 	// }
 
 	public boolean needReconn() {
-		// TODO Auto-generated method stub
 		return this.reconn;
 	}
 
@@ -952,11 +955,14 @@ public class QM {
 	}
 
 	public boolean getFlag() {
-		// TODO Auto-generated method stub
 		return this.flag;
 	}
 
 	public void log(String info) {
 		text_1.append(sdf.format(new Date()) + info);
+	}
+
+	public boolean del() {
+		return button.getSelection();
 	}
 }

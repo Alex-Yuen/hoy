@@ -49,11 +49,13 @@ public class Task implements Runnable {
 	private String title;
 	private String content;
 	private final String cs = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+	private boolean del;
 
 	public Task(ThreadPoolExecutor pool, List<String> proxies, TableItem item,
 			Object object, QM qm, Basket basket) {
 			this.proxies = proxies;
 			this.qm = qm;
+			this.del = qm.del();
 			this.basket = basket;
 			this.item = item;
 			this.uin = item.getText(1);
@@ -439,7 +441,7 @@ public class Task implements Runnable {
 						nvps.add(new BasicNameValuePair("ReAndFwMailid", ""));
 						nvps.add(new BasicNameValuePair("error", "app"));
 						nvps.add(new BasicNameValuePair("f", "xhtml"));
-						nvps.add(new BasicNameValuePair("os", "0.9.5.2"));
+						nvps.add(new BasicNameValuePair("apv", "0.9.5.2"));
 
 						post.setEntity(new UrlEncodedFormEntity(nvps, "GBK"));
 						response = client.execute(post);
@@ -462,14 +464,18 @@ public class Task implements Runnable {
 								return;
 							}
 						}catch(Exception e){
-							e.printStackTrace();
+							//e.printStackTrace();
 							update(4);
-							info("发送失败:" + json.getInt("errcode"), false);
+							System.out.println(">>"+line);
+							info("发送失败:非法内容", false);
 							return;
 						}
 						
-						//TODO
 						//发送完删除
+						if(del){
+							System.out.println("删除");
+						}
+						
 					}
 					catch(SocketTimeoutException e){
 						//System.out.println(this.time);
