@@ -34,7 +34,7 @@ public class Task implements Runnable {
 	protected QM qm;
 	private TableItem item;
 	private String line;
-	private final String UAG = "Dalvik/1.2.0 (Linux; U; Android 2.2; sdk Build/FRF91)";
+	private final String UAG = "Dalvik/1.6.0 (Linux; U; Android 4.2; google_sdk Build/JB_MR1)";
 	private String captcha;
 	protected String sid;
 	private Image image;
@@ -451,9 +451,11 @@ public class Task implements Runnable {
 						EntityUtils.consume(entity);
 
 						json = new JSONObject(line);
+						String mid = null;
 
 						try{
 							if (json.getInt("errcode") == 0) {
+								mid = json.getString("mid");
 								index++;
 								update(3);
 								info("发送成功:\r\n\t"+group
@@ -472,8 +474,51 @@ public class Task implements Runnable {
 						}
 						
 						//发送完删除
-						if(del){
-							System.out.println("删除");
+						if(del&&mid!=null){
+							post = new HttpPost(
+									"http://i.mail.qq.com/cgi-bin/mail_mgr");
+							post.setHeader("User-Agent", UAG);
+							post.setHeader("Connection", "Keep-Alive");
+							
+							nvps = new ArrayList<NameValuePair>();
+							nvps.add(new BasicNameValuePair("sid", this.sid));
+							nvps.add(new BasicNameValuePair("ef", "js"));
+							nvps.add(new BasicNameValuePair("t", "mobile_mgr.json"));
+							nvps.add(new BasicNameValuePair("s", "del"));
+							nvps.add(new BasicNameValuePair("mailaction", "mail_del"));
+							nvps.add(new BasicNameValuePair("mailid", mid));
+							nvps.add(new BasicNameValuePair("error", "app"));
+							nvps.add(new BasicNameValuePair("f", "xhtml"));
+							nvps.add(new BasicNameValuePair("apv", "0.9.5.2"));
+							nvps.add(new BasicNameValuePair("os", "android"));
+
+							post.setEntity(new UrlEncodedFormEntity(nvps));
+							response = client.execute(post);
+							entity = response.getEntity();
+
+							line = EntityUtils.toString(entity);
+							EntityUtils.consume(entity);
+
+							json = new JSONObject(line);
+
+							try{
+								if (json.getInt("errcode") == 0) {
+									//index++;
+									//update(3);
+									info("删除成功:\r\n\t"+group
+											.get(i), false);
+								} else {
+									//update(4);
+									info("删除失败:" + json.getInt("errcode"), false);
+									//return;
+								}
+							}catch(Exception e){
+								//e.printStackTrace();
+								//update(4);
+								//System.out.println(">>"+line);
+								info("删除失败:异常", false);
+								//return;
+							}
 						}
 						
 					}
