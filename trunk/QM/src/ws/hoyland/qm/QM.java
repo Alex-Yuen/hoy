@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -304,7 +305,7 @@ public class QM {
 			}
 		});
 		btnCheckButton.setBounds(499, 290, 117, 17);
-		btnCheckButton.setText("使用代理发送邮件");
+		btnCheckButton.setText("使用代理:");
 
 		label_3 = new Label(shlQqmail, SWT.NONE);
 		label_3.setEnabled(false);
@@ -453,14 +454,16 @@ public class QM {
 					
 					basket = new Basket();
 					basket.push(); // 默认生产一个
-
+					
+					final int ps = Integer.parseInt(QM.this.getConf().getProperty("THREAD_COUNT"));
+					
 					Display.getDefault().asyncExec(new Runnable() {
 
 						@Override
 						public void run() {
 							// 线程池 数据库连接池 可联系起来
-							int corePoolSize = 3;// minPoolSize
-							int maxPoolSize = 3;
+							int corePoolSize = ps;// minPoolSize
+							int maxPoolSize = ps;
 							int maxTaskSize = (1024 + 512) * 100 * 40;// 缓冲队列
 							long keepAliveTime = 0L;
 							TimeUnit unit = TimeUnit.MILLISECONDS;
@@ -526,7 +529,7 @@ public class QM {
 
 													// 负责重拨
 													if (reconn
-															&& waitingCount == 3) {
+															&& waitingCount == ps) {
 														reconn = false;
 														waitingCount = 0;
 
@@ -707,9 +710,9 @@ public class QM {
 						boolean tf = false;
 						File ipf = new File(filePath);
 						FileInputStream is = new FileInputStream(ipf);
-//						InputStreamReader isr = new InputStreamReader(is,
-//								Charset.forName("UTF-8"));
-						InputStreamReader isr = new InputStreamReader(is);
+						InputStreamReader isr = new InputStreamReader(is,
+								Charset.forName("UTF-8"));
+						//InputStreamReader isr = new InputStreamReader(is);
 						BufferedReader reader = new BufferedReader(isr);
 						String line = null;
 						StringBuffer sb = new StringBuffer();
