@@ -546,7 +546,7 @@ public class QM {
 																		new Runnable() {
 																			@Override
 																			public void run() {
-																				System.out
+																				System.err
 																						.println("reconn");
 																				//boolean cf = false;
 																				//while (!cf) {
@@ -566,12 +566,12 @@ public class QM {
 																								//cf = true;
 																							} else {
 																								//Thread.sleep(1000);
-																								System.out.println("连接失败");
+																								System.err.println("连接失败");
 																							}
 																						} else {
 																							// Thread.sleep(1000);
 																							//break;
-																							System.out.println("没有连接");
+																							System.err.println("没有连接");
 																						}
 																					} catch (Exception e) {
 																						e.printStackTrace();
@@ -580,7 +580,7 @@ public class QM {
 																				//}
 
 																				// 重拨完之后，通知其他
-																				System.out
+																				System.err
 																						.println("reconn finish");
 																				synchronized (QM.this) {
 																					QM.this.notifyAll();
@@ -913,7 +913,8 @@ public class QM {
 			gr++;
 		}
 
-		if ("1".equals(getConf().getProperty("RECONN_ACCOUNT_QUANTITY_FLAG"))) {
+		//无代理重拨
+		if (!btnCheckButton.getSelection()&&"1".equals(getConf().getProperty("RECONN_ACCOUNT_QUANTITY_FLAG"))) {
 			if (type == 0 || type == 1) {
 				interval_lc++;
 				if (Integer.parseInt(getConf().getProperty(
@@ -925,7 +926,7 @@ public class QM {
 			}
 		}
 
-		if ("1".equals(getConf().getProperty("RECONN_GROUP_QUANTITY_FLAG"))) {
+		if (!btnCheckButton.getSelection()&&"1".equals(getConf().getProperty("RECONN_GROUP_QUANTITY_FLAG"))) {
 			if (type == 3 || type == 4) {
 				interval_gc++;
 				if (Integer.parseInt(getConf().getProperty(
