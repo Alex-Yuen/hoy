@@ -256,6 +256,7 @@ public class Task implements Runnable {
 									}
 								}
 								info("重拨结束", false);
+								info("需验证码", false);
 							}
 							
 							//对于已经输入密码的，不再在此阻塞
