@@ -512,7 +512,7 @@ public class Task implements Runnable {
 							}
 						} catch (Exception e) {
 							// e.printStackTrace();
-							System.out.println(">>" + line);
+							System.err.println(line);
 							info("发送失败:非法内容", false);
 							update(4);
 							return;
