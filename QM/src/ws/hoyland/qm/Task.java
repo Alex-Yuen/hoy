@@ -50,6 +50,7 @@ public class Task implements Runnable {
 	private String content;
 	private final String cs = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 	private boolean del;
+	private boolean iptf;
 
 	public Task(ThreadPoolExecutor pool, List<String> proxies, TableItem item,
 			Object object, QM qm, Basket basket) {
@@ -72,6 +73,7 @@ public class Task implements Runnable {
 
 	public void setCaptcha(String captcha) {
 		this.captcha = captcha;
+		iptf = true;
 	}
 
 	public Image getImage() {
@@ -182,7 +184,7 @@ public class Task implements Runnable {
 					} else if (json.has("errtype")
 							&& !json.getString("errtype").isEmpty()
 							&& json.getString("errtype").equals("1")) {
-						System.err.println(line);
+						//System.err.println(line);
 						info("登录失败:密码错误", false);
 						update(1);
 						return;
@@ -209,6 +211,7 @@ public class Task implements Runnable {
 
 						boolean fnc = false;
 						while (needCaptcha) {
+							iptf = false;//重新设置验证码为未验证
 							fnc = true;
 							info("需验证码", false);
 
@@ -241,15 +244,31 @@ public class Task implements Runnable {
 								}
 							});
 
-							try {
-								synchronized (this) {
-									// System.out.println(this+"->3");
-									// System.out.println(this+" wait");
-									this.wait();
-									// System.out.println(this+"->4");
+							if (qm.needReconn()) {
+								info("等待重拨", false);
+								qm.report();
+								synchronized (qm) {
+									try {
+										qm.wait();
+									} catch (Exception e) {
+										e.printStackTrace();
+									}
 								}
-							} catch (Exception e) {
-								// normal
+								info("重拨结束", false);
+							}
+							
+							//对于已经输入密码的，不再在此阻塞
+							if(!iptf){
+								try {
+									synchronized (this) {
+										// System.out.println(this+"->3");
+										// System.out.println(this+" wait");
+										this.wait();
+										// System.out.println(this+"->4");
+									}
+								} catch (Exception e) {
+									// normal
+								}
 							}
 
 							post = new HttpPost(
@@ -298,7 +317,7 @@ public class Task implements Runnable {
 							} else if (json.has("errtype")
 									&& !json.getString("errtype").isEmpty()
 									&& json.getString("errtype").equals("1")) {
-								System.err.println(json);
+								//System.err.println(json);
 								info("登录失败:密码错误", false);
 								update(1);
 								return;
