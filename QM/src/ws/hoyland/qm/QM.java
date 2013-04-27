@@ -290,6 +290,10 @@ public class QM {
 					label_3.setEnabled(true);
 					label_4.setEnabled(true);
 					link_2.setEnabled(true);
+					if(proxies!=null){
+						pc = proxies.size();
+						lblMaxOfMax.setText(pc+"/"+pc);
+					}
 					if (pc <= 0) {
 						button_1.setEnabled(false);
 					}
@@ -297,6 +301,8 @@ public class QM {
 					label_3.setEnabled(false);
 					label_4.setEnabled(false);
 					link_2.setEnabled(false);
+					pc = 0;
+					lblMaxOfMax.setText("0/0");
 					if (ns != null && ns.size() > 0
 							&& !"".equals(text_2.getText())) {
 						button_1.setEnabled(true);

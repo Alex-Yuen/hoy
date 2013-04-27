@@ -182,12 +182,14 @@ public class Task implements Runnable {
 					} else if (json.has("errtype")
 							&& !json.getString("errtype").isEmpty()
 							&& json.getString("errtype").equals("1")) {
+						System.err.println(line);
 						info("登录失败:密码错误", false);
 						update(1);
 						return;
 					} else if (json.has("errmsg")
 							&& !json.getString("errmsg").isEmpty()) {
 						String[] items = json.getString("errmsg").split("&");
+						//System.err.println("K:"+line);
 						boolean needCaptcha = false;
 						for (String item : items) {
 							String[] pair = item.split("=");
@@ -296,13 +298,14 @@ public class Task implements Runnable {
 							} else if (json.has("errtype")
 									&& !json.getString("errtype").isEmpty()
 									&& json.getString("errtype").equals("1")) {
-								// System.err.println(json);
+								System.err.println(json);
 								info("登录失败:密码错误", false);
 								update(1);
 								return;
 							} else if (json.has("errmsg")
 									&& !json.getString("errmsg").isEmpty()) {
 								if ("-100".equals(json.getString("app_code"))) {
+									//System.err.println(json);
 									info("登录失败:帐号被封", false);
 									update(1);
 									return;
@@ -316,9 +319,26 @@ public class Task implements Runnable {
 								// info("登录失败:验证码错误或者帐号被封", false);
 								// continue;
 								// return;
+							}else if (json.has("errtype")
+									&& !json.getString("errtype").isEmpty()) {
+								if ("4".equals(json.getString("errtype"))) {
+									//System.err.println(json);
+									info("登录失败:独立密码", false);
+									update(1);
+									return;
+								} else {
+									info("登录失败:异常5", false);
+									continue;
+								}
+								// update(1);
+								// //这里是否哈有包含vurl，有的话，重新请求验证码
+								// System.out.println("1:"+json);
+								// info("登录失败:验证码错误或者帐号被封", false);
+								// continue;
+								// return;
 							} else {
-								System.out.println(line);
-								info("登录失败:异常3", false);
+								System.err.println(line);
+								info("登录失败:异常4", false);
 								update(1);
 								return;
 							}
@@ -330,7 +350,25 @@ public class Task implements Runnable {
 							update(1);
 							return;
 						}
+					} else if (json.has("errtype")
+							&& !json.getString("errtype").isEmpty()) {
+						if ("4".equals(json.getString("errtype"))) {
+							//System.err.println(json);
+							info("登录失败:独立密码", false);
+							update(1);
+							return;
+						} else {
+							info("登录失败:异常3", false);
+							continue;
+						}
+						// update(1);
+						// //这里是否哈有包含vurl，有的话，重新请求验证码
+						// System.out.println("1:"+json);
+						// info("登录失败:验证码错误或者帐号被封", false);
+						// continue;
+						// return;
 					} else {
+						//System.err.println(line);
 						info("登录失败:异常2", false);
 						update(1);
 						return;
@@ -455,7 +493,7 @@ public class Task implements Runnable {
 							}
 						} catch (Exception e) {
 							// e.printStackTrace();
-							// System.out.println(">>" + line);
+							System.out.println(">>" + line);
 							info("发送失败:非法内容", false);
 							update(4);
 							return;
