@@ -557,6 +557,18 @@ public class QM {
 														Display.getDefault()
 																.asyncExec(
 																		new Runnable() {
+																			private String execute(String cmd) throws Exception {
+																				Process p = Runtime.getRuntime().exec("cmd /c " + cmd);
+																				StringBuilder result = new StringBuilder();
+																				BufferedReader br = new BufferedReader(new InputStreamReader(
+																						p.getInputStream(), "GB2312"));
+																				String line;
+																				while ((line = br.readLine()) != null) {
+																					result.append(line + "\n");
+																				}
+																				return result.toString();
+																			}
+																			
 																			@Override
 																			public void run() {
 																				System.err
@@ -581,7 +593,7 @@ public class QM {
 																									//cf = true;
 																									URL url = new URL("http://iframe.ip138.com/ic.asp");
 																									InputStream is = url.openStream();
-																									BufferedReader br = new BufferedReader(new InputStreamReader(is, "gb2312"));  
+																									BufferedReader br = new BufferedReader(new InputStreamReader(is, "GB2312"));  
 																							        String line = null;
 																							        StringBuffer sb = new StringBuffer();
 																							        while ((line=br.readLine())!= null) {
@@ -908,18 +920,6 @@ public class QM {
 		} else {
 			return null;
 		}
-	}
-
-	private String execute(String cmd) throws Exception {
-		Process p = Runtime.getRuntime().exec("cmd /c " + cmd);
-		StringBuilder result = new StringBuilder();
-		BufferedReader br = new BufferedReader(new InputStreamReader(
-				p.getInputStream(), "GB2312"));
-		String line;
-		while ((line = br.readLine()) != null) {
-			result.append(line + "\n");
-		}
-		return result.toString();
 	}
 
 	// public void help(Task task) {
