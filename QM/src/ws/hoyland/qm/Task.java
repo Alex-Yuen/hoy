@@ -27,6 +27,7 @@ import org.apache.http.util.EntityUtils;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.TableItem;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 public class Task implements Runnable {
@@ -401,7 +402,7 @@ public class Task implements Runnable {
 						update(1);
 						return;
 					}
-				} catch (Exception e) {
+				} catch (JSONException e) {
 					e.printStackTrace();
 					info("登录失败:异常1", false);
 					update(1);
@@ -440,7 +441,7 @@ public class Task implements Runnable {
 					}
 
 					info("取群列表成功", false);
-				} catch (Exception e) {
+				} catch (JSONException e) {
 					info("取群列表失败:异常", false);
 					// update(1);
 					// return;
