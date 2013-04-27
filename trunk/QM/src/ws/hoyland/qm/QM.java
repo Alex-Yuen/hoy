@@ -3,13 +3,17 @@ package ws.hoyland.qm;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.URL;
 import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Random;
 import java.util.Timer;
@@ -94,6 +98,8 @@ public class QM {
 	private int gs;
 	private int gf;
 	private int gr;// 保留
+	
+	private Map<String, Long> ips = new HashMap<String ,Long>();
 
 	private int interval_gc;// 群重拨
 	private int interval_lc;// 帐号重拨
@@ -496,7 +502,8 @@ public class QM {
 									Task task = null;
 									//try{
 										task = new Task(pool, proxies, table
-												.getItem(i), null, QM.this, basket);	
+												.getItem(i), null, QM.this, basket);
+
 										pool.execute(task);
 									//}catch(Exception e){
 									//	table.getItem(i).setText(4, "记录异常");
@@ -561,23 +568,68 @@ public class QM {
 																							+ account
 																							+ " "
 																							+ password;
+																					
 																					try {
-																						String result = execute(cut);
-																						if (result
-																								.indexOf("没有连接") == -1) {
-																							//Thread.sleep(1000);
-																							result = execute(link);
+																						while(true){
+																							String result = execute(cut);
 																							if (result
-																									.indexOf("已连接") > 0) {
-																								//cf = true;
-																							} else {
+																									.indexOf("没有连接") == -1) {
 																								//Thread.sleep(1000);
-																								System.err.println("连接失败");
+																								result = execute(link);
+																								if (result
+																										.indexOf("已连接") > 0) {
+																									//cf = true;
+																									URL url = new URL("http://iframe.ip138.com/ic.asp");
+																									InputStream is = url.openStream();
+																									BufferedReader br = new BufferedReader(new InputStreamReader(is, "gb2312"));  
+																							        String line = null;
+																							        StringBuffer sb = new StringBuffer();
+																							        while ((line=br.readLine())!= null) {
+																							        	sb.append(line);
+																							        }
+																							
+																									String ip = sb.toString();
+																									//System.out.println(ip);
+																							        int index = ip.indexOf("您的IP是：[");
+																							        ip = ip.substring(index+7);
+																							        
+																							        index = ip.indexOf("]");
+																							        ip = ip.substring(0, index);																							        
+																							        System.err.println("ip="+ip);
+																									if(ips.containsKey(ip)){
+																										long time = ips.get(ip);
+																										if(System.currentTimeMillis()-time>=1*60*60*1000){
+																											System.err.println("IP重复，但超过1小时，拨号成功");
+																											ips.put(ip, System.currentTimeMillis());
+																											break;
+																										}else{
+																											System.err.println("IP重复，未超过1小时，重新拨号");
+																											continue;
+																										}
+																									}else{
+																										System.err.println("IP不重复，拨号成功");
+																										ips.put(ip, new Long(System.currentTimeMillis()));
+																										break;
+																									}
+																									//记录IP
+																									//getip
+																									//if not ip, store(ip, time)
+																									//else if get(ip) >1hr
+																									// no problem, update time
+																									//else if get(ip><= 1hr
+																									// reconn
+																									//store (ip, time)
+																								} else {
+																									//Thread.sleep(1000);
+																									System.err.println("连接失败");
+																									break;
+																								}
+																							} else {
+																								// Thread.sleep(1000);
+																								//break;
+																								System.err.println("没有连接");
+																								break;
 																							}
-																						} else {
-																							// Thread.sleep(1000);
-																							//break;
-																							System.err.println("没有连接");
 																						}
 																					} catch (Exception e) {
 																						e.printStackTrace();
@@ -904,7 +956,7 @@ public class QM {
 		waitingCount++;
 	}
 
-	public void update(int type) {
+	public synchronized void update(int type) {
 		if (type == 0) {
 			ls++;
 		} else if (type == 1) {
@@ -945,7 +997,7 @@ public class QM {
 		}
 	}
 
-	public void update(int type, int count) {
+	public synchronized void update(int type, int count) {
 		if (type == 0) {
 			ls += count;
 		} else if (type == 1) {
