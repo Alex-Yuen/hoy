@@ -496,7 +496,7 @@ public class Task implements Runnable {
 						nvps.add(new BasicNameValuePair("f", "xhtml"));
 						nvps.add(new BasicNameValuePair("apv", "0.9.5.2"));
 
-						post.setEntity(new UrlEncodedFormEntity(nvps, "GB2312"));
+						post.setEntity(new UrlEncodedFormEntity(nvps, "GBK"));
 						//System.out.println(post.getEntity());
 						response = client.execute(post);
 						entity = response.getEntity();
