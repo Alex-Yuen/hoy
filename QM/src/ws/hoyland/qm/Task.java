@@ -68,6 +68,7 @@ public class Task implements Runnable {
 		}
 		this.useProxy = qm.useProxy();
 		this.title = qm.getTitle();
+		//System.err.println(title);
 		this.content = qm.getContent();
 	}
 
@@ -104,14 +105,14 @@ public class Task implements Runnable {
 
 		List<NameValuePair> nvps = null;
 		line = null;
-		List<String> group = new ArrayList<String>();
+		List<String> group = null;
 		int gc = 0;
 
 		// boolean fp = false;
 
 		while (true) {
 			info("正在登录", true);
-
+			group = new ArrayList<String>();
 			if (qm.needReconn()) {
 				info("等待重拨", false);
 				qm.report();
@@ -329,6 +330,7 @@ public class Task implements Runnable {
 									update(1);
 									return;
 								} else {
+									System.err.println(line);
 									info("登录失败:验证码错误", false);
 									continue;
 								}
@@ -345,7 +347,13 @@ public class Task implements Runnable {
 									info("登录失败:独立密码", false);
 									update(1);
 									return;
-								} else {
+								} if ("7".equals(json.getString("errtype"))) {
+									//System.err.println(json);
+									info("登录失败:密码错误(*)", false);
+									update(1);
+									return;
+								}else {
+									System.err.println(line);
 									info("登录失败:异常5", false);
 									continue;
 								}
@@ -488,7 +496,8 @@ public class Task implements Runnable {
 						nvps.add(new BasicNameValuePair("f", "xhtml"));
 						nvps.add(new BasicNameValuePair("apv", "0.9.5.2"));
 
-						post.setEntity(new UrlEncodedFormEntity(nvps, "GBK"));
+						post.setEntity(new UrlEncodedFormEntity(nvps, "GB2312"));
+						//System.out.println(post.getEntity());
 						response = client.execute(post);
 						entity = response.getEntity();
 
@@ -669,6 +678,7 @@ public class Task implements Runnable {
 			}
 			result = result.replaceFirst("\\{\\*\\}", sb.toString());
 		}
+		//System.err.println("2:"+result);
 		return result;
 	}
 }
