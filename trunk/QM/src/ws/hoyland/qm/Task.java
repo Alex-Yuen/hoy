@@ -497,13 +497,14 @@ public class Task implements Runnable {
 										} else {
 											info("发送失败:" + json.getInt("errcode"));
 											update(4);
-											return;
+											//return;
 										}
 									} catch (Exception e) {
 										// e.printStackTrace();
 										System.err.println(line);
 										info("发送失败:非法内容");
 										update(4, gc-gr-idxc);
+										st();
 										return;
 									}
 									break;
@@ -530,8 +531,9 @@ public class Task implements Runnable {
 									//发送、删除 成功后，更新索引
 									break;
 								case 6:
-									info("注销成功");
+									info("注销成功");									
 									pos = RS;
+									st();
 									break;
 								default:
 									break;
@@ -552,7 +554,7 @@ public class Task implements Runnable {
 							}
 							break;
 						}
-					}else{					
+					}else{
 						InputStream input = entity.getContent();
 						image = new Image(Display.getDefault(), input);
 						info("获取验证码成功");
@@ -633,6 +635,17 @@ public class Task implements Runnable {
 		}
 
 		client.getConnectionManager().shutdown();
+	}
+
+	private void st() {
+		Display.getDefault().asyncExec(new Runnable() {
+			@Override
+			public void run() {
+				if (qm.getFlag()) {
+					qm.st(uin, password, idx);
+				}
+			}
+		});	
 	}
 
 	private void info_gs_i() {
