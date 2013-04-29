@@ -103,7 +103,7 @@ public class QM {
 
 	private int interval_gc;// 群重拨
 	private int interval_lc;// 帐号重拨
-	private SimpleDateFormat sdf = new SimpleDateFormat("[HH:mm:ss]");
+	private SimpleDateFormat sdf = new SimpleDateFormat("[HH:mm:ss] ");
 
 	/**
 	 * Launch the application.
@@ -502,7 +502,7 @@ public class QM {
 									Task task = null;
 									//try{
 										task = new Task(pool, proxies, table
-												.getItem(i), null, QM.this, basket);
+												.getItem(i), QM.this, basket);
 
 										pool.execute(task);
 									//}catch(Exception e){
