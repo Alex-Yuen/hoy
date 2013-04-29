@@ -62,6 +62,7 @@ public class Task implements Runnable {
 	private int idx; //current group
 	private int idxc;//sent group
 	private int mgc = 2;
+	private int gr = 0;
 
 	private String captchaId = null;
 	private String captchaUin = null;
@@ -155,7 +156,8 @@ public class Task implements Runnable {
 		
 		if(position==2){//等待验证码输入
 			if(!iptf){//如果验证码未输入，则等待
-				info("需验证码");
+				//System.err.println(this+">>"+3);
+				info("等待输入验证码");
 				try {
 					synchronized (this) {
 						this.wait();
@@ -163,6 +165,7 @@ public class Task implements Runnable {
 				} catch (Exception e) {
 					// normal
 				}
+				//System.err.println(this+">>"+4);
 			}
 		}
 
@@ -180,7 +183,13 @@ public class Task implements Runnable {
 			nvps.add(new BasicNameValuePair("error", "app"));
 			nvps.add(new BasicNameValuePair("f", "xhtml"));
 			nvps.add(new BasicNameValuePair("apv", "0.9.5.2"));
-			request = post;
+			try {
+				post.setEntity(new UrlEncodedFormEntity(nvps));
+				request = post;
+			} catch (Exception e) {
+				e.printStackTrace();
+				request = null;
+			}
 			break;
 		case 1:
 			get = new HttpGet("http://vc.gtimg.com/" + captchaUrl + ".gif");
@@ -344,6 +353,9 @@ public class Task implements Runnable {
 			outter:
 			for (byte i = pos; i < RS; i++) {
 				try {
+					if(!qm.getFlag()){
+						return;
+					}
 					getRequest(i);
 					response = client.execute(request);
 					entity = response.getEntity();
@@ -441,9 +453,11 @@ public class Task implements Runnable {
 											group.add(id);
 										}
 									}
+									info_gc(gc);
+									info_gs();
 									if(gc==0){
 										info("无可用群");
-										pos += 2;//进去注销
+										pos += 3;//进去注销
 										break outter;
 									}else{							
 										info("获取列表成功");
@@ -457,13 +471,15 @@ public class Task implements Runnable {
 				
 										//update(2, gc > index ? (gc - index) : 0);// 在索引后的
 										if (mgc != -1) {
-											update(5, (gc - index) > mgc ? (gc - index - mgc) : 0);// 未发送的
+											gr = (gc - index) > mgc ? (gc - index - mgc) : 0;
+											update(5, gr);// 未发送的
 										}
 
 										idx = index;//当前要操作的邮件
 										
 										if((mgc != -1 && idx < group.size() && idxc < mgc)
 							|| (mgc == -1 && idx < group.size())){
+											groupid = group.get(idx);
 											// ignore
 										}else{
 											pos += 2;//直接跳到注销步骤
@@ -472,31 +488,67 @@ public class Task implements Runnable {
 									}
 									break;
 								case 4://send
-									
+									try {
+										if (json.getInt("errcode") == 0) {
+											mid = json.getString("mid");
+											info("发送成功:\r\n\t" + groupid);
+											info_gs_i();
+											update(3);
+										} else {
+											info("发送失败:" + json.getInt("errcode"));
+											update(4);
+											return;
+										}
+									} catch (Exception e) {
+										// e.printStackTrace();
+										System.err.println(line);
+										info("发送失败:非法内容");
+										update(4, gc-gr-idxc);
+										return;
+									}
 									break;
 								case 5:
 									if(mid!=null&&del){//删除的条件
-										
+										try {
+											if (json.getInt("errcode") == 0) {
+												info("删除成功:\r\n\t" + groupid);
+											} else {
+												info("删除失败:" + json.getInt("errcode"));
+											}
+										} catch (Exception e) {
+											info("删除失败:异常");
+										}
 									}
 									idx++;
 									idxc++;
 									if((mgc != -1 && idx < group.size() && idxc < mgc)
 											|| (mgc == -1 && idx < group.size())){
-										pos -= 1;
+										groupid = group.get(idx);
+										pos = 4;
 										break outter;//需要继续发送
 									}
 									//发送、删除 成功后，更新索引
 									break;
 								case 6:
+									info("注销成功");
+									pos = RS;
 									break;
 								default:
 									break;
 							}
 						}catch(JSONException ex){
-							info("解析数据失败:更换代理, 重新执行任务");
-							if (!proxy()) {
-								info("获取代理失败:任务终止");
-								return;
+							System.err.println(line);
+							//ex.printStackTrace();
+							info("解析数据失败");
+							if(useProxy){
+								if (!proxy()) {
+									info("获取代理失败:任务终止");
+									return;
+								}else{
+									info("更换代理，重新执行任务");
+								}
+							}else{
+								info("重新执行任务");
 							}
 							break;
 						}
@@ -510,7 +562,9 @@ public class Task implements Runnable {
 					releaseConnection(request);
 					
 					if(i==1){ //图像的后续处理
+						//System.err.println(this+">>"+1);
 						basket.pop();// 消费者
+						//System.err.println(this+">>"+2);
 						Display.getDefault().asyncExec(new Runnable() {
 							@Override
 							public void run() {
@@ -579,6 +633,33 @@ public class Task implements Runnable {
 		}
 
 		client.getConnectionManager().shutdown();
+	}
+
+	private void info_gs_i() {
+		Display.getDefault().asyncExec(new Runnable() {
+			@Override
+			public void run() {
+				item.setText(6, String.valueOf(Integer.parseInt(item.getText(6))+1));
+			}
+		});
+	}
+
+	private void info_gs() {
+		Display.getDefault().asyncExec(new Runnable() {
+			@Override
+			public void run() {
+				item.setText(6, "0");
+			}
+		});		
+	}
+
+	private void info_gc(final int gcx) {
+		Display.getDefault().asyncExec(new Runnable() {
+			@Override
+			public void run() {
+				item.setText(5, String.valueOf(gcx));
+			}
+		});		
 	}
 
 	private void info(final String status) {

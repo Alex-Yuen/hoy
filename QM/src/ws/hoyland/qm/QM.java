@@ -409,6 +409,8 @@ public class QM {
 				if (text.getText().length() == 4 && ctask != null) {
 					// System.out.println(ctask+"->A");
 					ctask.setCaptcha(text.getText());
+					text.setText("");
+					label_1.setImage(null);
 					// 解锁ctask
 					synchronized (ctask) {
 						// System.out.println(ctask+"->B");
@@ -418,7 +420,6 @@ public class QM {
 					// 生产者
 					basket.push();
 					// System.out.println(ctask+"->D");
-					text.setText("");
 				}
 			}
 		});
