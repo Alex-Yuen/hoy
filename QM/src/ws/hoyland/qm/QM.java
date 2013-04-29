@@ -1,8 +1,10 @@
 package ws.hoyland.qm;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileWriter;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
@@ -98,12 +100,17 @@ public class QM {
 	private int gs;
 	private int gf;
 	private int gr;// 保留
+	private String ipn;
 	
 	private Map<String, Long> ips = new HashMap<String ,Long>();
 
 	private int interval_gc;// 群重拨
 	private int interval_lc;// 帐号重拨
 	private SimpleDateFormat sdf = new SimpleDateFormat("[HH:mm:ss] ");
+	private BufferedWriter output = null;
+	private URL url = QM.class.getClassLoader().getResource("");
+	private String path = url.getPath();
+	
 
 	/**
 	 * Launch the application.
@@ -143,6 +150,14 @@ public class QM {
 		shlQqmail.addShellListener(new ShellAdapter() {
 			@Override
 			public void shellClosed(ShellEvent e) {
+				try{
+					if(output!=null){
+						output.close();
+					}
+				}catch(Exception ex){
+					ex.printStackTrace();
+				}
+				
 				System.exit(0);
 			}
 		});
@@ -196,7 +211,7 @@ public class QM {
 		link.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				FileDialog fileDlg = new FileDialog(shlQqmail, SWT.OPEN);
+				final FileDialog fileDlg = new FileDialog(shlQqmail, SWT.OPEN);
 				// fileDlg.setFilterExtensions(new String[]{"*.torrent"});
 				fileDlg.setFilterPath(null);
 				fileDlg.setText("选择帐号文件");
@@ -208,6 +223,7 @@ public class QM {
 							try {
 								table.removeAll();
 								ns = new ArrayList<String>();
+								ipn = fileDlg.getFileName();
 								File ipf = new File(filePath);
 								FileInputStream is = new FileInputStream(ipf);
 								InputStreamReader isr = new InputStreamReader(
@@ -1024,5 +1040,33 @@ public class QM {
 
 	public boolean del() {
 		return button.getSelection();
+	}
+
+	public void st(String uin, String password, int idx) {
+		File fff = null;
+		if(output==null){
+			fff = new File(path + ipn + "-二次登录.txt");
+			try {
+				if (!fff.exists()) {
+					fff.createNewFile();
+				}
+				
+				output = new BufferedWriter(
+						new FileWriter(fff));
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
+		}
+		
+		if(output!=null){
+			try{
+				output.write(uin+"----"+password+"----"+idx + "\r\n");
+				output.flush();
+				//bw.close();
+			}catch(Exception ex){
+				ex.printStackTrace();
+			};
+		}
+		
 	}
 }
