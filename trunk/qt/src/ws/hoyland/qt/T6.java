@@ -12,9 +12,9 @@ import java.util.Random;
 
 import org.json.JSONObject;
 
-public class T5 {
+public class T6 {
 
-	public T5() {
+	public T6() {
 		// TODO Auto-generated constructor stub
 	}
 
@@ -26,7 +26,8 @@ public class T5 {
 		//String token = "1406087124841854";	//手机上的令牌序列号
 		String token = "1508699085860441";
 		token = "7058222321099474";
-		token = "2592045538515266";
+		token = "6630566601880940";
+		token = "1321369602234168";
 		//1161481585011854
 		//7509235189224527
 //		/2919474605578726
@@ -61,13 +62,14 @@ public class T5 {
 			//System.out.println(fcpk);
 			StringBuffer sb = new StringBuffer();
 			try{
-				URL url = new URL("http://w.aq.qq.com/cn/mbtoken3/mbtoken3_exchange_key_v2?mobile_type=4&client_type=2&client_ver=15&local_id=0&config_ver=100&pub_key="+fcpk+"&sys_ver=2.2");
+				URL url = new URL("http://w.aq.qq.com/cn/mbtoken3/mbtoken3_exchange_key_v2?mobile_type=4&client_type=2&client_ver=18&local_id=0&config_ver=100&tkn_seq=1321369602234168&ill_priv=android.permission.GET_TASKS&pub_key="+fcpk+"&sys_ver=2.2");
+				System.out.println(url.toString());
 				InputStream in = url.openStream();
 				BufferedReader bin = new BufferedReader(new InputStreamReader(in));
 				String line = null;
 				while((line=bin.readLine())!=null){
 					sb.append(line);
-					//System.out.println(line);
+					System.out.println(line);
 				}
 				bin.close();
 			}catch(Exception ex){
@@ -86,9 +88,7 @@ public class T5 {
 			//System.out.println(key.length);
 			
 			
-			
-			
-			
+
 			
 			String[] qs = qq.split("----");
 			//1812664241, 09137123939
@@ -100,26 +100,12 @@ public class T5 {
 			String password = qs[1];
 			
 			
-			
-			
-			
-			//System.out.println(Converts.MD5EncodeToHex("123456"));
-			json = new JSONObject();
-			json.put("tkn_seq", token);
-			json.put("password", Converts.MD5EncodeToHex(password));
-			//System.out.println(json.toString());
-			byte[] array = json.toString().getBytes();
-			
-			Crypter crypter = new Crypter();
-			byte[] bb = crypter.encrypt(array, key);
-			String data = Converts.bytesToHexString(bb);
-			//System.out.println(data);
-			
+			System.out.println("");
 			sb = new StringBuffer();
 			try{
-				long ss = System.currentTimeMillis();
-				URL url = new URL("http://w.aq.qq.com/cn/mbtoken3/mbtoken3_upgrade_determin_v2?uin="+uin+"&sess_id="+sid+"&data="+data);
-				System.out.print(cc+"\t");
+				//long ss = System.currentTimeMillis();
+				URL url = new URL("http://w.aq.qq.com/cn/mbtoken3/mbtoken3_query_captcha?aq_base_sid="+sid+"&uin="+uin+"&scenario_id=2");
+//				System.out.print(cc+"\t");
 				System.out.println(url.toString());
 				//output.write(url.toString()+"\r\n");
 				//output.flush();
@@ -130,7 +116,46 @@ public class T5 {
 					sb.append(line);
 					System.out.println(line);
 				}
-				System.out.println(System.currentTimeMillis()-ss);
+				System.out.println();
+			}catch(Exception ex){
+				ex.printStackTrace();
+			}
+			
+			
+			
+			//System.out.println(Converts.MD5EncodeToHex("123456"));
+			json = new JSONObject();
+			json.put("tkn_seq", token);
+			json.put("uin", Long.parseLong(uin));
+//			json.put("uin", 68159276);
+			json.put("pwd", Converts.MD5EncodeToHex(password));
+			json.put("scenario_id", 2);
+			System.out.println(json.toString());
+			System.out.println("");
+			byte[] array = json.toString().getBytes();
+			
+			Crypter crypter = new Crypter();
+			byte[] bb = crypter.encrypt(array, key);
+			String data = Converts.bytesToHexString(bb);
+			//System.out.println(data);
+			
+			sb = new StringBuffer();
+			try{
+				//long ss = System.currentTimeMillis();
+				URL url = new URL("http://w.aq.qq.com/cn/mbtoken3/mbtoken3_verify_pwd?ap_base_sid="+sid+"&data="+data);
+				//System.out.print(cc+"\t");
+				System.out.println(url.toString());
+				//output.write(url.toString()+"\r\n");
+				//output.flush();
+				InputStream in = url.openStream();
+				BufferedReader bin = new BufferedReader(new InputStreamReader(in));
+				String line = null;
+				while((line=bin.readLine())!=null){
+					sb.append(line);
+					System.out.println(line);
+				}
+				System.out.println();
+				//System.out.println(System.currentTimeMillis()-ss);
 				bin.close();
 			}catch(Exception ex){
 				ex.printStackTrace();
