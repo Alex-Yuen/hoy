@@ -49,7 +49,7 @@ public class T4 {
 			String line = null;
 			while ((line = bin.readLine()) != null) {
 				sb.append(line);
-				// System.out.println(line);
+				 System.out.println(line);
 			}
 			bin.close();
 		} catch (Exception ex) {
