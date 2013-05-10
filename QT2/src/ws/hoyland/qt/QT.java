@@ -57,6 +57,8 @@ public class QT {
 	private List<String> fc = null;
 	private List<String> oc = null;
 	private List<String> mc = null;
+	private List<String> sc0 = null;
+	private List<String> sc1 = null;
 	private List<String> proxies = null;
 	private List<String> tokens = null;
 	private String ctk = null;
@@ -69,8 +71,8 @@ public class QT {
 	private Label label_5;
 	// private SimpleDateFormat formatter = null;
 	private String ipn = null;
-	private String[] fn = { "正确.txt", "错误.txt", "过多.txt", "异常.txt" };
-	BufferedWriter[] output = new BufferedWriter[4];
+	private String[] fn = {"正确.txt", "错误.txt", "过多.txt", "异常.txt", "正确-二代.txt", "正确-无保一代.txt"};
+	BufferedWriter[] output = new BufferedWriter[6];
 	BufferedWriter bw = null;
 	private URL url = QT.class.getClassLoader().getResource("");
 	private String path = url.getPath();
@@ -84,6 +86,10 @@ public class QT {
 	private Spinner spinner_2;
 	private Text text;
 	private String ctk2 = null;
+	private Button btnCheckButton;
+	private boolean up;
+	private boolean dna;
+	private Button btnDna;
 	
 	public QT() {
 		// formatter = new SimpleDateFormat("HH:mm:ss");//初始化Formatter的转换格式
@@ -157,25 +163,59 @@ public class QT {
 //		lblNewLabel_1.setText(ct(System.currentTimeMillis() - this.startTime));
 //	}
 	
-	public void up(String line, int err) {
+	public void up(String line, int err, int isdna) {
 		
 		if (err == 0) {
 			// this.button_2.setEnabled(true);
-			if(output[0]==null){
-				fff = new File(path + ipn + "-" + ctimes + "-" + fn[0]);
-				try {
-					if (!fff.exists()) {
-						fff.createNewFile();
+			if(isdna==-1){
+				if(output[0]==null){
+					fff = new File(path + ipn + "-" + ctimes + "-" + fn[0]);
+					try {
+						if (!fff.exists()) {
+							fff.createNewFile();
+						}
+						
+						output[0] = new BufferedWriter(
+								new FileWriter(fff));
+					} catch (Exception ex) {
+						ex.printStackTrace();
 					}
-					
-					output[0] = new BufferedWriter(
-							new FileWriter(fff));
-				} catch (Exception ex) {
-					ex.printStackTrace();
 				}
+				bw = output[0];
+				sc.add(line);
+			}else if(isdna==1){
+				if(output[4]==null){
+					fff = new File(path + ipn + "-" + ctimes + "-" + fn[4]);
+					try {
+						if (!fff.exists()) {
+							fff.createNewFile();
+						}
+						
+						output[4] = new BufferedWriter(
+								new FileWriter(fff));
+					} catch (Exception ex) {
+						ex.printStackTrace();
+					}
+				}
+				bw = output[4];
+				sc0.add(line);
+			}else if(isdna==0){
+				if(output[5]==null){
+					fff = new File(path + ipn + "-" + ctimes + "-" + fn[5]);
+					try {
+						if (!fff.exists()) {
+							fff.createNewFile();
+						}
+						
+						output[5] = new BufferedWriter(
+								new FileWriter(fff));
+					} catch (Exception ex) {
+						ex.printStackTrace();
+					}
+				}
+				bw = output[5];
+				sc1.add(line);
 			}
-			bw = output[0];
-			sc.add(line);
 		} else if (err == 132) {
 			// this.button_3.setEnabled(true);
 			if(output[1]==null){
@@ -235,6 +275,10 @@ public class QT {
 			bw.flush();
 			//bw.close();
 		}catch(Exception ex){
+
+//			System.out.println(isdna);
+//			System.out.println(err);
+//			System.out.println(fff.getPath());
 			ex.printStackTrace();
 		}
 		
@@ -328,7 +372,7 @@ public class QT {
 		txtC = new Text(shlQt, SWT.BORDER);
 		txtC.setEditable(false);
 		txtC.setText("请指定文件，导入帐号");
-		txtC.setBounds(187, 7, 246, 23);
+		txtC.setBounds(245, 7, 188, 23);
 
 		button_1 = new Button(shlQt, SWT.NONE);
 		button_1.addSelectionListener(new SelectionAdapter() {
@@ -341,6 +385,8 @@ public class QT {
 					// button_3.setEnabled(false);
 					// button_4.setEnabled(false);
 
+					sc0 = new ArrayList<String>();
+					sc1 = new ArrayList<String>();
 					sc = new ArrayList<String>();
 					fc = new ArrayList<String>();
 					mc = new ArrayList<String>();
@@ -348,7 +394,11 @@ public class QT {
 					nsx =  new ArrayList<String>(ns);
 					
 					mctk = Integer.parseInt(spinner_1.getText());
-					lblNewLabel_5.setText(String.valueOf(sc.size()));
+					if(dna){
+						lblNewLabel_5.setText(String.valueOf(sc0.size()+sc1.size()));
+					}else{
+						lblNewLabel_5.setText(String.valueOf(sc.size()));
+					}
 					lblNewLabel_6.setText(String.valueOf(fc.size()));
 					label_5.setText(String.valueOf(mc.size()));
 					label_2.setText(String.valueOf(oc.size()));
@@ -357,7 +407,9 @@ public class QT {
 					ctimes = 1;
 					mtimes = Integer.parseInt(spinner_2.getText());
 					ctk2 = text.getText();
-
+					up = btnCheckButton.getSelection();
+					dna = btnDna.getSelection();
+					
 					Display.getDefault().asyncExec(new Runnable() {
 
 						@Override
@@ -406,15 +458,22 @@ public class QT {
 									System.out.println(i + ":" + ns.get(i));
 								}
 							}
-							
+							//final boolean up = useProxy();
 						    timerTask = new TimerTask() { 					             
 					            @Override 
 					            public void run() { 
 					                Display.getDefault().asyncExec(new Runnable() { 					                     
 					                    @Override 
 					                    public void run() { 
-					                		int total = sc.size() + fc.size() + mc.size() + oc.size();
-					                		lblNewLabel_9.setText(proxies.size() + "/" + pc);
+					                		int total = 0;
+					                		if(dna){
+					                			total = sc0.size() + sc1.size() + fc.size() + mc.size() + oc.size();
+					                		}else{
+					                			total = sc.size() + fc.size() + mc.size() + oc.size();
+					                		}
+					                		if(up){
+					                			lblNewLabel_9.setText(proxies.size() + "/" + pc);
+					                		}
 					                		//label_7.setText(String.valueOf(tokens.size()));
 					                		if(ctk!=null){
 					                			label_7.setText(ctk);
@@ -422,7 +481,11 @@ public class QT {
 					                			label_7.setText("空");
 					                		}
 					                		progressBar.setSelection(total);
-					                		lblNewLabel_5.setText(String.valueOf(sc.size()));
+					                		if(dna){
+					                			lblNewLabel_5.setText(String.valueOf(sc0.size()+sc1.size()));
+					                		}else{
+					                			lblNewLabel_5.setText(String.valueOf(sc.size()));
+					                		}
 					                		lblNewLabel_6.setText(String.valueOf(fc.size()));
 					                		label_5.setText(String.valueOf(mc.size()));
 					                		label_2.setText(String.valueOf(oc.size()));
@@ -570,7 +633,7 @@ public class QT {
 						if (ns.size() > 0) {
 							label_3.setText("共 " + ns.size() + " 条");
 							label_6.setText("0/" + nc);
-							if (proxies != null && proxies.size() > 0) {
+							if ((btnCheckButton.getSelection()&&proxies != null && proxies.size() > 0)||(!btnCheckButton.getSelection())) {
 								button_1.setEnabled(true);
 							}
 							//
@@ -604,7 +667,7 @@ public class QT {
 		label_2.setText("0");
 
 		label_3 = new Label(shlQt, SWT.NONE);
-		label_3.setBounds(77, 10, 103, 17);
+		label_3.setBounds(77, 10, 104, 17);
 		label_3.setText("共 0 条");
 
 		lblNewLabel_1 = new Label(shlQt, SWT.NONE);
@@ -620,11 +683,13 @@ public class QT {
 		lblNewLabel_9.setText("0/0");
 
 		text_1 = new Text(shlQt, SWT.BORDER);
-		text_1.setText("请指定文件，导入代理");
+		text_1.setEnabled(false);
 		text_1.setEditable(false);
-		text_1.setBounds(187, 36, 246, 23);
+		text_1.setText("请指定文件，导入代理");
+		text_1.setBounds(245, 36, 188, 23);
 
 		button = new Button(shlQt, SWT.NONE);
+		button.setEnabled(false);
 		button.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
@@ -712,7 +777,7 @@ public class QT {
 		spinner_2 = new Spinner(shlQt, SWT.BORDER);
 		spinner_2.setMaximum(20);
 		spinner_2.setMinimum(1);
-		spinner_2.setSelection(2);
+		spinner_2.setSelection(1);
 		spinner_2.setBounds(516, 68, 39, 23);
 		
 		lblNewLabel_13 = new Label(shlQt, SWT.NONE);
@@ -727,6 +792,36 @@ public class QT {
 		text = new Text(shlQt, SWT.BORDER);
 		text.setText("1321369602234168");
 		text.setBounds(390, 98, 161, 23);
+		
+		btnCheckButton = new Button(shlQt, SWT.CHECK);
+		btnCheckButton.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				if(btnCheckButton.getSelection()){
+					text_1.setEnabled(true);
+					button.setEnabled(true);
+					if(proxies != null && proxies.size() > 0&&ns!=null&&ns.size()>0){
+						button_1.setEnabled(true);
+					}else{
+						button_1.setEnabled(false);
+					}
+				}else{
+					text_1.setEnabled(false);
+					button.setEnabled(false);
+					if(ns!=null&&ns.size()>0){
+						button_1.setEnabled(true);
+					}else{
+						button_1.setEnabled(false);
+					}
+				}
+			}
+		});
+		btnCheckButton.setBounds(188, 39, 52, 17);
+		btnCheckButton.setText("使用");
+		
+		btnDna = new Button(shlQt, SWT.CHECK);
+		btnDna.setBounds(188, 10, 51, 17);
+		btnDna.setText("dna");
 
 	}
 
@@ -757,5 +852,13 @@ public class QT {
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}		
+	}
+	
+	public boolean useProxy(){
+		return up;
+	}
+	
+	public boolean dna(){
+		return dna;
 	}
 }

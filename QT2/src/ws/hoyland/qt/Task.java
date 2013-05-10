@@ -36,7 +36,12 @@ public class Task implements Runnable {
 	private Random rnd = new Random();
 	private String px;
 	private String line;
-	private final String UAG = "Dalvik/1.2.0 (Linux; U; Android 2.2; sdk Build/FRF91)";
+	private boolean useProxy;
+	private boolean dna;
+	private int isdna = -1;
+	//private final String UAG = "Dalvik/1.2.0 (Linux; U; Android 2.2; sdk Build/FRF91)";
+	private final String UAG = "QQMobileToken/4.7 CFNetwork/548.1.4 Darwin/11.0.0";	
+
 //	private long st;
 //	private String time;
 	
@@ -44,17 +49,21 @@ public class Task implements Runnable {
 		this.pool = pool;
 		this.proxies = proxies;
 		this.qt = qt;
+		this.useProxy = qt.useProxy();
+		this.dna = qt.dna();
 		this.tokens = tokens;
 		//this.token = "1406087124841854";
 //		this.token = "1475688552139964";
 		//this.token = "6980777939050726";
 		this.uin = uin;
 		this.password = password;
-		synchronized(proxies){
-			if(proxies.size()==0){
-				qt.shutdown();
-			}else{
-				this.px = proxies.get(rnd.nextInt(proxies.size()));
+		if(useProxy){
+			synchronized(proxies){
+				if(proxies.size()==0){
+					qt.shutdown();
+				}else{
+					this.px = proxies.get(rnd.nextInt(proxies.size()));
+				}
 			}
 		}
 	}
@@ -63,7 +72,8 @@ public class Task implements Runnable {
 	public void run() {
 //		this.st = System.currentTimeMillis();
 		//String token = "1406087124841854"; // 手机上的令牌序列号
-		String[] ips = px.split(":");
+//		if(useProxy){
+//		}
 //		if(ips.length<1){
 //			System.out.println(px);
 //		}
@@ -71,14 +81,17 @@ public class Task implements Runnable {
 //      System.getProperties().setProperty("http.proxyHost", ips[0]);
 //      System.getProperties().setProperty("http.proxyPort", ips[1]);
         DefaultHttpClient httpclient = new DefaultHttpClient();
-        HttpHost proxy = new HttpHost(ips[0], Integer.parseInt(ips[1]), "http");
 
         httpclient.getParams().setParameter(CoreConnectionPNames.CONNECTION_TIMEOUT, 5000);
         httpclient.getParams().setParameter(CoreConnectionPNames.SO_TIMEOUT, 5000);
 //        HttpMethodParams
         //CoreConnectionPNames.;
         //CoreConnectionPNames.
-        httpclient.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, proxy);
+        if(useProxy){
+    		String[] ips = px.split(":");
+            HttpHost proxy = new HttpHost(ips[0], Integer.parseInt(ips[1]), "http");
+        	httpclient.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, proxy);
+        }
         
 		BigInteger root = new BigInteger("2");
 		BigInteger d = new BigInteger(
@@ -155,12 +168,17 @@ public class Task implements Runnable {
 				if(!line.contains("sess_id")){
 					//err ! ++;
 					// err = 106; //操作失败 { "uin": 2474713063, "err": 106, "info": "操作失败，请重试。" }
-					synchronized(proxies){//删除代理
-						proxies.remove(px);
-						if(!this.pool.isShutdown()&&proxies.size()!=0){
-							Task task = new Task(pool, proxies, tokens, qt, uin, password);			
-							this.pool.execute(task);
+					if(useProxy){
+						synchronized(proxies){//删除代理
+							proxies.remove(px);
+							if(!this.pool.isShutdown()&&proxies.size()!=0){
+								Task task = new Task(pool, proxies, tokens, qt, uin, password);			
+								this.pool.execute(task);
+							}
 						}
+					}else{
+						Task task = new Task(pool, proxies, tokens, qt, uin, password);			
+						this.pool.execute(task);
 					}
 					return;
 				}else{
@@ -220,12 +238,17 @@ public class Task implements Runnable {
 					if(!line.contains("svc_pub_key")){
 						//err ! ++;
 						// err = 106; //操作失败 { "uin": 2474713063, "err": 106, "info": "操作失败，请重试。" }
-						synchronized(proxies){//删除代理
-							proxies.remove(px);
-							if(!this.pool.isShutdown()&&proxies.size()!=0){
-								Task task = new Task(pool, proxies, tokens, qt, uin, password);			
-								this.pool.execute(task);
+						if(useProxy){
+							synchronized(proxies){//删除代理
+								proxies.remove(px);
+								if(!this.pool.isShutdown()&&proxies.size()!=0){
+									Task task = new Task(pool, proxies, tokens, qt, uin, password);			
+									this.pool.execute(task);
+								}
 							}
+						}else{
+							Task task = new Task(pool, proxies, tokens, qt, uin, password);			
+							this.pool.execute(task);
 						}
 						return;
 					}else{
@@ -311,12 +334,17 @@ public class Task implements Runnable {
 			if(!line.contains("sess_id")){
 				//err ! ++;
 				// err = 106; //操作失败 { "uin": 2474713063, "err": 106, "info": "操作失败，请重试。" }
-				synchronized(proxies){//删除代理
-					proxies.remove(px);
-					if(!this.pool.isShutdown()&&proxies.size()!=0){
-						Task task = new Task(pool, proxies, tokens, qt, uin, password);			
-						this.pool.execute(task);
+				if(useProxy){
+					synchronized(proxies){//删除代理
+						proxies.remove(px);
+						if(!this.pool.isShutdown()&&proxies.size()!=0){
+							Task task = new Task(pool, proxies, tokens, qt, uin, password);			
+							this.pool.execute(task);
+						}
 					}
+				}else{
+					Task task = new Task(pool, proxies, tokens, qt, uin, password);			
+					this.pool.execute(task);
 				}
 //				Display.getDefault().asyncExec(new Runnable(){
 //					@Override
@@ -350,7 +378,20 @@ public class Task implements Runnable {
 					EntityUtils.consume(entity);
 					httpGet.releaseConnection();
 				}catch(Exception ex){
-					ex.printStackTrace();
+					//ex.printStackTrace();
+					if(useProxy){
+						synchronized(proxies){//删除代理
+							proxies.remove(px);
+							if(!this.pool.isShutdown()&&proxies.size()!=0){
+								Task task = new Task(pool, proxies, tokens, qt, uin, password);			
+								this.pool.execute(task);
+							}
+						}
+					}else{
+						Task task = new Task(pool, proxies, tokens, qt, uin, password);			
+						this.pool.execute(task);
+					}
+					return;
 				}
 				
 //				System.out.println(line);
@@ -406,12 +447,17 @@ public class Task implements Runnable {
 				err = json.getInt("err");
 				
 				if(err==120){ //网络异常
-					synchronized(proxies){//删除代理
-						proxies.remove(px);
-						if(!this.pool.isShutdown()&&proxies.size()!=0){
-							Task task = new Task(pool, proxies, tokens, qt, uin, password);			
-							this.pool.execute(task);
+					if(useProxy){
+						synchronized(proxies){//删除代理
+							proxies.remove(px);
+							if(!this.pool.isShutdown()&&proxies.size()!=0){
+								Task task = new Task(pool, proxies, tokens, qt, uin, password);			
+								this.pool.execute(task);
+							}
 						}
+					}else{
+						Task task = new Task(pool, proxies, tokens, qt, uin, password);			
+						this.pool.execute(task);
 					}
 //					Display.getDefault().asyncExec(new Runnable(){
 //						@Override
@@ -425,12 +471,17 @@ public class Task implements Runnable {
 					return;
 				}else if(err==106){//操作错误, 网络波动 IP重复
 					//System.out.println("ERR="+err+":"+line);
-					synchronized(proxies){
-						if(!this.pool.isShutdown()&&proxies.size()!=0){
-							//System.out.println("[106]B");
-							Task task = new Task(pool, proxies, tokens, qt, uin, password);			
-							this.pool.execute(task);
+					if(useProxy){
+						synchronized(proxies){//删除代理
+							proxies.remove(px);
+							if(!this.pool.isShutdown()&&proxies.size()!=0){
+								Task task = new Task(pool, proxies, tokens, qt, uin, password);			
+								this.pool.execute(task);
+							}
 						}
+					}else{
+						Task task = new Task(pool, proxies, tokens, qt, uin, password);			
+						this.pool.execute(task);
 					}
 //					Display.getDefault().asyncExec(new Runnable(){
 //						@Override
@@ -452,16 +503,25 @@ public class Task implements Runnable {
 						qt.setCTK(null);
 					}
 					
-					synchronized(proxies){
-						if(!this.pool.isShutdown()&&proxies.size()!=0){
-							//System.out.println("[106]B");
-							Task task = new Task(pool, proxies, tokens, qt, uin, password);			
-							this.pool.execute(task);
+					if(useProxy){
+						synchronized(proxies){//删除代理
+							proxies.remove(px);
+							if(!this.pool.isShutdown()&&proxies.size()!=0){
+								Task task = new Task(pool, proxies, tokens, qt, uin, password);			
+								this.pool.execute(task);
+							}
 						}
+					}else{
+						Task task = new Task(pool, proxies, tokens, qt, uin, password);			
+						this.pool.execute(task);
 					}
 					return;
 				}else if(err==0){
 					tkn_usable = json.getInt("tkn_usable");
+					if(dna){
+						isdna = json.getInt("isdna");
+					}
+					
 					if(tkn_usable==0){ //令牌无效
 //						synchronized(tokens){
 //							tokens.remove(token); //删除当前token
@@ -471,12 +531,17 @@ public class Task implements Runnable {
 							qt.setCTK(null);
 						}
 						
-						synchronized(proxies){
-							if(!this.pool.isShutdown()&&proxies.size()!=0){
-								//System.out.println("[106]B");
-								Task task = new Task(pool, proxies, tokens, qt, uin, password);			
-								this.pool.execute(task);
+						if(useProxy){
+							synchronized(proxies){//删除代理
+								proxies.remove(px);
+								if(!this.pool.isShutdown()&&proxies.size()!=0){
+									Task task = new Task(pool, proxies, tokens, qt, uin, password);			
+									this.pool.execute(task);
+								}
 							}
+						}else{
+							Task task = new Task(pool, proxies, tokens, qt, uin, password);			
+							this.pool.execute(task);
 						}
 						return;
 					}
@@ -504,12 +569,17 @@ public class Task implements Runnable {
 		catch(SocketTimeoutException ex){
 			//System.out.println(this.time);
 			err = -6;
-			synchronized(proxies){//删除代理
-				proxies.remove(px);
-				if(!this.pool.isShutdown()&&proxies.size()!=0){
-					Task task = new Task(pool, proxies, tokens, qt, uin, password);			
-					this.pool.execute(task);
+			if(useProxy){
+				synchronized(proxies){//删除代理
+					proxies.remove(px);
+					if(!this.pool.isShutdown()&&proxies.size()!=0){
+						Task task = new Task(pool, proxies, tokens, qt, uin, password);			
+						this.pool.execute(task);
+					}
 				}
+			}else{
+				Task task = new Task(pool, proxies, tokens, qt, uin, password);			
+				this.pool.execute(task);
 			}
 //			Display.getDefault().asyncExec(new Runnable(){
 //				@Override
@@ -525,12 +595,17 @@ public class Task implements Runnable {
 		}
 		catch(ClientProtocolException ex){
 			err = -5;
-			synchronized(proxies){//删除代理
-				proxies.remove(px);
-				if(!this.pool.isShutdown()&&proxies.size()!=0){
-					Task task = new Task(pool, proxies, tokens, qt, uin, password);			
-					this.pool.execute(task);
+			if(useProxy){
+				synchronized(proxies){//删除代理
+					proxies.remove(px);
+					if(!this.pool.isShutdown()&&proxies.size()!=0){
+						Task task = new Task(pool, proxies, tokens, qt, uin, password);			
+						this.pool.execute(task);
+					}
 				}
+			}else{
+				Task task = new Task(pool, proxies, tokens, qt, uin, password);			
+				this.pool.execute(task);
 			}
 //			Display.getDefault().asyncExec(new Runnable(){
 //				@Override
@@ -548,13 +623,17 @@ public class Task implements Runnable {
 			//System.out.println(this.time);
 			err = -4;
 			//System.out.print("SocketException:"+proxies.size()+"->");
-			synchronized(proxies){//删除代理
-				proxies.remove(px);
-				//System.out.print(proxies.size());
-				if(!this.pool.isShutdown()&&proxies.size()!=0){
-					Task task = new Task(pool, proxies, tokens, qt, uin, password);			
-					this.pool.execute(task);
+			if(useProxy){
+				synchronized(proxies){//删除代理
+					proxies.remove(px);
+					if(!this.pool.isShutdown()&&proxies.size()!=0){
+						Task task = new Task(pool, proxies, tokens, qt, uin, password);			
+						this.pool.execute(task);
+					}
 				}
+			}else{
+				Task task = new Task(pool, proxies, tokens, qt, uin, password);			
+				this.pool.execute(task);
 			}
 //			Display.getDefault().asyncExec(new Runnable(){
 //				@Override
@@ -572,13 +651,17 @@ public class Task implements Runnable {
 			//System.out.println(this.time);
 			err = -3;
 			//System.out.print("NoHttpResponseException:"+proxies.size()+"->");
-			synchronized(proxies){//删除代理
-				proxies.remove(px);
-				//System.out.print(proxies.size());
-				if(!this.pool.isShutdown()&&proxies.size()!=0){
-					Task task = new Task(pool, proxies, tokens, qt, uin, password);			
-					this.pool.execute(task);
+			if(useProxy){
+				synchronized(proxies){//删除代理
+					proxies.remove(px);
+					if(!this.pool.isShutdown()&&proxies.size()!=0){
+						Task task = new Task(pool, proxies, tokens, qt, uin, password);			
+						this.pool.execute(task);
+					}
 				}
+			}else{
+				Task task = new Task(pool, proxies, tokens, qt, uin, password);			
+				this.pool.execute(task);
 			}
 //			Display.getDefault().asyncExec(new Runnable(){
 //				@Override
@@ -594,12 +677,17 @@ public class Task implements Runnable {
 		}catch(ConnectTimeoutException ex){
 			//System.out.println(this.time);
 			err = -2;
-			synchronized(proxies){//删除代理
-				proxies.remove(px);
-				if(!this.pool.isShutdown()&&proxies.size()!=0){
-					Task task = new Task(pool, proxies, tokens, qt, uin, password);			
-					this.pool.execute(task);
+			if(useProxy){
+				synchronized(proxies){//删除代理
+					proxies.remove(px);
+					if(!this.pool.isShutdown()&&proxies.size()!=0){
+						Task task = new Task(pool, proxies, tokens, qt, uin, password);			
+						this.pool.execute(task);
+					}
 				}
+			}else{
+				Task task = new Task(pool, proxies, tokens, qt, uin, password);			
+				this.pool.execute(task);
 			}
 //			Display.getDefault().asyncExec(new Runnable(){
 //				@Override
@@ -640,7 +728,7 @@ public class Task implements Runnable {
 				//if(qt.getFlag()){
 
 				if(err!=132&&err!=0&&err!=136){
-					System.out.println(err+"->"+uin+":"+password+"->"+px+"->"+line);
+					System.err.println(err+"->"+uin+":"+password+"->"+px+"->"+line);
 				}
 				//if(err==0){
 				//System.out.println(line);
@@ -650,7 +738,7 @@ public class Task implements Runnable {
 //				}
 				if(qt.getFlag()){
 					//System.err.print(time);
-					qt.up(uin+"----"+password, err);
+					qt.up(uin+"----"+password, err, isdna);
 				}
 				//}
 			}
