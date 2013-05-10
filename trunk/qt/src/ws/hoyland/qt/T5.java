@@ -7,9 +7,14 @@ import java.io.FileWriter;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.math.BigInteger;
-import java.net.URL;
 import java.util.Random;
 
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.params.CoreConnectionPNames;
+import org.apache.http.util.EntityUtils;
 import org.json.JSONObject;
 
 public class T5 {
@@ -22,11 +27,26 @@ public class T5 {
 	 * @param args
 	 */
 	public static void main(String[] args) throws Exception{
+
+		String UAG = "Dalvik/1.2.0 (Linux; U; Android 2.2; sdk Build/FRF91)";
+		
+		DefaultHttpClient httpclient = new DefaultHttpClient();
+		httpclient.getParams().setParameter(
+				CoreConnectionPNames.CONNECTION_TIMEOUT, 5000);
+		httpclient.getParams().setParameter(
+				CoreConnectionPNames.SO_TIMEOUT, 5000);
+		
+		HttpGet httpGet = null;
+		String line = null;
+		HttpResponse response = null;
+		HttpEntity entity = null;
 		//int cc = 0;
 		//String token = "1406087124841854";	//手机上的令牌序列号
 		String token = "1508699085860441";
 		token = "7058222321099474";
 		token = "2592045538515266";
+		token = "1321369602234168";
+		//token = "8431897550167556";
 		//1161481585011854
 		//7509235189224527
 //		/2919474605578726
@@ -59,23 +79,36 @@ public class T5 {
 			String fcpk = root.modPow(e, d).toString(16).toUpperCase();
 			
 			//System.out.println(fcpk);
-			StringBuffer sb = new StringBuffer();
+			//StringBuffer sb = new StringBuffer();
 			try{
+				httpGet = new HttpGet(
+						"http://w.aq.qq.com/cn/mbtoken3/mbtoken3_exchange_key_v2?mobile_type=4&client_type=2&client_ver=18&local_id=0&config_ver=100&tkn_seq="+token+"&ill_priv=android.permission.GET_TASKS&pub_key="+fcpk+"&sys_ver=2.2");
+				httpGet.setHeader("User-Agent", UAG);
+				httpGet.setHeader("Connection", "Keep-Alive");
+				response = httpclient.execute(httpGet);
+				entity = response.getEntity();
+				// do something useful with the response body
+				// and ensure it is fully consumed
+				line = EntityUtils.toString(entity);
+				EntityUtils.consume(entity);
+				httpGet.releaseConnection();
+				System.out.println(line);
+				System.out.println();
 				//URL url = new URL("http://w.aq.qq.com/cn/mbtoken3/mbtoken3_exchange_key_v2?mobile_type=4&client_type=2&client_ver=15&local_id=0&config_ver=100&pub_key="+fcpk+"&sys_ver=2.2");
-				URL url = new URL("http://w.aq.qq.com/cn/mbtoken3/mbtoken3_exchange_key_v2?mobile_type=4&client_type=2&client_ver=18&local_id=0&config_ver=100&tkn_seq="+token+"&ill_priv=android.permission.GET_TASKS&pub_key="+fcpk+"&sys_ver=2.2");
-				InputStream in = url.openStream();
-				BufferedReader bin = new BufferedReader(new InputStreamReader(in));
-				String line = null;
-				while((line=bin.readLine())!=null){
-					sb.append(line);
-					//System.out.println(line);
-				}
-				bin.close();
+//				URL url = new URL("http://w.aq.qq.com/cn/mbtoken3/mbtoken3_exchange_key_v2?mobile_type=4&client_type=2&client_ver=18&local_id=0&config_ver=100&tkn_seq="+token+"&ill_priv=android.permission.GET_TASKS&pub_key="+fcpk+"&sys_ver=2.2");
+//				InputStream in = url.openStream();
+//				BufferedReader bin = new BufferedReader(new InputStreamReader(in));
+//				
+//				while((line=bin.readLine())!=null){
+//					sb.append(line);
+//					//System.out.println(line);
+//				}
+//				bin.close();
 			}catch(Exception ex){
 				ex.printStackTrace();
 			}
 			
-			JSONObject json = new JSONObject(sb.toString());
+			JSONObject json = new JSONObject(line);
 			String sid = json.getString("sess_id");
 			String tcpk = json.getString("pub_key"); //get server's crypt pub key
 			//System.out.println(tcpk);
@@ -116,23 +149,38 @@ public class T5 {
 			String data = Converts.bytesToHexString(bb);
 			//System.out.println(data);
 			
-			sb = new StringBuffer();
+			//sb = new StringBuffer();
 			try{
-				long ss = System.currentTimeMillis();
-				URL url = new URL("http://w.aq.qq.com/cn/mbtoken3/mbtoken3_upgrade_determin_v2?uin="+uin+"&sess_id="+sid+"&data="+data);
-				System.out.print(cc+"\t");
-				System.out.println(url.toString());
-				//output.write(url.toString()+"\r\n");
-				//output.flush();
-				InputStream in = url.openStream();
-				BufferedReader bin = new BufferedReader(new InputStreamReader(in));
-				String line = null;
-				while((line=bin.readLine())!=null){
-					sb.append(line);
-					System.out.println(line);
-				}
-				System.out.println(System.currentTimeMillis()-ss);
-				bin.close();
+				httpclient.getCookieStore().clear();
+				httpGet = new HttpGet(
+						"http://w.aq.qq.com/cn/mbtoken3/mbtoken3_query_captcha?aq_base_sid="+sid+"&uin="+uin+"&scenario_id=1");
+				httpGet.setHeader("User-Agent", UAG);
+				httpGet.setHeader("Connection", "Keep-Alive");
+				response = httpclient.execute(httpGet);
+				entity = response.getEntity();
+				// do something useful with the response body
+				// and ensure it is fully consumed
+				line = EntityUtils.toString(entity);
+				EntityUtils.consume(entity);
+				httpGet.releaseConnection();
+				System.out.println(line);
+				System.out.println();
+				
+				
+				httpclient.getCookieStore().clear();
+				httpGet = new HttpGet(
+						"http://w.aq.qq.com/cn/mbtoken3/mbtoken3_upgrade_determin_v2?uin=68159276&sess_id="+sid+"&data="+data);
+				httpGet.setHeader("User-Agent", UAG);
+				httpGet.setHeader("Connection", "Keep-Alive");
+
+				response = httpclient.execute(httpGet);
+				entity = response.getEntity();
+				// do something useful with the response body
+				// and ensure it is fully consumed
+				line = EntityUtils.toString(entity);
+				EntityUtils.consume(entity);
+				httpGet.releaseConnection();
+				System.out.println(line);
 			}catch(Exception ex){
 				ex.printStackTrace();
 			}
