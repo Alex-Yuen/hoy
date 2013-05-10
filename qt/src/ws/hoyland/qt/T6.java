@@ -28,6 +28,7 @@ public class T6 {
 		token = "7058222321099474";
 		token = "6630566601880940";
 		token = "1321369602234168";
+		token = "8431897550167556";
 		//1161481585011854
 		//7509235189224527
 //		/2919474605578726
@@ -62,7 +63,7 @@ public class T6 {
 			//System.out.println(fcpk);
 			StringBuffer sb = new StringBuffer();
 			try{
-				URL url = new URL("http://w.aq.qq.com/cn/mbtoken3/mbtoken3_exchange_key_v2?mobile_type=4&client_type=2&client_ver=18&local_id=0&config_ver=100&tkn_seq=1321369602234168&ill_priv=android.permission.GET_TASKS&pub_key="+fcpk+"&sys_ver=2.2");
+				URL url = new URL("http://w.aq.qq.com/cn/mbtoken3/mbtoken3_exchange_key_v2?mobile_type=4&client_type=2&client_ver=18&local_id=0&config_ver=100&tkn_seq="+token+"&ill_priv=android.permission.GET_TASKS&pub_key="+fcpk+"&sys_ver=2.2");
 				System.out.println(url.toString());
 				InputStream in = url.openStream();
 				BufferedReader bin = new BufferedReader(new InputStreamReader(in));
