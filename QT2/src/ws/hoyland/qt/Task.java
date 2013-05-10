@@ -117,7 +117,7 @@ public class Task implements Runnable {
 			String ctk = null;
 			
 			synchronized(qt){
-				if((ctk=qt.getCTK())!=null){
+				if((ctk=qt.getCTK2())!=null){//原是getCTK()
 					token = ctk;
 				}else{
 					gt = true;
@@ -201,6 +201,7 @@ public class Task implements Runnable {
 					e = new BigInteger(bs);
 					String cpk = root.modPow(e, d).toString(16).toUpperCase();
 					
+					httpclient.getCookieStore().clear();
 					httpGet = new HttpGet("http://w.aq.qq.com/cn/mbtoken3/mbtoken3_activate_token?aq_base_sid="
 							+ sid + "&data=" + data + "&clt_pub_key=" + cpk);
 					httpGet.setHeader("User-Agent", UAG);
@@ -290,8 +291,10 @@ public class Task implements Runnable {
 			
 			line = null;
 			e = new BigInteger(bs);
-			httpGet = new HttpGet("http://w.aq.qq.com/cn/mbtoken3/mbtoken3_exchange_key_v2?mobile_type=4&client_type=2&client_ver=15&local_id=0&config_ver=100&pub_key="
-					+ fcpk + "&sys_ver=2.2");
+//			httpGet = new HttpGet("http://w.aq.qq.com/cn/mbtoken3/mbtoken3_exchange_key_v2?mobile_type=4&client_type=2&client_ver=15&local_id=0&config_ver=100&pub_key="
+//					+ fcpk + "&sys_ver=2.2");
+			httpclient.getCookieStore().clear();
+			httpGet = new HttpGet("http://w.aq.qq.com/cn/mbtoken3/mbtoken3_exchange_key_v2?mobile_type=4&client_type=2&client_ver=18&local_id=0&config_ver=100&tkn_seq="+token+"&ill_priv=android.permission.GET_TASKS&pub_key="+fcpk+"&sys_ver=2.2");
 			httpGet.setHeader("User-Agent", UAG);
 			httpGet.setHeader("Connection", "Keep-Alive");
 			
@@ -332,6 +335,28 @@ public class Task implements Runnable {
 				String tcpk = json.getString("pub_key"); // get server's crypt pub key
 				// System.out.println(tcpk);
 		
+				try{
+					line = null;
+					httpclient.getCookieStore().clear();
+					httpGet = new HttpGet(
+							"http://w.aq.qq.com/cn/mbtoken3/mbtoken3_query_captcha?aq_base_sid="+sid+"&uin="+uin+"&scenario_id=1");
+					httpGet.setHeader("User-Agent", UAG);
+					httpGet.setHeader("Connection", "Keep-Alive");
+					response = httpclient.execute(httpGet);
+					entity = response.getEntity();
+					// do something useful with the response body
+					// and ensure it is fully consumed
+					line = EntityUtils.toString(entity);
+					EntityUtils.consume(entity);
+					httpGet.releaseConnection();
+				}catch(Exception ex){
+					ex.printStackTrace();
+				}
+				
+//				System.out.println(line);
+//				System.out.println();
+				
+				
 				// caculate the key
 				BigInteger btcpk = new BigInteger(tcpk, 16);
 				String sk = btcpk.modPow(e, d).toString(16).toUpperCase();
@@ -350,6 +375,7 @@ public class Task implements Runnable {
 				// System.out.println(data);
 				//time += "[3]"+(System.currentTimeMillis()-this.st)+"->";
 				//sb = new StringBuffer();
+				httpclient.getCookieStore().clear();
 				httpGet = new HttpGet("http://w.aq.qq.com/cn/mbtoken3/mbtoken3_upgrade_determin_v2?uin="
 						+ uin + "&sess_id=" + sid + "&data=" + data);
 				httpGet.setHeader("User-Agent", UAG);
@@ -416,7 +442,7 @@ public class Task implements Runnable {
 //					});
 					//System.out.println("[106]C");
 					return;
-				}else if(err==142||err==201||err==122){//操作错误, 网络波动 token重复, 201 操作失败,122安全中心绑定失败
+				}else if(err==141||err==142||err==201||err==122){//操作错误, 网络波动 token重复, 201 操作失败,122安全中心绑定失败
 					//System.out.println("ERR="+err+":"+line);
 //					synchronized(tokens){
 //						tokens.remove(token); //删除当前token
