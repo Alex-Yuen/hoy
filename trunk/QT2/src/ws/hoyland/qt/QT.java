@@ -82,6 +82,8 @@ public class QT {
 	private int ctimes = 0;
 	private int mtimes = 0;
 	private Spinner spinner_2;
+	private Text text;
+	private String ctk2 = null;
 	
 	public QT() {
 		// formatter = new SimpleDateFormat("HH:mm:ss");//初始化Formatter的转换格式
@@ -103,6 +105,10 @@ public class QT {
 			System.out.println(cctk+":"+mctk);
 			return null;
 		}
+	}
+	
+	public String getCTK2(){
+		return this.ctk2;
 	}
 	
 //	public int getCCTK(){
@@ -350,6 +356,7 @@ public class QT {
 					progressBar.setSelection(0);
 					ctimes = 1;
 					mtimes = Integer.parseInt(spinner_2.getText());
+					ctk2 = text.getText();
 
 					Display.getDefault().asyncExec(new Runnable() {
 
@@ -686,7 +693,7 @@ public class QT {
 		
 		label_7 = new Label(shlQt, SWT.NONE);
 		label_7.setText("空");
-		label_7.setBounds(394, 104, 157, 17);
+		label_7.setBounds(307, 81, 0, 0);
 		
 		Label lblNewLabel_11 = new Label(shlQt, SWT.NONE);
 		lblNewLabel_11.setBounds(225, 71, 61, 17);
@@ -716,6 +723,10 @@ public class QT {
 		lblNewLabel_2 = new Label(shlQt, SWT.NONE);
 		lblNewLabel_2.setBounds(163, 173, 61, 17);
 		lblNewLabel_2.setText("耗时:");
+		
+		text = new Text(shlQt, SWT.BORDER);
+		text.setText("1321369602234168");
+		text.setBounds(390, 98, 161, 23);
 
 	}
 
