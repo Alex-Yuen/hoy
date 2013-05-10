@@ -820,7 +820,7 @@ public class QT {
 		btnCheckButton.setText("使用");
 		
 		btnDna = new Button(shlQt, SWT.CHECK);
-		btnDna.setBounds(188, 10, 51, 17);
+		btnDna.setBounds(188, 10, 0, 0);
 		btnDna.setText("dna");
 
 	}
