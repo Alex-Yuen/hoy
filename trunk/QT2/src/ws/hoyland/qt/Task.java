@@ -317,7 +317,9 @@ public class Task implements Runnable {
 //			httpGet = new HttpGet("http://w.aq.qq.com/cn/mbtoken3/mbtoken3_exchange_key_v2?mobile_type=4&client_type=2&client_ver=15&local_id=0&config_ver=100&pub_key="
 //					+ fcpk + "&sys_ver=2.2");
 			httpclient.getCookieStore().clear();
-			httpGet = new HttpGet("http://w.aq.qq.com/cn/mbtoken3/mbtoken3_exchange_key_v2?mobile_type=4&client_type=2&client_ver=18&local_id=0&config_ver=100&tkn_seq="+token+"&ill_priv=android.permission.GET_TASKS&pub_key="+fcpk+"&sys_ver=2.2");
+			//httpGet = new HttpGet("http://w.aq.qq.com/cn/mbtoken3/mbtoken3_exchange_key_v2?mobile_type=4&client_type=2&client_ver=18&local_id=0&config_ver=100&tkn_seq="+token+"&ill_priv=android.permission.GET_TASKS&pub_key="+fcpk+"&sys_ver=2.2");
+			
+			httpGet = new HttpGet("http://w.aq.qq.com/cn/mbtoken3/mbtoken3_exchange_key_v2?mobile_type=1&client_type=2&client_ver=14&local_id=0&sys_ver=5.1.1_1&pub_key="+fcpk+"&tkn_seq="+token+"&config_ver=0");
 			httpGet.setHeader("User-Agent", UAG);
 			httpGet.setHeader("Connection", "Keep-Alive");
 			
@@ -493,7 +495,7 @@ public class Task implements Runnable {
 //					});
 					//System.out.println("[106]C");
 					return;
-				}else if(err==141||err==142||err==201||err==122){//操作错误, 网络波动 token重复, 201 操作失败,122安全中心绑定失败
+				}else if(err==140||err==141||err==142||err==201||err==122){//操作错误, 网络波动 token重复, 201 操作失败,122安全中心绑定失败,140验证码
 					//System.out.println("ERR="+err+":"+line);
 //					synchronized(tokens){
 //						tokens.remove(token); //删除当前token
