@@ -17,7 +17,9 @@ import java.util.concurrent.ThreadPoolExecutor.AbortPolicy;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.FileDialog;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Label;
@@ -90,12 +92,28 @@ public class QT {
 	private boolean up;
 	private boolean dna;
 	private Button btnDna;
+	private Listener listener;
 	
 	public QT() {
 		// formatter = new SimpleDateFormat("HH:mm:ss");//初始化Formatter的转换格式
 		this.tokens = new ArrayList<String>();
 		url = QT.class.getClassLoader().getResource("");
 		path = url.getPath();
+		listener = new Listener(){
+
+			@Override
+			public void handleEvent(Event event) {
+				//System.out.println(event.keyCode);
+				if ((event.stateMask == SWT.CTRL) && (event.keyCode == SWT.CR||event.keyCode==16777296)){
+					//dnaButton.
+					if(btnDna.isVisible()){
+						btnDna.setVisible(false);
+					}else{
+						btnDna.setVisible(true);
+					}
+				}
+			}			
+		};
 	}
 
 	public void setCTK(String ctk){
@@ -315,6 +333,8 @@ public class QT {
 	public void open() {
 		Display display = Display.getDefault();
 		createContents();
+		btnDna.setVisible(false);
+		display.addFilter(SWT.KeyDown, listener);
 		shlQt.open();
 		shlQt.layout();
 		while (!shlQt.isDisposed()) {
@@ -355,7 +375,7 @@ public class QT {
 						ex.printStackTrace();
 					}
 				}
-
+				Display.getDefault().removeFilter(SWT.KeyDown, listener);
 				System.exit(0);
 			}
 		});
@@ -790,7 +810,7 @@ public class QT {
 		lblNewLabel_2.setText("耗时:");
 		
 		text = new Text(shlQt, SWT.BORDER);
-		text.setText("1321369602234168");
+		text.setText("7703431606604520");
 		text.setBounds(390, 98, 161, 23);
 		
 		btnCheckButton = new Button(shlQt, SWT.CHECK);
@@ -820,7 +840,7 @@ public class QT {
 		btnCheckButton.setText("使用");
 		
 		btnDna = new Button(shlQt, SWT.CHECK);
-		btnDna.setBounds(188, 10, 0, 0);
+		btnDna.setBounds(188, 10, 52, 17);
 		btnDna.setText("dna");
 
 	}
