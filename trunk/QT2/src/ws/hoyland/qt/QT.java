@@ -92,6 +92,7 @@ public class QT {
 	private Button btnCheckButton;
 	private boolean up;
 	private boolean dna;
+	private int model;
 	private Button btnDna;
 	private Listener listener;
 	private Combo combo;
@@ -436,6 +437,7 @@ public class QT {
 					ctk2 = text.getText();
 					up = btnCheckButton.getSelection();
 					dna = btnDna.getSelection();
+					model = combo.getSelectionIndex();
 					
 					Display.getDefault().asyncExec(new Runnable() {
 
@@ -891,6 +893,6 @@ public class QT {
 	}
 	
 	public int model(){
-		return this.combo.getSelectionIndex();
+		return model;
 	}
 }
