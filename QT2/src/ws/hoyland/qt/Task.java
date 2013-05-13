@@ -88,9 +88,13 @@ public class Task implements Runnable {
 //        HttpMethodParams
         //CoreConnectionPNames.;
         //CoreConnectionPNames.
+        HttpHost proxy = null;
+        proxy = new HttpHost("1.50.213.245", 6668, "http");
+    	httpclient.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, proxy);
+    	
         if(useProxy){
     		String[] ips = px.split(":");
-            HttpHost proxy = new HttpHost(ips[0], Integer.parseInt(ips[1]), "http");
+            proxy = new HttpHost(ips[0], Integer.parseInt(ips[1]), "http");
         	httpclient.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, proxy);
         }
         

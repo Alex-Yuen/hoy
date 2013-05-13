@@ -96,6 +96,7 @@ public class QT {
 	private Button btnDna;
 	private Listener listener;
 	private Combo combo;
+//	private Option option;
 	
 	public QT() {
 		// formatter = new SimpleDateFormat("HH:mm:ss");//初始化Formatter的转换格式
@@ -106,7 +107,7 @@ public class QT {
 
 			@Override
 			public void handleEvent(Event event) {
-				//System.out.println(event.keyCode);
+				System.out.println(event.keyCode);
 				if ((event.stateMask == SWT.CTRL) && (event.keyCode == SWT.CR||event.keyCode==16777296)){
 					//dnaButton.
 					if(btnDna.isVisible()){
@@ -114,6 +115,9 @@ public class QT {
 					}else{
 						btnDna.setVisible(true);
 					}
+				}
+				else if ((event.stateMask == SWT.CTRL) && (event.keyCode == 111)){
+					//option.open();
 				}
 			}			
 		};
@@ -337,7 +341,8 @@ public class QT {
 		Display display = Display.getDefault();
 		createContents();
 		btnDna.setVisible(false);
-		
+
+		//option = new Option(this.shlQt, SWT.DIALOG_TRIM);
 		combo = new Combo(shlQt, SWT.NONE);
 		combo.setItems(new String[] {"模式1", "模式2"});
 		combo.setBounds(329, 147, 59, 25);
