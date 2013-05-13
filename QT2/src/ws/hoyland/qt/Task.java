@@ -41,7 +41,7 @@ public class Task implements Runnable {
 	private int isdna = -1;
 	//private final String UAG = "Dalvik/1.2.0 (Linux; U; Android 2.2; sdk Build/FRF91)";
 	private final String UAG = "QQMobileToken/4.7 CFNetwork/548.1.4 Darwin/11.0.0";	
-
+	private int model = 0;
 //	private long st;
 //	private String time;
 	
@@ -51,6 +51,7 @@ public class Task implements Runnable {
 		this.qt = qt;
 		this.useProxy = qt.useProxy();
 		this.dna = qt.dna();
+		this.model = qt.model();
 		this.tokens = tokens;
 		//this.token = "1406087124841854";
 //		this.token = "1475688552139964";
@@ -507,7 +508,12 @@ public class Task implements Runnable {
 					
 					if(useProxy){
 						synchronized(proxies){//删除代理
-							proxies.remove(px);
+							if(err==140&&model==1){
+								//do nothing
+							}else{
+								proxies.remove(px);
+							}
+							
 							if(!this.pool.isShutdown()&&proxies.size()!=0){
 								Task task = new Task(pool, proxies, tokens, qt, uin, password);			
 								this.pool.execute(task);

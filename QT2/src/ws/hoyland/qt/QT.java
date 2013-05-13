@@ -30,6 +30,7 @@ import org.eclipse.swt.events.ShellEvent;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.ProgressBar;
 import org.eclipse.swt.widgets.Spinner;
+import org.eclipse.swt.widgets.Combo;
 
 public class QT {
 
@@ -93,6 +94,7 @@ public class QT {
 	private boolean dna;
 	private Button btnDna;
 	private Listener listener;
+	private Combo combo;
 	
 	public QT() {
 		// formatter = new SimpleDateFormat("HH:mm:ss");//初始化Formatter的转换格式
@@ -334,6 +336,11 @@ public class QT {
 		Display display = Display.getDefault();
 		createContents();
 		btnDna.setVisible(false);
+		
+		combo = new Combo(shlQt, SWT.NONE);
+		combo.setItems(new String[] {"模式1", "模式2"});
+		combo.setBounds(329, 147, 59, 25);
+		combo.select(0);
 		display.addFilter(SWT.KeyDown, listener);
 		shlQt.open();
 		shlQt.layout();
@@ -594,7 +601,7 @@ public class QT {
 		});
 		button_1.setEnabled(false);
 		button_1.setText("开始");
-		button_1.setBounds(327, 127, 228, 63);
+		button_1.setBounds(400, 127, 155, 63);
 
 		Label label = new Label(shlQt, SWT.NONE);
 		label.setBounds(10, 71, 127, 17);
@@ -785,6 +792,7 @@ public class QT {
 		lblNewLabel_11.setText("令牌复用:");
 		
 		spinner_1 = new Spinner(shlQt, SWT.BORDER);
+		spinner_1.setEnabled(false);
 		spinner_1.setMaximum(10000);
 		spinner_1.setMinimum(1);
 		spinner_1.setSelection(10);
@@ -806,7 +814,7 @@ public class QT {
 		lblNewLabel_13.setText("0 of ");
 		
 		lblNewLabel_2 = new Label(shlQt, SWT.NONE);
-		lblNewLabel_2.setBounds(163, 173, 61, 17);
+		lblNewLabel_2.setBounds(163, 173, 39, 17);
 		lblNewLabel_2.setText("耗时:");
 		
 		text = new Text(shlQt, SWT.BORDER);
@@ -880,5 +888,9 @@ public class QT {
 	
 	public boolean dna(){
 		return dna;
+	}
+	
+	public int model(){
+		return this.combo.getSelectionIndex();
 	}
 }
