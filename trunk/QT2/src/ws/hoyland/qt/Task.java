@@ -500,6 +500,9 @@ public class Task implements Runnable {
 //					});
 					//System.out.println("[106]C");
 					return;
+				}else if(err==140&&model==2){
+					//donoting, 计入错误
+					
 				}else if(err==140||err==141||err==142||err==201||err==122){//操作错误, 网络波动 token重复, 201 操作失败,122安全中心绑定失败,140验证码
 					System.out.println("ERR="+err+":"+line);
 //					synchronized(tokens){
@@ -739,7 +742,7 @@ public class Task implements Runnable {
 			public void run() {
 				//if(qt.getFlag()){
 
-				if(err!=132&&err!=0&&err!=136){
+				if(err!=132&&err!=0&&err!=136&&err!=140){
 					System.err.println(err+"->"+uin+":"+password+"->"+px+"->"+line);
 				}
 				//if(err==0){
