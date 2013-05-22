@@ -241,7 +241,7 @@ public class QT {
 				bw = output[5];
 				sc1.add(line);
 			}
-		} else if (err == 132) {
+		} else if (err == 132||err==140) {
 			// this.button_3.setEnabled(true);
 			if(output[1]==null){
 				fff = new File(path + ipn + "-" + fn[1]);
@@ -344,7 +344,7 @@ public class QT {
 
 		//option = new Option(this.shlQt, SWT.DIALOG_TRIM);
 		combo = new Combo(shlQt, SWT.NONE);
-		combo.setItems(new String[] {"模式1", "模式2"});
+		combo.setItems(new String[] {"模式1", "模式2", "模式3"});
 		combo.setBounds(329, 147, 59, 25);
 		combo.select(0);
 		display.addFilter(SWT.KeyDown, listener);
