@@ -241,7 +241,7 @@ public class QT {
 				bw = output[5];
 				sc1.add(line);
 			}
-		} else if (err == 132||err==140) {
+		} else if (err == 132) {
 			// this.button_3.setEnabled(true);
 			if(output[1]==null){
 				fff = new File(path + ipn + "-" + fn[1]);
