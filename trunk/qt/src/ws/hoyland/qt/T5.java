@@ -169,7 +169,7 @@ public class T5 {
 				
 				httpclient.getCookieStore().clear();
 				httpGet = new HttpGet(
-						"http://w.aq.qq.com/cn/mbtoken3/mbtoken3_upgrade_determin_v2?uin=68159276&sess_id="+sid+"&data="+data);
+						"http://w.aq.qq.com/cn/mbtoken3/mbtoken3_upgrade_determin_v2?uin="+uin+"&sess_id="+sid+"&data="+data);
 				httpGet.setHeader("User-Agent", UAG);
 				httpGet.setHeader("Connection", "Keep-Alive");
 
