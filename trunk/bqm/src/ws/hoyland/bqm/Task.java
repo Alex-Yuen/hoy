@@ -1,7 +1,17 @@
 package ws.hoyland.bqm;
 
+import java.util.Date;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Random;
+
+import javax.mail.Address;
+import javax.mail.Authenticator;
+import javax.mail.Message;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
 
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.TableItem;
@@ -10,64 +20,96 @@ public class Task implements Runnable {
 
 	private TableItem item;
 	private ICallback cb;
-	private String mail;
+	private String to;
+	private String title;
+	private String content;
 	private Map<String, Byte> ss;
 	private Random rnd;
 	private String[] smtp;
-	
-	public Task(TableItem item, Map<String, Byte> ss, ICallback cb) {
+
+	public Task(TableItem item, Map<String, Byte> ss, String[] mail,
+			ICallback cb) {
 		this.item = item;
 		this.cb = cb;
 		this.ss = ss;
-		
-		this.mail = item.getText(1);
+		this.title = mail[0];
+		this.content = mail[1];
+		this.to = item.getText(1);
 		this.rnd = new Random();
 	}
 
 	@Override
 	public void run() {
 		info("开始发送");
-		synchronized (ss) { //获取发送方
+		synchronized (ss) { // 获取发送方
 			if (ss.size() == 0) {
+				info("SMTP为0");
+				setSelection();
 				return;
 			} else {
 				String[] sl = new String[ss.size()];
 				ss.keySet().toArray(sl);
-				
+
 				String key = sl[rnd.nextInt(ss.size())];
-				if(ss.get(key)==2){
+				if (ss.get(key) == 2) {
 					ss.remove(key);
-				}else{
-					ss.put(key, (byte)(ss.get(key)+1));
+				} else {
+					ss.put(key, (byte) (ss.get(key) + 1));
 				}
 				smtp = key.split("----");
 			}
 		}
-		
-		try{
-			//Thread.sleep(2000);
+
+		try {
+			Properties props = new Properties(); // 获取系统环境
+			Authenticator auth = new EmailAutherticator(smtp[0], smtp[1]); // 进行邮件服务器用户认证
+			String host = "smtp."+smtp[0].split("@")[1];
+			props.put("mail.smtp.host", host);
+			props.put("mail.smtp.auth", "true");
+			Session session = Session.getDefaultInstance(props, auth);
+			// 设置session,和邮件服务器进行通讯。
+			MimeMessage message = new MimeMessage(session);
+			// message.setContent("foobar, "application/x-foobar"); // 设置邮件格式
+			message.setSubject(title); // 设置邮件主题
+			message.setText(content); // 设置邮件正文
+			//message.setHeader("BQM", "BQM"); // 设置邮件标题
+			message.setSentDate(new Date()); // 设置邮件发送日期
+			Address address = null;
+			address = new InternetAddress(smtp[0], "hoyland.ws");
+//			if(smtp[0].endsWith("163.com")){
+//				address = new InternetAddress(smtp[0]);
+//			}else if(smtp[0].endsWith("qq.com")){
+//				address = new InternetAddress(smtp[0], "hoyland.ws");
+//			}
+			message.setFrom(address); // 设置邮件发送者的地址
+			Address toAddress = new InternetAddress(to); // 设置邮件接收方的地址
+			message.addRecipient(Message.RecipientType.TO, toAddress);
+			Transport.send(message); // 发送邮件
 			
-			call(ICallback.SUCC, 0); //统计 成功的次数
-		}catch(Exception e){
+			call(ICallback.SUCC, 0); // 统计 成功的次数
+		} catch (Exception e) {
+			call(ICallback.FAIL, 0); // 统计 失败的次数
+			System.out.println(smtp[0]);
+			System.out.println(smtp[1]);
+			System.out.println("smtp."+smtp[0].split("@")[1]);
 			e.printStackTrace();
 		}
-		
-		
+
 		info("发送结束");
 		setSelection();
 	}
-	
+
 	private void info(final String status) {
 		Display.getDefault().asyncExec(new Runnable() {
 			@Override
 			public void run() {
-				//qm.log(uin + "->" + status + "\r\n");
+				// qm.log(uin + "->" + status + "\r\n");
 				item.setText(2, status);
 			}
 		});
 	}
-	
-	private void setSelection(){
+
+	private void setSelection() {
 		Display.getDefault().asyncExec(new Runnable() {
 			@Override
 			public void run() {
@@ -75,7 +117,7 @@ public class Task implements Runnable {
 			}
 		});
 	}
-	
+
 	private void call(final int key, final int value) {
 		Display.getDefault().asyncExec(new Runnable() {
 			@Override
