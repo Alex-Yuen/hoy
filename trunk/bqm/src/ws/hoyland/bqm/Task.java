@@ -66,7 +66,7 @@ public class Task implements Runnable {
 			String host = "smtp."+smtp[0].split("@")[1];
 			props.put("mail.smtp.host", host);
 			props.put("mail.smtp.auth", "true");
-			Session session = Session.getDefaultInstance(props, auth);
+			Session session = Session.getInstance(props, auth);
 			// 设置session,和邮件服务器进行通讯。
 			MimeMessage message = new MimeMessage(session);
 			// message.setContent("foobar, "application/x-foobar"); // 设置邮件格式
@@ -75,12 +75,13 @@ public class Task implements Runnable {
 			//message.setHeader("BQM", "BQM"); // 设置邮件标题
 			message.setSentDate(new Date()); // 设置邮件发送日期
 			Address address = null;
-			address = new InternetAddress(smtp[0], "hoyland.ws");
-//			if(smtp[0].endsWith("163.com")){
-//				address = new InternetAddress(smtp[0]);
-//			}else if(smtp[0].endsWith("qq.com")){
-//				address = new InternetAddress(smtp[0], "hoyland.ws");
-//			}
+//			address = new InternetAddress(smtp[0]);
+			if(smtp[0].endsWith("163.com")){
+				address = new InternetAddress(smtp[0], smtp[0].split("@")[0]);
+			}else if(smtp[0].endsWith("qq.com")){
+				address = new InternetAddress(smtp[0], "hoyland.ws");
+			}
+			System.out.println(address);
 			message.setFrom(address); // 设置邮件发送者的地址
 			Address toAddress = new InternetAddress(to); // 设置邮件接收方的地址
 			message.addRecipient(Message.RecipientType.TO, toAddress);
