@@ -15,5 +15,6 @@
 	<classpathentry kind="lib" path="D:/Eclipse/plugins/com.ibm.icu_4.4.2.v20110823.jar" sourcepath="D:/Eclipse/plugins/com.ibm.icu.source_4.4.2.v20110823.jar"/>
 	<classpathentry kind="lib" path="D:/Eclipse/plugins/org.eclipse.ui.forms_3.5.200.v20120521-2329.jar" sourcepath="D:/Eclipse/plugins/org.eclipse.ui.forms.source_3.5.200.v20120521-2329.jar"/>
 	<classpathentry kind="lib" path="lib/javax.mail-1.5.0.jar"/>
+	<classpathentry kind="lib" path="lib/activation.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
