@@ -11,6 +11,12 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.RejectedExecutionHandler;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.ThreadPoolExecutor.AbortPolicy;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
@@ -35,7 +41,7 @@ import org.eclipse.swt.events.ShellEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 
-public class BQM {
+public class BQM implements ICallback{
 
 	protected Shell shell;
 	private Table table;
@@ -51,6 +57,9 @@ public class BQM {
 	protected String title;
 	protected String content;
 	private int count;
+	private byte status = 0;
+	
+	private ThreadPoolExecutor pool; //线程池
 	
 	/**
 	 * Launch the application.
@@ -260,6 +269,56 @@ public class BQM {
 		link_1.setBounds(719, 10, 36, 17);
 		
 		button = new Button(shell, SWT.NONE);
+		button.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				if(status==0){//当前停止
+					button.setText("停止");
+					button.setEnabled(true);
+					status = 1;
+					
+					int tc = Integer.parseInt(spinner.getText()); //threads count
+					int corePoolSize = tc;// minPoolSize
+					int maxPoolSize = tc;
+					
+					int maxTaskSize = 1024 * 10 * 5;// 缓冲队列
+					long keepAliveTime = 0L;
+					TimeUnit unit = TimeUnit.MILLISECONDS;
+					
+					// 任务队列
+					BlockingQueue<Runnable> workQueue = new ArrayBlockingQueue<Runnable>(
+							maxTaskSize);
+					// 饱和处理策略
+					RejectedExecutionHandler handler = new AbortPolicy();
+					// 创建线程池
+					pool = new ThreadPoolExecutor(corePoolSize,
+							maxPoolSize, keepAliveTime, unit,
+							workQueue, handler);
+					
+					Display.getDefault().asyncExec(new Runnable() {
+						@Override
+						public void run() {
+							for (int i = 0; i < table.getItemCount(); i++) {
+								try {
+									Task task = null;
+									task = new Task(table.getItem(i), BQM.this);
+									pool.execute(task);
+								} catch (Exception e) {
+									e.printStackTrace();
+								}
+							}
+						}
+					});
+					
+				}else if(status==1){//当前停止
+					button.setText("开始");
+					button.setEnabled(true);
+					status = 0;
+					
+					pool.shutdownNow();
+				}
+			}
+		});
 		button.setText("开始");
 		button.setEnabled(false);
 		button.setBounds(542, 441, 213, 73);
@@ -283,7 +342,7 @@ public class BQM {
 		
 		Label lblNewLabel = new Label(shell, SWT.NONE);
 		lblNewLabel.setBounds(276, 311, 71, 17);
-		lblNewLabel.setText("SMTP池:");
+		lblNewLabel.setText("状态:");
 		
 		Link link_2 = new Link(shell, 0);
 		link_2.addSelectionListener(new SelectionAdapter() {
@@ -309,7 +368,7 @@ public class BQM {
 						}
 						count = ss.size();
 						canvas.redraw();
-						System.out.println(count);
+						//System.out.println(count);
 						reader.close();
 						isr.close();
 						is.close();
@@ -320,8 +379,8 @@ public class BQM {
 				}				
 			}
 		});
-		link_2.setText("<a>导入...</a>");
-		link_2.setBounds(486, 311, 36, 17);
+		link_2.setText("<a>导入SMTP...</a>");
+		link_2.setBounds(454, 311, 71, 17);
 		
 		canvas = new Canvas(shell, SWT.NONE);
 		canvas.setBounds(276, 334, 247, 180);
@@ -336,6 +395,18 @@ public class BQM {
 	}
 	
 	private void check(){
-		System.out.println("CHECKING...");
+		if (!"".equals(text_1.getText())&&rs!=null&&rs.size()>0&&ss!=null&&ss.size()>0) {
+			button.setEnabled(true);
+		}else{
+			button.setEnabled(false);
+		}
+		
+	}
+
+	@Override
+	public String call(String key, String value) {
+		// TODO Auto-generated method stub
+		return null;
+		
 	}
 }
