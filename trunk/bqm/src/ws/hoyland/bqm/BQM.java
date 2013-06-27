@@ -41,6 +41,12 @@ import org.eclipse.swt.events.ShellEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 
+/**
+ * TODO:发送TASK, 统计, 界面日志, 文件日志
+ * http://duguyiren3476.iteye.com/blog/1771301
+ * @author Administrator
+ *
+ */
 public class BQM implements ICallback{
 
 	protected Shell shell;
@@ -56,8 +62,10 @@ public class BQM implements ICallback{
 
 	protected String title;
 	protected String content;
-	private int count;
+	private int count; //smtp 数量
 	private byte status = 0;
+	private int sc = 0; //成功
+	private int fc = 0; //失败
 	
 	private ThreadPoolExecutor pool; //线程池
 	
@@ -147,9 +155,7 @@ public class BQM implements ICallback{
 									//line = line.trim();
 									if (!line.equals("")&&!line.contains("#FHW#")) {
 										rs.add(line);
-//										if(line.startsWith("1021129871")){
-//											System.out.println(line);
-//										}
+
 										line = i + "#FHW#" + line;
 										List<String> lns = new ArrayList<String>();
 										lns.addAll(Arrays.asList(line.split("#FHW#")));
@@ -158,21 +164,17 @@ public class BQM implements ICallback{
 										final String[] items = new String[lns.size()];
 								        lns.toArray(items);
 								        
-										//final String[] items = (String[])lns.toArray();
 										Display.getDefault().asyncExec(new Runnable() {
 											@Override
 											public void run() {
 												TableItem tableItem = new TableItem(
 														table, SWT.NONE);
 												tableItem.setText(items);
-												//table.setSelection(tableItem);
 											}
 										});
 										i++;
 									}
-									// System.out.println(line);
 								}
-								// pc = proxies.size();
 								label.setText("收件人 (共 "+rs.size()+" 个):");
 								reader.close();
 								isr.close();
@@ -199,11 +201,11 @@ public class BQM implements ICallback{
 		tableColumn.setText("ID");
 		
 		TableColumn tableColumn_1 = new TableColumn(table, SWT.LEFT);
-		tableColumn_1.setWidth(144);
+		tableColumn_1.setWidth(120);
 		tableColumn_1.setText("帐号");
 		
 		TableColumn tableColumn_2 = new TableColumn(table, SWT.CENTER);
-		tableColumn_2.setWidth(52);
+		tableColumn_2.setWidth(75);
 		tableColumn_2.setText("状态");
 		
 		Label label_1 = new Label(shell, SWT.NONE);
@@ -277,6 +279,9 @@ public class BQM implements ICallback{
 					button.setEnabled(true);
 					status = 1;
 					
+					fc = 0;
+					sc = 0;
+					
 					int tc = Integer.parseInt(spinner.getText()); //threads count
 					int corePoolSize = tc;// minPoolSize
 					int maxPoolSize = tc;
@@ -301,7 +306,7 @@ public class BQM implements ICallback{
 							for (int i = 0; i < table.getItemCount(); i++) {
 								try {
 									Task task = null;
-									task = new Task(table.getItem(i), BQM.this);
+									task = new Task(table.getItem(i), ss, BQM.this);
 									pool.execute(task);
 								} catch (Exception e) {
 									e.printStackTrace();
@@ -390,6 +395,8 @@ public class BQM implements ICallback{
 		canvas.addPaintListener(new PaintListener() {  
             public void paintControl(PaintEvent e) {
             	e.gc.drawText("总数: " + String.valueOf(count), 0, 0);
+            	e.gc.drawText("成功: " + String.valueOf(sc), 0, 30);
+            	e.gc.drawText("失败: " + String.valueOf(fc), 0, 60);
             }  
         });  
 	}
@@ -404,9 +411,16 @@ public class BQM implements ICallback{
 	}
 
 	@Override
-	public String call(String key, String value) {
-		// TODO Auto-generated method stub
-		return null;
+	public void call(int key, int value) {
+		switch(key){
+			case ICallback.SUCC:
+				sc++;
+				this.canvas.redraw();
+				break;
+			default:
+				break;
+		}
+		return;
 		
 	}
 }
