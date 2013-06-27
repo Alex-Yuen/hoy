@@ -236,6 +236,7 @@ public class BQM implements ICallback{
 				if (filePath != null) {
 					try {
 						boolean tf = false;
+						content = "";
 						File ipf = new File(filePath);
 						FileInputStream is = new FileInputStream(ipf);
 						InputStreamReader isr = new InputStreamReader(is,
@@ -251,7 +252,7 @@ public class BQM implements ICallback{
 								title = line;
 								tf = true;
 							} else {
-								content += line + "<br/>";
+								content += line + "\r\n";
 							}
 						}
 
@@ -306,7 +307,7 @@ public class BQM implements ICallback{
 							for (int i = 0; i < table.getItemCount(); i++) {
 								try {
 									Task task = null;
-									task = new Task(table.getItem(i), ss, BQM.this);
+									task = new Task(table.getItem(i), ss, new String[]{title, content}, BQM.this);
 									pool.execute(task);
 								} catch (Exception e) {
 									e.printStackTrace();
@@ -415,6 +416,10 @@ public class BQM implements ICallback{
 		switch(key){
 			case ICallback.SUCC:
 				sc++;
+				this.canvas.redraw();
+				break;
+			case ICallback.FAIL:
+				fc++;
 				this.canvas.redraw();
 				break;
 			default:
