@@ -88,15 +88,17 @@ public class Task implements Runnable {
 			Transport.send(message); // 发送邮件
 			
 			call(ICallback.SUCC, 0); // 统计 成功的次数
+			info("发送成功");
 		} catch (Exception e) {
 			call(ICallback.FAIL, 0); // 统计 失败的次数
+			info("发送失败:"+e.getMessage());
 			System.err.println(smtp[0]);
 			System.err.println(smtp[1]);
 			System.err.println("smtp."+smtp[0].split("@")[1]);
 			e.printStackTrace();
 		}
 
-		info("发送结束");
+		//info("发送结束");
 		setSelection();
 	}
 
