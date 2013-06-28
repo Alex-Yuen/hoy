@@ -11,7 +11,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.RejectedExecutionHandler;
@@ -251,7 +250,7 @@ public class BQM implements ICallback{
 							sb.append(line + "\r\n");
 							if (!tf) {
 								//title = line;
-								title = "[hoyland.ws]-#"+rs()+"#";
+								title = "[hoyland.ws]-#{*}#";
 								content += line + "\r\n";
 								tf = true;
 							} else {
@@ -403,17 +402,7 @@ public class BQM implements ICallback{
             }  
         });  
 	}
-	
-	private String rs(){
-		String cs = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890";
-		StringBuffer sb = new StringBuffer();
-		Random rnd = new Random();
-		for(int i=0;i<11+rnd.nextInt(4);i++){
-			sb.append(cs.charAt(rnd.nextInt(62)));
-		}
-		return sb.toString();
-	}
-	
+		
 	private void check(){
 		if (!"".equals(text_1.getText())&&rs!=null&&rs.size()>0&&ss!=null&&ss.size()>0) {
 			button.setEnabled(true);

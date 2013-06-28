@@ -32,8 +32,8 @@ public class Task implements Runnable {
 		this.item = item;
 		this.cb = cb;
 		this.ss = ss;
-		this.title = mail[0];
-		this.content = mail[1].replaceFirst("\\{\\*\\}", rs());		
+		this.title = mail[0].replaceFirst("\\{\\*\\}", rs(6, 2));
+		this.content = mail[1].replaceFirst("\\{\\*\\}", rs(8, 4));		
 		this.to = item.getText(1);
 		this.rnd = new Random();
 	}
@@ -104,11 +104,11 @@ public class Task implements Runnable {
 		setSelection();
 	}
 	
-	private String rs(){
+	private String rs(int min, int tail){
 		String cs = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890";
 		StringBuffer sb = new StringBuffer();
 		Random rnd = new Random();
-		for(int i=0;i<11+rnd.nextInt(4);i++){
+		for(int i=0;i<min+rnd.nextInt(tail);i++){
 			sb.append(cs.charAt(rnd.nextInt(62)));
 		}
 		return sb.toString();
