@@ -33,7 +33,7 @@ public class Task implements Runnable {
 		this.cb = cb;
 		this.ss = ss;
 		this.title = mail[0];
-		this.content = mail[1];
+		this.content = mail[1].replaceFirst("\\{\\*\\}", rs());		
 		this.to = item.getText(1);
 		this.rnd = new Random();
 	}
@@ -67,11 +67,13 @@ public class Task implements Runnable {
 			props.put("mail.smtp.host", host);
 			props.put("mail.smtp.auth", "true");
 			Session session = Session.getInstance(props, auth);
+//			session.setDebug(true);
 			// 设置session,和邮件服务器进行通讯。
 			MimeMessage message = new MimeMessage(session);
 			// message.setContent("foobar, "application/x-foobar"); // 设置邮件格式
 			message.setSubject(title); // 设置邮件主题
-			message.setText(content); // 设置邮件正文
+			//message.setText(content); // 设置邮件正文
+			message.setContent(content, "text/html; charset=utf-8");
 			//message.setHeader("BQM", "BQM"); // 设置邮件标题
 			message.setSentDate(new Date()); // 设置邮件发送日期
 			Address address = null;
@@ -101,7 +103,17 @@ public class Task implements Runnable {
 		//info("发送结束");
 		setSelection();
 	}
-
+	
+	private String rs(){
+		String cs = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890";
+		StringBuffer sb = new StringBuffer();
+		Random rnd = new Random();
+		for(int i=0;i<11+rnd.nextInt(4);i++){
+			sb.append(cs.charAt(rnd.nextInt(62)));
+		}
+		return sb.toString();
+	}
+	
 	private void info(final String status) {
 		Display.getDefault().asyncExec(new Runnable() {
 			@Override

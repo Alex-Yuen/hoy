@@ -11,6 +11,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.RejectedExecutionHandler;
@@ -249,13 +250,14 @@ public class BQM implements ICallback{
 							// line = line.trim();
 							sb.append(line + "\r\n");
 							if (!tf) {
-								title = line;
+								//title = line;
+								title = "[hoyland.ws]-#"+rs()+"#";
+								content += line + "\r\n";
 								tf = true;
 							} else {
 								content += line + "\r\n";
 							}
 						}
-
 						text_1.setText(sb.toString());
 
 						reader.close();
@@ -400,6 +402,16 @@ public class BQM implements ICallback{
             	e.gc.drawText("失败: " + String.valueOf(fc), 0, 60);
             }  
         });  
+	}
+	
+	private String rs(){
+		String cs = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890";
+		StringBuffer sb = new StringBuffer();
+		Random rnd = new Random();
+		for(int i=0;i<11+rnd.nextInt(4);i++){
+			sb.append(cs.charAt(rnd.nextInt(62)));
+		}
+		return sb.toString();
 	}
 	
 	private void check(){
