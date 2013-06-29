@@ -29,8 +29,9 @@ class UniqueValue {
 		StringBuffer s = new StringBuffer();
 
 		s.append(s.hashCode()).append('.').append(getUniqueId()).append('.')
-				.append(System.currentTimeMillis()).append('.')
-				.append("HL-Mail").append('.').append(suffix);
+				.append(System.currentTimeMillis());
+//				.append('.')
+//				.append("HL-Mail").append('.').append(suffix);
 
 		return s.toString();
 	}
