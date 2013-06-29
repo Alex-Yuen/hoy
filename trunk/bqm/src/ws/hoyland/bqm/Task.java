@@ -61,6 +61,10 @@ public class Task implements Runnable {
 		}
 
 		try {
+			if(smtp.length!=2){
+				System.err.println("SMTP帐号错误，请调整后重新开始软件");
+				return;
+			}
 			Properties props = new Properties(); // 获取系统环境
 			Authenticator auth = new EmailAutherticator(smtp[0], smtp[1]); // 进行邮件服务器用户认证
 			String host = "smtp."+smtp[0].split("@")[1];

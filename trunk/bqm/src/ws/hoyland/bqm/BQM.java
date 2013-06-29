@@ -250,7 +250,7 @@ public class BQM implements ICallback{
 							sb.append(line + "\r\n");
 							if (!tf) {
 								//title = line;
-								title = "[hoyland.ws]-#{*}#";
+								title = "{*}";
 								content += line + "\r\n";
 								tf = true;
 							} else {
