@@ -51,7 +51,7 @@ import org.eclipse.swt.events.KeyEvent;
  */
 public class BQM implements ICallback{
 
-	protected Shell shell;
+	protected Shell shlBqm;
 	private Table table;
 	private Text text;
 	private Text text_1;
@@ -91,9 +91,9 @@ public class BQM implements ICallback{
 	public void open() {
 		Display display = Display.getDefault();
 		createContents();
-		shell.open();
-		shell.layout();
-		while (!shell.isDisposed()) {
+		shlBqm.open();
+		shlBqm.layout();
+		while (!shlBqm.isDisposed()) {
 			if (!display.readAndDispatch()) {
 				display.sleep();
 			}
@@ -104,38 +104,39 @@ public class BQM implements ICallback{
 	 * Create contents of the window.
 	 */
 	protected void createContents() {
-		shell = new Shell(Display.getDefault(), SWT.SHELL_TRIM ^ SWT.MAX
+		shlBqm = new Shell(Display.getDefault(), SWT.SHELL_TRIM ^ SWT.MAX
 				^ SWT.RESIZE);
-		shell.addShellListener(new ShellAdapter() {
+		shlBqm.setTouchEnabled(true);
+		shlBqm.addShellListener(new ShellAdapter() {
 			@Override
 			public void shellClosed(ShellEvent e) {
 				System.exit(0);
 			}
 		});
-		shell.setSize(769, 566);
-		shell.setText("Batch QQ Mail");
+		shlBqm.setSize(769, 566);
+		shlBqm.setText("BQM 0.2");
 
 		Rectangle bounds = Display.getDefault().getPrimaryMonitor().getBounds();
-		Rectangle rect = shell.getBounds();
+		Rectangle rect = shlBqm.getBounds();
 		int x = bounds.x + (bounds.width - rect.width) / 2;
 		int y = bounds.y + (bounds.height - rect.height) / 2;
-		shell.setLocation(x, y);
+		shlBqm.setLocation(x, y);
 		
 		InputStream is = BQM.class.getClassLoader().getResourceAsStream("mail.png");
 		Image image = new Image(Display.getDefault(), is);
-		shell.setImage(image);
-		shell.setLayout(null);
+		shlBqm.setImage(image);
+		shlBqm.setLayout(null);
 		
-		label = new Label(shell, SWT.NONE);
+		label = new Label(shlBqm, SWT.NONE);
 		label.setText("收件人 (共 0 个):");
 		label.setBounds(10, 10, 164, 17);
 		
-		Link link = new Link(shell, 0);
+		Link link = new Link(shlBqm, 0);
 		link.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				
-				final FileDialog fileDlg = new FileDialog(shell, SWT.OPEN);
+				final FileDialog fileDlg = new FileDialog(shlBqm, SWT.OPEN);
 				// fileDlg.setFilterExtensions(new String[]{"*.torrent"});
 				fileDlg.setFilterPath(null);
 				fileDlg.setText("导入收件人");
@@ -194,7 +195,7 @@ public class BQM implements ICallback{
 		link.setText("<a>导入...</a>");
 		link.setBounds(224, 10, 36, 17);
 		
-		table = new Table(shell, SWT.BORDER | SWT.FULL_SELECTION);
+		table = new Table(shlBqm, SWT.BORDER | SWT.FULL_SELECTION);
 		table.setLinesVisible(true);
 		table.setHeaderVisible(true);
 		table.setBounds(10, 35, 250, 270);
@@ -211,27 +212,27 @@ public class BQM implements ICallback{
 		tableColumn_2.setWidth(75);
 		tableColumn_2.setText("状态");
 		
-		Label label_1 = new Label(shell, SWT.NONE);
+		Label label_1 = new Label(shlBqm, SWT.NONE);
 		label_1.setText("系统日志:");
 		label_1.setBounds(10, 311, 250, 17);
 		
-		text = new Text(shell, SWT.BORDER | SWT.READ_ONLY | SWT.WRAP | SWT.V_SCROLL);
+		text = new Text(shlBqm, SWT.BORDER | SWT.READ_ONLY | SWT.WRAP | SWT.V_SCROLL);
 		text.setEditable(false);
 		text.setBounds(10, 334, 250, 180);
 		
-		Label label_2 = new Label(shell, SWT.NONE);
+		Label label_2 = new Label(shlBqm, SWT.NONE);
 		label_2.setText("模板文件:");
 		label_2.setBounds(275, 36, 61, 17);
 		
-		text_1 = new Text(shell, SWT.BORDER | SWT.READ_ONLY | SWT.WRAP | SWT.V_SCROLL);
+		text_1 = new Text(shlBqm, SWT.BORDER | SWT.READ_ONLY | SWT.WRAP | SWT.V_SCROLL);
 		text_1.setEditable(false);
 		text_1.setBounds(276, 59, 479, 246);
 		
-		Link link_1 = new Link(shell, 0);
+		Link link_1 = new Link(shlBqm, 0);
 		link_1.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				FileDialog fileDlg = new FileDialog(shell, SWT.OPEN);
+				FileDialog fileDlg = new FileDialog(shlBqm, SWT.OPEN);
 				// fileDlg.setFilterExtensions(new String[]{"*.torrent"});
 				fileDlg.setFilterPath(null);
 				fileDlg.setText("导入模板文件");
@@ -275,7 +276,7 @@ public class BQM implements ICallback{
 		link_1.setText("<a>导入...</a>");
 		link_1.setBounds(719, 36, 36, 17);
 		
-		button = new Button(shell, SWT.NONE);
+		button = new Button(shlBqm, SWT.NONE);
 		button.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
@@ -333,10 +334,11 @@ public class BQM implements ICallback{
 		button.setEnabled(false);
 		button.setBounds(542, 441, 213, 73);
 		
-		Label label_3 = new Label(shell, SWT.BORDER);
-		label_3.setBounds(0, 520, 763, 17);
+		Label lblHttpwwwhoylandws = new Label(shlBqm, SWT.BORDER);
+		lblHttpwwwhoylandws.setText("http://www.hoyland.ws");
+		lblHttpwwwhoylandws.setBounds(0, 520, 763, 17);
 		
-		Group grpOption = new Group(shell, SWT.NONE);
+		Group grpOption = new Group(shlBqm, SWT.NONE);
 		grpOption.setText("设置");
 		grpOption.setBounds(542, 311, 213, 124);
 		
@@ -350,15 +352,15 @@ public class BQM implements ICallback{
 		spinner.setSelection(1);
 		spinner.setBounds(105, 23, 45, 23);
 		
-		Label lblNewLabel = new Label(shell, SWT.NONE);
+		Label lblNewLabel = new Label(shlBqm, SWT.NONE);
 		lblNewLabel.setBounds(276, 311, 71, 17);
 		lblNewLabel.setText("状态:");
 		
-		Link link_2 = new Link(shell, 0);
+		Link link_2 = new Link(shlBqm, 0);
 		link_2.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				FileDialog fileDlg = new FileDialog(shell, SWT.OPEN);
+				FileDialog fileDlg = new FileDialog(shlBqm, SWT.OPEN);
 				// fileDlg.setFilterExtensions(new String[]{"*.torrent"});
 				fileDlg.setFilterPath(null);
 				fileDlg.setText("导入SMTP帐号");
@@ -392,16 +394,16 @@ public class BQM implements ICallback{
 		link_2.setText("<a>导入SMTP...</a>");
 		link_2.setBounds(454, 311, 71, 17);
 		
-		canvas = new Canvas(shell, SWT.NONE);
+		canvas = new Canvas(shlBqm, SWT.NONE);
 		canvas.setBounds(276, 334, 247, 180);
 		
 		canvas.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_GRAY));  
 		
-		Label lblNewLabel_1 = new Label(shell, SWT.NONE);
+		Label lblNewLabel_1 = new Label(shlBqm, SWT.NONE);
 		lblNewLabel_1.setBounds(275, 10, 61, 17);
 		lblNewLabel_1.setText("标　　题:");
 		
-		text_2 = new Text(shell, SWT.BORDER);
+		text_2 = new Text(shlBqm, SWT.BORDER);
 		text_2.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyReleased(KeyEvent e) {
