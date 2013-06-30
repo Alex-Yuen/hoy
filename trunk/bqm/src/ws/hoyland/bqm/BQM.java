@@ -40,6 +40,8 @@ import org.eclipse.swt.events.ShellAdapter;
 import org.eclipse.swt.events.ShellEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.KeyAdapter;
+import org.eclipse.swt.events.KeyEvent;
 
 /**
  * TODO:发送TASK, 统计, 界面日志, 文件日志
@@ -68,6 +70,7 @@ public class BQM implements ICallback{
 	private int fc = 0; //失败
 	
 	private ThreadPoolExecutor pool; //线程池
+	private Text text_2;
 	
 	/**
 	 * Launch the application.
@@ -218,11 +221,11 @@ public class BQM implements ICallback{
 		
 		Label label_2 = new Label(shell, SWT.NONE);
 		label_2.setText("模板文件:");
-		label_2.setBounds(276, 10, 61, 17);
+		label_2.setBounds(275, 36, 61, 17);
 		
 		text_1 = new Text(shell, SWT.BORDER | SWT.READ_ONLY | SWT.WRAP | SWT.V_SCROLL);
 		text_1.setEditable(false);
-		text_1.setBounds(276, 35, 479, 270);
+		text_1.setBounds(276, 59, 479, 246);
 		
 		Link link_1 = new Link(shell, 0);
 		link_1.addSelectionListener(new SelectionAdapter() {
@@ -250,7 +253,7 @@ public class BQM implements ICallback{
 							sb.append(line + "\r\n");
 							if (!tf) {
 								//title = line;
-								title = "{*}";
+								//title = "{*}";
 								content += line + "\r\n";
 								tf = true;
 							} else {
@@ -270,7 +273,7 @@ public class BQM implements ICallback{
 			}
 		});
 		link_1.setText("<a>导入...</a>");
-		link_1.setBounds(719, 10, 36, 17);
+		link_1.setBounds(719, 36, 36, 17);
 		
 		button = new Button(shell, SWT.NONE);
 		button.addSelectionListener(new SelectionAdapter() {
@@ -394,6 +397,20 @@ public class BQM implements ICallback{
 		
 		canvas.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_GRAY));  
 		
+		Label lblNewLabel_1 = new Label(shell, SWT.NONE);
+		lblNewLabel_1.setBounds(275, 10, 61, 17);
+		lblNewLabel_1.setText("标　　题:");
+		
+		text_2 = new Text(shell, SWT.BORDER);
+		text_2.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyReleased(KeyEvent e) {
+				title = text_2.getText();
+				check();
+			}
+		});
+		text_2.setBounds(345, 7, 408, 23);
+		
 		canvas.addPaintListener(new PaintListener() {  
             public void paintControl(PaintEvent e) {
             	e.gc.drawText("总数: " + String.valueOf(count), 0, 0);
@@ -404,7 +421,7 @@ public class BQM implements ICallback{
 	}
 		
 	private void check(){
-		if (!"".equals(text_1.getText())&&rs!=null&&rs.size()>0&&ss!=null&&ss.size()>0) {
+		if (!"".equals(text_1.getText())&&rs!=null&&rs.size()>0&&ss!=null&&ss.size()>0&&title!=null&&!title.equals("")) {
 			button.setEnabled(true);
 		}else{
 			button.setEnabled(false);
