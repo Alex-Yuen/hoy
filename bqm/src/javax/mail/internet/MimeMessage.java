@@ -951,7 +951,11 @@ public class MimeMessage extends Message
   protected void updateMessageID()
     throws MessagingException
   {
-    //setHeader("Message-ID", "<" + UniqueValue.getUniqueMessageIDValue(this.session) + ">");
+    setHeader("Message-ID", "<" + UniqueValue.getUniqueMessageIDValue(this.session) + ">");    
+//    setHeader("X-QQ-MIME", "TCMime 1.0 by Tencent");
+//    setHeader("X-Mailer", "QQMail 2.x");
+//    setHeader("X-QQ-Mailer:", "QQMail 2.x");
+//    setHeader("X-Mailer", "Foxmail 7.0.1.92[cn]");
   }
 
   protected synchronized void updateHeaders()

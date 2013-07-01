@@ -32,8 +32,22 @@ public class Task implements Runnable {
 		this.item = item;
 		this.cb = cb;
 		this.ss = ss;
-		this.title = mail[0].replaceFirst("\\{\\*\\}", rs(6, 2));
-		this.content = mail[1].replaceFirst("\\{\\*\\}", rs(8, 4));		
+		//this.title = mail[0].replaceFirst("\\{\\*\\}", rs(6, 2));		
+		//this.content = mail[1].replaceFirst("\\{\\*\\}", rs(8, 4));
+		this.title = mail[0];
+		while(this.title.contains("{*}")){
+			this.title = this.title.replaceFirst("\\{\\*\\}", rs(6, 2));
+		}
+		
+		this.content = mail[1];
+		while(this.content.contains("{*}")){
+			this.content = this.content.replaceFirst("\\{\\*\\}", rs(8, 4));
+		}
+		
+		if(this.content.contains("hlflag=0")){
+			this.content = this.content.replaceFirst("hlflag=0", "hlflag=1");
+		}
+		
 		this.to = item.getText(1);
 		this.rnd = new Random();
 	}
@@ -75,14 +89,32 @@ public class Task implements Runnable {
 			// 设置session,和邮件服务器进行通讯。
 			MimeMessage message = new MimeMessage(session);
 			// message.setContent("foobar, "application/x-foobar"); // 设置邮件格式
-			message.setSubject(title); // 设置邮件主题
+			message.setSubject(title, "utf-8"); // 设置邮件主题
 			//message.setText(content); // 设置邮件正文
 			message.setContent(content, "text/html; charset=utf-8");
+			message.setHeader("Content-Transfer-Encoding", "quoted-printable");
+			
+//			MimeMultipart multipart = new MimeMultipart();
+//			
+//		    MimeBodyPart txtbodyPart = new MimeBodyPart();
+//		    txtbodyPart.setText("这是一封html邮件，请用html方式察看！");
+//		    multipart.addBodyPart(txtbodyPart);
+//		    
+//		    MimeBodyPart htmlbodyPart = new MimeBodyPart();
+//		    htmlbodyPart.setContent(content, "text/html;charset=utf-8");
+//		    //最最关键的就这么一行
+//		    htmlbodyPart.setHeader("Content-Transfer-Encoding", "quoted-printable");
+//		    multipart.addBodyPart(htmlbodyPart);
+//		    message.setContent(multipart);
+//		    message.saveChanges();
+		    
 			//message.setHeader("BQM", "BQM"); // 设置邮件标题
 			message.setSentDate(new Date()); // 设置邮件发送日期
 			Address address = null;
 //			address = new InternetAddress(smtp[0]);
 			if(smtp[0].endsWith("163.com")){
+				address = new InternetAddress(smtp[0], smtp[0].split("@")[0]);
+			}else if(smtp[0].endsWith("126.com")){
 				address = new InternetAddress(smtp[0], smtp[0].split("@")[0]);
 			}else if(smtp[0].endsWith("qq.com")){
 				address = new InternetAddress(smtp[0], "hoyland.ws");
@@ -90,7 +122,7 @@ public class Task implements Runnable {
 			System.err.println(address);
 			message.setFrom(address); // 设置邮件发送者的地址
 			Address toAddress = new InternetAddress(to); // 设置邮件接收方的地址
-			message.addRecipient(Message.RecipientType.TO, toAddress);
+			message.setRecipient(Message.RecipientType.TO, toAddress);
 			Transport.send(message); // 发送邮件
 			
 			call(ICallback.SUCC, 0); // 统计 成功的次数

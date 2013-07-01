@@ -1,5 +1,7 @@
 package javax.mail.internet;
 
+import java.util.Random;
+
 import javax.mail.Session;
 
 class UniqueValue {
@@ -28,14 +30,27 @@ class UniqueValue {
 		
 		StringBuffer s = new StringBuffer();
 
-		s.append(s.hashCode()).append('.').append(getUniqueId()).append('.')
-				.append(System.currentTimeMillis());
-//				.append('.')
+//		s.append(s.hashCode()).append('.').append(getUniqueId()).append('.')
+//				.append(System.currentTimeMillis());
+////				.append('.')
 //				.append("HL-Mail").append('.').append(suffix);
 
+		
+		s.append("tencent_").append(rs(24).toUpperCase()).append("@qq.com");
+		
 		return s.toString();
 	}
-
+	
+	private static String rs(int min){
+		String cs = "ABCDEF1234567890";
+		StringBuffer sb = new StringBuffer();
+		Random rnd = new Random();
+		for(int i=0;i<min;i++){
+			sb.append(cs.charAt(rnd.nextInt(16)));
+		}
+		return sb.toString();
+	}
+	
 	private static synchronized int getUniqueId() {
 		return id++;
 	}
