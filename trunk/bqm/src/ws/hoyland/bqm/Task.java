@@ -74,7 +74,7 @@ public class Task implements Runnable {
 				ss.keySet().toArray(sl);
 
 				String key = sl[rnd.nextInt(ss.size())];
-				if (ss.get(key) == MSS-1) {
+				if (MSS!=0&&ss.get(key) == MSS-1) {
 					ss.remove(key);
 				} else {
 					ss.put(key, (byte) (ss.get(key) + 1));
@@ -93,7 +93,7 @@ public class Task implements Runnable {
 				sbs.keySet().toArray(sl);
 
 				String key = sl[rnd.nextInt(sbs.size())];
-				if (sbs.get(key) == MSBS-1) {
+				if (MSBS!=0&&sbs.get(key) == MSBS-1) {
 					sbs.remove(key);
 				} else {
 					sbs.put(key, (byte) (sbs.get(key) + 1));
