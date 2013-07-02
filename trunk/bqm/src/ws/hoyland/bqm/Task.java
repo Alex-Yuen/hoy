@@ -116,6 +116,12 @@ public class Task implements Runnable {
 			String host = "smtp."+smtp[0].split("@")[1];
 			props.put("mail.smtp.host", host);
 			props.put("mail.smtp.auth", "true");
+			if(smtp[0].endsWith("gmail.com")){
+				props.setProperty("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
+				props.setProperty("mail.smtp.socketFactory.fallback", "false");
+				props.setProperty("mail.smtp.port", "465");
+				props.setProperty("mail.smtp.socketFactory.port", "465");
+			}
 			Session session = Session.getInstance(props, auth);
 //			session.setDebug(true);
 			// 设置session,和邮件服务器进行通讯。
@@ -147,6 +153,8 @@ public class Task implements Runnable {
 			if(smtp[0].endsWith("163.com")){
 				address = new InternetAddress(smtp[0], smtp[0].split("@")[0]);
 			}else if(smtp[0].endsWith("126.com")){
+				address = new InternetAddress(smtp[0], smtp[0].split("@")[0]);
+			}else if(smtp[0].endsWith("gmail.com")){
 				address = new InternetAddress(smtp[0], smtp[0].split("@")[0]);
 			}else if(smtp[0].endsWith("qq.com")){
 				address = new InternetAddress(smtp[0], "hoyland.ws");
