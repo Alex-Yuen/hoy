@@ -24,22 +24,26 @@ public class Task implements Runnable {
 	private String title;
 	private String content;
 	private Map<String, Byte> ss;
+	private Map<String, Byte> sbs;
 	private Random rnd;
 	private String[] smtp;
+	private int MSS = 3;
+	private int MSBS = 3;
 
-	public Task(TableItem item, Map<String, Byte> ss, String[] mail,
+	public Task(TableItem item, Map<String, Byte> ss, Map<String, Byte> sbs, String mail,
 			ICallback cb) {
 		this.item = item;
 		this.cb = cb;
 		this.ss = ss;
+		this.sbs = sbs;
 		//this.title = mail[0].replaceFirst("\\{\\*\\}", rs(6, 2));		
 		//this.content = mail[1].replaceFirst("\\{\\*\\}", rs(8, 4));
-		this.title = mail[0];
-		while(this.title.contains("{*}")){
-			this.title = this.title.replaceFirst("\\{\\*\\}", rs(6, 2));
-		}
+//		this.title = mail[0];
+//		while(this.title.contains("{*}")){
+//			this.title = this.title.replaceFirst("\\{\\*\\}", rs(6, 2));
+//		}
 		
-		this.content = mail[1];
+		this.content = mail;
 		while(this.content.contains("{*}")){
 			this.content = this.content.replaceFirst("\\{\\*\\}", rs(8, 4));
 		}
@@ -52,6 +56,11 @@ public class Task implements Runnable {
 		this.rnd = new Random();
 	}
 
+	public void set(int mss, int msbs){
+		this.MSS = mss;
+		this.MSBS = msbs;
+	}
+	
 	@Override
 	public void run() {
 		info("开始发送");
@@ -65,7 +74,7 @@ public class Task implements Runnable {
 				ss.keySet().toArray(sl);
 
 				String key = sl[rnd.nextInt(ss.size())];
-				if (ss.get(key) == 2) {
+				if (ss.get(key) == MSS-1) {
 					ss.remove(key);
 				} else {
 					ss.put(key, (byte) (ss.get(key) + 1));
@@ -74,6 +83,29 @@ public class Task implements Runnable {
 			}
 		}
 
+		synchronized (ss) { // 获取主题
+			if (sbs.size() == 0) {
+				info("主题为0");
+				setSelection();
+				return;
+			} else {
+				String[] sl = new String[sbs.size()];
+				sbs.keySet().toArray(sl);
+
+				String key = sl[rnd.nextInt(sbs.size())];
+				if (sbs.get(key) == MSBS-1) {
+					sbs.remove(key);
+				} else {
+					sbs.put(key, (byte) (sbs.get(key) + 1));
+				}
+				title = key;
+			}
+		}
+				
+		while(this.title.contains("{*}")){
+			this.title = this.title.replaceFirst("\\{\\*\\}", rs(6, 2));
+		}
+			
 		try {
 			if(smtp.length!=2){
 				System.err.println("SMTP帐号错误，请调整后重新开始软件");
