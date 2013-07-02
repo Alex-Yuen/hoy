@@ -415,13 +415,11 @@ public class BQM implements ICallback {
 		
 		spinner_1 = new Spinner(grpOption, SWT.BORDER);
 		spinner_1.setMaximum(10);
-		spinner_1.setMinimum(1);
 		spinner_1.setSelection(3);
 		spinner_1.setBounds(105, 49, 45, 23);
 		
 		spinner_2 = new Spinner(grpOption, SWT.BORDER);
 		spinner_2.setMaximum(10);
-		spinner_2.setMinimum(1);
 		spinner_2.setSelection(3);
 		spinner_2.setBounds(105, 75, 45, 23);
 		
@@ -533,11 +531,11 @@ public class BQM implements ICallback {
 
 		canvas.addPaintListener(new PaintListener() {
 			public void paintControl(PaintEvent e) {
-				e.gc.drawText("总数: " + String.valueOf(count), 0, 0);
-				e.gc.drawText("成功: " + String.valueOf(sc), 0, 30);
-				e.gc.drawText("失败: " + String.valueOf(fc), 0, 60);
+				e.gc.drawText("成功: " + String.valueOf(sc), 0, 0);
+				e.gc.drawText("失败: " + String.valueOf(fc), 0, 30);
 				
-				e.gc.drawText("主题总数: " + String.valueOf(sbscount), 0, 120);
+				e.gc.drawText("主题总数: " + String.valueOf(sbscount), 0, 90);
+				e.gc.drawText("SMTP总数: " + String.valueOf(count), 0, 120);
 			}
 		});
 	}
