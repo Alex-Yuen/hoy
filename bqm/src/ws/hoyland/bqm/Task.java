@@ -151,9 +151,7 @@ public class Task implements Runnable {
 			}else if(smtp[0].endsWith("qq.com")){
 				address = new InternetAddress(smtp[0], "hoyland.ws");
 			}
-			System.err.println(address);
-			System.err.println(title);
-			System.err.println("----------------");
+			System.err.println(address+"\n"+title+"\n"+"----------------");
 			
 			message.setFrom(address); // 设置邮件发送者的地址
 			Address toAddress = new InternetAddress(to); // 设置邮件接收方的地址
