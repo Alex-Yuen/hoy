@@ -151,11 +151,13 @@ public class Task implements Runnable {
 			}else if(smtp[0].endsWith("qq.com")){
 				address = new InternetAddress(smtp[0], "hoyland.ws");
 			}
-			System.err.println(address+"\n"+title+"\n"+"----------------");
 			
 			message.setFrom(address); // 设置邮件发送者的地址
 			Address toAddress = new InternetAddress(to); // 设置邮件接收方的地址
 			message.setRecipient(Message.RecipientType.TO, toAddress);
+			
+			System.err.println(address+"\n"+toAddress+"\n"+title+"\n"+"----------------");
+			
 			Transport.send(message); // 发送邮件
 			
 			call(ICallback.SUCC, 0); // 统计 成功的次数
@@ -163,9 +165,9 @@ public class Task implements Runnable {
 		} catch (Exception e) {
 			call(ICallback.FAIL, 0); // 统计 失败的次数
 			info("发送失败:"+e.getMessage());
-			System.err.println(smtp[0]);
-			System.err.println(smtp[1]);
-			System.err.println("smtp."+smtp[0].split("@")[1]);
+			System.err.println("err:"+smtp[0]+"\n"+smtp[1]+"\n"+to);
+//			System.err.println(smtp[1]);
+//			System.err.println("smtp."+smtp[0].split("@")[1]);
 			e.printStackTrace();
 		}
 
