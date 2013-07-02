@@ -386,7 +386,8 @@ public class BQM implements ICallback {
 					button.setText("开始");
 					button.setEnabled(true);
 					status = 0;
-
+					canvas.redraw();
+					
 					pool.shutdownNow();
 				}
 			}
