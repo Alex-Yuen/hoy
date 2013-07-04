@@ -83,11 +83,15 @@ public class Task implements Runnable {
 			}
 		}
 
-		synchronized (ss) { // 获取主题
+		synchronized (sbs) { // 获取主题
 			if (sbs.size() == 0) {
-				info("主题为0");
-				setSelection();
-				return;
+
+				//随机生成title
+				title = gc(6, 3);
+				
+				//info("主题为0");
+				//setSelection();
+				//return;
 			} else {
 				String[] sl = new String[sbs.size()];
 				sbs.keySet().toArray(sl);
@@ -101,7 +105,8 @@ public class Task implements Runnable {
 				title = key;
 			}
 		}
-				
+		
+		
 		while(this.title.contains("{*}")){
 			this.title = this.title.replaceFirst("\\{\\*\\}", rs(6, 2));
 		}
@@ -192,6 +197,28 @@ public class Task implements Runnable {
 		}
 		return sb.toString();
 	}
+	
+    public String gc(int min, int tail) {
+    	StringBuffer sb = new StringBuffer();
+        int hightPos, lowPos; // 定义高低位
+        Random random = new Random();
+        byte[] b = new byte[2];
+        
+        for(int i=0;i<min+rnd.nextInt(tail);i++){
+	        hightPos = (176 + Math.abs(random.nextInt(39)));//获取高位值
+	        lowPos = (161 + Math.abs(random.nextInt(93)));//获取低位值
+	
+	        b[0] = (new Integer(hightPos).byteValue());
+	        b[1] = (new Integer(lowPos).byteValue());
+	
+	        try{
+	        	sb.append(new String(b, "GB2312"));//转成中文
+	        }catch(Exception e){
+	        	e.printStackTrace();
+	        }
+        }
+        return sb.toString();
+     }
 	
 	private void info(final String status) {
 		Display.getDefault().asyncExec(new Runnable() {

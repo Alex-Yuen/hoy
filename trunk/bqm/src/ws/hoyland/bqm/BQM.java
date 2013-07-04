@@ -77,6 +77,7 @@ public class BQM implements ICallback {
 	private Spinner spinner_1;
 	private Spinner spinner_2;
 	private StringBuffer bsc;
+	private boolean zoom = false;
 
 	/**
 	 * Launch the application.
@@ -286,27 +287,29 @@ public class BQM implements ICallback {
 							}
 
 							@Override
-							public void completed(ProgressEvent event) {
-								browser.forceFocus();
-
-								Event evt = new Event();
-
-								for (int i = 0; i < 3; i++) {
-									evt.type = SWT.KeyDown;
-									evt.keyCode = SWT.CTRL;
-									browser.getDisplay().post(evt);
-
-									evt.type = SWT.KeyDown;
-									evt.keyCode = 16777261;
-									browser.getDisplay().post(evt);
-
-									evt.type = SWT.KeyUp;
-									evt.keyCode = SWT.CTRL;
-									browser.getDisplay().post(evt);
-
-									evt.type = SWT.KeyUp;
-									evt.keyCode = 16777261;
-									browser.getDisplay().post(evt);
+							public void completed(ProgressEvent event) {								
+								if(!zoom){
+									browser.forceFocus();
+									Event evt = new Event();
+	
+									for (int i = 0; i < 1; i++) {
+										evt.type = SWT.KeyDown;
+										evt.keyCode = SWT.CTRL;
+										browser.getDisplay().post(evt);
+	
+										evt.type = SWT.KeyDown;
+										evt.keyCode = 16777261;
+										browser.getDisplay().post(evt);
+	
+										evt.type = SWT.KeyUp;
+										evt.keyCode = SWT.CTRL;
+										browser.getDisplay().post(evt);
+	
+										evt.type = SWT.KeyUp;
+										evt.keyCode = 16777261;
+										browser.getDisplay().post(evt);
+									}
+									zoom = true;
 								}
 							}
 						});
@@ -333,8 +336,23 @@ public class BQM implements ICallback {
 					button.setEnabled(true);
 					status = 1;
 
+					Display.getDefault().asyncExec(new Runnable() {
+						@Override
+						public void run() {
+							for (int i = 0; i < table.getItemCount(); i++) {
+								table.getItem(i).setText(2, "初始化");
+							}
+						}
+					});
+					
 					fc = 0;
 					sc = 0;
+					
+					canvas.redraw();
+					
+					if(sbs==null){//用于主题为0情况
+						sbs = new HashMap<String, Byte>();
+					}
 
 					int tc = Integer.parseInt(spinner.getText()); // threads
 																	// count
@@ -375,14 +393,6 @@ public class BQM implements ICallback {
 					});
 
 				} else if (status == 1) {// 当前运行
-					Display.getDefault().asyncExec(new Runnable() {
-						@Override
-						public void run() {
-							for (int i = 0; i < table.getItemCount(); i++) {
-								table.getItem(i).setText(2, "初始化");
-							}
-						}
-					});
 					button.setText("开始");
 					button.setEnabled(true);
 					status = 0;
@@ -543,7 +553,7 @@ public class BQM implements ICallback {
 
 	private void check() {
 		if (bsc!=null&&bsc.length()>0 && rs != null && rs.size() > 0
-				&& ss != null && ss.size() > 0 &&  sbs != null && sbs.size() > 0) {
+				&& ss != null && ss.size() > 0) {// &&  sbs != null && sbs.size() > 0
 			button.setEnabled(true);
 		} else {
 			button.setEnabled(false);
