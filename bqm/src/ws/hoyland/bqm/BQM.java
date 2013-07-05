@@ -351,14 +351,23 @@ public class BQM implements ICallback {
 						}
 					});
 					
+					
 					fc = 0;
-					sc = 0;
-					
-					canvas.redraw();
-					
+					sc = 0;					
+										
 					if(sbs==null){//用于主题为0情况
 						sbs = new HashMap<String, Byte>();
+					}					
+
+					for(String key:sbs.keySet()){
+						sbs.put(key, (byte)0x0);
 					}
+					
+					for(String key:ss.keySet()){
+						ss.put(key, (byte)0x0);
+					}
+
+					canvas.redraw();
 
 					int tc = Integer.parseInt(spinner.getText()); // threads
 																	// count
