@@ -224,7 +224,7 @@ public class Task implements Runnable {
 		Display.getDefault().asyncExec(new Runnable() {
 			@Override
 			public void run() {
-				// qm.log(uin + "->" + status + "\r\n");
+				cb.log(to+"->"+status);
 				item.setText(2, status);
 			}
 		});
