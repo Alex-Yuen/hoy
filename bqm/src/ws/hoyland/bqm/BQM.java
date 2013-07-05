@@ -6,8 +6,10 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -79,6 +81,8 @@ public class BQM implements ICallback {
 	private StringBuffer bsc;
 	private boolean zoom = false;
 
+	private SimpleDateFormat sdf = new SimpleDateFormat("[HH:mm:ss] ");
+	
 	/**
 	 * Launch the application.
 	 * 
@@ -335,7 +339,9 @@ public class BQM implements ICallback {
 					button.setText("停止");
 					button.setEnabled(true);
 					status = 1;
-
+					
+					text.setText("");
+					
 					Display.getDefault().asyncExec(new Runnable() {
 						@Override
 						public void run() {
@@ -581,5 +587,10 @@ public class BQM implements ICallback {
 		}
 		return;
 
+	}
+
+	@Override
+	public void log(String info) {
+		text.append(sdf.format(new Date()) + info +"\n");
 	}
 }
