@@ -44,8 +44,12 @@ public class Task implements Runnable {
 //		}
 		
 		this.content = mail;
+		while(this.content.contains("{#}")){
+			this.content = this.content.replaceFirst("\\{\\#\\}", rs(12, 4)); 
+		}
+		
 		while(this.content.contains("{*}")){
-			this.content = this.content.replaceFirst("\\{\\*\\}", rs(8, 4));
+			this.content = this.content.replaceFirst("\\{\\*\\}", gc(12, 4)); //rs(12, 4)
 		}
 		
 		if(this.content.contains("hlflag=0")){
@@ -87,7 +91,7 @@ public class Task implements Runnable {
 			if (sbs.size() == 0) {
 
 				//随机生成title
-				title = gc(6, 3);
+				title = gc(9, 3);
 				
 				//info("主题为0");
 				//setSelection();
@@ -104,11 +108,14 @@ public class Task implements Runnable {
 				}
 				title = key;
 			}
+		}		
+		
+		while(this.title.contains("{#}")){
+			this.title = this.title.replaceFirst("\\{\\#\\}", rs(6, 2));
 		}
 		
-		
 		while(this.title.contains("{*}")){
-			this.title = this.title.replaceFirst("\\{\\*\\}", rs(6, 2));
+			this.title = this.title.replaceFirst("\\{\\*\\}", gc(6, 2));
 		}
 			
 		try {
@@ -201,12 +208,12 @@ public class Task implements Runnable {
     public String gc(int min, int tail) {
     	StringBuffer sb = new StringBuffer();
         int hightPos, lowPos; // 定义高低位
-        Random random = new Random();
+        Random rnd = new Random();
         byte[] b = new byte[2];
         
         for(int i=0;i<min+rnd.nextInt(tail);i++){
-	        hightPos = (176 + Math.abs(random.nextInt(39)));//获取高位值
-	        lowPos = (161 + Math.abs(random.nextInt(93)));//获取低位值
+	        hightPos = (176 + Math.abs(rnd.nextInt(39)));//获取高位值
+	        lowPos = (161 + Math.abs(rnd.nextInt(93)));//获取低位值
 	
 	        b[0] = (new Integer(hightPos).byteValue());
 	        b[1] = (new Integer(lowPos).byteValue());
