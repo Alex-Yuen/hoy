@@ -6,6 +6,11 @@ import java.net.Socket;
 
 public class SMTPServer extends Thread {
 
+	public static void main(String[] args) {
+		Thread t = new Thread(new SMTPServer());
+		t.start();
+	}
+
 	public void run() {
 		try {
 			ServerSocket ss = new ServerSocket(25);
