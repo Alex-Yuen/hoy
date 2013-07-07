@@ -12,6 +12,7 @@ import java.net.Socket;
 public class SMTPSession extends Thread {
 	
 	public static final String CMD_HELO="HELO";//信号
+	public static final String CMD_EHLO="EHLO";
 	public static final String CMD_MAIL="MAIL";//
 	public static final String CMD_RCPT="RCPT";
 	public static final String CMD_DATA="DATA";
@@ -43,7 +44,7 @@ public class SMTPSession extends Thread {
 			while(line!=null){
 				System.out.println(line);
 				String command=line.substring(0,4).trim();
-				if(command.equalsIgnoreCase(CMD_HELO)){
+				if(command.equalsIgnoreCase(CMD_HELO)||command.equalsIgnoreCase(CMD_EHLO)){
 					doHello();
 				}
 				else if(command.equalsIgnoreCase(CMD_RSET))
@@ -179,7 +180,7 @@ public class SMTPSession extends Thread {
 	private void doHello() {
 		ps.println("250 OK");
 	}
-
+	
 	private void doWelcome() {
 		ps.println("220 wrfei");
 	}
