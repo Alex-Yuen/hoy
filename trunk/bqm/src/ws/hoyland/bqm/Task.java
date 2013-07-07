@@ -126,6 +126,7 @@ public class Task implements Runnable {
 			Properties props = new Properties(); // 获取系统环境
 			Authenticator auth = new EmailAutherticator(smtp[0], smtp[1]); // 进行邮件服务器用户认证
 			String host = "smtp."+smtp[0].split("@")[1];
+			//host = "smtp.byteset.net";
 			props.put("mail.smtp.host", host);
 			props.put("mail.smtp.auth", "true");
 			if(smtp[0].endsWith("gmail.com")){
@@ -167,6 +168,8 @@ public class Task implements Runnable {
 			}else if(smtp[0].endsWith("126.com")){
 				address = new InternetAddress(smtp[0], smtp[0].split("@")[0]);
 			}else if(smtp[0].endsWith("gmail.com")){
+				address = new InternetAddress(smtp[0], smtp[0].split("@")[0]);
+			}else if(smtp[0].endsWith("byteset.net")){
 				address = new InternetAddress(smtp[0], smtp[0].split("@")[0]);
 			}else if(smtp[0].endsWith("qq.com")){
 				address = new InternetAddress(smtp[0], "hoyland.ws");
