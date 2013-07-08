@@ -30,13 +30,13 @@ class UniqueValue {
 		
 		StringBuffer s = new StringBuffer();
 
-//		s.append(s.hashCode()).append('.').append(getUniqueId()).append('.')
-//				.append(System.currentTimeMillis());
+		s.append(s.hashCode()).append('.').append(getUniqueId()).append('.')
+				.append(System.currentTimeMillis());
 ////				.append('.')
 //				.append("HL-Mail").append('.').append(suffix);
 
 		
-		s.append("tencent_").append(rs(24).toUpperCase()).append("@qq.com");
+		//s.append("tencent_").append(rs(24).toUpperCase()).append("@qq.com");
 		
 		return s.toString();
 	}

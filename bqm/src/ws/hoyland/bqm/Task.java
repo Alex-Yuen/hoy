@@ -44,20 +44,38 @@ public class Task implements Runnable {
 //		}
 		
 		this.content = mail;
-		while(this.content.contains("{#}")){
-			this.content = this.content.replaceFirst("\\{\\#\\}", rs(12, 4)); 
-		}
-		
-		while(this.content.contains("{*}")){
-			this.content = this.content.replaceFirst("\\{\\*\\}", gc(12, 4)); //rs(12, 4)
-		}
-		
-		if(this.content.contains("hlflag=0")){
-			this.content = this.content.replaceFirst("hlflag=0", "hlflag=1");
-		}
+		this.content = deal(this.content);
 		
 		this.to = item.getText(1);
 		this.rnd = new Random();
+	}
+
+	private String deal(String ct) {
+		while(ct.contains("{c}")){
+			ct = ct.replaceFirst("\\{c\\}", cs(9, 3)); 
+		}
+		
+		while(ct.contains("{*}")){
+			ct = ct.replaceFirst("\\{\\*\\}", gc(9, 3));
+		}
+		
+		while(ct.contains("{e}")){
+			ct = ct.replaceFirst("\\{e\\}", es(9, 3));
+		}
+		
+		while(ct.contains("{d}")){
+			ct = ct.replaceFirst("\\{d\\}", ds(9, 3));
+		}
+		
+		ct = ct.replaceAll("\\{ex\\}", es(2, 1));
+		ct = ct.replaceAll("\\{dx\\}", ds(2, 1));
+		ct = ct.replaceAll("\\{cx\\}", cs(2, 1));
+		
+		if(ct.contains("hlflag=0")){
+			ct = ct.replaceFirst("hlflag=0", "hlflag=1");
+		}
+		
+		return ct;
 	}
 
 	public void set(int mss, int msbs){
@@ -110,13 +128,7 @@ public class Task implements Runnable {
 			}
 		}		
 		
-		while(this.title.contains("{#}")){
-			this.title = this.title.replaceFirst("\\{\\#\\}", rs(6, 2));
-		}
-		
-		while(this.title.contains("{*}")){
-			this.title = this.title.replaceFirst("\\{\\*\\}", gc(6, 2));
-		}
+		this.title = deal(this.title);
 			
 		try {
 			if(smtp.length!=2){
@@ -198,12 +210,32 @@ public class Task implements Runnable {
 		setSelection();
 	}
 	
-	private String rs(int min, int tail){
+	private String cs(int min, int tail){
 		String cs = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890";
 		StringBuffer sb = new StringBuffer();
 		Random rnd = new Random();
 		for(int i=0;i<min+rnd.nextInt(tail);i++){
 			sb.append(cs.charAt(rnd.nextInt(62)));
+		}
+		return sb.toString();
+	}
+	
+	private String es(int min, int tail){
+		String cs = "abcdefghijklmnopqrstuvwxyz";
+		StringBuffer sb = new StringBuffer();
+		Random rnd = new Random();
+		for(int i=0;i<min+rnd.nextInt(tail);i++){
+			sb.append(cs.charAt(rnd.nextInt(26)));
+		}
+		return sb.toString();
+	}
+	
+	private String ds(int min, int tail){
+		String cs = "1234567890";
+		StringBuffer sb = new StringBuffer();
+		Random rnd = new Random();
+		for(int i=0;i<min+rnd.nextInt(tail);i++){
+			sb.append(cs.charAt(rnd.nextInt(10)));
 		}
 		return sb.toString();
 	}
