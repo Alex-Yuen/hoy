@@ -138,6 +138,9 @@ public class Task implements Runnable {
 			Properties props = new Properties(); // 获取系统环境
 			Authenticator auth = new EmailAutherticator(smtp[0], smtp[1]); // 进行邮件服务器用户认证
 			String host = "smtp."+smtp[0].split("@")[1];
+			
+			info("smtp="+smtp[0]);
+			info("title="+title);
 			//host = "smtp.byteset.net";
 			props.put("mail.smtp.host", host);
 			props.put("mail.smtp.auth", "true");
