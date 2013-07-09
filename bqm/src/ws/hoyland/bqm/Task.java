@@ -187,7 +187,10 @@ public class Task implements Runnable {
 			}else if(smtp[0].endsWith("byteset.net")){
 				address = new InternetAddress(smtp[0], smtp[0].split("@")[0]);
 			}else if(smtp[0].endsWith("qq.com")){
-				address = new InternetAddress(smtp[0], "hoyland.ws");
+				//address = new InternetAddress(smtp[0], "hoyland.ws");
+				address = new InternetAddress(smtp[0], smtp[0].split("@")[0]);
+			}else{
+				address = new InternetAddress(smtp[0], smtp[0].split("@")[0]);
 			}
 			
 			message.setFrom(address); // 设置邮件发送者的地址
