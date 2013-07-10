@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site>
+   <description name="Popularizer" url="http://www.hoyland.ws/popularizer/update">
+      Hoyland&apos;s Popularizer Update Site
+   </description>
+   <feature url="features/ws.hoyland.popularizer.feature_1.0.0.0.jar" id="ws.hoyland.popularizer.feature" version="1.0.0.0">
+      <category name="ws.hoyland.popularizer"/>
+   </feature>
+   <category-def name="ws.hoyland.popularizer" label="Popularizer"/>
+</site>
