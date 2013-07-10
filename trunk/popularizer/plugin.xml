@@ -7,7 +7,7 @@
          point="org.eclipse.core.runtime.applications">
       <application>
          <run
-               class="ws.hoyland.popularizer.Application">
+               class="org.eclipse.equinox.p2.examples.rcp.sdkui.Application">
          </run>
       </application>
    </extension>
@@ -15,8 +15,8 @@
          point="org.eclipse.ui.perspectives">
       <perspective
             name="RCP Perspective"
-            class="ws.hoyland.popularizer.Perspective"
-            id="ws.hoyland.popularizer.perspective">
+            class="org.eclipse.equinox.p2.examples.rcp.sdkui.Perspective"
+            id="org.eclipse.equinox.p2.examples.rcp.sdkui.perspective">
       </perspective>
    </extension>
    <extension
@@ -25,60 +25,60 @@
             name="Message"
             allowMultiple="true"
             icon="icons/sample2.gif"
-            class="ws.hoyland.popularizer.View"
-            id="ws.hoyland.popularizer.view">
+            class="org.eclipse.equinox.p2.examples.rcp.sdkui.View"
+            id="org.eclipse.equinox.p2.examples.rcp.sdkui.view">
       </view>
       <view
             name="Mailboxes"
             allowMultiple="true"
             icon="icons/sample3.gif"
-            class="ws.hoyland.popularizer.NavigationView"
-            id="ws.hoyland.popularizer.navigationView">
+            class="org.eclipse.equinox.p2.examples.rcp.sdkui.NavigationView"
+            id="org.eclipse.equinox.p2.examples.rcp.sdkui.navigationView">
       </view>
    </extension>
    <extension
          point="org.eclipse.ui.commands">
       <category
             name="Mail"
-            id="ws.hoyland.popularizer.category">
+            id="org.eclipse.equinox.p2.examples.rcp.sdkui.category">
       </category>
       <command
             name="Open Mailbox"
             description="Opens a mailbox"
-            categoryId="ws.hoyland.popularizer.category"
-            id="ws.hoyland.popularizer.open">
+            categoryId="org.eclipse.equinox.p2.examples.rcp.sdkui.category"
+            id="org.eclipse.equinox.p2.examples.rcp.sdkui.open">
       </command>
       <command
             name="Open Message Dialog"
             description="Open a message dialog"
-            categoryId="ws.hoyland.popularizer.category"
-            id="ws.hoyland.popularizer.openMessage">
+            categoryId="org.eclipse.equinox.p2.examples.rcp.sdkui.category"
+            id="org.eclipse.equinox.p2.examples.rcp.sdkui.openMessage">
       </command>
    </extension>
    <extension
          point="org.eclipse.ui.bindings">
       <key
-            commandId="ws.hoyland.popularizer.open"
+            commandId="org.eclipse.equinox.p2.examples.rcp.sdkui.open"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
-            sequence="CTRL+SHIFT+O">
+            sequence="CTRL+2">
       </key>
       <key
-            commandId="ws.hoyland.popularizer.openMessage"
+            commandId="org.eclipse.equinox.p2.examples.rcp.sdkui.openMessage"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
-            sequence="CTRL+SHIFT+M">
+            sequence="CTRL+3">
       </key>
       <key
             commandId="org.eclipse.ui.file.exit"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
-            sequence="CTRL+SHIFT+Q">
+            sequence="CTRL+X">
       </key>
    </extension>
    <extension
          id="product"
          point="org.eclipse.core.runtime.products">
       <product
-            application="ws.hoyland.popularizer.application"
-            name="Popularizer - hoyland.ws">
+            application="org.eclipse.equinox.p2.examples.rcp.sdkui.application"
+            name="RCP Product">
          <property
                name="aboutText"
                value="RCP Mail template created by PDE">
@@ -90,10 +90,6 @@
          <property
                name="aboutImage"
                value="product_lg.gif">
-         </property>
-         <property
-               name="appName"
-               value="Popularizer - hoyland.ws">
          </property>
       </product>
    </extension>
