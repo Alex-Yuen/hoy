@@ -7,7 +7,7 @@
          point="org.eclipse.core.runtime.applications">
       <application>
          <run
-               class="org.eclipse.equinox.p2.examples.rcp.sdkui.Application">
+               class="ws.hoyland.popularizer.Application">
          </run>
       </application>
    </extension>
@@ -15,8 +15,8 @@
          point="org.eclipse.ui.perspectives">
       <perspective
             name="RCP Perspective"
-            class="org.eclipse.equinox.p2.examples.rcp.sdkui.Perspective"
-            id="org.eclipse.equinox.p2.examples.rcp.sdkui.perspective">
+            class="ws.hoyland.popularizer.Perspective"
+            id="ws.hoyland.popularizer.perspective">
       </perspective>
    </extension>
    <extension
@@ -25,45 +25,45 @@
             name="Message"
             allowMultiple="true"
             icon="icons/sample2.gif"
-            class="org.eclipse.equinox.p2.examples.rcp.sdkui.View"
-            id="org.eclipse.equinox.p2.examples.rcp.sdkui.view">
+            class="ws.hoyland.popularizer.View"
+            id="ws.hoyland.popularizer.view">
       </view>
       <view
             name="Mailboxes"
             allowMultiple="true"
             icon="icons/sample3.gif"
-            class="org.eclipse.equinox.p2.examples.rcp.sdkui.NavigationView"
-            id="org.eclipse.equinox.p2.examples.rcp.sdkui.navigationView">
+            class="ws.hoyland.popularizer.NavigationView"
+            id="ws.hoyland.popularizer.navigationView">
       </view>
    </extension>
    <extension
          point="org.eclipse.ui.commands">
       <category
             name="Mail"
-            id="org.eclipse.equinox.p2.examples.rcp.sdkui.category">
+            id="ws.hoyland.popularizer.category">
       </category>
       <command
             name="Open Mailbox"
             description="Opens a mailbox"
-            categoryId="org.eclipse.equinox.p2.examples.rcp.sdkui.category"
-            id="org.eclipse.equinox.p2.examples.rcp.sdkui.open">
+            categoryId="ws.hoyland.popularizer.category"
+            id="ws.hoyland.popularizer.open">
       </command>
       <command
             name="Open Message Dialog"
             description="Open a message dialog"
-            categoryId="org.eclipse.equinox.p2.examples.rcp.sdkui.category"
-            id="org.eclipse.equinox.p2.examples.rcp.sdkui.openMessage">
+            categoryId="ws.hoyland.popularizer.category"
+            id="ws.hoyland.popularizer.openMessage">
       </command>
    </extension>
    <extension
          point="org.eclipse.ui.bindings">
       <key
-            commandId="org.eclipse.equinox.p2.examples.rcp.sdkui.open"
+            commandId="ws.hoyland.popularizer.open"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
             sequence="CTRL+2">
       </key>
       <key
-            commandId="org.eclipse.equinox.p2.examples.rcp.sdkui.openMessage"
+            commandId="ws.hoyland.popularizer.openMessage"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
             sequence="CTRL+3">
       </key>
@@ -77,7 +77,7 @@
          id="product"
          point="org.eclipse.core.runtime.products">
       <product
-            application="org.eclipse.equinox.p2.examples.rcp.sdkui.application"
+            application="ws.hoyland.popularizer.application"
             name="RCP Product">
          <property
                name="aboutText"

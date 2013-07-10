@@ -1,4 +1,4 @@
-package org.eclipse.equinox.p2.examples.rcp.sdkui;
+package ws.hoyland.popularizer;
 
 import org.eclipse.ui.IFolderLayout;
 import org.eclipse.ui.IPageLayout;
@@ -9,7 +9,7 @@ public class Perspective implements IPerspectiveFactory {
 	/**
 	 * The ID of the perspective as specified in the extension.
 	 */
-	public static final String ID = "org.eclipse.equinox.p2.examples.rcp.sdkui.perspective";
+	public static final String ID = "ws.hoyland.popularizer.perspective";
 
 	public void createInitialLayout(IPageLayout layout) {
 		String editorArea = layout.getEditorArea();

@@ -1,4 +1,4 @@
-package org.eclipse.equinox.p2.examples.rcp.sdkui;
+package ws.hoyland.popularizer;
 
 /**
  * Interface defining the application's command IDs.
@@ -9,7 +9,7 @@ package org.eclipse.equinox.p2.examples.rcp.sdkui;
  */
 public interface ICommandIds {
 
-    public static final String CMD_OPEN = "org.eclipse.equinox.p2.examples.rcp.sdkui.open";
-    public static final String CMD_OPEN_MESSAGE = "org.eclipse.equinox.p2.examples.rcp.sdkui.openMessage";
+    public static final String CMD_OPEN = "ws.hoyland.popularizer.open";
+    public static final String CMD_OPEN_MESSAGE = "ws.hoyland.popularizer.openMessage";
     
 }
