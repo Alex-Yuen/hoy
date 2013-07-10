@@ -78,7 +78,7 @@
          point="org.eclipse.core.runtime.products">
       <product
             application="ws.hoyland.popularizer.application"
-            name="RCP Product">
+            name="Popularizer - hoyland.ws">
          <property
                name="aboutText"
                value="RCP Mail template created by PDE">
@@ -90,6 +90,10 @@
          <property
                name="aboutImage"
                value="product_lg.gif">
+         </property>
+         <property
+               name="appName"
+               value="Popularizer - hoyland.ws">
          </property>
       </product>
    </extension>
