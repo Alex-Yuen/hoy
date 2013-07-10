@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="Popularizer - hoyland.ws" uid="ws.hoyland.popularizer.product" id="ws.hoyland.popularizer.product" application="ws.hoyland.popularizer.application" version="1.0.0.1" useFeatures="true" includeLaunchers="true">
+<product name="Popularizer - hoyland.ws" uid="ws.hoyland.popularizer.product" id="ws.hoyland.popularizer.product" application="ws.hoyland.popularizer.application" version="1.0.0.0" useFeatures="true" includeLaunchers="true">
 
    <aboutInfo>
       <image path="product_lg.gif"/>
@@ -30,11 +30,9 @@
       </win>
    </launcher>
 
-
    <vm>
       <windows include="false">org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7</windows>
    </vm>
-
 
    <plugins>
       <plugin id="com.ibm.icu"/>
@@ -107,7 +105,7 @@
    </plugins>
 
    <features>
-      <feature id="ws.hoyland.popularizer.feature" version="1.0.0.1"/>
+      <feature id="ws.hoyland.popularizer.feature" version="1.0.0.0"/>
    </features>
 
    <configurations>
