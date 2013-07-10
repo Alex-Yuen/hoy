@@ -2,7 +2,7 @@
 <feature
       id="ws.hoyland.popularizer.feature"
       label="Popularizer Feature"
-      version="1.0.0.1"
+      version="1.0.0.0"
       provider-name="hoyland.ws">
 
    <description url="http://www.example.com/description">
