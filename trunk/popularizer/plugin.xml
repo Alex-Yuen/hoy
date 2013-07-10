@@ -78,7 +78,7 @@
          point="org.eclipse.core.runtime.products">
       <product
             application="ws.hoyland.popularizer.application"
-            name="Popularizer - hoyland.ws">
+            name="Popularizer">
          <property
                name="aboutText"
                value="RCP Mail template created by PDE">
@@ -93,7 +93,7 @@
          </property>
          <property
                name="appName"
-               value="Popularizer - hoyland.ws">
+               value="Popularizer">
          </property>
       </product>
    </extension>
