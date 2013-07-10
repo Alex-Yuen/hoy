@@ -1,4 +1,4 @@
-package org.eclipse.equinox.p2.examples.rcp.sdkui;
+package ws.hoyland.popularizer;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.GroupMarker;

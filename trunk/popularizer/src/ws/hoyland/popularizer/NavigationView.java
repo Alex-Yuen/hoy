@@ -1,4 +1,4 @@
-package org.eclipse.equinox.p2.examples.rcp.sdkui;
+package ws.hoyland.popularizer;
 
 import java.util.ArrayList;
 
@@ -15,7 +15,7 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 
 public class NavigationView extends ViewPart {
-	public static final String ID = "org.eclipse.equinox.p2.examples.rcp.sdkui.navigationView";
+	public static final String ID = "ws.hoyland.popularizer.navigationView";
 	private TreeViewer viewer;
 	 
 	class TreeObject {

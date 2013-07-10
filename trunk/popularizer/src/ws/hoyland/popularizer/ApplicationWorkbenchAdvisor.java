@@ -1,4 +1,4 @@
-package org.eclipse.equinox.p2.examples.rcp.sdkui;
+package ws.hoyland.popularizer;
 
 import org.eclipse.ui.application.IWorkbenchWindowConfigurer;
 import org.eclipse.ui.application.WorkbenchAdvisor;

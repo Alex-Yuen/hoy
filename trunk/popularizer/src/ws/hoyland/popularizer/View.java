@@ -1,4 +1,4 @@
-package org.eclipse.equinox.p2.examples.rcp.sdkui;
+package ws.hoyland.popularizer;
 
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.resource.JFaceResources;
@@ -16,7 +16,7 @@ import org.eclipse.ui.part.ViewPart;
 
 public class View extends ViewPart {
 
-	public static final String ID = "org.eclipse.equinox.p2.examples.rcp.sdkui.view";
+	public static final String ID = "ws.hoyland.popularizer.view";
 	
 	public void createPartControl(Composite parent) {
 		Composite top = new Composite(parent, SWT.NONE);
