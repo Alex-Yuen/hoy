@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="Popularizer - hoyland.ws" uid="ws.hoyland.popularizer.product" id="ws.hoyland.popularizer.product" application="ws.hoyland.popularizer.application" version="1.0.0.0" useFeatures="true" includeLaunchers="true">
+<product name="Popularizer" uid="ws.hoyland.popularizer.product" id="ws.hoyland.popularizer.product" application="ws.hoyland.popularizer.application" version="1.0.0.0" useFeatures="true" includeLaunchers="true">
 
    <aboutInfo>
       <image path="product_lg.gif"/>
