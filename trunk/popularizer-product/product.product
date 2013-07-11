@@ -22,7 +22,7 @@
 
    <splash
       location="ws.hoyland.popularizer"
-      startupProgressRect="10,290,460,15" />
+      startupProgressRect="15,290,460,15" />
    <launcher>
       <solaris/>
       <win useIco="false">
