@@ -95,6 +95,14 @@
                name="appName"
                value="Popularizer">
          </property>
+         <property
+               name="startupProgressRect"
+               value="10,290,460,15">
+         </property>
+         <property
+               name="preferenceCustomization"
+               value="plugin_customization.ini">
+         </property>
       </product>
    </extension>
 
