@@ -21,7 +21,8 @@
    <windowImages i16="icons/sample2.gif"/>
 
    <splash
-      location="ws.hoyland.popularizer" />
+      location="ws.hoyland.popularizer"
+      startupProgressRect="10,290,460,15" />
    <launcher>
       <solaris/>
       <win useIco="false">
