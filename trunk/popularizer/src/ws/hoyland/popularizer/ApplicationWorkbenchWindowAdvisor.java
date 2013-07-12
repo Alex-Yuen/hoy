@@ -23,7 +23,7 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
 
 	public void preWindowOpen() {
 		IWorkbenchWindowConfigurer configurer = getWindowConfigurer();
-		configurer.setInitialSize(new Point(600, 400));
+		configurer.setInitialSize(new Point(400, 300));
 		configurer.setShowCoolBar(true);
 		// XXX We set the status line and progress indicator so that update
 		// information can be shown there
@@ -33,11 +33,11 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
 
 	@Override
 	public void postWindowOpen() {
-		super.postWindowOpen();
+		super.postWindowOpen();				
 		Shell shell = getWindowConfigurer().getWindow().getShell();
 		Rectangle screenSize = Display.getDefault().getClientArea();
 		Rectangle frameSize = shell.getBounds();
 		shell.setLocation((screenSize.width - frameSize.width) / 2,
-				(screenSize.height - frameSize.height) / 2);
+				(screenSize.height - frameSize.height) / 2);		
 	}
 }
