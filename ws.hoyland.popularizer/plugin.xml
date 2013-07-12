@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+
+   <extension
+         id="application"
+         point="org.eclipse.core.runtime.applications">
+      <application>
+         <run
+               class="ws.hoyland.popularizer.Application">
+         </run>
+      </application>
+   </extension>
+   <extension
+         point="org.eclipse.ui.perspectives">
+      <perspective
+            name="RCP Perspective"
+            class="ws.hoyland.popularizer.Perspective"
+            id="ws.hoyland.popularizer.perspective">
+      </perspective>
+   </extension>
+   <extension
+         point="org.eclipse.ui.views">
+      <view
+            name="Message"
+            allowMultiple="true"
+            icon="icons/sample2.gif"
+            class="ws.hoyland.popularizer.View"
+            id="ws.hoyland.popularizer.view">
+      </view>
+      <view
+            name="Mailboxes"
+            allowMultiple="true"
+            icon="icons/sample3.gif"
+            class="ws.hoyland.popularizer.NavigationView"
+            id="ws.hoyland.popularizer.navigationView">
+      </view>
+   </extension>
+   <extension
+         point="org.eclipse.ui.commands">
+      <category
+            name="Mail"
+            id="ws.hoyland.popularizer.category">
+      </category>
+      <command
+            name="Open Mailbox"
+            description="Opens a mailbox"
+            categoryId="ws.hoyland.popularizer.category"
+            id="ws.hoyland.popularizer.open">
+      </command>
+      <command
+            name="Open Message Dialog"
+            description="Open a message dialog"
+            categoryId="ws.hoyland.popularizer.category"
+            id="ws.hoyland.popularizer.openMessage">
+      </command>
+   </extension>
+   <extension
+         point="org.eclipse.ui.bindings">
+      <key
+            commandId="ws.hoyland.popularizer.open"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="CTRL+SHIFT+O">
+      </key>
+      <key
+            commandId="ws.hoyland.popularizer.openMessage"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="CTRL+SHIFT+M">
+      </key>
+      <key
+            commandId="org.eclipse.ui.file.exit"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="CTRL+SHIFT+Q">
+      </key>
+   </extension>
+   <extension
+         id="product"
+         point="org.eclipse.core.runtime.products">
+      <product
+            application="ws.hoyland.popularizer.application"
+            name="Popularizer">
+         <property
+               name="aboutText"
+               value="RCP Mail template created by PDE">
+         </property>
+         <property
+               name="windowImages"
+               value="icons/sample2.gif">
+         </property>
+         <property
+               name="aboutImage"
+               value="product_lg.gif">
+         </property>
+      </product>
+   </extension>
+
+</plugin>

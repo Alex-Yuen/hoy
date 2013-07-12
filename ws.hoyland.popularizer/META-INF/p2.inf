@@ -1,0 +1,3 @@
+instructions.configure=\
+   addRepository(name:Hoyland's Popularizer,type:0,location:http${#58}//www.hoyland.ws/popularizer/update/);\
+   addRepository(name:Hoyland's Popularizer,type:1,location:http${#58}//www.hoyland.ws/popularizer/update/);
