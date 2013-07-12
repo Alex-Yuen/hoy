@@ -78,10 +78,10 @@
          point="org.eclipse.core.runtime.products">
       <product
             application="ws.hoyland.popularizer.application"
-            name="Popularizer">
+            name="Porpularizer">
          <property
                name="aboutText"
-               value="RCP Mail template created by PDE">
+               value="Hoyland&apos;s Popularizer">
          </property>
          <property
                name="windowImages"
@@ -90,6 +90,18 @@
          <property
                name="aboutImage"
                value="product_lg.gif">
+         </property>
+         <property
+               name="appName"
+               value="Porpularizer">
+         </property>
+         <property
+               name="startupProgressRect"
+               value="5,295,445,15">
+         </property>
+         <property
+               name="preferenceCustomization"
+               value="plugin_customization.ini">
          </property>
       </product>
    </extension>
