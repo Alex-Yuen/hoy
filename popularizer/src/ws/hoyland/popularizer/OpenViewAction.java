@@ -21,7 +21,7 @@ public class OpenViewAction extends Action {
 		setId(ICommandIds.CMD_OPEN);
         // Associate the action with a pre-defined command, to allow key bindings.
 		setActionDefinitionId(ICommandIds.CMD_OPEN);
-		setImageDescriptor(ws.hoyland.popularizer.Activator.getImageDescriptor("/icons/sample2.gif"));
+		setImageDescriptor(ws.hoyland.popularizer.Activator.getImageDescriptor("/icons/mail.png"));
 	}
 	
 	public void run() {

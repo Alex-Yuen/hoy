@@ -55,7 +55,7 @@
             id="ws.hoyland.popularizer.openMessage">
       </command>
    </extension>
-   <extension
+   <!--extension
          point="org.eclipse.ui.bindings">
       <key
             commandId="ws.hoyland.popularizer.open"
@@ -72,7 +72,7 @@
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
             sequence="CTRL+X">
       </key>
-   </extension>
+   </extension-->
    <extension
          id="product"
          point="org.eclipse.core.runtime.products">
