@@ -6,7 +6,7 @@
    <aboutInfo>
       <image path="product_lg.gif"/>
       <text>
-         RCP Mail template created by PDE
+         Hoyland&apos;s Popularizer
       </text>
    </aboutInfo>
 
@@ -22,13 +22,15 @@
    <windowImages i16="icons/sample2.gif"/>
 
    <splash
-      location="ws.hoyland.popularizer" />
+      location="ws.hoyland.popularizer"
+      startupProgressRect="5,295,445,15" />
    <launcher name="ppzer">
       <solaris/>
       <win useIco="false">
          <bmp/>
       </win>
    </launcher>
+
 
    <vm>
       <windows include="false">org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7</windows>
