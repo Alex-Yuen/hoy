@@ -6,6 +6,9 @@ Bundle-Version: 1.0.0.0
 Bundle-Activator: ws.hoyland.popularizer.Activator
 Bundle-Vendor: hoyland.ws
 Require-Bundle: org.eclipse.ui,
- org.eclipse.core.runtime
+ org.eclipse.core.runtime,
+ org.eclipse.equinox.p2.ui.sdk;bundle-version="1.0.300",
+ org.eclipse.equinox.p2.ui;bundle-version="2.3.0",
+ org.eclipse.equinox.p2.ui.sdk.scheduler;bundle-version="1.2.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ActivationPolicy: lazy
