@@ -106,4 +106,50 @@
       </product>
    </extension>
 
+   	<!--extension 
+   		id="preferences" point="org.eclipse.core.runtime.preferences" name="%preferences">
+		<initializer class="ws.hoyland.popularizer.p2.PreferenceInitializer"/>
+	</extension-->
+	
+	<!--extension
+		point="org.eclipse.ui.installationPages">
+		<page
+			name="%installedSoftwarePage"
+            class="org.eclipse.equinox.p2.ui.InstalledSoftwarePage"
+            id="10.ws.hoyland.popularizer.InstalledSoftwarePage">
+		</page>
+		<page
+            name="%installHistoryPage"
+            class="org.eclipse.equinox.p2.ui.RevertProfilePage"
+            id="11.ws.hoyland.popularizer.RevertProfilePage">
+		</page>          
+	</extension-->
+      
+	<extension
+			point="org.eclipse.ui.commands">
+		<command
+			name="%Update.command"
+            id="ws.hoyland.popularizer.command.update">
+		</command>
+	</extension>
+   
+	<extension
+		point="org.eclipse.ui.handlers">
+		<handler
+			commandId="ws.hoyland.popularizer.command.update"
+            class="ws.hoyland.popularizer.p2.UpdateHandler">
+		</handler>
+	</extension>
+   
+	<extension
+		point="org.eclipse.ui.menus">
+		<menuContribution
+			locationURI="menu:help?after=additions">
+			<command
+				commandId="ws.hoyland.popularizer.command.update"
+				mnemonic="%Update.command.mnemonic"
+				id="ws.hoyland.popularizer.menu.update">
+			</command>
+		</menuContribution>
+	</extension>
 </plugin>
