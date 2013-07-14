@@ -97,7 +97,7 @@
          </property>
          <property
                name="startupProgressRect"
-               value="5,295,445,15">
+               value="5,295,450,15">
          </property>
          <property
                name="preferenceCustomization"
