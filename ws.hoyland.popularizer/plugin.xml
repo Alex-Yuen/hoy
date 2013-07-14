@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<?eclipse version="3.4"?>
+<?eclipse version="4.3"?>
 <plugin>
 
    <extension
@@ -14,7 +14,7 @@
    <extension
          point="org.eclipse.ui.perspectives">
       <perspective
-            name="RCP Perspective"
+            name="Popularizer Perspective"
             class="ws.hoyland.popularizer.Perspective"
             id="ws.hoyland.popularizer.perspective">
       </perspective>
@@ -22,38 +22,57 @@
    <extension
          point="org.eclipse.ui.views">
       <view
-            name="Message"
-            allowMultiple="true"
-            icon="icons/sample2.gif"
-            class="ws.hoyland.popularizer.View"
-            id="ws.hoyland.popularizer.view">
-      </view>
-      <view
-            name="Mailboxes"
-            allowMultiple="true"
+            name="Navigation"
+            allowMultiple="false"
             icon="icons/sample3.gif"
             class="ws.hoyland.popularizer.NavigationView"
-            id="ws.hoyland.popularizer.navigationView">
+            id="ws.hoyland.popularizer.navigationview">
       </view>
+      
+      <view
+            name="Home"
+            allowMultiple="false"
+            icon="icons/sample2.gif"
+            class="ws.hoyland.popularizer.HomeView"
+            id="ws.hoyland.popularizer.homeview">
+      </view>
+      
+      
+       <view
+            name="Visit"
+            allowMultiple="false"
+            icon="icons/sample2.gif"
+            class="ws.hoyland.popularizer.VisitView"
+            id="ws.hoyland.popularizer.visitview">
+      </view>
+      
    </extension>
+   
    <extension
          point="org.eclipse.ui.commands">
       <category
             name="Mail"
             id="ws.hoyland.popularizer.category">
       </category>
+      
+	<command
+		name="%Update.command"
+        id="ws.hoyland.popularizer.command.update">
+	</command>
+		
       <command
             name="Open Mailbox"
             description="Opens a mailbox"
             categoryId="ws.hoyland.popularizer.category"
-            id="ws.hoyland.popularizer.open">
+            id="ws.hoyland.popularizer.home">
       </command>
       <command
             name="Open Message Dialog"
             description="Open a message dialog"
             categoryId="ws.hoyland.popularizer.category"
-            id="ws.hoyland.popularizer.openMessage">
+            id="ws.hoyland.popularizer.visit">
       </command>
+      
    </extension>
    <extension
          point="org.eclipse.ui.bindings">
@@ -125,14 +144,6 @@
 		</page>          
 	</extension-->
       
-	<extension
-			point="org.eclipse.ui.commands">
-		<command
-			name="%Update.command"
-            id="ws.hoyland.popularizer.command.update">
-		</command>
-	</extension>
-   
 	<extension
 		point="org.eclipse.ui.handlers">
 		<handler

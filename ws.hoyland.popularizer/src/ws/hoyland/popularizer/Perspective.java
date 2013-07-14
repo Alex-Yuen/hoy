@@ -14,12 +14,20 @@ public class Perspective implements IPerspectiveFactory {
 	public void createInitialLayout(IPageLayout layout) {
 		String editorArea = layout.getEditorArea();
 		layout.setEditorAreaVisible(false);
+		layout.setFixed(true); 
 		
 		layout.addStandaloneView(NavigationView.ID,  false, IPageLayout.LEFT, 0.25f, editorArea);
-		IFolderLayout folder = layout.createFolder("messages", IPageLayout.TOP, 0.5f, editorArea);
-		folder.addPlaceholder(View.ID + ":*");
-		folder.addView(View.ID);
-		
+
+		IFolderLayout folder = layout.createFolder("operations", IPageLayout.TOP, 0.5f, editorArea);
+		folder.addPlaceholder(HomeView.ID + ":*");
+		folder.addView(HomeView.ID);
+		folder.addView(VisitView.ID);
+
 		layout.getViewLayout(NavigationView.ID).setCloseable(false);
+		layout.getViewLayout(HomeView.ID).setCloseable(false);
+		layout.getViewLayout(HomeView.ID).setMoveable(false);
+		layout.getViewLayout(VisitView.ID).setCloseable(false);
+		layout.getViewLayout(VisitView.ID).setMoveable(false);
+		
 	}
 }
