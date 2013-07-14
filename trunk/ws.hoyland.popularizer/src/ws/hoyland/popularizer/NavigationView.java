@@ -15,7 +15,7 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 
 public class NavigationView extends ViewPart {
-	public static final String ID = "ws.hoyland.popularizer.navigationView";
+	public static final String ID = "ws.hoyland.popularizer.navigationview";
 	private TreeViewer viewer;
 	 
 	class TreeObject {

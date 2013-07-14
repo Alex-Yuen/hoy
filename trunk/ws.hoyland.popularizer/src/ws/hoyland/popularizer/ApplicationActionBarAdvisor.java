@@ -1,6 +1,5 @@
 package ws.hoyland.popularizer;
 
-import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.GroupMarker;
 import org.eclipse.jface.action.ICoolBarManager;
 import org.eclipse.jface.action.IMenuManager;
@@ -29,10 +28,8 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
     // when fillActionBars is called with FILL_PROXY.
     private IWorkbenchAction exitAction;
     private IWorkbenchAction aboutAction;
-    private IWorkbenchAction newWindowAction;
-    private OpenViewAction openViewAction;
-    private HomeViewAction homeViewAction;
-    private Action messagePopupAction;
+    private VisitActon visitAction;
+    private HomeAction homeAction;
     // XXX we want to show all update preferences
     private IWorkbenchAction preferencesAction;
 
@@ -53,19 +50,13 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
         aboutAction = ActionFactory.ABOUT.create(window);
         register(aboutAction);
         
-        newWindowAction = ActionFactory.OPEN_NEW_WINDOW.create(window);
-        register(newWindowAction);
+        homeAction = new HomeAction(window, "Home", HomeView.ID);
+        register(homeAction); 
         
-        openViewAction = new OpenViewAction(window, "Open Another Message View", View.ID);
-        register(openViewAction);
-        
-        homeViewAction = new HomeViewAction(window, "Home", View.ID);
-        register(homeViewAction);
-        
-        
-        messagePopupAction = new MessagePopupAction("Open Message", window);
-        register(messagePopupAction);
-        
+        visitAction = new VisitActon(window, "Visit", VisitView.ID);
+        register(visitAction);
+              
+                
         //XXX preferences action
         preferencesAction = ActionFactory.PREFERENCES.create(window);
         register(preferencesAction);
@@ -106,7 +97,7 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
     protected void fillCoolBar(ICoolBarManager coolBar) {
         IToolBarManager toolbar = new ToolBarManager(SWT.FLAT | SWT.RIGHT);
         coolBar.add(new ToolBarContributionItem(toolbar, "main"));   
-        toolbar.add(homeViewAction);
-        toolbar.add(messagePopupAction);
+        toolbar.add(homeAction);
+        toolbar.add(visitAction);
     }
 }

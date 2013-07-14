@@ -9,7 +9,7 @@ package ws.hoyland.popularizer;
  */
 public interface ICommandIds {
 
-    public static final String CMD_OPEN = "ws.hoyland.popularizer.open";
-    public static final String CMD_OPEN_MESSAGE = "ws.hoyland.popularizer.openMessage";
+    public static final String CMD_HOME = "ws.hoyland.popularizer.home";
+    public static final String CMD_VISIT = "ws.hoyland.popularizer.visit";
     
 }
