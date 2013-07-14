@@ -57,7 +57,7 @@
    </extension>
    <extension
          point="org.eclipse.ui.bindings">
-      <key
+      <!--key
             commandId="ws.hoyland.popularizer.open"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
             sequence="CTRL+SHIFT+O">
@@ -66,11 +66,11 @@
             commandId="ws.hoyland.popularizer.openMessage"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
             sequence="CTRL+SHIFT+M">
-      </key>
+      </key-->
       <key
             commandId="org.eclipse.ui.file.exit"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
-            sequence="CTRL+SHIFT+Q">
+            sequence="CTRL+X">
       </key>
    </extension>
    <extension
@@ -97,7 +97,7 @@
          </property>
          <property
                name="startupProgressRect"
-               value="5,295,450,15">
+               value="0,297,498,15">
          </property>
          <property
                name="preferenceCustomization"
