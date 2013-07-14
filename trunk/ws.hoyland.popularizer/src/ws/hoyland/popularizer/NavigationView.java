@@ -16,8 +16,13 @@ import org.eclipse.ui.part.ViewPart;
 
 public class NavigationView extends ViewPart {
 	public static final String ID = "ws.hoyland.popularizer.navigationview";
+	//private Label label;
 	private TreeViewer viewer;
-	 
+	
+	public NavigationView(){
+		
+	}
+	
 	class TreeObject {
 		private String name;
 		private TreeParent parent;
@@ -136,6 +141,17 @@ public class NavigationView extends ViewPart {
      * it.
      */
 	public void createPartControl(Composite parent) {
+//		Composite top = new Composite(parent, SWT.NONE);
+//		GridLayout layout = new GridLayout();
+//		layout.marginHeight = 0;
+//		layout.marginWidth = 0;
+//		top.setLayout(layout);
+//		
+//		Composite banner = new Composite(top, SWT.NONE);
+//		label = new Label(banner, SWT.WRAP);
+//		label.setText("DFDF");
+//		
+		
 		viewer = new TreeViewer(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER);
 		viewer.setContentProvider(new ViewContentProvider());
 		viewer.setLabelProvider(new ViewLabelProvider());
