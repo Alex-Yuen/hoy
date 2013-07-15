@@ -16,8 +16,6 @@ public class Activator extends AbstractUIPlugin {
 
 	// The shared instance
 	private static Activator plugin;
-	
-	private String value;
 	/**
 	 * The constructor
 	 */
@@ -33,9 +31,9 @@ public class Activator extends AbstractUIPlugin {
 		plugin = this;
 		// XXX register the p2 UI policy
 
-		String key = "WS_HOYLAND_POPULARIZER_ID";//写入的键
+		String key = "WS_HOYLAND_POPULARIZER_PID";//写入的键
 		Preferences pre = Preferences.systemRoot();//得到跟节点
-		//String value = null;
+		String value = null;
 		
 		//读注册表
 		value = pre.get(key, "");
@@ -46,6 +44,7 @@ public class Activator extends AbstractUIPlugin {
 			//System.out.println("!"+value);
 			pre.put(key, value);
 		}else{
+			//pre.put(key, value);
 			//System.out.println("#"+value);
 		}
 //		CloudPolicy policy = new CloudPolicy();
@@ -84,10 +83,6 @@ public class Activator extends AbstractUIPlugin {
 	 */
 	public static ImageDescriptor getImageDescriptor(String path) {
 		return imageDescriptorFromPlugin(PLUGIN_ID, path);
-	}
-	
-	public String getPID(){
-		return this.value;
 	}
 	
 }

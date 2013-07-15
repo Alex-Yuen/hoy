@@ -22,12 +22,15 @@ public class Perspective implements IPerspectiveFactory {
 		folder.addPlaceholder(HomeView.ID + ":*");
 		folder.addView(HomeView.ID);
 		folder.addView(ProcessView.ID);
+		folder.addView(PostView.ID);
 
 		//layout.getViewLayout(NavigationView.ID).setCloseable(false);
 		layout.getViewLayout(HomeView.ID).setCloseable(false);
 		layout.getViewLayout(HomeView.ID).setMoveable(false);
 		layout.getViewLayout(ProcessView.ID).setCloseable(false);
 		layout.getViewLayout(ProcessView.ID).setMoveable(false);
+		layout.getViewLayout(PostView.ID).setCloseable(false);
+		layout.getViewLayout(PostView.ID).setMoveable(false);
 		
 	}
 }
