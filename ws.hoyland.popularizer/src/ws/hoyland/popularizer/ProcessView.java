@@ -14,9 +14,9 @@ import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.part.ViewPart;
 
-public class VisitView extends ViewPart {
+public class ProcessView extends ViewPart {
 
-	public static final String ID = "ws.hoyland.popularizer.visitview";
+	public static final String ID = "ws.hoyland.popularizer.processview";
 
 	/**
 	 * The text control that's displaying the content of the email message.
@@ -66,7 +66,7 @@ public class VisitView extends ViewPart {
 		l.setText("10:34 am");
 		// message contents
 		messageText = new Text(top, SWT.MULTI | SWT.WRAP);
-		messageText.setText("VISIT This RCP Application was generated from the PDE Plug-in Project wizard. This sample shows how to:\n"+
+		messageText.setText("Process This RCP Application was generated from the PDE Plug-in Project wizard. This sample shows how to:\n"+
 						"- add a top-level menu and toolbar with actions\n"+
 						"- add keybindings to actions\n" +
 						"- create views that can't be closed and\n"+
