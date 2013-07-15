@@ -1,5 +1,7 @@
 package ws.hoyland.popularizer;
 
+import java.util.prefs.Preferences;
+
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.swt.SWT;
@@ -21,7 +23,7 @@ public class HomeView extends ViewPart {
 	/**
 	 * The text control that's displaying the content of the email message.
 	 */
-	private Text messageText;
+//	private Text messageText;
 	
 	public void createPartControl(Composite parent) {
 		Composite top = new Composite(parent, SWT.NONE);
@@ -42,42 +44,39 @@ public class HomeView extends ViewPart {
 		Font boldFont = JFaceResources.getFontRegistry().getBold(JFaceResources.DEFAULT_FONT);    
 		
 		Label l = new Label(banner, SWT.WRAP);
-		l.setText("Subject:");
+		l.setText("用户编号:");
 		l.setFont(boldFont);
-		l = new Label(banner, SWT.WRAP);
-		l.setText("This is a message about the cool Eclipse RCP!");
+
+		Preferences pre = Preferences.systemRoot();//得到跟节点
+		String key = "WS_HOYLAND_POPULARIZER_PID";//写入的键
+		String value = pre.get(key, "0000000000000000");
 		
 		l = new Label(banner, SWT.WRAP);
-		l.setText("From:");
+		l.setText(value);
+		
+		l = new Label(banner, SWT.WRAP);
+		l.setText("授权序号:");
 		l.setFont(boldFont);
     
-		final Link link = new Link(banner, SWT.NONE);
-		link.setText("<a>nicole@mail.org</a>");
-		link.addSelectionListener(new SelectionAdapter() {    
-			public void widgetSelected(SelectionEvent e) {
-				MessageDialog.openInformation(getSite().getShell(), "Not Implemented", "Imagine the address book or a new message being created now.");
-			}    
-		});
+		key = "WS_HOYLAND_POPULARIZER_SID";//写入的键
+		value = pre.get(key, "WHPS-XXXX-XXXX-XXXX");
+		l = new Label(banner, SWT.NONE);
+		l.setText(value);
     
-		l = new Label(banner, SWT.WRAP);
-		l.setText("Date:");
-		l.setFont(boldFont);
-		l = new Label(banner, SWT.WRAP);
-		l.setText("10:34 am");
 		// message contents
-		messageText = new Text(top, SWT.MULTI | SWT.WRAP);
-		messageText.setText("HOME This RCP Application was generated from the PDE Plug-in Project wizard. This sample shows how to:\n"+
-						"- add a top-level menu and toolbar with actions\n"+
-						"- add keybindings to actions\n" +
-						"- create views that can't be closed and\n"+
-						"  multiple instances of the same view\n"+
-						"- perspectives with placeholders for new views\n"+
-						"- use the default about dialog\n"+
-						"- create a product definition\n");
-		messageText.setLayoutData(new GridData(GridData.FILL_BOTH));
+//		messageText = new Text(top, SWT.MULTI | SWT.WRAP);
+//		messageText.setText("HOME This RCP Application was generated from the PDE Plug-in Project wizard. This sample shows how to:\n"+
+//						"- add a top-level menu and toolbar with actions\n"+
+//						"- add keybindings to actions\n" +
+//						"- create views that can't be closed and\n"+
+//						"  multiple instances of the same view\n"+
+//						"- perspectives with placeholders for new views\n"+
+//						"- use the default about dialog\n"+
+//						"- create a product definition\n");
+//		messageText.setLayoutData(new GridData(GridData.FILL_BOTH));
 	}
 
 	public void setFocus() {
-		messageText.setFocus();
+//		messageText.setFocus();
 	}
 }

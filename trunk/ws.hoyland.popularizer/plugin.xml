@@ -23,7 +23,7 @@
          point="org.eclipse.ui.views">
       
       <view
-            name="Home"
+            name="首　　页"
             allowMultiple="false"
             icon="icons/home.png"
             class="ws.hoyland.popularizer.HomeView"
@@ -32,13 +32,20 @@
       
       
        <view
-            name="Process"
+            name="当前任务"
             allowMultiple="false"
             icon="icons/process.png"
             class="ws.hoyland.popularizer.ProcessView"
             id="ws.hoyland.popularizer.processview">
       </view>
       
+      <view
+            name="新建任务"
+            allowMultiple="false"
+            icon="icons/post.png"
+            class="ws.hoyland.popularizer.PostView"
+            id="ws.hoyland.popularizer.postview">
+      </view>
    </extension>
    
    <extension
@@ -77,22 +84,22 @@
          point="org.eclipse.core.runtime.products">
       <product
             application="ws.hoyland.popularizer.application"
-            name="Porpularizer">
+            name="互联网营销专家">
          <property
                name="aboutText"
-               value="Hoyland&apos;s Popularizer">
+               value="http://www.hoyland.ws">
          </property>
          <property
                name="windowImages"
-               value="icons/sample2.gif">
+               value="icons/logo.png">
          </property>
          <property
                name="aboutImage"
-               value="product_lg.gif">
+               value="icons/about.png">
          </property>
          <property
                name="appName"
-               value="Porpularizer">
+               value="互联网营销专家">
          </property>
          <property
                name="startupProgressRect"

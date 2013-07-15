@@ -14,9 +14,9 @@ import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.part.ViewPart;
 
-public class ProcessView extends ViewPart {
+public class PostView extends ViewPart {
 
-	public static final String ID = "ws.hoyland.popularizer.processview";
+	public static final String ID = "ws.hoyland.popularizer.postview";
 
 	/**
 	 * The text control that's displaying the content of the email message.
@@ -42,10 +42,10 @@ public class ProcessView extends ViewPart {
 		Font boldFont = JFaceResources.getFontRegistry().getBold(JFaceResources.DEFAULT_FONT);    
 		
 		Label l = new Label(banner, SWT.WRAP);
-		l.setText("任务列表:");
+		l.setText("提交任务:");
 		l.setFont(boldFont);
 		l = new Label(banner, SWT.WRAP);
-		l.setText("空");
+		l.setText("////");
 		
 //		l = new Label(banner, SWT.WRAP);
 //		l.setText("From:");
