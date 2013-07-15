@@ -21,29 +21,22 @@
    </extension>
    <extension
          point="org.eclipse.ui.views">
-      <view
-            name="Navigation"
-            allowMultiple="false"
-            icon="icons/sample3.gif"
-            class="ws.hoyland.popularizer.NavigationView"
-            id="ws.hoyland.popularizer.navigationview">
-      </view>
       
       <view
             name="Home"
             allowMultiple="false"
-            icon="icons/sample2.gif"
+            icon="icons/home.png"
             class="ws.hoyland.popularizer.HomeView"
             id="ws.hoyland.popularizer.homeview">
       </view>
       
       
        <view
-            name="Visit"
+            name="Process"
             allowMultiple="false"
-            icon="icons/sample2.gif"
-            class="ws.hoyland.popularizer.VisitView"
-            id="ws.hoyland.popularizer.visitview">
+            icon="icons/process.png"
+            class="ws.hoyland.popularizer.ProcessView"
+            id="ws.hoyland.popularizer.processview">
       </view>
       
    </extension>
@@ -60,19 +53,6 @@
         id="ws.hoyland.popularizer.command.update">
 	</command>
 		
-      <command
-            name="Open Mailbox"
-            description="Opens a mailbox"
-            categoryId="ws.hoyland.popularizer.category"
-            id="ws.hoyland.popularizer.home">
-      </command>
-      <command
-            name="Open Message Dialog"
-            description="Open a message dialog"
-            categoryId="ws.hoyland.popularizer.category"
-            id="ws.hoyland.popularizer.visit">
-      </command>
-      
    </extension>
    <extension
          point="org.eclipse.ui.bindings">

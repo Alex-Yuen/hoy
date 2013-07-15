@@ -28,8 +28,6 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
     // when fillActionBars is called with FILL_PROXY.
     private IWorkbenchAction exitAction;
     private IWorkbenchAction aboutAction;
-    private VisitActon visitAction;
-    private HomeAction homeAction;
     // XXX we want to show all update preferences
     private IWorkbenchAction preferencesAction;
 
@@ -49,14 +47,7 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
         
         aboutAction = ActionFactory.ABOUT.create(window);
         register(aboutAction);
-        
-        homeAction = new HomeAction(window, "Home", HomeView.ID);
-        register(homeAction); 
-        
-        visitAction = new VisitActon(window, "Visit", VisitView.ID);
-        register(visitAction);
-              
-                
+                        
         //XXX preferences action
         preferencesAction = ActionFactory.PREFERENCES.create(window);
         register(preferencesAction);
@@ -97,7 +88,7 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
     protected void fillCoolBar(ICoolBarManager coolBar) {
         IToolBarManager toolbar = new ToolBarManager(SWT.FLAT | SWT.RIGHT);
         coolBar.add(new ToolBarContributionItem(toolbar, "main"));   
-        toolbar.add(homeAction);
-        toolbar.add(visitAction);
+//        toolbar.add(homeAction);
+//        toolbar.add(visitAction);
     }
 }
