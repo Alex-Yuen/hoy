@@ -85,27 +85,32 @@ public class ProxyThread extends Thread {
 //						os.close();
 //					}
 					conn.connect();
+					   Map responseHeader = conn.getHeaderFields();
+	                   System.out.println(responseHeader.toString()); 
+	                   
+					//System.out.println(conn.getResponseMessage());
 					is = conn.getInputStream();
 				} catch (IOException e) {
 					return;
 				}
 
-				if (conn.getContentType().startsWith("text/html")) {
-					rd = new BufferedReader(new InputStreamReader(is, "utf-8"));
-					String line = null;
-					StringBuffer sb = new StringBuffer();
-					while ((line = rd.readLine()) != null) {
-						sb.append(line);
-					}
-					String text = sb.toString();
-					if (sb.toString().contains("focusFlag = 0;")) {
-						text = sb.toString().replace("focusFlag = 0;",
-								"focusFlag = 1;");
-						System.out.println(text);
-					}
-					is.close();
-					is = new ByteArrayInputStream(text.getBytes("UTF-8"));
-				}
+				//conn.
+//				if (conn.getContentType()!=null&&conn.getContentType().startsWith("text/html")) {
+//					rd = new BufferedReader(new InputStreamReader(is));
+//					String line = null;
+//					StringBuffer sb = new StringBuffer();
+//					while ((line = rd.readLine()) != null) {
+//						sb.append(line);
+//					}
+//					String text = sb.toString();
+//					if (sb.toString().contains("focusFlag = 0;")) {
+//						text = sb.toString().replace("focusFlag = 0;",
+//								"focusFlag = 1;");
+//						System.out.println(text);
+//					}
+//					is.close();
+//					is = new ByteArrayInputStream(text.getBytes("UTF-8"));
+//				}
 
 				byte by[] = new byte[BUFFER_SIZE];
 				int index = is.read(by, 0, BUFFER_SIZE);
