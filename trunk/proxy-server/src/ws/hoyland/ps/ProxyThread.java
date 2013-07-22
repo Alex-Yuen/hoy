@@ -1,131 +1,140 @@
 package ws.hoyland.ps;
 
 import java.net.*;
-import java.io.*;
 import java.util.*;
+import java.io.*;
 
 public class ProxyThread extends Thread {
-    private Socket socket = null;
-    private static final int BUFFER_SIZE = 32768;
-    public ProxyThread(Socket socket) {
-        super("ProxyThread");
-        this.socket = socket;
-    }
+	private Socket socket = null;
+	private static final int BUFFER_SIZE = 32768;
 
-    public void run() {
-        //get input from user
-        //send request to server
-        //get response from server
-        //send response to user
+	public ProxyThread(Socket socket) {
+		super("ProxyThread");
+		this.socket = socket;
+	}
 
-        try {
-            DataOutputStream out =
-		new DataOutputStream(socket.getOutputStream());
-            BufferedReader in = new BufferedReader(
-		new InputStreamReader(socket.getInputStream()));
+	public void run() {
+		try {
+			DataOutputStream out = new DataOutputStream(
+					socket.getOutputStream());
+			BufferedReader in = new BufferedReader(new InputStreamReader(
+					socket.getInputStream()));
 
-            String inputLine, outputLine;
-            int cnt = 0;
-            String urlToCall = "";
-            ///////////////////////////////////
-            //begin get request from client
-            while ((inputLine = in.readLine()) != null) {
-                try {
-                    StringTokenizer tok = new StringTokenizer(inputLine);
-                    tok.nextToken();
-                } catch (Exception e) {
-                    break;
-                }
-                //parse the first line of the request to find the url
-                if (cnt == 0) {
-                    String[] tokens = inputLine.split(" ");
-                    urlToCall = tokens[1];
-                    //can redirect this to output log
-                    System.out.println("Request for : " + urlToCall);
-                }
+			String inputLine;
+			int cnt = 0;
+			String urlToCall = "";
+			String method = "";
+			Map<String, String> rps = new HashMap<String, String>();
 
-                cnt++;
-            }
-            //end get request from client
-            ///////////////////////////////////
+			//StringBuffer content = new StringBuffer();
+			while ((inputLine = in.readLine()) != null) {
+				try {
+					StringTokenizer tok = new StringTokenizer(inputLine);
+					tok.nextToken();
+				} catch (Exception e) {
+					break;
+				}
 
-            BufferedReader rd = null;
-            try {
-                //System.out.println("sending request
-		//to real server for url: "
-                //        + urlToCall);
-                ///////////////////////////////////
-                //begin send request to server, get response from server
-            	urlToCall = "http://"+urlToCall;
-                URL url = new URL(urlToCall);
-                URLConnection conn = url.openConnection();
-                conn.setDoInput(true);
-                //not doing HTTP posts
-                conn.setDoOutput(true);
-                //System.out.println("Type is: "
-			//+ conn.getContentType());
-                //System.out.println("content length: "
-			//+ conn.getContentLength());
-                //System.out.println("allowed user interaction: "
-			//+ conn.getAllowUserInteraction());
-                //System.out.println("content encoding: "
-			//+ conn.getContentEncoding());
-                //System.out.println("content type: "
-			//+ conn.getContentType());
+				if (cnt == 0) {
+					String[] tokens = inputLine.split(" ");
+					method = tokens[0];
+					urlToCall = tokens[1];
+				} else {
+					String[] tokens = inputLine.split(": ");
+					rps.put(tokens[0], tokens[1]);
+					//content.append(inputLine + "\n");
+				}
 
-                // Get the response
-                InputStream is = null;
-                HttpURLConnection huc = (HttpURLConnection)conn;
-                if (conn.getContentLength() > 0) {
-                    try {
-                        is = conn.getInputStream();
-                        rd = new BufferedReader(new InputStreamReader(is));
-                    } catch (IOException ioe) {
-                        System.out.println(
-				"********* IO EXCEPTION **********: " + ioe);
-                    }
-                }
-                //end send request to server, get response from server
-                ///////////////////////////////////
+				cnt++;
+			}
 
-                ///////////////////////////////////
-                //begin send response to client
-                byte by[] = new byte[ BUFFER_SIZE ];
-                int index = is.read( by, 0, BUFFER_SIZE );
-                while ( index != -1 )
-                {
-                  out.write( by, 0, index );
-                  index = is.read( by, 0, BUFFER_SIZE );
-                }
-                out.flush();
+			BufferedReader rd = null;
+			try {
+				System.out.println(urlToCall);
+				if (!urlToCall.startsWith("http://")) {
+					return;
+				}
+				URL url = new URL(urlToCall);
+				HttpURLConnection conn = (HttpURLConnection)url.openConnection();
 
-                //end send response to client
-                ///////////////////////////////////
-            } catch (Exception e) {
-                //can redirect this to error log
-                System.err.println("Encountered exception: " + e);
-                e.printStackTrace();
-                //encountered error - just send nothing back, so
-                //processing can continue
-                out.writeBytes("");
-            }
+				conn.setRequestMethod(method);
+				conn.setConnectTimeout(3000);
+				conn.setReadTimeout(3000);
+				conn.setDoInput(true);
+				conn.setDoOutput(true);
 
-            //close out all resources
-            if (rd != null) {
-                rd.close();
-            }
-            if (out != null) {
-                out.close();
-            }
-            if (in != null) {
-                in.close();
-            }
-            if (socket != null) {
-                socket.close();
-            }
+				InputStream is = null;
+				//OutputStream os = null;
 
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
+				for(String key: rps.keySet()){
+					conn.setRequestProperty(key, rps.get(key));
+				}
+				//conn.setRequestProperty("Content-Type", "UTF-8");
+				
+				try {
+//					os = conn.getOutputStream();
+////					BufferedWriter bw = new BufferedWriter(
+////							new OutputStreamWriter(os));
+////					bw.write(content.toString());
+////					bw.flush();
+////					bw.close();
+//					os.close();
+//					
+//					conn.connect();
+//					if(os!=null){
+//						os.close();
+//					}
+					conn.connect();
+					is = conn.getInputStream();
+				} catch (IOException e) {
+					return;
+				}
+
+				if (conn.getContentType().startsWith("text/html")) {
+					rd = new BufferedReader(new InputStreamReader(is, "utf-8"));
+					String line = null;
+					StringBuffer sb = new StringBuffer();
+					while ((line = rd.readLine()) != null) {
+						sb.append(line);
+					}
+					String text = sb.toString();
+					if (sb.toString().contains("focusFlag = 0;")) {
+						text = sb.toString().replace("focusFlag = 0;",
+								"focusFlag = 1;");
+						System.out.println(text);
+					}
+					is.close();
+					is = new ByteArrayInputStream(text.getBytes("UTF-8"));
+				}
+
+				byte by[] = new byte[BUFFER_SIZE];
+				int index = is.read(by, 0, BUFFER_SIZE);
+				while (index != -1) {
+					out.write(by, 0, index);
+					index = is.read(by, 0, BUFFER_SIZE);
+				}
+				out.flush();
+
+			} catch (Exception e) {
+				e.printStackTrace();
+				out.writeBytes("");
+			}
+
+			if (rd != null) {
+				rd.close();
+			}
+			if (out != null) {
+				out.close();
+			}
+			if (in != null) {
+				in.close();
+			}
+
+			if (socket != null) {
+				socket.close();
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 }
