@@ -2,18 +2,15 @@ package ws.hoyland.ps;
 
 import java.net.*;
 import java.util.*;
-import java.util.zip.GZIPInputStream;
-import java.util.zip.GZIPOutputStream;
 import java.io.*;
 
 public class ProxyThread extends Thread {
 	private Socket socket = null;
 	private static final int BUFFER_SIZE = 32768;
-	private BufferedWriter out;
-	private BufferedReader in;
+	private PrintStream out;
+	private BufferedReader in;	
 	
-	
-	private final String CRLF = "\r\n";
+	private static final String CRLF = "\r\n";
 	
 	public ProxyThread(Socket socket) {
 		super("ProxyThread");
@@ -22,8 +19,7 @@ public class ProxyThread extends Thread {
 
 	public void run() {
 		try {
-			out = new BufferedWriter(new OutputStreamWriter(
-					socket.getOutputStream()));
+			out = new PrintStream(socket.getOutputStream());
 			in = new BufferedReader(new InputStreamReader(
 					socket.getInputStream()));
 
@@ -56,11 +52,12 @@ public class ProxyThread extends Thread {
 					}
 //				}
 			}
+//			in.close();
 			
 			if (!url.startsWith("http://")) {
 				return;
 			}
-			System.out.println(method);
+//			System.out.println(method);
 			System.out.println(url);
 			System.out.println(rps);
 //			System.out.println(content);
@@ -68,8 +65,8 @@ public class ProxyThread extends Thread {
 			
 			URL u = new URL(url);
 			HttpURLConnection conn = (HttpURLConnection)u.openConnection();
-//			conn.setConnectTimeout(5000);
-//			conn.setReadTimeout(5000);
+			conn.setConnectTimeout(5000);
+			conn.setReadTimeout(5000);
 			conn.setRequestMethod(method);
 			conn.setDoInput(true);
 			conn.setDoOutput(true);
@@ -80,36 +77,43 @@ public class ProxyThread extends Thread {
 			}
 			
 			conn.connect();
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
 			
-//			if (conn.getContentType()!=null&&conn.getContentType().startsWith("text/html")) {
+			StringBuffer hs = new StringBuffer();			
+			Map<String, List<String>> headers = conn.getHeaderFields();
+			if(headers.size()>0){
+				//状态码
+				String vs = "";
+				for(String v:headers.get(null)){
+					vs += v;
+				}
 				
-				StringBuffer hs = new StringBuffer();			
-				Map<String, List<String>> headers = conn.getHeaderFields();
-				if(headers.size()>0){
-					for(String key:headers.keySet()){
-						String vs = "";
+				hs.append(vs).append(CRLF);
+				
+				for(String key:headers.keySet()){					
+					if(key!=null){
+						vs = "";
 						for(String v:headers.get(key)){
 							vs += v;
 						}
-						
-						if(key==null){
-							hs.append(vs).append(CRLF);
-						}else{
-							hs.append(key+": "+vs).append(CRLF);
-						}
+						hs.append(key+": "+vs).append(CRLF);
 					}
-
-					out.append(hs.toString());
-					out.append(CRLF);
-					out.flush();
 				}
-//			}
+				
+				hs.append(CRLF);
+//				out.println(hs.toString());
+				baos.write(hs.toString().getBytes());
+//				out.append(CRLF);
+//				out.flush();
+			}
 			
+//			if (conn.getContentType()!=null&&conn.getContentType().startsWith("text/html")) {
 			InputStream is = conn.getInputStream();
-			OutputStream os = socket.getOutputStream();
+//			OutputStream os = socket.getOutputStream();
 
-			System.out.println();
-			System.out.println(hs);
+//			System.out.println();
+//			System.out.println(hs);
+			
 			//System.out.println(conn.getContentEncoding());
 //			if("gzip".equals(conn.getContentEncoding())){
 //				is = new GZIPInputStream(is);
@@ -117,8 +121,7 @@ public class ProxyThread extends Thread {
 //			}
 			//out.close();
 			
-			//转发内容
-			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			//读取内容
 			byte[] bs = new byte[BUFFER_SIZE];
 			int index = is.read(bs, 0, BUFFER_SIZE);
 			while (index != -1) {
@@ -127,8 +130,10 @@ public class ProxyThread extends Thread {
 				index = is.read(bs, 0, BUFFER_SIZE);
 			}
 			
-			os.write(baos.toByteArray());
-			os.flush();
+			//转发
+//			System.out.println(new String(baos.toByteArray()));
+			out.write(baos.toByteArray());
+			out.flush();
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -146,7 +151,7 @@ public class ProxyThread extends Thread {
 			}catch(Exception e){
 				e.printStackTrace();
 			}
-			System.out.println("=========================");
+//			System.out.println("=========================");
 		}
 	}
 }
