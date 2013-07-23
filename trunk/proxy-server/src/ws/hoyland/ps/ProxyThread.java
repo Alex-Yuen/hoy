@@ -2,16 +2,18 @@ package ws.hoyland.ps;
 
 import java.net.*;
 import java.util.*;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
 import java.io.*;
 
 public class ProxyThread extends Thread {
 	private Socket socket = null;
 	private static final int BUFFER_SIZE = 32768;
-	private PrintStream out;
-	private BufferedReader in;	
-	
+	private BufferedWriter out;
+	private BufferedReader in;
+
 	private static final String CRLF = "\r\n";
-	
+
 	public ProxyThread(Socket socket) {
 		super("ProxyThread");
 		this.socket = socket;
@@ -19,7 +21,8 @@ public class ProxyThread extends Thread {
 
 	public void run() {
 		try {
-			out = new PrintStream(socket.getOutputStream());
+			out = new BufferedWriter(new OutputStreamWriter(
+					socket.getOutputStream()));
 			in = new BufferedReader(new InputStreamReader(
 					socket.getInputStream()));
 
@@ -31,15 +34,16 @@ public class ProxyThread extends Thread {
 			Map<String, String> rps = new HashMap<String, String>();
 
 			String[] tokens = null;
-//			StringBuffer content = new StringBuffer();
-			
-			//分析请求
+			StringBuffer content = new StringBuffer();
+
+			// 分析请求
 			while ((line = in.readLine()) != null) {
-				if("".equals(line)){
+				if ("".equals(line)) {
 					break;
 				}
+				
 //				if(cf){
-//					content.append(line+"\n");
+//					content.append(line).append(CRLF);
 //				}else{
 					if (hf) {
 						tokens = line.split(" ");
@@ -52,99 +56,163 @@ public class ProxyThread extends Thread {
 					}
 //				}
 			}
-//			in.close();
 			
+			int index = -1;
+			if(method!=null&&"POST".equals(method)){
+				char[] cs = new char[1024];
+				index = in.read(cs, 0, 1024);
+				while (index != -1) {
+					content.append(cs, 0, index);
+					if(index<1024)
+					{
+						break;
+					}
+					index = in.read(cs, 0, 1024);
+				}
+			}
+			
+			// in.close();
+
 			if (!url.startsWith("http://")) {
 				return;
 			}
-//			System.out.println(method);
+			// System.out.println(method);
 			System.out.println(url);
 			System.out.println(rps);
-//			System.out.println(content);
-			
-			
+			// System.out.println(content);
+
 			URL u = new URL(url);
-			HttpURLConnection conn = (HttpURLConnection)u.openConnection();
-			conn.setConnectTimeout(5000);
-			conn.setReadTimeout(5000);
+			HttpURLConnection conn = (HttpURLConnection) u.openConnection();
+			conn.setConnectTimeout(3000);
+			conn.setReadTimeout(3000);
 			conn.setRequestMethod(method);
 			conn.setDoInput(true);
 			conn.setDoOutput(true);
 			conn.setUseCaches(false);
-			
-			for(String key: rps.keySet()){
+
+			for (String key : rps.keySet()) {
 				conn.setRequestProperty(key, rps.get(key));
 			}
-			
-			conn.connect();
-			ByteArrayOutputStream baos = new ByteArrayOutputStream();
-			
-			StringBuffer hs = new StringBuffer();			
-			Map<String, List<String>> headers = conn.getHeaderFields();
-			if(headers.size()>0){
-				//状态码
-				String vs = "";
-				for(String v:headers.get(null)){
-					vs += v;
+
+			try{
+				conn.connect();
+				if(method!=null&&"POST".equals(method)){
+					OutputStream ops = conn.getOutputStream();
+					ops.write(content.toString().getBytes());
+					ops.flush();
 				}
-				
-				hs.append(vs).append(CRLF);
-				
-				for(String key:headers.keySet()){					
-					if(key!=null){
-						vs = "";
-						for(String v:headers.get(key)){
-							vs += v;
-						}
-						hs.append(key+": "+vs).append(CRLF);
-					}
-				}
-				
-				hs.append(CRLF);
-//				out.println(hs.toString());
-				baos.write(hs.toString().getBytes());
-//				out.append(CRLF);
-//				out.flush();
+			}catch(Exception e){
+				System.out.println(e.getMessage());
+				return;
 			}
 			
-//			if (conn.getContentType()!=null&&conn.getContentType().startsWith("text/html")) {
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+			try{
+				if(conn.getResponseCode()==411){
+					System.out.println(411);
+					return;
+				}
+			}catch(Exception e){
+				System.out.println(e.getMessage());
+				return;
+			}
+			
+			StringBuffer hs = new StringBuffer();
+			Map<String, List<String>> headers = conn.getHeaderFields();
+			if (headers.size() > 0) {
+				// 状态码
+				String vs = "";
+				for (String v : headers.get(null)) {
+					vs += v;
+				}
+
+				hs.append(vs).append(CRLF);
+
+				for (String key : headers.keySet()) {
+					if (key != null && !"Transfer-Encoding".equals(key)) {
+						vs = "";
+						for (String v : headers.get(key)) {
+							vs += v;
+						}
+						hs.append(key + ": " + vs).append(CRLF);
+					}
+				}
+
+				hs.append(CRLF);
+				// out.println(hs.toString());
+				out.write(hs.toString());
+				// out.append(CRLF);
+				out.flush();
+			}
+
+			// if
+			// (conn.getContentType()!=null&&conn.getContentType().startsWith("text/html"))
+			// {
 			InputStream is = conn.getInputStream();
-//			OutputStream os = socket.getOutputStream();
-
-//			System.out.println();
-//			System.out.println(hs);
+			OutputStream os = socket.getOutputStream();
+//			OutputStream datum = new ByteArrayOutputStream();
 			
-			//System.out.println(conn.getContentEncoding());
-//			if("gzip".equals(conn.getContentEncoding())){
-//				is = new GZIPInputStream(is);
-//				os = new GZIPOutputStream(os);
-//			}
-			//out.close();
+			// System.out.println();
+			// System.out.println(hs);
+			// OutputStream os;
+			// System.out.println(conn.getContentEncoding());
+			if (conn.getContentType()!=null&&conn.getContentType().startsWith("text/html")) {
+				if ("gzip".equals(conn.getContentEncoding())) {
+					is = new GZIPInputStream(is);
+					os = new GZIPOutputStream(os);
+	//				datum =  new GZIPOutputStream(datum);  
+				}
+			}
+			// out.close();
 
-//			baos.write("HTTP/1.1 200 OK".getBytes());
-//			baos.write(CRLF.getBytes());
-//			baos.write(CRLF.getBytes());
-//			baos.write("OK".getBytes());
-			
-			//读取内容
+			// baos.write("HTTP/1.1 200 OK".getBytes());
+			// baos.write(CRLF.getBytes());
+			// baos.write(CRLF.getBytes());
+			// baos.write("OK".getBytes());
+
+			// 读取内容
 			byte[] bs = new byte[BUFFER_SIZE];
-			int index = is.read(bs, 0, BUFFER_SIZE);
+			index = is.read(bs, 0, BUFFER_SIZE);
 			while (index != -1) {
-				//System.out.println(socket.isConnected());
+				// System.out.println(socket.isConnected());
 				baos.write(bs, 0, index);
 				index = is.read(bs, 0, BUFFER_SIZE);
 			}
+
+			// 转发
+			// System.out.println(new String(baos.toByteArray()));
+			// ByteArrayOutputStream ba = new ByteArrayOutputStream();
+
+			if (conn.getContentType()!=null&&conn.getContentType().startsWith("text/html")) {
+				String ct = new String(baos.toByteArray());
+				
+				if (ct.contains("if(!fc && !fc_override) {")) {
+					ct = ct.replace("if(!fc && !fc_override) {",
+						"if(false) {");
+					ct = ct.replace("numbercounter_n -= 0.5;", "numbercounter_n = 0;");
+					baos = new ByteArrayOutputStream();
+					baos.write(ct.getBytes());
+					System.err.println("REPLACE!");
+				}
+			}
 			
-			//转发
-//			System.out.println(new String(baos.toByteArray()));
-//			ByteArrayOutputStream ba = new ByteArrayOutputStream();
 			
-			out.write(baos.toByteArray());
-			out.flush();
+			//最终需要发出内容
+//			datum.write(baos.toByteArray());
+//			datum.flush();
+			
+			os.write(baos.toByteArray());
+			if(os instanceof GZIPOutputStream){
+				((GZIPOutputStream)os).finish();
+			}
+			os.flush();
+			// out.write(baos.toByteArray());
+			// out.flush();
 		} catch (Exception e) {
 			e.printStackTrace();
-		} finally{
-			try{
+		} finally {
+			try {
 				if (out != null) {
 					out.close();
 				}
@@ -154,10 +222,10 @@ public class ProxyThread extends Thread {
 				if (socket != null) {
 					socket.close();
 				}
-			}catch(Exception e){
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
-//			System.out.println("=========================");
+			// System.out.println("=========================");
 		}
 	}
 }
