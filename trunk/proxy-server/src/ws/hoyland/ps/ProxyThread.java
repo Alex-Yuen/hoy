@@ -120,6 +120,11 @@ public class ProxyThread extends Thread {
 //				os = new GZIPOutputStream(os);
 //			}
 			//out.close();
+
+//			baos.write("HTTP/1.1 200 OK".getBytes());
+//			baos.write(CRLF.getBytes());
+//			baos.write(CRLF.getBytes());
+//			baos.write("OK".getBytes());
 			
 			//读取内容
 			byte[] bs = new byte[BUFFER_SIZE];
@@ -132,9 +137,10 @@ public class ProxyThread extends Thread {
 			
 			//转发
 //			System.out.println(new String(baos.toByteArray()));
+//			ByteArrayOutputStream ba = new ByteArrayOutputStream();
+			
 			out.write(baos.toByteArray());
 			out.flush();
-
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally{
