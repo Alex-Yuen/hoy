@@ -2,12 +2,19 @@ package ws.hoyland.ps;
 
 import java.net.*;
 import java.util.*;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
 import java.io.*;
 
 public class ProxyThread extends Thread {
 	private Socket socket = null;
 	private static final int BUFFER_SIZE = 32768;
-
+	private BufferedWriter out;
+	private BufferedReader in;
+	
+	
+	private final String CRLF = "\r\n";
+	
 	public ProxyThread(Socket socket) {
 		super("ProxyThread");
 		this.socket = socket;
@@ -15,131 +22,131 @@ public class ProxyThread extends Thread {
 
 	public void run() {
 		try {
-			DataOutputStream out = new DataOutputStream(
-					socket.getOutputStream());
-			BufferedReader in = new BufferedReader(new InputStreamReader(
+			out = new BufferedWriter(new OutputStreamWriter(
+					socket.getOutputStream()));
+			in = new BufferedReader(new InputStreamReader(
 					socket.getInputStream()));
 
-			String inputLine;
-			int cnt = 0;
-			String urlToCall = "";
+			String line;
+			boolean hf = true; // header flag
+//			boolean cf = false; //content flag
+			String url = "";
 			String method = "";
 			Map<String, String> rps = new HashMap<String, String>();
 
-			//StringBuffer content = new StringBuffer();
-			while ((inputLine = in.readLine()) != null) {
-				try {
-					StringTokenizer tok = new StringTokenizer(inputLine);
-					tok.nextToken();
-				} catch (Exception e) {
+			String[] tokens = null;
+//			StringBuffer content = new StringBuffer();
+			
+			//分析请求
+			while ((line = in.readLine()) != null) {
+				if("".equals(line)){
 					break;
 				}
-
-				if (cnt == 0) {
-					String[] tokens = inputLine.split(" ");
-					method = tokens[0];
-					urlToCall = tokens[1];
-				} else {
-					String[] tokens = inputLine.split(": ");
-					rps.put(tokens[0], tokens[1]);
-					//content.append(inputLine + "\n");
-				}
-
-				cnt++;
-			}
-
-			BufferedReader rd = null;
-			try {
-				System.out.println(urlToCall);
-				if (!urlToCall.startsWith("http://")) {
-					return;
-				}
-				URL url = new URL(urlToCall);
-				HttpURLConnection conn = (HttpURLConnection)url.openConnection();
-
-				conn.setRequestMethod(method);
-				conn.setConnectTimeout(3000);
-				conn.setReadTimeout(3000);
-				conn.setDoInput(true);
-				conn.setDoOutput(true);
-
-				InputStream is = null;
-				//OutputStream os = null;
-
-				for(String key: rps.keySet()){
-					conn.setRequestProperty(key, rps.get(key));
-				}
-				//conn.setRequestProperty("Content-Type", "UTF-8");
-				
-				try {
-//					os = conn.getOutputStream();
-////					BufferedWriter bw = new BufferedWriter(
-////							new OutputStreamWriter(os));
-////					bw.write(content.toString());
-////					bw.flush();
-////					bw.close();
-//					os.close();
-//					
-//					conn.connect();
-//					if(os!=null){
-//						os.close();
-//					}
-					conn.connect();
-					   Map responseHeader = conn.getHeaderFields();
-	                   System.out.println(responseHeader.toString()); 
-	                   
-					//System.out.println(conn.getResponseMessage());
-					is = conn.getInputStream();
-				} catch (IOException e) {
-					return;
-				}
-
-				//conn.
-//				if (conn.getContentType()!=null&&conn.getContentType().startsWith("text/html")) {
-//					rd = new BufferedReader(new InputStreamReader(is));
-//					String line = null;
-//					StringBuffer sb = new StringBuffer();
-//					while ((line = rd.readLine()) != null) {
-//						sb.append(line);
-//					}
-//					String text = sb.toString();
-//					if (sb.toString().contains("focusFlag = 0;")) {
-//						text = sb.toString().replace("focusFlag = 0;",
-//								"focusFlag = 1;");
-//						System.out.println(text);
-//					}
-//					is.close();
-//					is = new ByteArrayInputStream(text.getBytes("UTF-8"));
+//				if(cf){
+//					content.append(line+"\n");
+//				}else{
+					if (hf) {
+						tokens = line.split(" ");
+						method = tokens[0];
+						url = tokens[1];
+						hf = false;
+					} else {
+						tokens = line.split(": ");
+						rps.put(tokens[0], tokens[1]);
+					}
 //				}
+			}
+			
+			if (!url.startsWith("http://")) {
+				return;
+			}
+			System.out.println(method);
+			System.out.println(url);
+			System.out.println(rps);
+//			System.out.println(content);
+			
+			
+			URL u = new URL(url);
+			HttpURLConnection conn = (HttpURLConnection)u.openConnection();
+//			conn.setConnectTimeout(5000);
+//			conn.setReadTimeout(5000);
+			conn.setRequestMethod(method);
+			conn.setDoInput(true);
+			conn.setDoOutput(true);
+			conn.setUseCaches(false);
+			
+			for(String key: rps.keySet()){
+				conn.setRequestProperty(key, rps.get(key));
+			}
+			
+			conn.connect();
+			
+//			if (conn.getContentType()!=null&&conn.getContentType().startsWith("text/html")) {
+				
+				StringBuffer hs = new StringBuffer();			
+				Map<String, List<String>> headers = conn.getHeaderFields();
+				if(headers.size()>0){
+					for(String key:headers.keySet()){
+						String vs = "";
+						for(String v:headers.get(key)){
+							vs += v;
+						}
+						
+						if(key==null){
+							hs.append(vs).append(CRLF);
+						}else{
+							hs.append(key+": "+vs).append(CRLF);
+						}
+					}
 
-				byte by[] = new byte[BUFFER_SIZE];
-				int index = is.read(by, 0, BUFFER_SIZE);
-				while (index != -1) {
-					out.write(by, 0, index);
-					index = is.read(by, 0, BUFFER_SIZE);
+					out.append(hs.toString());
+					out.append(CRLF);
+					out.flush();
 				}
-				out.flush();
+//			}
+			
+			InputStream is = conn.getInputStream();
+			OutputStream os = socket.getOutputStream();
 
-			} catch (Exception e) {
-				e.printStackTrace();
-				out.writeBytes("");
+			System.out.println();
+			System.out.println(hs);
+			//System.out.println(conn.getContentEncoding());
+//			if("gzip".equals(conn.getContentEncoding())){
+//				is = new GZIPInputStream(is);
+//				os = new GZIPOutputStream(os);
+//			}
+			//out.close();
+			
+			//转发内容
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			byte[] bs = new byte[BUFFER_SIZE];
+			int index = is.read(bs, 0, BUFFER_SIZE);
+			while (index != -1) {
+				//System.out.println(socket.isConnected());
+				baos.write(bs, 0, index);
+				index = is.read(bs, 0, BUFFER_SIZE);
 			}
+			
+			os.write(baos.toByteArray());
+			os.flush();
 
-			if (rd != null) {
-				rd.close();
-			}
-			if (out != null) {
-				out.close();
-			}
-			if (in != null) {
-				in.close();
-			}
-
-			if (socket != null) {
-				socket.close();
-			}
 		} catch (Exception e) {
 			e.printStackTrace();
+		} finally{
+			try{
+				if (out != null) {
+					out.close();
+				}
+				if (in != null) {
+					in.close();
+				}
+				if (socket != null) {
+					socket.close();
+				}
+			}catch(Exception e){
+				e.printStackTrace();
+			}
+			System.out.println("=========================");
 		}
 	}
 }
