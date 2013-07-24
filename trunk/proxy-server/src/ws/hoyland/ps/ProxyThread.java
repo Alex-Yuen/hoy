@@ -11,7 +11,7 @@ public class ProxyThread extends Thread {
 	private static final int BUFFER_SIZE = 32768;
 	private BufferedWriter out;
 	private BufferedReader in;
-
+	private String host;
 	private static final String CRLF = "\r\n";
 
 	public ProxyThread(Socket socket) {
@@ -53,6 +53,9 @@ public class ProxyThread extends Thread {
 					} else {
 						tokens = line.split(": ");
 						rps.put(tokens[0], tokens[1]);
+						if("Host".equals(tokens[0])){
+							host = tokens[1];
+						}
 					}
 //				}
 			}
@@ -187,13 +190,31 @@ public class ProxyThread extends Thread {
 			if (conn.getContentType()!=null&&conn.getContentType().startsWith("text/html")) {
 				String ct = new String(baos.toByteArray());
 				
-				if (ct.contains("if(!fc && !fc_override) {")) {
-					ct = ct.replace("if(!fc && !fc_override) {",
-						"if(false) {");
-					ct = ct.replace("numbercounter_n -= 0.5;", "numbercounter_n = 0;");
+				boolean edited = false;
+				if(host.endsWith("hoolbux.com")||host.endsWith("termbux.com")){
+					if (ct.contains("if(!fc && !fc_override) {")) {				
+						ct = ct.replace("if(!fc && !fc_override) {",
+								"if(false) {");
+						ct = ct.replace("numbercounter_n -= 0.5;", "numbercounter_n = 0;");
+						edited = true;
+					}
+				}else if(host.endsWith("sekbux.com")){ //展示时间限制
+					if (ct.contains("if(!fc && !fc_override) {")) {
+						ct = ct.replace("if(!fc && !fc_override) {",
+								"if(false) {");
+						edited = true;
+					}
+				}else if(host.endsWith("probux.com")){ //展示时间有限制
+//					if(ct.contains("var cnt = 1;")){
+//						ct = ct.replace("var cnt = 1;",
+//								"var cnt = 50;");
+//						edited = true;
+//					}
+				}
+
+				if(edited){//修改过
 					baos = new ByteArrayOutputStream();
 					baos.write(ct.getBytes());
-					System.err.println("REPLACE!");
 				}
 			}
 			
