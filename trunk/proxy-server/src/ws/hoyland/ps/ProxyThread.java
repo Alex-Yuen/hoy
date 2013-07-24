@@ -191,26 +191,34 @@ public class ProxyThread extends Thread {
 				String ct = new String(baos.toByteArray());
 				
 				boolean edited = false;
-				if(host.endsWith("hoolbux.com")||host.endsWith("termbux.com")){
+				if(host.endsWith("hoolbux.com")||host.endsWith("termbux.com")||host.endsWith("dearbux.com")||host.endsWith("koolbux.com")||host.endsWith("nvbux.com")){
+					//nvbux, hoolbux没有限制时间
 					if (ct.contains("if(!fc && !fc_override) {")) {				
 						ct = ct.replace("if(!fc && !fc_override) {",
 								"if(false) {");
 						ct = ct.replace("numbercounter_n -= 0.5;", "numbercounter_n = 0;");
 						edited = true;
 					}
-				}else if(host.endsWith("sekbux.com")){ //展示时间限制
+				}else if(host.endsWith("sekbux.com")){ //展示时间限制, 解决对焦问题
 					if (ct.contains("if(!fc && !fc_override) {")) {
 						ct = ct.replace("if(!fc && !fc_override) {",
 								"if(false) {");
 						edited = true;
 					}
-				}else if(host.endsWith("probux.com")){ //展示时间有限制
+				}else if(host.endsWith("probux.com")){ //展示时间有限制, 不需解决focus问题
 //					if(ct.contains("var cnt = 1;")){
 //						ct = ct.replace("var cnt = 1;",
 //								"var cnt = 50;");
 //						edited = true;
 //					}
+				}else if(host.endsWith("neobux.com")){//不成功 jv_107.js, aren't logined, 需要首先解决对焦问题
+//					if(ct.contains("https://fullcache-neodevlda.netdna-ssl.com/js/jv_107.js")){
+//						ct = ct.replace("https://fullcache-neodevlda.netdna-ssl.com/js/jv_107.js",
+//								"http://www.hoyland.ws/ptcsky/neobux/jv_107.js");
+//						edited = true;
+//					}
 				}
+				
 
 				if(edited){//修改过
 					baos = new ByteArrayOutputStream();
