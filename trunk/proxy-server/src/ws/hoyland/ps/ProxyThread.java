@@ -210,7 +210,7 @@ public class ProxyThread extends Thread {
 //								"var cnt = 50;");
 //						edited = true;
 //					}
-				}else if(host.endsWith("neobux.com")){//不成功 jv_107.js, aren't logined, 需要首先解决对焦问题
+				}else if(host.endsWith("neobux.com")){//不成功 jv_107.js?, aren't logined, 需要首先解决对焦问题
 //					if(ct.contains("https://fullcache-neodevlda.netdna-ssl.com/js/jv_107.js")){
 //						ct = ct.replace("https://fullcache-neodevlda.netdna-ssl.com/js/jv_107.js",
 //								"http://www.hoyland.ws/ptcsky/neobux/jv_107.js");
