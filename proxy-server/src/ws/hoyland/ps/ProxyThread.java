@@ -134,11 +134,10 @@ public class ProxyThread extends Thread {
 
 				for (String key : headers.keySet()) {
 					if (key != null && !"Transfer-Encoding".equals(key)) {
-						vs = "";
+						//vs = "";
 						for (String v : headers.get(key)) {
-							vs += v;
+							hs.append(key + ": " + v).append(CRLF);
 						}
-						hs.append(key + ": " + vs).append(CRLF);
 					}
 				}
 
@@ -216,8 +215,7 @@ public class ProxyThread extends Thread {
 								"http://www.hoyland.ws/ptcsky/neobux/jv_107.js");
 						edited = true;
 					}
-				}
-				
+				}				
 
 				if(edited){//修改过
 					baos = new ByteArrayOutputStream();
