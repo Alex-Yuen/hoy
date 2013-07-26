@@ -14,6 +14,9 @@ public class ProxyThread extends Thread {
 	private String host;
 	private static final String CRLF = "\r\n";
 
+	private String url = "";
+	private String method = "";
+	
 	public ProxyThread(Socket socket) {
 		super("ProxyThread");
 		this.socket = socket;
@@ -29,8 +32,6 @@ public class ProxyThread extends Thread {
 			String line;
 			boolean hf = true; // header flag
 //			boolean cf = false; //content flag
-			String url = "";
-			String method = "";
 			Map<String, String> rps = new HashMap<String, String>();
 
 			String[] tokens = null;
@@ -204,15 +205,28 @@ public class ProxyThread extends Thread {
 						edited = true;
 					}
 				}else if(host.endsWith("probux.com")){ //不需解决focus问题? 展示时间有限制
+					if(ct.contains("$(\"#m_ok\").show();")){//自动关闭，自动点击
+						ct = ct.replace("$(\"#m_ok\").show();",
+							"$(\"#m_ok\").show();\n				window.opener.nt();\n				window.close();");
+						edited = true;
+					}
+					if(ct.contains("/js/m/viewads7.js")){//自动点击
+						//ct = ct.replace("$(document).ready(function(){", "function nt(){\n	alert(\"next\");\n};\n$(document).ready(function(){");
+						ct = ct.replace("$(document).ready(function(){", "$(document).ready(function(){\n		setTimeout(\"nt();\", 5000);\n");
+						ct = ct.replace("/js/m/viewads7.js", "http://www.hoyland.ws/ptcsky/probux/viewads7.js"); 
+						edited = true;
+					}
+					
 //					if(ct.contains("var cnt = 1;")){
 //						ct = ct.replace("var cnt = 1;",
 //								"var cnt = 50;");
 //						edited = true;
 //					}
-				}else if(host.endsWith("neobux.com")){//不成功 jv_107.js?, aren't logined, 需要首先解决对焦问题
+				}else if(host.endsWith("neobux.com")){//不需要首先解决对焦问题?
 					if(ct.contains("https://fullcache-neodevlda.netdna-ssl.com/js/jv_107.js")){
 						ct = ct.replace("https://fullcache-neodevlda.netdna-ssl.com/js/jv_107.js",
-								"http://www.hoyland.ws/ptcsky/neobux/jv_107.js");
+								"http://www.hoyland.ws/ptcsky/neobux/jv_107.js");	//自动点adprize，首次需手动
+						//ct = ct.replace("/cdi2.swf", "");
 						edited = true;
 					}
 				}				
@@ -236,6 +250,7 @@ public class ProxyThread extends Thread {
 			// out.write(baos.toByteArray());
 			// out.flush();
 		} catch (Exception e) {
+			System.out.println(method+"->"+url);
 			e.printStackTrace();
 		} finally {
 			try {
