@@ -13,7 +13,7 @@ public class ProxyThread extends Thread {
 	private BufferedReader in;
 	private String host;
 	private static final String CRLF = "\r\n";
-
+	private static final String SERVER = "http://www.hoyland.ws";
 	private String url = "";
 	private String method = "";
 	
@@ -186,28 +186,31 @@ public class ProxyThread extends Thread {
 			// 转发
 			// System.out.println(new String(baos.toByteArray()));
 			// ByteArrayOutputStream ba = new ByteArrayOutputStream();
-			//focus限制, 时间限制（可选）, 自动点击, 验证码, 自动登录（可选） 
+			//时间限制（可选）,自动登录（可选）
+			//focus限制,  自动点击, 验证码,  
 			if (conn.getContentType()!=null&&conn.getContentType().startsWith("text/html")) {
 				String ct = new String(baos.toByteArray());
 				
 				boolean edited = false;
-				if(host.endsWith("hoolbux.com")||host.endsWith("nvbux.com")){//解决focus问题, 没有限制时间
-					if (ct.contains("if(!fc && !fc_override) {")) {				
-						ct = ct.replace("if(!fc && !fc_override) {",
-								"if(false) {");
-						ct = ct.replace("numbercounter_n -= 0.5;", "numbercounter_n = 0;");
-						edited = true;
-					}
-				}else if(host.endsWith("sekbux.com")||host.endsWith("termbux.com")||host.endsWith("dearbux.com")||host.endsWith("koolbux.com")){ //解决focus问题, 展示时间有限制 
+//				if(host.endsWith("hoolbux.com")||host.endsWith("nvbux.com")){//解决focus问题, 没有限制时间
+//					if (ct.contains("if(!fc && !fc_override) {")) {				
+//						ct = ct.replace("if(!fc && !fc_override) {",
+//								"if(false) {");
+//						ct = ct.replace("numbercounter_n -= 0.5;", "numbercounter_n = 0;");
+//						edited = true;
+//					}
+//				}else 
+				if(host.endsWith("hoolbux.com")||host.endsWith("nvbux.com")||host.endsWith("sekbux.com")||host.endsWith("termbux.com")||host.endsWith("dearbux.com")||host.endsWith("koolbux.com")){ //解决focus问题, 展示时间有限制
+					//hoolbux.com 和 nvbux.com 不做解除时间限制，本来可以解除 2013.07.26
 					if (ct.contains("if(!fc && !fc_override) {")) {
-						ct = ct.replace("if(!fc && !fc_override) {",
+						ct = ct.replace("if(!fc && !fc_override) {",	//解决focus 问题
 								"if(false) {");
 //						ct = ct.replace("function captcha_callback(ID) {",
 //								"function captcha_callback(ID) {\n          alert('ok');\n");
 						edited = true;
 					}
 				}else if(host.endsWith("probux.com")){ //不需解决focus问题? 展示时间有限制
-					if(ct.contains("$(\"#m_ok\").show();")){//自动关闭，自动点击
+					if(ct.contains("$(\"#m_ok\").show();")){//自动关闭，自动点击，需要先进入 view ads
 						ct = ct.replace("$(\"#m_ok\").show();",
 							"$(\"#m_ok\").show();\n				window.opener.nt();\n				window.close();");
 						edited = true;
@@ -215,7 +218,7 @@ public class ProxyThread extends Thread {
 					if(ct.contains("/js/m/viewads7.js")){//自动点击
 						//ct = ct.replace("$(document).ready(function(){", "function nt(){\n	alert(\"next\");\n};\n$(document).ready(function(){");
 						ct = ct.replace("$(document).ready(function(){", "$(document).ready(function(){\n		setTimeout(\"nt();\", 5000);\n");
-						ct = ct.replace("/js/m/viewads7.js", "http://www.hoyland.ws/ptcsky/probux/viewads7.js"); 
+						ct = ct.replace("/js/m/viewads7.js", SERVER+"/ptcsky/probux/viewads7.js"); 
 						edited = true;
 					}
 					
@@ -227,7 +230,7 @@ public class ProxyThread extends Thread {
 				}else if(host.endsWith("neobux.com")){//不需要首先解决对焦问题?
 					if(ct.contains("https://fullcache-neodevlda.netdna-ssl.com/js/jv_107.js")){
 						ct = ct.replace("https://fullcache-neodevlda.netdna-ssl.com/js/jv_107.js",
-								"http://www.hoyland.ws/ptcsky/neobux/jv_107.js");	//自动点adprize，首次需手动
+								SERVER+"/ptcsky/neobux/jv_107.js");	//自动点adprize，首次需手动
 						//ct = ct.replace("/cdi2.swf", "");
 						edited = true;
 					}
