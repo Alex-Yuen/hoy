@@ -87,12 +87,12 @@ public class ProxyThread extends Thread {
 
 			URL u = new URL(url);
 			HttpURLConnection conn = (HttpURLConnection) u.openConnection();
-			conn.setConnectTimeout(3000);
-			conn.setReadTimeout(3000);
+//			conn.setConnectTimeout(5000);
+//			conn.setReadTimeout(5000);
 			conn.setRequestMethod(method);
 			conn.setDoInput(true);
 			conn.setDoOutput(true);
-			conn.setUseCaches(false);
+//			conn.setUseCaches(false);
 
 			for (String key : rps.keySet()) {
 				conn.setRequestProperty(key, rps.get(key));
@@ -186,7 +186,7 @@ public class ProxyThread extends Thread {
 			// 转发
 			// System.out.println(new String(baos.toByteArray()));
 			// ByteArrayOutputStream ba = new ByteArrayOutputStream();
-
+			//focus限制, 时间限制（可选）, 自动点击, 验证码, 自动登录（可选） 
 			if (conn.getContentType()!=null&&conn.getContentType().startsWith("text/html")) {
 				String ct = new String(baos.toByteArray());
 				
@@ -202,6 +202,8 @@ public class ProxyThread extends Thread {
 					if (ct.contains("if(!fc && !fc_override) {")) {
 						ct = ct.replace("if(!fc && !fc_override) {",
 								"if(false) {");
+//						ct = ct.replace("function captcha_callback(ID) {",
+//								"function captcha_callback(ID) {\n          alert('ok');\n");
 						edited = true;
 					}
 				}else if(host.endsWith("probux.com")){ //不需解决focus问题? 展示时间有限制
