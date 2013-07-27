@@ -87,8 +87,8 @@ public class ProxyThread extends Thread {
 
 			URL u = new URL(url);
 			HttpURLConnection conn = (HttpURLConnection) u.openConnection();
-//			conn.setConnectTimeout(5000);
-//			conn.setReadTimeout(5000);
+			conn.setConnectTimeout(5000);
+			conn.setReadTimeout(5000);
 			conn.setRequestMethod(method);
 			conn.setDoInput(true);
 			conn.setDoOutput(true);
@@ -186,6 +186,7 @@ public class ProxyThread extends Thread {
 			// 转发
 			// System.out.println(new String(baos.toByteArray()));
 			// ByteArrayOutputStream ba = new ByteArrayOutputStream();
+			//稳定之后，再做产品，设计
 			//时间限制（可选）,自动登录（可选）
 			//focus限制,  自动点击, 验证码,  
 			if (conn.getContentType()!=null&&conn.getContentType().startsWith("text/html")) {
@@ -200,6 +201,7 @@ public class ProxyThread extends Thread {
 //						edited = true;
 //					}
 //				}else 
+				
 				if(host.endsWith("hoolbux.com")||host.endsWith("nvbux.com")||host.endsWith("sekbux.com")||host.endsWith("termbux.com")||host.endsWith("dearbux.com")||host.endsWith("koolbux.com")){ //解决focus问题, 展示时间有限制
 					//hoolbux.com 和 nvbux.com 不做解除时间限制，本来可以解除 2013.07.26
 					if (ct.contains("if(!fc && !fc_override) {")) {
@@ -217,11 +219,11 @@ public class ProxyThread extends Thread {
 					}
 					if(ct.contains("/js/m/viewads7.js")){//自动点击
 						//ct = ct.replace("$(document).ready(function(){", "function nt(){\n	alert(\"next\");\n};\n$(document).ready(function(){");
-						ct = ct.replace("$(document).ready(function(){", "$(document).ready(function(){\n		setTimeout(\"nt();\", 5000);\n");
+						ct = ct.replace("$(document).ready(function(){", "$(document).ready(function(){\n		setTimeout(\"nt();\", 5000);");
 						ct = ct.replace("/js/m/viewads7.js", SERVER+"/ptcsky/probux/viewads7.js"); 
 						edited = true;
 					}
-					
+					//自动点Grid
 //					if(ct.contains("var cnt = 1;")){
 //						ct = ct.replace("var cnt = 1;",
 //								"var cnt = 50;");
@@ -230,11 +232,40 @@ public class ProxyThread extends Thread {
 				}else if(host.endsWith("neobux.com")){//不需要首先解决对焦问题?
 					if(ct.contains("https://fullcache-neodevlda.netdna-ssl.com/js/jv_107.js")){
 						ct = ct.replace("https://fullcache-neodevlda.netdna-ssl.com/js/jv_107.js",
-								SERVER+"/ptcsky/neobux/jv_107.js");	//自动点adprize，首次需手动
+								SERVER+"/ptcsky/neobux/jv_107.js");	//浏览完广告后，自动点adprize
 						//ct = ct.replace("/cdi2.swf", "");
 						edited = true;
 					}
-				}				
+					if(ct.contains("l1l();jQuery(document).ready(function() {")){
+						StringBuffer sb = new StringBuffer();
+						sb.append("						var links = new Array();\n");
+						sb.append("						function nt(){\n");
+						sb.append("							if(links.length>0){\n");
+						sb.append("								var lk = links.shift();\n");
+						sb.append("								window.open(lk);\n");
+						sb.append("							}else if(d00('ap_h')!=null){\n");
+						sb.append("								window.open(d00('ap_h').href);\n");
+						sb.append("							}\n");
+						sb.append("						};\n");
+						sb.append("l1l();jQuery(document).ready(function() {\n");
+						sb.append("				jQuery(\"img[src*='estrela_16.gif']\").each(function(){\n");
+						sb.append("					jQuery(\"a[id=l\"+this.id.substring(4)+\"]\").each(function() {\n");
+						sb.append("						links.push(this.href);\n");
+						sb.append("					});\n");
+						sb.append("				});\n");
+						sb.append("				setTimeout(\"nt();\", 5000);");
+						ct = ct.replace("l1l();jQuery(document).ready(function() {", sb.toString());
+						edited = true;
+					}
+					
+					if(ct.contains("<div class=\"f_b\" style=\"font-size:18px;color:#bd0000;\">")){ //adv 出错情况处理
+						ct = ct.replace("<div class=\"f_b\" style=\"font-size:18px;color:#bd0000;\">", "<div id=\"ptcerr\" class=\"f_b\" style=\"font-size:18px;color:#bd0000;\">");
+						edited = true;
+					}
+				}else if(ct.contains("beforeunload")){//关闭页面时候出现对话窗口
+					ct = ct.replace("beforeunload", "x");
+					edited = true;
+				}
 
 				if(edited){//修改过
 					baos = new ByteArrayOutputStream();
