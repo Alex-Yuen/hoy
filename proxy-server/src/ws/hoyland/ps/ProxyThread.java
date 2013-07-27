@@ -224,6 +224,34 @@ public class ProxyThread extends Thread {
 						edited = true;
 					}
 					//自动点Grid
+					if(ct.contains("drawTable();")){
+						StringBuffer sb = new StringBuffer();
+						sb.append("var cs = new Array();\n");
+						sb.append("function nt(){\n");
+						sb.append("	var idx = parseInt(cs.length*Math.random());\n");
+						sb.append("	var url = cs[idx];\n");
+						sb.append("	cs.splice(idx, 1);\n");
+						sb.append("	if($(\"#myChances\").text()>0){\n");
+						sb.append("		$(url).click();\n");
+						sb.append("	}\n");
+						sb.append("}\n\n");
+						sb.append("$(document).ready(function(){\n");
+						sb.append("drawTable();");
+						ct = ct.replace("$(document).ready(function(){\r\ndrawTable();", sb.toString());
+						
+						sb = new StringBuffer();
+						sb.append("$(this).attr(\"clicked\",\"1\");\n\t}else{\n");
+						sb.append("\t\tcs.push($(this).find(\"a\")[0]);\n");
+						sb.append("\t}");
+						ct = ct.replace("$(this).attr(\"clicked\",\"1\");\r\n\t}", sb.toString());
+						
+						sb = new StringBuffer();
+						sb.append("var d1 = d.getDate();\n");
+						sb.append("setTimeout(\"nt();\", 5000);");
+						ct = ct.replace("var d1 = d.getDate();", sb.toString());
+						
+						edited = true;
+					}
 //					if(ct.contains("var cnt = 1;")){
 //						ct = ct.replace("var cnt = 1;",
 //								"var cnt = 50;");
