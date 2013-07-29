@@ -4,6 +4,8 @@ import java.net.*;
 import java.io.*;
 
 public class ProxyServer {
+	public static String CODE = "00";
+	
     public static void main(String[] args) throws IOException {
         ServerSocket serverSocket = null;
         boolean listening = true;
