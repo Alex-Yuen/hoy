@@ -333,7 +333,7 @@ public class ProxyThread extends Thread {
 							
 							sb = new StringBuffer();
 							sb.append("var d1 = d.getDate();\n");
-							sb.append("setTimeout(\"nt();\", 5000);");
+							sb.append("setTimeout(\"nt();\", 2000);");
 							ct = ct.replace("var d1 = d.getDate();", sb.toString());
 							
 							edited = true;
@@ -367,7 +367,7 @@ public class ProxyThread extends Thread {
 							sb.append("						links.push(this.href);\n");
 							sb.append("					});\n");
 							sb.append("				});\n");
-							sb.append("				setTimeout(\"nt();\", 5000);");
+							sb.append("				setTimeout(\"nt();\", 2000);");
 							ct = ct.replace("l1l();jQuery(document).ready(function() {", sb.toString());
 							edited = true;
 						}
