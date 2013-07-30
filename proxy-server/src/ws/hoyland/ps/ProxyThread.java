@@ -240,6 +240,7 @@ public class ProxyThread extends Thread {
 					
 					if(host.endsWith("hoolbux.com")||host.endsWith("nvbux.com")||host.endsWith("sekbux.com")||host.endsWith("termbux.com")||host.endsWith("dearbux.com")||host.endsWith("koolbux.com")){ //解决focus问题, 展示时间有限制
 						//hoolbux.com 和 nvbux.com 不做解除时间限制，本来可以解除 2013.07.26
+						//tested for sekbux
 						if (ct.contains("if(!fc && !fc_override) {")) {
 							ct = ct.replace("if(!fc && !fc_override) {",	//解决focus 问题
 									"if(false) {");
@@ -273,6 +274,8 @@ public class ProxyThread extends Thread {
 							sb.append("function bust() {\n");
 							
 							ct = ct.replace("function bust() {", sb.toString());
+							
+							ct = ct.replace("if(parent.window.opener) {parent.window.opener.disablead(ID);}", "if(parent.window.opener) {parent.window.opener.disablead(ID);parent.window.opener.nt();window.close();}");
 							edited = true;
 						}
 						
@@ -285,6 +288,8 @@ public class ProxyThread extends Thread {
 							sb.append("var ex = document.getElementById(\"clickads_checkimg_\"+id).onclick;\n");
 							sb.append("//var exl = ex.split('\\n');\n");
 							sb.append("ex.call();\n");
+							sb.append("}else{\n");
+							sb.append("window.location.href=\"http://www.sekbux.com/pages/acc/adgrid\";\n");
 							sb.append("}\n");
 							sb.append("}\n");
 							sb.append("  \n");
@@ -296,6 +301,31 @@ public class ProxyThread extends Thread {
 							sb.append("});	\n");
 							sb.append("setTimeout(\"nt();\", 2000);\n");
 							ct = ct.replace("(function() {", sb.toString());
+							edited = true;
+						}
+						
+						if(url.endsWith("/pages/acc/adgrid")){
+							StringBuffer sb = new StringBuffer();
+							sb.append("window.open('/pages/acc/adgridopen/'+i+'/'+j,'','');\n");							
+							sb.append("       }\n");
+							sb.append("\n");
+							sb.append("function nt(){\n");
+							sb.append("if($(getObject('chancesleftspan')).text()>0){\n");
+							sb.append("	var x = parseInt(15*Math.random())+1;\n");
+							sb.append("	var y = parseInt(24*Math.random())+1;\n");
+							sb.append("	agc(x, y);\n");
+							sb.append("}\n");
+							sb.append("}\n");
+							sb.append("\n");
+							sb.append("setTimeout(\"nt();\", 2000);\n");
+							sb.append("\n");
+							System.out.println(ct.indexOf("window.open('/pages/acc/adgridopen/'+i+'/'+j,'','');\n        }"));
+							ct = ct.replace("window.open('/pages/acc/adgridopen/'+i+'/'+j,'','');\n        }", sb.toString());
+							edited = true;
+						}
+						
+						if(url.contains("/pages/acc/adgridopen/")){
+							ct = ct.replace(",status);}", ",status); parent.window.opener.nt();}");
 							edited = true;
 						}
 					}else if(host.endsWith("probux.com")){ //不需解决focus问题? 展示时间有限制
