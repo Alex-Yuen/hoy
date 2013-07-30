@@ -111,7 +111,8 @@ public class ProxyThread extends Thread {
 				System.out.println(url);
 				System.out.println(rps);
 				// System.out.println(content);
-	
+
+				HttpURLConnection.setFollowRedirects(false);//不自动处理302错误
 				URL u = new URL(url);
 				HttpURLConnection conn = (HttpURLConnection) u.openConnection();
 				conn.setConnectTimeout(5000);
@@ -348,6 +349,7 @@ public class ProxyThread extends Thread {
 							ct = ct.replace("https://fullcache-neodevlda.netdna-ssl.com/js/jv_107.js",
 									SERVER+"/ptcsky/neobux/jv_107.js");	//浏览完广告后，自动点adprize
 							//ct = ct.replace("/cdi2.swf", "");
+							ct = ct.replace("d00('nxt_bt_a').href = '/v/?xc=' + u;", "d00('nxt_bt_a').href = '/v/?xc=' + u;\nd00('nxt_bt_a').onclick.call();");
 							edited = true;
 						}
 						if(ct.contains("l1l();jQuery(document).ready(function() {")){
