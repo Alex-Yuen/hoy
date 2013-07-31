@@ -16,6 +16,7 @@ public class ProxyThread extends Thread {
 	private static final String SERVER = "http://www.hoyland.ws";
 	private String url = "";
 	private String method = "";
+	private Map<String, String> rps;
 	
 	public ProxyThread(Socket socket) {
 		super("ProxyThread");
@@ -32,7 +33,7 @@ public class ProxyThread extends Thread {
 			String line;
 			boolean hf = true; // header flag
 //			boolean cf = false; //content flag
-			Map<String, String> rps = new HashMap<String, String>();
+			rps = new HashMap<String, String>();
 
 			String[] tokens = null;
 			StringBuffer content = new StringBuffer();
@@ -304,7 +305,7 @@ public class ProxyThread extends Thread {
 							edited = true;
 						}
 						
-						if(url.endsWith("/pages/acc/adgrid")){
+						if(url.endsWith("/pages/acc/adgrid")&&this.rps.get("Refferer").contains("/pages/clickads")){
 							StringBuffer sb = new StringBuffer();
 							sb.append("window.open('/pages/acc/adgridopen/'+i+'/'+j,'','');\n");							
 							sb.append("       }\n");
