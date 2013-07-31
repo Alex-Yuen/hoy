@@ -13,7 +13,7 @@ public class ProxyThread extends Thread {
 	private BufferedReader in;
 	private String host;
 	private static final String CRLF = "\r\n";
-	private static final String SERVER = "www.hoyland.ws";
+	private static final String SERVER = "www.ptcsky.net";
 	private String url = "";
 	private String method = "";
 	private Map<String, String> rps;
