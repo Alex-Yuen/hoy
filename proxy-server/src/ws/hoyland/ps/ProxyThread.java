@@ -313,6 +313,7 @@ public class ProxyThread extends Thread {
 							sb.append("if($(getObject('chancesleftspan')).text()>0){\n");
 							sb.append("	var x = parseInt(15*Math.random())+1;\n");
 							sb.append("	var y = parseInt(24*Math.random())+1;\n");
+							sb.append("	if(boxclicked(x+'_'+y)) {nt();return;}\n");
 							sb.append("	agc(x, y);\n");
 							sb.append("}\n");
 							sb.append("}\n");
@@ -325,7 +326,7 @@ public class ProxyThread extends Thread {
 						}
 						
 						if(url.contains("/pages/acc/adgridopen/")){
-							ct = ct.replace(",status);}", ",status); parent.window.opener.nt();}");
+							ct = ct.replace(",status);}", ",status); parent.window.opener.nt();window.close();}");
 							edited = true;
 						}
 					}else if(host.endsWith("probux.com")){ //不需解决focus问题? 展示时间有限制
