@@ -246,7 +246,7 @@ public class ProxyThread extends Thread {
 					//focus限制,  自动点击, 验证码,
 					
 					if (conn.getContentType()!=null&&conn.getContentType().startsWith("image/jpeg")&&url.contains("captcha_proc.php")) {
-						if(host.endsWith("sekbux.com")){
+						if(host.endsWith("sekbux.com")||host.endsWith("jeetbux.com")){
 							//写入image
 							//识别image
 							//记录image
@@ -267,7 +267,7 @@ public class ProxyThread extends Thread {
 		//					}
 		//				}else 
 						
-						if(host.endsWith("hoolbux.com")||host.endsWith("nvbux.com")||host.endsWith("sekbux.com")||host.endsWith("termbux.com")||host.endsWith("dearbux.com")||host.endsWith("koolbux.com")){ //解决focus问题, 展示时间有限制
+						if(host.endsWith("jeetbux.com")||host.endsWith("sekbux.com")){ //解决focus问题, 展示时间有限制
 							//hoolbux.com 和 nvbux.com 不做解除时间限制，本来可以解除 2013.07.26
 							//tested for sekbux
 							if (ct.contains("if(!fc && !fc_override) {")) {
@@ -318,7 +318,7 @@ public class ProxyThread extends Thread {
 								sb.append("//var exl = ex.split('\\n');\n");
 								sb.append("ex.call();\n");
 								sb.append("}else{\n");
-								sb.append("window.location.href=\"http://www.sekbux.com/pages/acc/adgrid\";\n");
+								sb.append("window.location.href=\"http://"+host+"/pages/acc/adgrid\";\n");
 								sb.append("}\n");
 								sb.append("}\n");
 								sb.append("  \n");
@@ -333,7 +333,7 @@ public class ProxyThread extends Thread {
 								edited = true;
 							}
 							
-							if(url.endsWith("/pages/acc/adgrid")&&this.rps.get("Referer").contains("/pages/clickads")){
+							if(url.endsWith("/pages/acc/adgrid")&&this.rps.get("Referer")!=null&&this.rps.get("Referer").contains("/pages/clickads")){
 								StringBuffer sb = new StringBuffer();
 								sb.append("window.open('/pages/acc/adgridopen/'+i+'/'+j,'','');\n");							
 								sb.append("       }\n");
@@ -368,6 +368,10 @@ public class ProxyThread extends Thread {
 								//ct = ct.replace("$(document).ready(function(){", "function nt(){\n	alert(\"next\");\n};\n$(document).ready(function(){");
 								ct = ct.replace("$(document).ready(function(){", "$(document).ready(function(){\n		setTimeout(\"nt();\", 5000);");
 								ct = ct.replace("/js/m/viewads7.js", "http://"+SERVER+"/ptcsky/probux/viewads7.js"); 
+								edited = true;
+							}
+							if(ct.contains("$(\"#m_error\").show();")){
+								ct = ct.replace("$(\"#m_error\").show();", "$(\"#m_error\").show();\nwindow.opener.location.href=window.opener.location.href;\nwindow.close();"); 
 								edited = true;
 							}
 							//自动点Grid
