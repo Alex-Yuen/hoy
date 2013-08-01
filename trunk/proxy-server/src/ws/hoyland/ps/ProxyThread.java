@@ -448,6 +448,19 @@ public class ProxyThread extends Thread {
 							baos = new ByteArrayOutputStream();
 							baos.write(ct.getBytes());
 						}
+					}else if (conn.getContentType()!=null&&conn.getContentType().contains("javascript")){
+						String ct = new String(baos.toByteArray());						
+						boolean edited = false;
+						
+						if(ct.contains("beforeunload")){//关闭页面时候出现对话窗口
+								ct = ct.replace("beforeunload", "x");
+								edited = true;
+						}
+						
+						if(edited){//修改过
+							baos = new ByteArrayOutputStream();
+							baos.write(ct.getBytes());
+						}
 					}
 				
 				}
