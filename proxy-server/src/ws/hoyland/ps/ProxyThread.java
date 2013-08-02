@@ -267,7 +267,7 @@ public class ProxyThread extends Thread {
 		//					}
 		//				}else 
 						
-						if(host.endsWith("jeetbux.com")||host.endsWith("sekbux.com")){ //解决focus问题, 展示时间有限制
+						if(host.endsWith("jeetbux.com")||host.endsWith("sekbux.com")||host.endsWith("mettabux.com")){ //解决focus问题, 展示时间有限制
 							//hoolbux.com 和 nvbux.com 不做解除时间限制，本来可以解除 2013.07.26
 							//tested for sekbux
 							if (ct.contains("if(!fc && !fc_override) {")) {
@@ -308,7 +308,7 @@ public class ProxyThread extends Thread {
 								edited = true;
 							}
 							
-							if(url.endsWith("/pages/clickads")&&ct.contains("(function() {")){
+							if(!host.endsWith("mettabux.com")&&url.endsWith("/pages/clickads")&&ct.contains("(function() {")){
 								StringBuffer sb = new StringBuffer();
 								sb.append("var ids = new Array();\n");
 								sb.append("function nt(){\n");
@@ -446,6 +446,9 @@ public class ProxyThread extends Thread {
 						}else if(ct.contains("beforeunload")){//关闭页面时候出现对话窗口
 							ct = ct.replace("beforeunload", "x");
 							edited = true;
+						}else if(ct.contains("top.location")){
+							ct = ct.replace("top.location", "window.location");
+							edited = true;
 						}
 		
 						if(edited){//修改过
@@ -457,8 +460,11 @@ public class ProxyThread extends Thread {
 						boolean edited = false;
 						
 						if(ct.contains("beforeunload")){//关闭页面时候出现对话窗口
-								ct = ct.replace("beforeunload", "x");
-								edited = true;
+							ct = ct.replace("beforeunload", "x");
+							edited = true;
+						}else if(ct.contains("top.location")){
+							ct = ct.replace("top.location", "window.location");
+							edited = true;
 						}
 						
 						if(edited){//修改过
