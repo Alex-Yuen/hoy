@@ -17,16 +17,18 @@ public class Tester {
 		// TODO Auto-generated method stub
 		System.out.println("OK...");
 		try{
-		 IJ.open("D:\\Juno\\workspace\\proxy-server\\src\\res\\pic\\01.png");     
+			for(int i=1;i<16;i++){
+				String path = i<10?"0"+i:""+i;
+		 IJ.open("D:\\Juno\\workspace\\proxy-server\\src\\res\\pic\\"+path+".png");     
          
 		 //IJ.run("Color Balance...");
 		 IJ.setMinAndMax(0, 69);
 	          
 	        //另存图片  
-		 IJ.save("D:\\Juno\\workspace\\proxy-server\\src\\res\\out\\01.png");
+		 IJ.save("D:\\Juno\\workspace\\proxy-server\\src\\res\\out\\out-"+path+"-1.png");
 		 
 		 //读取另存图片  
-	     BufferedImage image = ImageIO.read(new FileInputStream("D:\\Juno\\workspace\\proxy-server\\src\\res\\out\\01.png"));
+	     BufferedImage image = ImageIO.read(new FileInputStream("D:\\Juno\\workspace\\proxy-server\\src\\res\\out\\out-"+path+"-1.png"));
 	     
 	     int height = image.getHeight();  
 	        int width = image.getWidth();  
@@ -49,7 +51,8 @@ public class Tester {
 	        	}
 	        }
 	        
-	        ImageIO.write(image, "PNG", new File("D:\\Juno\\workspace\\proxy-server\\src\\res\\out\\01-1.png"));  
+	        ImageIO.write(image, "PNG", new File("D:\\Juno\\workspace\\proxy-server\\src\\res\\out\\out-"+path+"-2.png"));
+			}
 		}catch(Exception e){
 			e.printStackTrace();
 		}

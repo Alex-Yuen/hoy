@@ -267,7 +267,7 @@ public class ProxyThread extends Thread {
 		//					}
 		//				}else 
 						
-						if(host.endsWith("jeetbux.com")||host.endsWith("sekbux.com")||host.endsWith("mettabux.com")){ //解决focus问题, 展示时间有限制
+						if(host.endsWith("novakbux.com")||host.endsWith("jeetbux.com")||host.endsWith("sekbux.com")||host.endsWith("mettabux.com")){ //解决focus问题, 展示时间有限制
 							//hoolbux.com 和 nvbux.com 不做解除时间限制，本来可以解除 2013.07.26
 							//tested for sekbux
 							if (ct.contains("if(!fc && !fc_override) {")) {
@@ -308,7 +308,7 @@ public class ProxyThread extends Thread {
 								edited = true;
 							}
 							
-							if(!host.endsWith("mettabux.com")&&url.endsWith("/pages/clickads")&&ct.contains("(function() {")){
+							if(url.endsWith("/pages/clickads")&&ct.contains("(function() {")){
 								StringBuffer sb = new StringBuffer();
 								sb.append("var ids = new Array();\n");
 								sb.append("function nt(){\n");
@@ -318,7 +318,9 @@ public class ProxyThread extends Thread {
 								sb.append("//var exl = ex.split('\\n');\n");
 								sb.append("ex.call();\n");
 								sb.append("}else{\n");
-								sb.append("window.location.href=\"http://"+host+"/pages/acc/adgrid\";\n");
+								if(!host.endsWith("mettabux.com")){
+									sb.append("window.location.href=\"http://"+host+"/pages/acc/adgrid\";\n");
+								}
 								sb.append("}\n");
 								sb.append("}\n");
 								sb.append("  \n");
