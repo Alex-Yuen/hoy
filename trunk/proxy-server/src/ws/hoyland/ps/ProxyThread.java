@@ -315,6 +315,7 @@ public class ProxyThread extends Thread {
 								sb.append("if(ids.length>0){\n");
 								sb.append("var id = ids.shift();\n");
 								sb.append("var ex = document.getElementById(\"clickads_checkimg_\"+id).onclick;\n");
+								//sb.append("alert(ex);");
 								sb.append("//var exl = ex.split('\\n');\n");
 								sb.append("ex.call();\n");
 								sb.append("}else{\n");
@@ -326,12 +327,21 @@ public class ProxyThread extends Thread {
 								sb.append("  \n");
 								sb.append("(function() {\n");
 								sb.append("$(\".clickads_wrapper1\").each(function(){\n");
-								sb.append("if(this.style.opacity==''){\n");
+								if(!host.endsWith("jeetbux.com")){
+									sb.append("if(this.style.opacity==''){\n");
+								}else{
+									sb.append("{\n");
+									//sb.append("alert(this.id.substring(18))\n");
+								}
 								sb.append("ids.push(this.id.substring(18));\n");
 								sb.append("}\n");
 								sb.append("});	\n");
 								sb.append("setTimeout(\"nt();\", 2000);\n");
 								ct = ct.replace("(function() {", sb.toString());
+								
+								if(host.endsWith("jeetbux.com")){
+									ct = ct.replace("if((lastopened==ID && viaball==1) ) {", "if((viaball==1) ) {");
+								}
 								edited = true;
 							}
 							
