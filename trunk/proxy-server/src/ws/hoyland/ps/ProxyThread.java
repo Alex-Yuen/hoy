@@ -250,7 +250,7 @@ public class ProxyThread extends Thread {
 							//写入image
 							//识别image
 							//记录image
-							ProxyServer.CODE = "68"; 
+							ProxyServer.CODE = "";//68 
 						}
 					}
 					
@@ -267,7 +267,7 @@ public class ProxyThread extends Thread {
 		//					}
 		//				}else 
 						
-						if(host.endsWith("novakbux.com")||host.endsWith("jeetbux.com")||host.endsWith("sekbux.com")||host.endsWith("mettabux.com")){ //解决focus问题, 展示时间有限制
+						if(host.endsWith("jeetbux.com")||host.endsWith("sekbux.com")||host.endsWith("mettabux.com")){ //解决focus问题, 展示时间有限制
 							//hoolbux.com 和 nvbux.com 不做解除时间限制，本来可以解除 2013.07.26
 							//tested for sekbux
 							if (ct.contains("if(!fc && !fc_override) {")) {
