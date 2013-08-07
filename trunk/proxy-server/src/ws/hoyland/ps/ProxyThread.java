@@ -455,6 +455,13 @@ public class ProxyThread extends Thread {
 								ct = ct.replace("<div class=\"f_b\" style=\"font-size:18px;color:#bd0000;\">", "<div id=\"ptcerr\" class=\"f_b\" style=\"font-size:18px;color:#bd0000;\">");
 								edited = true;
 							}
+						}else if(host.endsWith("clixsense.com")){
+							if(ct.contains("lwf=((typeof doc.hasFocus!='undefined'?doc.hasFocus():wf)?1:0);")){
+								ct = ct.replace("lwf=((typeof doc.hasFocus!='undefined'?doc.hasFocus():wf)?1:0);", "lwf = 1;");
+								edited = true;
+							}
+							
+							
 						}else if(ct.contains("beforeunload")){//关闭页面时候出现对话窗口
 							ct = ct.replace("beforeunload", "x");
 							edited = true;
