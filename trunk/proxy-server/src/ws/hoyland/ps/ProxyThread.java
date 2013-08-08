@@ -327,7 +327,7 @@ public class ProxyThread extends Thread {
 								sb.append("  \n");
 								sb.append("(function() {\n");
 								sb.append("$(\".clickads_wrapper1\").each(function(){\n");
-								if(!host.endsWith("jeetbux.com")){
+								if(!host.endsWith("jeetbux.com")&&!host.endsWith("mettabux.com")){
 									sb.append("if(this.style.opacity==''){\n");
 								}else{
 									sb.append("{\n");
@@ -339,7 +339,7 @@ public class ProxyThread extends Thread {
 								sb.append("setTimeout(\"nt();\", 2000);\n");
 								ct = ct.replace("(function() {", sb.toString());
 								
-								if(host.endsWith("jeetbux.com")){
+								if(host.endsWith("jeetbux.com")||host.endsWith("mettabux.com")){
 									ct = ct.replace("if((lastopened==ID && viaball==1) ) {", "if((viaball==1) ) {");
 								}
 								edited = true;
