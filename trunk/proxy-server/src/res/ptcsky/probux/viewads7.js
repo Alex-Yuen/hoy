@@ -1,4 +1,4 @@
-var advs = new Array();
+//var advs = new Array();
 var links = new Array();
 var tx = 0;
 
@@ -20,8 +20,8 @@ function mkA(a,fieldset){
 		var print_class = b[9];
 		var clicked = b[10];
 		if(!clicked&&uk!=3){
-			advs.push("link"+tx+"x"+i);
-			links.push(url);
+			//advs.push("link"+tx+"x"+i);
+			links.push(document.getElementById("link"+tx+"x"+i));
 		}
 				t += (lastclass && print_class!=lastclass && uk!=3 ? '<div style="clear:left;"></div>' : '')+
                     '<div id="link' + tx + 'x' + i + '" class="anc-style" '+(uk==3 ? 'style="display:none;"' : '')+' onclick="window.open(\'./view.php?a='+url+'\')">'+
@@ -70,12 +70,13 @@ function ck(name){
     
 function nt(){
 	if(advs.length>0){
-		var cid = advs.shift();
+		//var cid = advs.shift();
 		var lk = links.shift();
 		//alert(cid);
 		//alert(lk);
 		//window.open("http://www.baidu.com");
-		window.open("./view.php?a="+lk);
+		//window.open("./view.php?a="+lk);
+		lk.click();
 	}else{
 		window.location.href = "http://www.probux.com/progrid.php";
 	}
