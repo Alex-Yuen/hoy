@@ -425,8 +425,8 @@ public class ProxyThread extends Thread {
 								ct = ct.replace("https://fullcache-neodevlda.netdna-ssl.com/js/jv_107.js",
 										"http://"+SERVER+"/ptcsky/neobux/jv_107.js");	//浏览完广告后，自动点adprize
 								//ct = ct.replace("/cdi2.swf", "");
-								ct = ct.replace("d00('nxt_bt_a').href = '/v/?xc=' + u;", "d00('nxt_bt_a').href = '/v/?xc=' + u;\nd00('nxt_bt_a').onclick.call();");
-								ct = ct.replace("d00('nxt_bt_a').href='/v/?xc='+u;", "d00('nxt_bt_a').href='/v/?xc='+u;\nd00('nxt_bt_a').onclick.call();");
+								//ct = ct.replace("d00('nxt_bt_a').href = '/v/?xc=' + u;", "d00('nxt_bt_a').href = '/v/?xc=' + u;\nd00('nxt_bt_a').onclick.call();");
+								//ct = ct.replace("d00('nxt_bt_a').href='/v/?xc='+u;", "d00('nxt_bt_a').href='/v/?xc='+u;\nd00('nxt_bt_a').onclick.call();");
 								edited = true;
 							}
 							if(ct.contains("l1l();jQuery(document).ready(function() {")){
@@ -435,15 +435,15 @@ public class ProxyThread extends Thread {
 								sb.append("						function nt(){\n");
 								sb.append("							if(links.length>0){\n");
 								sb.append("								var lk = links.shift();\n");
-								sb.append("								window.open(lk);\n");
+								sb.append("								lk.onclick.call();\n");
 								sb.append("							}else if(d00('ap_h')!=null){\n");
-								sb.append("								window.open(d00('ap_h').href);\n");
+								sb.append("								d00('ap_h').onclick.call();\n");
 								sb.append("							}\n");
 								sb.append("						};\n");
 								sb.append("l1l();jQuery(document).ready(function() {\n");
 								sb.append("				jQuery(\"img[src*='estrela_16.gif']\").each(function(){\n");
 								sb.append("					jQuery(\"a[id=l\"+this.id.substring(4)+\"]\").each(function() {\n");
-								sb.append("						links.push(this.href);\n");
+								sb.append("						links.push(this);\n");
 								sb.append("					});\n");
 								sb.append("				});\n");
 								sb.append("				setTimeout(\"nt();\", 2000);");
