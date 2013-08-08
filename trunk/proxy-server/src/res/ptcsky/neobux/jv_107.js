@@ -219,9 +219,10 @@ function DXS(){
 		window.opener.nt();
 		window.close();
 	}
-	//else if(d00('nxt_bt_a').href!=""){
-	//	window.location.href = d00('nxt_bt_a').href;
-	//}
+	else if(d00('nxt_bt_a').href!=""){
+		//window.location.href = d00('nxt_bt_a').href;
+		d00('nxt_bt_a').onclick.call();
+	}
 };
 jQuery(document).ready(function() {
 	if (jedi) focW()
