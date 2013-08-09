@@ -345,7 +345,7 @@ public class ProxyThread extends Thread {
 								edited = true;
 							}
 							
-							if(url.endsWith("/pages/acc/adgrid")&&this.rps.get("Referer")!=null&&this.rps.get("Referer").contains("/pages/clickads")){
+							if(url.endsWith("/pages/acc/adgrid")){
 								StringBuffer sb = new StringBuffer();
 								sb.append("window.open('/pages/acc/adgridopen/'+i+'/'+j,'','');\n");							
 								sb.append("       }\n");
