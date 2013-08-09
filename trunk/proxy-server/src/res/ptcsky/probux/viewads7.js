@@ -21,12 +21,12 @@ function mkA(a,fieldset){
 		var clicked = b[10];
 		if(!clicked&&uk!=3){
 			//advs.push("link"+tx+"x"+i);
-			links.push(document.getElementById("link"+tx+"x"+i));
+			links.push("link"+tx+"x"+i);
 		}
 				t += (lastclass && print_class!=lastclass && uk!=3 ? '<div style="clear:left;"></div>' : '')+
-                    '<div id="link' + tx + 'x' + i + '" class="anc-style" '+(uk==3 ? 'style="display:none;"' : '')+' onclick="window.open(\'./view.php?a='+url+'\')">'+
+                    '<div class="anc-style" '+(uk==3 ? 'style="display:none;"' : '')+' onclick="window.open(\'./view.php?a='+url+'\')">'+
                     
-                        '<table cellspacing="0" cellpadding="0" class="box-anuncio" onMouseOut="this.style.borderColor=\'#ccc\';this.style.backgroundColor=\'#fff\'" onMouseOver="this.style.borderColor=\'#bbb\';this.style.backgroundColor=\'#ffffcc\'" onClick="mkC('+adid+')">'+
+                        '<table id="link' + tx + 'x' + i + '" cellspacing="0" cellpadding="0" class="box-anuncio" onMouseOut="this.style.borderColor=\'#ccc\';this.style.backgroundColor=\'#fff\'" onMouseOver="this.style.borderColor=\'#bbb\';this.style.backgroundColor=\'#ffffcc\'" onClick="mkC('+adid+')">'+
                         '<tr>'+
                           '<td align="left" style="padding:3px 3px 0;"><div id="title-'+adid+'" class="anuncio-'+(clicked ?  'clicked' : print_class)+'-title">'+title+'</div></td>'+
                         '</tr>'+
@@ -69,14 +69,14 @@ function ck(name){
 }
     
 function nt(){
-	if(advs.length>0){
+	if(links.length>0){
 		//var cid = advs.shift();
 		var lk = links.shift();
 		//alert(cid);
 		//alert(lk);
 		//window.open("http://www.baidu.com");
 		//window.open("./view.php?a="+lk);
-		lk.click();
+		document.getElementById(lk).click();
 	}else{
 		window.location.href = "http://www.probux.com/progrid.php";
 	}
