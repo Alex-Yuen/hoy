@@ -15,5 +15,12 @@
 	<classpathentry kind="lib" path="D:/Juno/plugins/com.ibm.icu_4.4.2.v20110823.jar" sourcepath="D:/Juno/plugins/com.ibm.icu.source_4.4.2.v20110823.jar"/>
 	<classpathentry kind="lib" path="D:/Juno/plugins/org.eclipse.ui.forms_3.5.200.v20120521-2329.jar" sourcepath="D:/Juno/plugins/org.eclipse.ui.forms.source_3.5.200.v20120521-2329.jar"/>
 	<classpathentry kind="lib" path="lib/image.jar"/>
+	<classpathentry kind="lib" path="lib/commons-codec-1.6.jar"/>
+	<classpathentry kind="lib" path="lib/commons-logging-1.1.1.jar"/>
+	<classpathentry kind="lib" path="lib/httpclient-4.2.3.jar"/>
+	<classpathentry kind="lib" path="lib/httpclient-cache-4.2.3.jar"/>
+	<classpathentry kind="lib" path="lib/httpcore-4.2.2.jar"/>
+	<classpathentry kind="lib" path="lib/httpmime-4.2.3.jar"/>
+	<classpathentry kind="lib" path="lib/json.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
