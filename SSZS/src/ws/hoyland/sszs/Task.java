@@ -14,7 +14,7 @@ public class Task implements Runnable, Observer {
 	@Override
 	public void update(Observable obj, Object arg) {
 		// TODO Auto-generated method stub
-		// 指导线程的动作
+		// 接收来自Engin的消息
 		
 	}
 
