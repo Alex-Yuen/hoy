@@ -185,8 +185,8 @@ public class Option extends Dialog implements Observer {
 		label_2.setBounds(10, 71, 112, 17);
 		
 		spinner_4 = new Spinner(composite, SWT.BORDER);
-		spinner_4.setMinimum(3);
-		spinner_4.setSelection(3);
+		spinner_4.setMinimum(1);
+		spinner_4.setSelection(1);
 		spinner_4.setBounds(128, 68, 47, 20);
 		
 		TabItem tbtmNewItem_1 = new TabItem(tabFolder, SWT.NONE);
