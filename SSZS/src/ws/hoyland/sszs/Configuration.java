@@ -40,6 +40,8 @@ public class Configuration extends Properties {
 			store(os, null);
 			os.flush();
 			os.close();
+			
+			Engine.getInstance().fire(EngineMessage.MSG_CONFIG_UPDATED, null);
 		}catch(Exception e){
 			e.printStackTrace();
 		}
