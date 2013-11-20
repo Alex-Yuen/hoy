@@ -1,5 +1,7 @@
 package ws.hoyland.sszs;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -31,6 +33,13 @@ public class SSZS implements Observer{
 	private Option option;
 	private Text text_1;
 	private Text text_3;
+	private Button btnUu;
+	private Label label_3;
+	private Label label_4;
+	private Button button;
+	private Button button_1;
+	private Button btnDenglu;
+	private Label status;
 
 	/**
 	 * Launch the application.
@@ -88,7 +97,7 @@ public class SSZS implements Observer{
 		int y = bounds.y + (bounds.height - rect.height) / 2;
 		shlSszs.setLocation(x, y);
 		
-		Label status = new Label(shlSszs, SWT.BORDER);
+		status = new Label(shlSszs, SWT.BORDER);
 		status.setBounds(0, 531, 852, 17);
 		
 		Label label = new Label(shlSszs, SWT.NONE);
@@ -131,12 +140,34 @@ public class SSZS implements Observer{
 		text.setEditable(false);
 		text.setBounds(489, 26, 363, 223);
 		
-		Button btnUu = new Button(shlSszs, SWT.CHECK);
+		btnUu = new Button(shlSszs, SWT.CHECK);
+		btnUu.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				if(btnUu.getSelection()){
+					label_3.setEnabled(true);
+					label_4.setEnabled(true);
+					text_1.setEnabled(true);
+					text_3.setEnabled(true);					
+					button.setEnabled(true);
+					button_1.setEnabled(true);					
+					btnDenglu.setEnabled(true);					
+				}else{
+					label_3.setEnabled(false);
+					label_4.setEnabled(false);
+					text_1.setEnabled(false);
+					text_3.setEnabled(false);					
+					button.setEnabled(false);
+					button_1.setEnabled(false);					
+					btnDenglu.setEnabled(false);				
+				}
+			}
+		});
 		btnUu.setSelection(true);
 		btnUu.setText("使用UU输入验证码:");
 		btnUu.setBounds(489, 255, 132, 17);
 		
-		Label label_3 = new Label(shlSszs, SWT.NONE);
+		label_3 = new Label(shlSszs, SWT.NONE);
 		label_3.setText("帐号:");
 		label_3.setBounds(489, 280, 43, 17);
 		
@@ -268,19 +299,39 @@ public class SSZS implements Observer{
 		tableColumn_11.setWidth(67);
 		tableColumn_11.setText("使用次数");
 		
-		Button btnDenglu = new Button(shlSszs, SWT.NONE);
+		btnDenglu = new Button(shlSszs, SWT.NONE);
+		btnDenglu.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				List<String> message = new ArrayList<String>();
+				message.add(text_1.getText());
+				message.add(text_3.getText());
+				message.add(String.valueOf(button.getSelection()));
+				message.add(String.valueOf(button_1.getSelection()));
+				
+				Engine.getInstance().fire(EngineMessage.IM_USERLOGIN, message);
+			}
+		});
 		btnDenglu.setText("登录");
 		btnDenglu.setBounds(707, 278, 145, 65);
 		
-		Label label_21 = new Label(shlSszs, SWT.NONE);
-		label_21.setText("密码:");
-		label_21.setBounds(489, 304, 43, 17);
+		label_4 = new Label(shlSszs, SWT.NONE);
+		label_4.setText("密码:");
+		label_4.setBounds(489, 304, 43, 17);
 		
-		Button button = new Button(shlSszs, SWT.CHECK);
+		button = new Button(shlSszs, SWT.CHECK);
 		button.setText("记住密码");
 		button.setBounds(489, 326, 69, 17);
 		
-		Button button_1 = new Button(shlSszs, SWT.CHECK);
+		button_1 = new Button(shlSszs, SWT.CHECK);
+		button_1.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				if(button_1.getSelection()){
+					button.setSelection(true);
+				}
+			}
+		});
 		button_1.setText("自动登录");
 		button_1.setBounds(614, 326, 69, 17);
 		
@@ -294,8 +345,24 @@ public class SSZS implements Observer{
 
 	@Override
 	public void update(Observable obj, Object arg) {
-		// TODO Auto-generated method stub
 		//接收来自Engine的消息
+		final String msg = (String) arg;
+		
+		if(msg.startsWith(String.valueOf(EngineMessage.OM_LOGINING))){
+			Display.getDefault().asyncExec(new Runnable() {
+				@Override
+				public void run() {
+					status.setText("正在登录");
+				}				
+			});
+		}else if(msg.startsWith(String.valueOf(EngineMessage.OM_LOGINED))){
+			Display.getDefault().asyncExec(new Runnable() {
+				@Override
+				public void run() {
+					status.setText("登录完成: 结果为"+msg.split(":")[1]);
+				}				
+			});
+		}
 	}
 
 }

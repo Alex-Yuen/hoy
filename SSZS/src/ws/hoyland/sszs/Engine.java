@@ -1,5 +1,6 @@
 package ws.hoyland.sszs;
 
+import java.util.List;
 import java.util.Observable;
 
 /**
@@ -33,8 +34,41 @@ public class Engine extends Observable {
 				//暂不做处理
 				//this.setChanged();
 				break;
+			case EngineMessage.IM_USERLOGIN:
+				uulogin(message);
+				break;
+			case EngineMessage.IM_UL_STATUS:
+				Integer i = (Integer)message;				
+				this.setChanged();
+				if(i==0x2586){
+					//this.setChanged();
+					this.notifyObservers(String.valueOf(EngineMessage.OM_LOGINING));
+				}else{
+					this.notifyObservers(EngineMessage.OM_LOGINED+":"+i);
+				}
+				break;
 			default:
 				break;
 		}
+	}
+
+	@SuppressWarnings("unchecked")
+	private void uulogin(Object message){
+		final List<String> msg = (List<String>)message;
+		
+		Thread t = new Thread(new Runnable(){
+			@Override
+			public void run() {
+				Engine.getInstance().fire(EngineMessage.IM_UL_STATUS, 0x2586);
+				
+				int userID;
+				DM.INSTANCE.uu_setSoftInfoA(94034, "0c324570e9914c20ad2fab51b50b3fdc");				
+				userID = DM.INSTANCE.uu_loginA(msg.get(0), msg.get(1));
+				
+				Engine.getInstance().fire(EngineMessage.IM_UL_STATUS, userID);
+			}			
+		});
+		
+		t.start();
 	}
 }
