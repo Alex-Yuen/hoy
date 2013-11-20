@@ -29,7 +29,9 @@ public class Engine extends Observable {
 	 */
 	public void fire(int type, Object message){
 		switch(type){
-			case EngineMessage.MSG_CONFIG_UPDATED:
+			case EngineMessage.IM_CONFIG_UPDATED:
+				//暂不做处理
+				//this.setChanged();
 				break;
 			default:
 				break;
