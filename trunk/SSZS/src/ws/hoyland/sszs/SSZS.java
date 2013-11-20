@@ -98,7 +98,7 @@ public class SSZS implements Observer{
 		shlSszs.setLocation(x, y);
 		
 		status = new Label(shlSszs, SWT.BORDER);
-		status.setBounds(0, 531, 852, 17);
+		status.setBounds(0, 528, 852, 20);
 		
 		Label label = new Label(shlSszs, SWT.NONE);
 		label.setText("帐号列表 (共 0 条):");
