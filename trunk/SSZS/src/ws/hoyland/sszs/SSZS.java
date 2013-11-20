@@ -1,5 +1,8 @@
 package ws.hoyland.sszs;
 
+import java.util.Observable;
+import java.util.Observer;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ShellAdapter;
 import org.eclipse.swt.events.ShellEvent;
@@ -17,7 +20,7 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 
-public class SSZS {
+public class SSZS implements Observer{
 
 	protected Shell shlSszs;
 	
@@ -42,6 +45,10 @@ public class SSZS {
 		}
 	}
 
+	public SSZS(){
+		Engine.getInstance().addObserver(this);
+	}
+	
 	/**
 	 * Open the window.
 	 */
@@ -68,6 +75,7 @@ public class SSZS {
 		shlSszs.addShellListener(new ShellAdapter() {
 			@Override
 			public void shellClosed(ShellEvent e) {
+				Engine.getInstance().deleteObserver(SSZS.this);
 				System.exit(0);
 			}
 		});
@@ -282,6 +290,12 @@ public class SSZS {
 		text_3 = new Text(shlSszs, SWT.BORDER | SWT.PASSWORD);
 		text_3.setBounds(538, 302, 139, 20);
 
+	}
+
+	@Override
+	public void update(Observable obj, Object arg) {
+		// TODO Auto-generated method stub
+		//接收来自Engine的消息
 	}
 
 }

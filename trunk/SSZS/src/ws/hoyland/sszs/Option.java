@@ -1,5 +1,8 @@
 package ws.hoyland.sszs;
 
+import java.util.Observable;
+import java.util.Observer;
+
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Dialog;
 import org.eclipse.swt.widgets.Display;
@@ -15,8 +18,10 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.events.DisposeListener;
+import org.eclipse.swt.events.DisposeEvent;
 
-public class Option extends Dialog {
+public class Option extends Dialog implements Observer {
 
 	protected Object result;
 	protected Shell shell;
@@ -40,6 +45,7 @@ public class Option extends Dialog {
 	public Option(Shell parent, int style) {
 		super(parent, style);
 		setText("SWT Dialog");
+		Engine.getInstance().addObserver(this);
 	}
 	
 	private void load(){
@@ -103,7 +109,7 @@ public class Option extends Dialog {
 	public Object open() {
 		createContents();
 		load();
-		shell.open();		
+		shell.open();
 		shell.layout();
 		Display display = getParent().getDisplay();
 		while (!shell.isDisposed()) {
@@ -123,6 +129,11 @@ public class Option extends Dialog {
 	 */
 	private void createContents() {
 		shell = new Shell(getParent(), getStyle());
+		shell.addDisposeListener(new DisposeListener() {
+			public void widgetDisposed(DisposeEvent e) {
+				Engine.getInstance().deleteObserver(Option.this);
+			}
+		});
 //		shell.addShellListener(new ShellAdapter() {
 //			@Override
 //			public void shellClosed(ShellEvent e) {
@@ -271,5 +282,11 @@ public class Option extends Dialog {
 		});
 		btnc.setText("取消(&C)");
 		btnc.setBounds(338, 221, 80, 27);
+	}
+
+	@Override
+	public void update(Observable obj, Object arg) {
+		// TODO Auto-generated method stub
+		// 接收来自Engine的消息
 	}
 }
