@@ -41,7 +41,11 @@ public class Configuration extends Properties {
 			os.flush();
 			os.close();
 			
-			Engine.getInstance().fire(EngineMessage.IM_CONFIG_UPDATED, this);
+			EngineMessage message = new EngineMessage();
+			message.setType(EngineMessageType.IM_CONFIG_UPDATED);
+			message.setData(this);
+			
+			Engine.getInstance().fire(message);
 		}catch(Exception e){
 			e.printStackTrace();
 		}
