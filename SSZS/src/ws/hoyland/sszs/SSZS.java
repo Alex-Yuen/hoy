@@ -1,5 +1,6 @@
 package ws.hoyland.sszs;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
@@ -36,8 +37,8 @@ public class SSZS implements Observer{
 	private Label label_1;
 	private Label label_5;
 	private Button button_2;
-	private Text text;
 	private Text text_1;
+	private Text text_3;
 	private Button btnDenglu;
 	private Button btnUu;
 	private Label label_2;
@@ -69,6 +70,12 @@ public class SSZS implements Observer{
 		Display display = Display.getDefault();
 		createContents();
 		shlSszs.open();
+
+		EngineMessage message = new EngineMessage();
+		message.setType(EngineMessageType.IM_CAPTCHA_TYPE);
+		message.setData(btnUu.getSelection());
+		Engine.getInstance().fire(message);
+		
 		shlSszs.layout();
 		while (!shlSszs.isDisposed()) {
 			if (!display.readAndDispatch()) {
@@ -90,14 +97,6 @@ public class SSZS implements Observer{
 			public void shellClosed(ShellEvent e) {
 				Engine.getInstance().deleteObserver(SSZS.this);
 				System.exit(0);
-			}
-			@Override
-			public void shellActivated(ShellEvent e) {
-				EngineMessage message = new EngineMessage();
-				message.setType(EngineMessageType.IM_CAPTCHA_TYPE);
-				message.setData(btnDenglu.getSelection());
-				Engine.getInstance().fire(message);
-				
 			}
 		});
 		shlSszs.setSize(713, 499);
@@ -156,7 +155,7 @@ public class SSZS implements Observer{
 		tableColumn_2.setText("密码");
 		
 		TableColumn tableColumn_4 = new TableColumn(table, SWT.NONE);
-		tableColumn_4.setWidth(100);
+		tableColumn_4.setWidth(98);
 		tableColumn_4.setText("状态");
 		
 		label_5 = new Label(shlSszs, SWT.BORDER | SWT.WRAP);
@@ -296,7 +295,7 @@ public class SSZS implements Observer{
 		tableColumn_9.setText("密码");
 		
 		TableColumn tableColumn_11 = new TableColumn(table_1, SWT.NONE);
-		tableColumn_11.setWidth(100);
+		tableColumn_11.setWidth(98);
 		tableColumn_11.setText("使用次数");
 		
 		Group group_1 = new Group(shlSszs, SWT.NONE);
@@ -310,7 +309,7 @@ public class SSZS implements Observer{
 				if(btnUu.getSelection()){
 					label_2.setEnabled(true);
 					label_3.setEnabled(true);
-					text.setEnabled(true);
+					text_3.setEnabled(true);
 					text_1.setEnabled(true);
 					button_1.setEnabled(true);
 					button_3.setEnabled(true);
@@ -318,12 +317,18 @@ public class SSZS implements Observer{
 				}else{
 					label_2.setEnabled(false);
 					label_3.setEnabled(false);
-					text.setEnabled(false);
+					text_3.setEnabled(false);
 					text_1.setEnabled(false);
 					button_1.setEnabled(false);
 					button_3.setEnabled(false);
 					btnDenglu.setEnabled(false);					
 				}
+				
+				EngineMessage message = new EngineMessage();
+				message.setType(EngineMessageType.IM_CAPTCHA_TYPE);
+				message.setData(btnUu.getSelection());
+				Engine.getInstance().fire(message);
+				//ready();
 			}
 		});
 		btnUu.setText("使用UU输入验证码:");
@@ -361,14 +366,30 @@ public class SSZS implements Observer{
 		});
 		button_3.setText("自动登录");
 		button_3.setBounds(135, 92, 69, 17);
-		
-		text = new Text(group_1, SWT.BORDER | SWT.PASSWORD);
-		text.setBounds(59, 68, 139, 20);
-		
+
 		text_1 = new Text(group_1, SWT.BORDER);
 		text_1.setBounds(59, 44, 139, 20);
 		
+		text_3 = new Text(group_1, SWT.BORDER | SWT.PASSWORD);
+		text_3.setBounds(59, 68, 139, 20);		
+		
 		btnDenglu = new Button(group_1, SWT.NONE);
+		btnDenglu.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				List<String> params = new ArrayList<String>();
+				params.add(text_1.getText());
+				params.add(text_3.getText());
+				params.add(String.valueOf(button_1.getSelection()));
+				params.add(String.valueOf(button_3.getSelection()));
+				
+				EngineMessage message = new EngineMessage();
+				message.setType(EngineMessageType.IM_USERLOGIN);
+				message.setData(params);
+				
+				Engine.getInstance().fire(message);
+			}
+		});
 		btnDenglu.setText("登录");
 		btnDenglu.setBounds(41, 118, 129, 48);
 		

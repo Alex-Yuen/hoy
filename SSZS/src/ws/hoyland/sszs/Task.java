@@ -6,16 +6,28 @@ import java.util.Observer;
 public class Task implements Runnable, Observer {
 
 	private String line;
+	private boolean run = false;
+	private boolean fb = false; //break flag;
+	private boolean fc = false; //continue flag;
 	
 	public Task(String line) {
 		// TODO Auto-generated constructor stub
 		this.line = line;
+		this.run = true;
 	}
 
 	@Override
 	public void run() {
-		// TODO Auto-generated method stub
-		System.out.println(line);
+		//System.out.println(line);
+		while(run){
+			pretreat();
+			if(fb){
+				break;
+			}
+			if(fc){
+				continue;
+			}
+		}
 	}
 
 	@Override
@@ -25,4 +37,7 @@ public class Task implements Runnable, Observer {
 		
 	}
 
+	private void pretreat(){
+		
+	}
 }
