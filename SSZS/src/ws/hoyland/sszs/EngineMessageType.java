@@ -29,4 +29,5 @@ public class EngineMessageType {
 	public static final int OM_LOGIN_ERROR = 0x2020;
 	public static final int OM_RUNNING = 0x2021;
 	public static final int OM_IMAGE_DATA = 0x2022;
+	public static final int OM_REQUIRE_MAIL = 0x2023;
 }
