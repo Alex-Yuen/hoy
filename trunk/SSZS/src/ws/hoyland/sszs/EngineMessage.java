@@ -2,8 +2,17 @@ package ws.hoyland.sszs;
 
 public class EngineMessage {
 
+	private int tid; //task id
 	private int type;
 	private Object data;
+	
+	public int getTid() {
+		return tid;
+	}
+
+	public void setTid(int tid) {
+		this.tid = tid;
+	}
 
 	public int getType() {
 		return type;

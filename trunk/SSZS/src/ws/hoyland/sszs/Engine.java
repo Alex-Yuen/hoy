@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Observable;
+import java.util.Random;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.RejectedExecutionHandler;
@@ -255,6 +256,7 @@ public class Engine extends Observable {
 					for (int i = 0; i < accounts.size(); i++) {
 						try {
 							Task task = new Task(accounts.get(i));
+							Engine.getInstance().addObserver(task);
 							pool.execute(task);
 						} catch (ArrayIndexOutOfBoundsException e) {
 							e.printStackTrace();
@@ -277,12 +279,16 @@ public class Engine extends Observable {
 				
 				break;
 			case EngineMessageType.IM_REQUIRE_MAIL:
-				TaskObject obj = (TaskObject)message.getData();
-				obj.setData("hoyzhang@163.com");
 				
-				synchronized (obj.getBlock()) {
-					obj.getBlock().notifyAll();
-				}
+				Random rnd = new Random();
+				String[] ms = mails.get(rnd.nextInt(mails.size())).split("----");
+				
+				msg = new EngineMessage();
+				msg.setTid(message.getTid());
+				msg.setType(EngineMessageType.OM_REQUIRE_MAIL);
+				msg.setData(ms);
+				this.setChanged();
+				this.notifyObservers(msg);
 				
 				break;
 			default:
