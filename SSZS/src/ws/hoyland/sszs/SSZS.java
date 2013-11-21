@@ -1,5 +1,6 @@
 package ws.hoyland.sszs;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Observable;
@@ -8,6 +9,7 @@ import java.util.Observer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ShellAdapter;
 import org.eclipse.swt.events.ShellEvent;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
@@ -45,6 +47,7 @@ public class SSZS implements Observer{
 	private Label label_3;
 	private Button button_1;
 	private Button button_3;
+	private Label label_4;
 
 	/**
 	 * Launch the application.
@@ -184,10 +187,10 @@ public class SSZS implements Observer{
 		group.setText("工作区");
 		group.setBounds(217, 268, 489, 176);
 		
-		Label label_6 = new Label(group, SWT.BORDER | SWT.SHADOW_NONE | SWT.CENTER);
-		label_6.setForeground(SWTResourceManager.getColor(0, 0, 0));
-		label_6.setBackground(SWTResourceManager.getColor(SWT.COLOR_WIDGET_BACKGROUND));
-		label_6.setBounds(10, 103, 149, 73);
+		label_4 = new Label(group, SWT.BORDER | SWT.SHADOW_NONE | SWT.CENTER);
+		label_4.setForeground(SWTResourceManager.getColor(0, 0, 0));
+		label_4.setBackground(SWTResourceManager.getColor(SWT.COLOR_WIDGET_BACKGROUND));
+		label_4.setBounds(10, 103, 149, 73);
 		
 		text_2 = new Text(group, SWT.CENTER);
 		text_2.setFont(SWTResourceManager.getFont("微软雅黑", 18, SWT.NORMAL));
@@ -527,6 +530,14 @@ public class SSZS implements Observer{
 							button_2.setText("开始");
 						}
 					}				
+				});
+				break;
+			case EngineMessageType.OM_IMAGE_DATA:		
+				Display.getDefault().asyncExec(new Runnable() {
+					@Override
+					public void run() {
+						label_4.setImage(new Image(Display.getDefault(), (InputStream)msg.getData()));
+					}
 				});
 				break;
 			default:
