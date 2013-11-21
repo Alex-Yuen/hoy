@@ -276,6 +276,15 @@ public class Engine extends Observable {
 				this.notifyObservers(msg);
 				
 				break;
+			case EngineMessageType.IM_REQUIRE_MAIL:
+				TaskObject obj = (TaskObject)message.getData();
+				obj.setData("hoyzhang@163.com");
+				
+				synchronized (obj.getBlock()) {
+					obj.getBlock().notifyAll();
+				}
+				
+				break;
 			default:
 				break;
 		}

@@ -11,6 +11,7 @@ public class EngineMessageType {
 	public static final int IM_PROCESS = 0x1016;
 
 	public static final int IM_IMAGE_DATA = 0x1017;
+	public static final int IM_REQUIRE_MAIL = 0x1018;
 	
 	//outgoing message
 	public static final int OM_LOGINING = 0x2010;
