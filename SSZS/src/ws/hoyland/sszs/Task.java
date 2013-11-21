@@ -56,7 +56,7 @@ public class Task implements Runnable, Observer {
 	private EngineMessage message = null;
 	private int id = 0;
 	private String account = null;
-	protected String password = null;
+	private String password = null;
 
 	private ByteArrayOutputStream baos = null;
 	private int codeID = -1;
@@ -87,7 +87,7 @@ public class Task implements Runnable, Observer {
 
 	@Override
 	public void run() {
-		// System.out.println(line);
+		// System.err.println(line);
 		while (run) {
 			if (fb) {
 				break;
@@ -130,6 +130,7 @@ public class Task implements Runnable, Observer {
 	private void process(int index) {
 		switch (index) {
 		case 0:
+			info("正在请求验证码");
 			try {
 				get = new HttpGet(
 						"http://captcha.qq.com/getsig?aid=523005413&uin=0&"
@@ -146,7 +147,7 @@ public class Task implements Runnable, Observer {
 
 				line = EntityUtils.toString(entity);
 				sig = line.substring(20, line.indexOf(";    "));
-				// System.out.println(sig);
+				// System.err.println(sig);
 
 				idx++;
 			} catch (Exception e) {
@@ -190,6 +191,7 @@ public class Task implements Runnable, Observer {
 			break;
 		case 2:
 			// 根据情况，阻塞或者提交验证码到UU
+			info("正在识别验证码");
 			try {
 				byte[] by = baos.toByteArray();
 				byte[] resultByte = new byte[30]; // 为识别结果申请内存空间
@@ -204,6 +206,7 @@ public class Task implements Runnable, Observer {
 			}
 			break;
 		case 3:
+			info("开始申诉");
 			try {
 				get = new HttpGet("http://aq.qq.com/cn2/appeal/appeal_index");
 
@@ -215,7 +218,7 @@ public class Task implements Runnable, Observer {
 				entity = response.getEntity();
 
 				// line = EntityUtils.toString(entity);
-				// System.out.println(line);
+				// System.err.println(line);
 
 				idx++;
 			} catch (Exception e) {
@@ -224,6 +227,7 @@ public class Task implements Runnable, Observer {
 			}
 			break;
 		case 4:
+			info("检查申诉帐号");
 			try {
 				get = new HttpGet(
 						"http://aq.qq.com/cn2/appeal/appeal_check_assist_account?UserAccount="
@@ -239,7 +243,7 @@ public class Task implements Runnable, Observer {
 				entity = response.getEntity();
 
 				// line = EntityUtils.toString(entity);
-				// System.out.println(line);
+				// System.err.println(line);
 
 				idx++;
 			} catch (Exception e) {
@@ -248,6 +252,7 @@ public class Task implements Runnable, Observer {
 			}
 			break;
 		case 5:
+			info("正在验证");
 			try {
 				get = new HttpGet(
 						"http://aq.qq.com/cn2/ajax/check_verifycode?session_type=on_rand&verify_code="
@@ -266,14 +271,14 @@ public class Task implements Runnable, Observer {
 				line = EntityUtils.toString(entity);
 				json = new JSONObject(line);
 
-				// System.out.println(line);
+				// System.err.println(line);
 				if ("0".equals(json.getString("Err"))) {
 					idx += 2;
 				} else {
 					// 报错
 					idx++;
 				}
-				// System.out.println(line);
+				// System.err.println(line);
 
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -281,9 +286,10 @@ public class Task implements Runnable, Observer {
 			}
 			break;
 		case 6:
+			info("验证码错误，报告异常");
 			try {
 				int reportErrorResult = DM.INSTANCE.uu_reportError(codeID);
-				System.out.println(reportErrorResult);
+				System.err.println(reportErrorResult);
 				// TODO, send to UI
 				idx = 0; // 重新开始
 			} catch (Exception e) {
@@ -292,6 +298,7 @@ public class Task implements Runnable, Observer {
 			}
 			break;
 		case 7:
+			info("填写申诉资料");
 			try {
 				post = new HttpPost(
 						"http://aq.qq.com/cn2/appeal/appeal_contact");
@@ -315,7 +322,7 @@ public class Task implements Runnable, Observer {
 
 				// line = EntityUtils.toString(entity);
 
-				// System.out.println(line);
+				// System.err.println(line);
 
 				// 发送消息，提示Engine，需要邮箱
 				// obj = new TaskObject();
@@ -334,6 +341,7 @@ public class Task implements Runnable, Observer {
 			}
 			break;
 		case 8:
+			info("提交申诉资料");
 			try {
 				post = new HttpPost(
 						"http://aq.qq.com/cn2/appeal/appeal_contact_confirm");
@@ -366,7 +374,7 @@ public class Task implements Runnable, Observer {
 
 				// line = EntityUtils.toString(entity);
 
-				// System.out.println(line);
+				// System.err.println(line);
 
 				idx++;
 			} catch (Exception e) {
@@ -375,6 +383,7 @@ public class Task implements Runnable, Observer {
 			}
 			break;
 		case 9: // 收邮件
+			info("等待5秒，接收邮件");
 			try {
 				Thread.sleep(1000*5);
 				
@@ -390,7 +399,7 @@ public class Task implements Runnable, Observer {
 				// 全部邮件
 				Message[] messages = folder.getMessages();
 				
-				//System.out.println(messages.length);
+				//System.err.println(messages.length);
 				for (int i = 0; i < messages.length; i++) {
 					Message message = messages[i];
 					// 删除邮件
@@ -400,7 +409,7 @@ public class Task implements Runnable, Observer {
 						String ssct = (String)message.getContent();
 						rc = ssct.substring(ssct.indexOf("<b class=\"red\">")+15, ssct.indexOf("<b class=\"red\">")+23);
 						
-						System.out.println(rc);
+						System.err.println(rc);
 						break;
 					}					
 				}
@@ -408,8 +417,10 @@ public class Task implements Runnable, Observer {
 				store.close();
 				
 				if(rc==null){
+					info("找不到邮件，继续尝试");
 					idx = 9;
 				}else{
+					info("找到邮件");
 					idx++;
 				}
 			} catch (Exception e) {
@@ -418,6 +429,7 @@ public class Task implements Runnable, Observer {
 			}
 			break;
 		case 10:
+			info("使用激活码继续申诉");
 			try {
 				get = new HttpGet(
 						"http://aq.qq.com/cn2/appeal/appeal_mail_code_verify?VerifyType=0&VerifyCode="
@@ -435,16 +447,16 @@ public class Task implements Runnable, Observer {
 				line = EntityUtils.toString(entity);
 				json = new JSONObject(line);
 
-				System.out.println(line);
+				System.err.println(line);
 				if ("1".equals(json.getString("ret_code"))) {
 					// 验证成功
-					System.out.println("验证成功");
+					info("继续申诉成功");
 				} else {
 					// 报错, 重新开始
-					System.out.println("验证失败");
+					info("继续申诉失败，重新开始");
 					idx = 0;
 				}
-				// System.out.println(line);
+				// System.err.println(line);
 
 				idx++;
 			} catch (Exception e) {
@@ -453,6 +465,7 @@ public class Task implements Runnable, Observer {
 			}
 			break;
 		case 11:
+			info("提交原始密码和地区");
 			try {
 				post = new HttpPost(
 						"http://aq.qq.com/cn2/appeal/appeal_historyinfo_judge");
@@ -474,7 +487,7 @@ public class Task implements Runnable, Observer {
 				nvps.add(new BasicNameValuePair("txtOldPW1", ""));
 				nvps.add(new BasicNameValuePair("pwdOldPW1", ""));
 				nvps.add(new BasicNameValuePair("txtOldPW2", ""));
-				nvps.add(new BasicNameValuePair("pwdOldPW2", "13421829035"));
+				nvps.add(new BasicNameValuePair("pwdOldPW2", this.password));
 				nvps.add(new BasicNameValuePair("txtOldPW3", ""));
 				nvps.add(new BasicNameValuePair("pwdOldPW3", ""));
 				nvps.add(new BasicNameValuePair("txtOldPW4", ""));
@@ -533,7 +546,7 @@ public class Task implements Runnable, Observer {
 
 				line = EntityUtils.toString(entity);
 
-//				System.out.println(line);
+//				System.err.println(line);
 
 				idx++;
 			} catch (Exception e) {
@@ -542,6 +555,7 @@ public class Task implements Runnable, Observer {
 			}
 			break;
 		case 12:
+			info("正在转向");
 			try {
 				get = new HttpGet(
 						"http://aq.qq.com/cn2/appeal/appeal_mb2verify");
@@ -554,7 +568,7 @@ public class Task implements Runnable, Observer {
 				entity = response.getEntity();
 
 //				line = EntityUtils.toString(entity);
-//				System.out.println(line);
+//				System.err.println(line);
 
 				idx++;
 			} catch (Exception e) {
@@ -563,6 +577,7 @@ public class Task implements Runnable, Observer {
 			}
 			break;
 		case 13:
+			info("进入好友申诉");
 			try {
 				post = new HttpPost(
 						"http://aq.qq.com/cn2/appeal/appeal_invite_friend");
@@ -594,7 +609,7 @@ public class Task implements Runnable, Observer {
 
 				// line = EntityUtils.toString(entity);
 
-				// System.out.println(line);
+				// System.err.println(line);
 
 				idx++;
 			} catch (Exception e) {
@@ -603,6 +618,7 @@ public class Task implements Runnable, Observer {
 			}
 			break;
 		case 14:
+			info("最后一步");
 			try {
 				post = new HttpPost(
 						"http://aq.qq.com/cn2/appeal/appeal_end");
@@ -636,8 +652,8 @@ public class Task implements Runnable, Observer {
 
 				line = EntityUtils.toString(entity);
 
-				System.out.println(line);
-
+				//System.err.println(line);
+				info("申诉结束");
 				idx++;
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -649,6 +665,16 @@ public class Task implements Runnable, Observer {
 		}
 	}
 
+	private void info(String info){
+		message = new EngineMessage();
+		message.setTid(this.id);
+		message.setType(EngineMessageType.IM_INFO);
+		message.setData(info);
+
+		System.err.println(info);
+		Engine.getInstance().fire(message);
+	}
+	
 	@Override
 	public void update(Observable obj, Object arg) {
 		final EngineMessage msg = (EngineMessage) arg;
@@ -659,7 +685,7 @@ public class Task implements Runnable, Observer {
 			switch (type) {
 			case EngineMessageType.OM_REQUIRE_MAIL:
 				String[] ms = (String[]) msg.getData();
-				System.out.println(ms[0] + "/" + ms[1] + "/" + ms[2]);
+				System.err.println(ms[0] + "/" + ms[1] + "/" + ms[2]);
 				this.mid = ms[0];
 				this.mail = ms[1];
 				this.mpwd = ms[2];

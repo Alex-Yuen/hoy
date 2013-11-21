@@ -540,6 +540,13 @@ public class SSZS implements Observer{
 					}
 				});
 				break;
+			case EngineMessageType.OM_INFO:
+				Display.getDefault().asyncExec(new Runnable() {
+					@Override
+					public void run() {					
+						table.getItem(msg.getTid()-1).setText(3, (String)msg.getData());
+					}
+				});
 			default:
 				break;
 		}

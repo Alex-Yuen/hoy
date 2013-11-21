@@ -291,6 +291,15 @@ public class Engine extends Observable {
 				this.notifyObservers(msg);
 				
 				break;
+			case EngineMessageType.IM_INFO:
+				msg = new EngineMessage();
+				msg.setTid(message.getTid());
+				msg.setType(EngineMessageType.OM_INFO);
+				msg.setData(message.getData());
+				
+				this.setChanged();
+				this.notifyObservers(msg);
+				break;
 			default:
 				break;
 		}
