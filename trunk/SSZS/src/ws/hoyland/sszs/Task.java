@@ -6,8 +6,6 @@ import java.io.DataInputStream;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Observable;
-import java.util.Observer;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -21,13 +19,16 @@ import org.apache.http.params.CoreConnectionPNames;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONObject;
 
-public class Task implements Runnable, Observer {
+public class Task implements Runnable {
 
 	private String line;
 	private boolean run = false;
 	private boolean fb = false; //break flag;
 	private boolean fc = false; //continue flag;
 	private int idx = 0; //method index;
+	
+	private boolean block = false;
+	private TaskObject obj = null;
 	
 	private DefaultHttpClient client;
 	private HttpPost post = null;
@@ -79,6 +80,19 @@ public class Task implements Runnable, Observer {
 			if(fc){
 				continue;
 			}
+			
+			if(block){			
+				synchronized (obj.getBlock()) {
+					try {
+						obj.getBlock().wait();
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+				block = false;
+			}
+			
+			process(idx);
 
 			try {
 				if(entity!=null){
@@ -94,15 +108,7 @@ public class Task implements Runnable, Observer {
 			catch (Exception e) {
 				e.printStackTrace();
 			}
-			process(idx);
 		}
-	}
-
-	@Override
-	public void update(Observable obj, Object arg) {
-		// TODO Auto-generated method stub
-		// 接收来自Engin的消息
-		
 	}
 
 	private void process(int index){
@@ -286,7 +292,16 @@ public class Task implements Runnable, Observer {
 
 					//System.out.println(line);
 					
-					idx++;					
+					//发送消息，提示Engine，需要邮箱
+					obj = new TaskObject();
+					EngineMessage message = new EngineMessage();
+					message.setType(EngineMessageType.IM_REQUIRE_MAIL);
+					message.setData(obj);
+					sendMessage(message);
+					
+					block = true;
+					
+					idx++;
 				}catch(Exception e){
 					e.printStackTrace();
 					fb = true;
@@ -294,6 +309,7 @@ public class Task implements Runnable, Observer {
 				break;
 			case 8:
 				try{
+					System.out.println(obj.getData()+">>>>");
 					post = new HttpPost(
 							"http://aq.qq.com/cn2/appeal/appeal_contact_confirm");
 					
@@ -305,7 +321,7 @@ public class Task implements Runnable, Observer {
 					nvps = new ArrayList<NameValuePair>();
 					nvps.add(new BasicNameValuePair("txtLoginUin", this.account));
 					nvps.add(new BasicNameValuePair("txtCtCheckBox", "0"));
-					nvps.add(new BasicNameValuePair("txtName", "桓国环"));
+					nvps.add(new BasicNameValuePair("txtName", Names.getInstance().getName()));
 					nvps.add(new BasicNameValuePair("txtAddress", ""));
 					nvps.add(new BasicNameValuePair("txtIDCard", ""));
 					nvps.add(new BasicNameValuePair("txtContactQQ", ""));
@@ -330,9 +346,26 @@ public class Task implements Runnable, Observer {
 					fb = true;
 				}
 				break;
+			case 9: //收邮件
+				try{
+					
+				}catch(Exception e){
+					e.printStackTrace();
+					fb = true;
+				}
+				break;
 			default:
 				break;
-		}
-		
+		}		
+	}
+	
+	private void sendMessage(final EngineMessage message){
+		Thread t = new Thread(new Runnable(){
+			@Override
+			public void run() {
+				Engine.getInstance().fire(message);
+			}			
+		});
+		t.start();
 	}
 }
