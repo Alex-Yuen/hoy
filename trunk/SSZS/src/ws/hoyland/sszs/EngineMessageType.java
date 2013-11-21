@@ -9,6 +9,8 @@ public class EngineMessageType {
 	public static final int IM_LOAD_MAIL = 0x1014; //加载邮件列表
 	public static final int IM_CAPTCHA_TYPE = 0x1015;
 	public static final int IM_PROCESS = 0x1016;
+
+	public static final int IM_IMAGE_DATA = 0x1017;
 	
 	//outgoing message
 	public static final int OM_LOGINING = 0x2010;
@@ -25,4 +27,5 @@ public class EngineMessageType {
 	public static final int OM_UNREADY = 0x2019;
 	public static final int OM_LOGIN_ERROR = 0x2020;
 	public static final int OM_RUNNING = 0x2021;
+	public static final int OM_IMAGE_DATA = 0x2022;
 }

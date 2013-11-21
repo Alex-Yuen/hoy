@@ -268,6 +268,14 @@ public class Engine extends Observable {
 					}
 				}
 				break;
+			case EngineMessageType.IM_IMAGE_DATA:				
+				msg = new EngineMessage();
+				msg.setType(EngineMessageType.OM_IMAGE_DATA);
+				msg.setData(message.getData());
+				this.setChanged();
+				this.notifyObservers(msg);
+				
+				break;
 			default:
 				break;
 		}
