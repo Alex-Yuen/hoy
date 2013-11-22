@@ -33,7 +33,7 @@ public class Task implements Runnable, Observer {
 	private String line;
 	private boolean run = false;
 	private boolean fb = false; // break flag;
-	private boolean fc = false; // continue flag;
+//	private boolean fc = false; // continue flag;
 	private int idx = 0; // method index;
 
 	// private boolean block = false;
@@ -92,9 +92,9 @@ public class Task implements Runnable, Observer {
 			if (fb) {
 				break;
 			}
-			if (fc) {
-				continue;
-			}
+//			if (fc) {
+//				continue;
+//			}
 
 			// if(block){
 			// synchronized (obj.getBlock()) {
@@ -400,17 +400,31 @@ public class Task implements Runnable, Observer {
 				Message[] messages = folder.getMessages();
 				
 				//System.err.println(messages.length);
-				for (int i = 0; i < messages.length; i++) {
+				for (int i = messages.length-1; i >=0; i--) {
 					Message message = messages[i];
 					// 删除邮件
 					// message.setFlag(Flags.Flag.DELETED,true);
 					if(message.getSubject().startsWith("QQ号码申诉联系方式确认")){
-						message.setFlag(Flags.Flag.SEEN,true);	// 标记为已读
-						String ssct = (String)message.getContent();
-						rc = ssct.substring(ssct.indexOf("<b class=\"red\">")+15, ssct.indexOf("<b class=\"red\">")+23);
 						
-						System.err.println(rc);
-						break;
+//						boolean isold = false;      
+//				        Flags flags = message.getFlags();      
+//				        Flags.Flag[] flag = flags.getSystemFlags();      
+//				        
+//				        for (int ix = 0; ix< flag.length; ix++) {      
+//				            if (flag[ix] == Flags.Flag.SEEN) {      
+//				            	isold = true;
+//				                break;
+//				            }
+//				        }
+				        
+				        //if(!isold){
+							message.setFlag(Flags.Flag.SEEN, true);	// 标记为已读
+							String ssct = (String)message.getContent();
+							rc = ssct.substring(ssct.indexOf("<b class=\"red\">")+15, ssct.indexOf("<b class=\"red\">")+23);
+							
+							System.err.println(rc);
+							break;
+				        //}
 					}					
 				}
 				folder.close(true);
@@ -451,10 +465,15 @@ public class Task implements Runnable, Observer {
 				if ("1".equals(json.getString("ret_code"))) {
 					// 验证成功
 					info("继续申诉成功");
-				} else {
+				} else if ("-1".equals(json.getString("ret_code"))){
 					// 报错, 重新开始
-					info("继续申诉失败，重新开始");
+					info("继续申诉失败: 频繁申诉");
+					this.run = false;
+					break;
+				} else if("2".equals(json.getString("ret_code"))){
+					info("继续申诉失败: 激活码错误，重新开始");
 					idx = 0;
+					break;
 				}
 				// System.err.println(line);
 
@@ -659,6 +678,8 @@ public class Task implements Runnable, Observer {
 				e.printStackTrace();
 				fb = true;
 			}
+			
+			this.run = false; //结束运行
 			break;
 		default:
 			break;
