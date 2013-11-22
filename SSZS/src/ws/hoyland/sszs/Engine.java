@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Observable;
-import java.util.Random;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.RejectedExecutionHandler;
@@ -32,6 +31,7 @@ public class Engine extends Observable {
 	private boolean cptType = true;
 	private boolean running = false;
 	private ThreadPoolExecutor pool;
+	private int mindex = 0;
 	
 	private Engine(){
 		
@@ -280,8 +280,11 @@ public class Engine extends Observable {
 				break;
 			case EngineMessageType.IM_REQUIRE_MAIL:
 				
-				Random rnd = new Random();
-				String[] ms = mails.get(rnd.nextInt(mails.size())).split("----");
+				//Random rnd = new Random();
+				String[] ms = mails.get(mindex++).split("----");
+				if(mindex==mails.size()){
+					mindex = 0;
+				}
 				
 				msg = new EngineMessage();
 				msg.setTid(message.getTid());

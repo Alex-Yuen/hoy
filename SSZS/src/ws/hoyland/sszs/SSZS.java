@@ -545,8 +545,21 @@ public class SSZS implements Observer{
 					@Override
 					public void run() {					
 						table.getItem(msg.getTid()-1).setText(3, (String)msg.getData());
+						table.setSelection(msg.getTid()-1);
 					}
 				});
+				break;
+			case EngineMessageType.OM_REQUIRE_MAIL:
+				Display.getDefault().asyncExec(new Runnable() {
+					@Override
+					public void run() {
+						int mid = Integer.parseInt(((String[])msg.getData())[0]);
+						int mc = Integer.parseInt(table_1.getItem(mid-1).getText(3))+1;
+						table_1.getItem(mid-1).setText(3, String.valueOf(mc));
+						table_1.setSelection(mid-1);
+					}
+				});
+				break;
 			default:
 				break;
 		}
