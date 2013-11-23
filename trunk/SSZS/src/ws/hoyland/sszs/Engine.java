@@ -285,6 +285,7 @@ public class Engine extends Observable {
 				
 				//Random rnd = new Random();
 				if(mcount==Integer.parseInt(configuration.getProperty("EMAIL_TIMES"))){
+					mcount = 0;
 					mindex++;
 				}
 				

@@ -439,14 +439,16 @@ public class Task implements Runnable, Observer {
 //				                break;
 //				            }
 //				        }
-				        
-				        //if(!isold){
-						message.setFlag(Flags.Flag.SEEN, true);	// 标记为已读
+
 						String ssct = (String)message.getContent();
-						rc = ssct.substring(ssct.indexOf("<b class=\"red\">")+15, ssct.indexOf("<b class=\"red\">")+23);
-							
-						System.err.println(rc);
-						break;
+						if(ssct.contains("[<b>"+account.substring(0, 1))&&ssct.contains(account.substring(account.length()-1)+"</b>]")){
+				        //if(!isold){
+							message.setFlag(Flags.Flag.SEEN, true);	// 标记为已读
+							rc = ssct.substring(ssct.indexOf("<b class=\"red\">")+15, ssct.indexOf("<b class=\"red\">")+23);
+								
+							System.err.println(rc);
+							break;
+						}
 				        //}
 					}					
 				}
@@ -739,7 +741,7 @@ public class Task implements Runnable, Observer {
 					this.mail = ms[1];
 					this.mpwd = ms[2];
 				}else {
-					info("邮箱用尽, 退出线程");
+					info("没有可用邮箱, 退出任务");
 					this.run = false;
 					
 					//通知引擎
