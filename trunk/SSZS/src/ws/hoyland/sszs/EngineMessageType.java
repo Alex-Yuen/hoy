@@ -16,6 +16,9 @@ public class EngineMessageType {
 
 	public static final int IM_NO_EMAILS = 0x1020;
 	
+	public static final int IM_FINISH = 0x1021;
+	public static final int IM_START = 0x1022;
+	
 	//outgoing message
 	public static final int OM_LOGINING = 0x2010;
 	public static final int OM_LOGINED = 0x2011;
@@ -34,4 +37,5 @@ public class EngineMessageType {
 	public static final int OM_IMAGE_DATA = 0x2022;
 	public static final int OM_REQUIRE_MAIL = 0x2023;
 	public static final int OM_INFO = 0x2024;
+	public static final int OM_RECONN = 0x2025;
 }

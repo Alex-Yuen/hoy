@@ -66,12 +66,14 @@ public class Task implements Runnable, Observer {
 	private String result;
 	
 	private String rc = null; //red code in mail
+	private String rcl = null; //回执编号
 
 	protected String mid = null;
 	private String mail = null;
 	private String mpwd = null;
 	
 	private boolean sf = false; //stop flag from engine
+	private boolean rec = false;//是否准备重拨
 
 	private final String UAG = "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1; QQDownload 734; Maxthon; .NET CLR 2.0.50727; .NET4.0C; .NET4.0E)";
 
@@ -92,8 +94,26 @@ public class Task implements Runnable, Observer {
 
 	@Override
 	public void run() {
+		//阻塞等待重拨
+		if(rec){
+			info("等待重拨");
+			synchronized(ReconObject.getInstance()){
+				try{
+					ReconObject.getInstance().wait();
+				}catch(Exception e){
+					e.printStackTrace();
+				}
+			}
+			info("等待重拨结束， 继续执行");
+		}
+
+		//通知有新线程开始执行
+		message = new EngineMessage();
+		message.setType(EngineMessageType.IM_START);
+		Engine.getInstance().fire(message);
+		
 		// System.err.println(line);
-		while (run) {
+		while (run&&!sf) { //正常运行，以及未收到停止信号
 			if (fb) {
 				break;
 			}
@@ -129,6 +149,11 @@ public class Task implements Runnable, Observer {
 			}
 		}
 
+		//通知Engine: 线程结束
+		message = new EngineMessage();
+		message.setType(EngineMessageType.IM_FINISH);
+		Engine.getInstance().fire(message);
+		
 		Engine.getInstance().deleteObserver(this);
 	}
 
@@ -387,8 +412,8 @@ public class Task implements Runnable, Observer {
 				fb = true;
 			}
 			break;
-		case 9: // 收邮件
-			info("等待5秒，接收邮件");
+		case 9: // 收邮件 
+			info("等待5秒，接收邮件[确认]");
 			try {
 				try{
 					Thread.sleep(1000*5);
@@ -456,10 +481,11 @@ public class Task implements Runnable, Observer {
 				store.close();
 				
 				if(rc==null){
-					info("找不到邮件，继续尝试");
+					info("找不到邮件[确认]，继续尝试");
 					idx = 9;
+					
 				}else{
-					info("找到邮件");
+					info("找到邮件[确认]");
 					idx++;
 				}
 			} catch (Exception e) {
@@ -499,9 +525,9 @@ public class Task implements Runnable, Observer {
 					info("继续申诉失败: 激活码错误，重新开始");
 					idx = 0;
 					
-					if(sf){ //已经收到停止信号
-						this.run = false;
-					}
+//					if(sf){ //已经收到停止信号
+//						this.run = false;
+//					}
 					break;
 				}
 				// System.err.println(line);
@@ -625,7 +651,7 @@ public class Task implements Runnable, Observer {
 			}
 			break;
 		case 13:
-			info("进入好友申诉");
+			info("进入好友辅助");
 			try {
 				post = new HttpPost(
 						"http://aq.qq.com/cn2/appeal/appeal_invite_friend");
@@ -666,7 +692,7 @@ public class Task implements Runnable, Observer {
 			}
 			break;
 		case 14:
-			info("最后一步");
+			info("跳过好友辅助");
 			try {
 				post = new HttpPost(
 						"http://aq.qq.com/cn2/appeal/appeal_end");
@@ -701,14 +727,96 @@ public class Task implements Runnable, Observer {
 				line = EntityUtils.toString(entity);
 
 				//System.err.println(line);
-				info("申诉结束");
 				idx++;
 			} catch (Exception e) {
 				e.printStackTrace();
 				fb = true;
 			}
 			
-			this.run = false; //结束运行
+			break;
+		case 15:
+			//获取回执编号
+			info("等待5秒，接收邮件[回执]");
+			try {
+				try{
+					Thread.sleep(1000*5);
+				}catch(Exception e){
+					sf = true;
+					Thread.sleep(1000*4); //意外中断，继续等待
+				}
+				
+				Properties props = new Properties();
+//				props.setProperty("mail.store.protocol", "pop3");
+//				props.setProperty("mail.pop3.host", "pop3.163.com");
+				props.put("mail.imap.host", "imap.163.com");	            
+	            props.put("mail.imap.auth.plain.disable", "true");
+	             
+				Session session = Session.getDefaultInstance(props);
+				session.setDebug(false); 
+				IMAPStore store = (IMAPStore)session.getStore("imap");
+				store.connect(this.mail, this.mpwd);
+				IMAPFolder folder = (IMAPFolder)store.getFolder("INBOX");
+				folder.open(Folder.READ_WRITE);
+
+				// 全部邮件
+				Message[] messages = folder.getMessages();
+				
+				boolean seen = true;
+				//System.err.println(messages.length);
+				for (int i = messages.length-1; i >=0; i--) {
+					Message message = messages[i];
+					// 删除邮件
+					// message.setFlag(Flags.Flag.DELETED,true);
+
+					Flags flags = message.getFlags();    
+					if (flags.contains(Flags.Flag.SEEN)){
+						seen = true;    
+					} else {    
+						seen = false;    
+					}
+		               
+					if(!seen&&message.getSubject().startsWith("QQ号码申诉单已受理")){
+						
+//						boolean isold = false;      
+//				        Flags flags = message.getFlags();      
+//				        Flags.Flag[] flag = flags.getSystemFlags();      
+//				        
+//				        for (int ix = 0; ix< flag.length; ix++) {      
+//				            if (flag[ix] == Flags.Flag.SEEN) {      
+//				            	isold = true;
+//				                break;
+//				            }
+//				        }
+
+						String ssct = (String)message.getContent();
+						if(ssct.contains("[<b>"+account.substring(0, 1))&&ssct.contains(account.substring(account.length()-1)+"</b>]")){
+				        //if(!isold){
+							message.setFlag(Flags.Flag.SEEN, true);	// 标记为已读
+							rcl = ssct.substring(ssct.indexOf("<b class=\"red\">")+15, ssct.indexOf("<b class=\"red\">")+25);
+								
+							System.err.println(rcl);
+							break;
+						}
+				        //}
+					}					
+				}
+				folder.close(true);
+				store.close();
+				
+				if(rc==null){
+					info("找不到邮件[回执]，继续尝试");
+					idx = 15;
+				}else{
+					info("找到邮件[回执]");
+					idx++;
+					info("申诉结束");
+					this.run = false; //结束运行
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+				fb = true;
+			}
+
 			break;
 		default:
 			break;
@@ -721,7 +829,7 @@ public class Task implements Runnable, Observer {
 		message.setType(EngineMessageType.IM_INFO);
 		message.setData(info);
 
-		System.err.println(info);
+		System.err.println("["+this.account+"]"+info);
 		Engine.getInstance().fire(message);
 	}
 	
@@ -729,7 +837,7 @@ public class Task implements Runnable, Observer {
 	public void update(Observable obj, Object arg) {
 		final EngineMessage msg = (EngineMessage) arg;
 
-		if (msg.getTid() == this.id) {
+		if (msg.getTid() == this.id || msg.getTid()==-1) { //-1, all tasks message
 			int type = msg.getType();
 
 			switch (type) {
@@ -751,6 +859,9 @@ public class Task implements Runnable, Observer {
 					// message.setData(obj);
 					Engine.getInstance().fire(message);
 				}
+				break;
+			case EngineMessageType.OM_RECONN: //系统准备重拨
+				rec = true;
 				break;
 			default:
 				break;

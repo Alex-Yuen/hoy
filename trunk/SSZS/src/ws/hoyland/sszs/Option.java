@@ -30,8 +30,6 @@ public class Option extends Dialog implements Observer {
 	private Text text_1;
 	private Configuration configuration = Configuration.getInstance();
 	private Combo combo;
-	private Spinner spinner;
-	private Spinner spinner_1;
 	private Combo combo_1;
 	private Combo combo_3;
 	private Combo combo_5;
@@ -76,6 +74,10 @@ public class Option extends Dialog implements Observer {
 			{"澳门"},
 			{"请选择城市","忘记了","台北","高雄","基隆","台中","台南","新竹","嘉义","台北县","宜兰县","新竹县","桃园县","苗栗县","台中县","彰化县","南投县","嘉义县","云林县","台南县","高雄县","屏东县","台东县","花莲县","澎湖县"}
 	};
+	private Spinner spinner;
+	private Spinner spinner_1;
+	private Spinner spinner_2;
+	private Spinner spinner_3;
 	/**
 	 * Create the dialog.
 	 * @param parent
@@ -132,6 +134,9 @@ public class Option extends Dialog implements Observer {
 				text_1.setText(this.configuration.getProperty("ADSL_PASSWORD"));
 				
 				spinner_1.setSelection(Integer.parseInt(this.configuration.getProperty("THREAD_COUNT")));
+				
+				spinner_2.setSelection(Integer.parseInt(this.configuration.getProperty("AUTO_RECON")));
+				spinner_3.setSelection(Integer.parseInt(this.configuration.getProperty("RECON_DELAY")));
 			}
 		}catch(Exception e){
 			e.printStackTrace();
@@ -154,6 +159,9 @@ public class Option extends Dialog implements Observer {
 		this.configuration.put("C2", String.valueOf(combo_4.getSelectionIndex()));
 		this.configuration.put("P3", String.valueOf(combo_5.getSelectionIndex()));
 		this.configuration.put("C3", String.valueOf(combo_6.getSelectionIndex()));
+		
+		this.configuration.put("AUTO_RECON", spinner_2.getText());
+		this.configuration.put("RECON_DELAY", spinner_3.getText());
 		
 		this.configuration.save();
 	}
@@ -219,7 +227,7 @@ public class Option extends Dialog implements Observer {
 		
 		Group group = new Group(composite, SWT.NONE);
 		group.setText("常用QQ的地点");
-		group.setBounds(0, 0, 416, 185);
+		group.setBounds(0, 67, 416, 118);
 		
 		Label label = new Label(group, SWT.NONE);
 		label.setText("2013年");
@@ -287,6 +295,25 @@ public class Option extends Dialog implements Observer {
 		combo_6.setBounds(136, 84, 174, 25);
 		combo_6.select(0);
 		
+		Label label_2 = new Label(composite, SWT.NONE);
+		label_2.setText("邮箱复用:");
+		label_2.setBounds(10, 10, 61, 17);
+		
+		Label label_3 = new Label(composite, SWT.NONE);
+		label_3.setText("线程数量:");
+		label_3.setBounds(10, 36, 61, 17);
+		
+		spinner = new Spinner(composite, SWT.BORDER);
+		spinner.setMaximum(10);
+		spinner.setMinimum(1);
+		spinner.setSelection(2);
+		spinner.setBounds(77, 10, 47, 20);
+		
+		spinner_1 = new Spinner(composite, SWT.BORDER);
+		spinner_1.setMinimum(1);
+		spinner_1.setSelection(1);
+		spinner_1.setBounds(77, 36, 47, 20);
+		
 		TabItem tbtmNewItem_1 = new TabItem(tabFolder, SWT.NONE);
 		tbtmNewItem_1.setText("高级");
 		
@@ -317,24 +344,29 @@ public class Option extends Dialog implements Observer {
 		text_1 = new Text(composite_1, SWT.BORDER | SWT.PASSWORD);
 		text_1.setBounds(77, 125, 139, 20);
 		
-		Label label_2 = new Label(composite_1, SWT.NONE);
-		label_2.setText("邮箱复用:");
-		label_2.setBounds(10, 13, 61, 17);
+		Label label_5 = new Label(composite_1, SWT.NONE);
+		label_5.setText("自动拨号:");
+		label_5.setBounds(10, 14, 61, 17);
 		
-		spinner = new Spinner(composite_1, SWT.BORDER);
-		spinner.setMaximum(10);
-		spinner.setMinimum(1);
-		spinner.setSelection(2);
-		spinner.setBounds(77, 13, 47, 20);
+		spinner_2 = new Spinner(composite_1, SWT.BORDER);
+		spinner_2.setMaximum(99);
+		spinner_2.setBounds(77, 11, 45, 23);
 		
-		spinner_1 = new Spinner(composite_1, SWT.BORDER);
-		spinner_1.setMinimum(1);
-		spinner_1.setSelection(1);
-		spinner_1.setBounds(77, 39, 47, 20);
+		Label lblNewLabel = new Label(composite_1, SWT.NONE);
+		lblNewLabel.setBounds(128, 14, 37, 17);
+		lblNewLabel.setText("个号码");
 		
-		Label label_3 = new Label(composite_1, SWT.NONE);
-		label_3.setText("线程数量:");
-		label_3.setBounds(10, 39, 61, 17);
+		Label label_7 = new Label(composite_1, SWT.NONE);
+		label_7.setText("拨号延时:");
+		label_7.setBounds(10, 43, 61, 17);
+		
+		spinner_3 = new Spinner(composite_1, SWT.BORDER);
+		spinner_3.setMaximum(99);
+		spinner_3.setBounds(77, 40, 45, 23);
+		
+		Label label_8 = new Label(composite_1, SWT.NONE);
+		label_8.setText("秒");
+		label_8.setBounds(128, 43, 37, 17);
 		
 		Button btnNewButton = new Button(shell, SWT.NONE);
 		btnNewButton.addSelectionListener(new SelectionAdapter() {

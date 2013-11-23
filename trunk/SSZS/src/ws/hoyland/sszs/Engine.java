@@ -15,8 +15,6 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.ThreadPoolExecutor.AbortPolicy;
 
-
-
 /**
  * 核心引擎，UI以及其他线程观察此Engine
  * @author Administrator
@@ -34,7 +32,11 @@ public class Engine extends Observable {
 	private int mindex = 0;
 	private int mcount = 0;
 	private Configuration configuration = Configuration.getInstance();
-		
+	private int recc = 0;//reconnect count
+	private int frecc = 0;//finished
+	
+	private int atrecc; //config data
+	
 	private Engine(){
 		
 	}
@@ -316,6 +318,84 @@ public class Engine extends Observable {
 			case EngineMessageType.IM_NO_EMAILS:
 				shutdown();				
 				break;
+			case EngineMessageType.IM_START: //IM_FINISH
+				recc++;
+				atrecc = Integer.parseInt(configuration.getProperty("AUTO_RECON"));
+				if(atrecc!=0&&atrecc==recc){//重拨的触发条件
+					recc = 0;
+					
+					msg = new EngineMessage();
+					msg.setTid(-1); //所有task
+					msg.setType(EngineMessageType.OM_RECONN);
+					//msg.setData(message.getData());
+					
+					this.setChanged();
+					this.notifyObservers(msg);					
+				}
+				break;
+			case EngineMessageType.IM_FINISH:
+				frecc++;
+				
+				atrecc = Integer.parseInt(configuration.getProperty("AUTO_RECON"));
+				if(atrecc!=0&&atrecc==frecc){//执行重拨
+					frecc = 0;
+					
+					Thread t = new Thread(new Runnable(){
+
+						final String account = configuration.getProperty("ADSL_ACCOUNT");
+						final String password = configuration.getProperty("ADSL_PASSWORD");
+						
+						@Override
+						public void run() {
+							System.err.println("正在重拨");
+							
+							String cut = "rasdial 宽带连接 /disconnect";
+							String link = "rasdial 宽带连接 "
+									+ account
+									+ " "
+									+ password;
+							try{
+								Thread.sleep(1000*Integer.parseInt(configuration.getProperty("RECON_DELAY")));
+								
+								String result = execute(cut);
+								
+								if (result
+										.indexOf("没有连接") == -1) {
+									result = execute(link);
+								}
+							}catch(Exception e){
+								e.printStackTrace();
+							}
+								
+							synchronized(ReconObject.getInstance()){
+								try{
+									ReconObject.getInstance().notifyAll();
+								}catch(Exception e){
+									e.printStackTrace();
+								}
+							}
+							
+							System.err.println("重拨结束");
+						}
+						
+						private String execute(String cmd) throws Exception {
+							Process p = Runtime.getRuntime().exec("cmd /c " + cmd);
+							StringBuilder result = new StringBuilder();
+							BufferedReader br = new BufferedReader(new InputStreamReader(
+									p.getInputStream(), "GB2312"));
+							String line;
+							while ((line = br.readLine()) != null) {
+								result.append(line + "\n");
+							}
+							return result.toString();
+						}
+						
+					});
+					
+					t.start();
+					
+				}
+				break;
 			default:
 				break;
 		}
@@ -324,8 +404,8 @@ public class Engine extends Observable {
 	private void shutdown() {
 		if(pool!=null){
 			//pool.shutdown();
-			pool.shutdownNow();		}
-		
+			pool.shutdownNow();	
+		}		
 	}
 
 	@SuppressWarnings("unchecked")
