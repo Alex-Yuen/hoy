@@ -48,6 +48,11 @@ public class SSZS implements Observer{
 	private Button button_1;
 	private Button button_3;
 	private Label label_4;
+	private Group group_1;
+	private Label lblNewLabel;
+	private Label label_9;
+	private Button button;
+	private Label label_6;
 
 	/**
 	 * Launch the application.
@@ -72,6 +77,7 @@ public class SSZS implements Observer{
 	public void open() {
 		Display display = Display.getDefault();
 		createContents();
+		load();
 		shlSszs.open();
 
 		EngineMessage message = new EngineMessage();
@@ -87,6 +93,22 @@ public class SSZS implements Observer{
 		}
 	}
 
+	private void load(){
+		Configuration configuration = Configuration.getInstance();
+		if(configuration.size()>0){
+			text_1.setText(configuration.getProperty("T_ACC"));
+			if("true".equals(configuration.getProperty("R_PWD"))){
+				button_1.setSelection(true);
+				text_3.setText(configuration.getProperty("T_PWD"));
+			}
+			if("true".equals(configuration.getProperty("AUTO_LOGIN"))){
+				button_3.setSelection(true);
+				login();				
+			}
+		}
+		
+	}
+	
 	/**
 	 * Create contents of the window.
 	 */
@@ -301,7 +323,7 @@ public class SSZS implements Observer{
 		tableColumn_11.setWidth(98);
 		tableColumn_11.setText("使用次数");
 		
-		Group group_1 = new Group(shlSszs, SWT.NONE);
+		group_1 = new Group(shlSszs, SWT.NONE);
 		group_1.setText("识别方式");
 		group_1.setBounds(0, 268, 213, 176);
 		
@@ -380,17 +402,7 @@ public class SSZS implements Observer{
 		btnDenglu.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				List<String> params = new ArrayList<String>();
-				params.add(text_1.getText());
-				params.add(text_3.getText());
-				params.add(String.valueOf(button_1.getSelection()));
-				params.add(String.valueOf(button_3.getSelection()));
-				
-				EngineMessage message = new EngineMessage();
-				message.setType(EngineMessageType.IM_USERLOGIN);
-				message.setData(params);
-				
-				Engine.getInstance().fire(message);
+				login();
 			}
 		});
 		btnDenglu.setText("登录");
@@ -406,7 +418,52 @@ public class SSZS implements Observer{
 		});
 		link_1.setBounds(174, 21, 24, 17);
 		link_1.setText("<a>设置</a>");
+		
+		button = new Button(group_1, SWT.NONE);
+		button.setBounds(41, 118, 129, 48);
+		button.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {				
+				button_1.setVisible(true);
+				button_3.setVisible(true);
+				text_1.setVisible(true);
+				text_3.setVisible(true);
+				btnDenglu.setVisible(true);
+				btnUu.setVisible(true);
+				label_3.setVisible(true);
 
+				lblNewLabel.setVisible(false);
+				label_9.setVisible(false);
+				button.setVisible(false);
+				label_6.setVisible(true);
+			}
+		});
+		button.setText("切换帐号");
+		
+		lblNewLabel = new Label(group_1, SWT.NONE);
+		lblNewLabel.setBounds(59, 46, 139, 17);
+		
+		label_9 = new Label(group_1, SWT.NONE);
+		label_9.setBounds(59, 70, 139, 17);
+		
+		label_6 = new Label(group_1, SWT.NONE);
+		label_6.setText("题分:");
+		label_6.setBounds(10, 70, 43, 17);
+
+	}
+
+	private void login() {
+		List<String> params = new ArrayList<String>();
+		params.add(text_1.getText());
+		params.add(text_3.getText());
+		params.add(String.valueOf(button_1.getSelection()));
+		params.add(String.valueOf(button_3.getSelection()));
+		
+		EngineMessage message = new EngineMessage();
+		message.setType(EngineMessageType.IM_USERLOGIN);
+		message.setData(params);
+		
+		Engine.getInstance().fire(message);		
 	}
 
 	@Override
@@ -420,6 +477,7 @@ public class SSZS implements Observer{
 				Display.getDefault().asyncExec(new Runnable() {
 					@Override
 					public void run() {
+						btnDenglu.setEnabled(false);
 						status.setText("正在登录");
 					}				
 				});
@@ -428,7 +486,25 @@ public class SSZS implements Observer{
 				Display.getDefault().asyncExec(new Runnable() {
 					@Override
 					public void run() {
-						status.setText("登录成功: ID="+msg.getData());
+						Object[] objs = (Object[])msg.getData();
+						
+						lblNewLabel.setText((String)objs[2]);
+						label_9.setText(String.valueOf(((Integer)objs[1]).intValue()));
+						
+						btnDenglu.setEnabled(true);
+						lblNewLabel.setVisible(true);
+						label_9.setVisible(true);
+						button.setVisible(true);
+						label_6.setVisible(true);
+						
+						btnUu.setVisible(false);
+						button_1.setVisible(false);
+						button_3.setVisible(false);
+						text_1.setVisible(false);
+						text_3.setVisible(false);
+						label_3.setVisible(false);
+						btnDenglu.setVisible(false);
+						status.setText("登录成功: ID="+String.valueOf(((Integer)objs[0]).intValue()));
 					}				
 				});
 				break;
@@ -436,7 +512,9 @@ public class SSZS implements Observer{
 				Display.getDefault().asyncExec(new Runnable() {
 					@Override
 					public void run() {
-						status.setText("登录失败: ERR="+msg.getData());
+						Object[] objs = (Object[])msg.getData();
+						btnDenglu.setEnabled(true);
+						status.setText("登录失败: ERR="+String.valueOf(((Integer)objs[0]).intValue()));
 					}				
 				});
 				break;
@@ -467,7 +545,8 @@ public class SSZS implements Observer{
 						List<String> ls = (List<String>)msg.getData();
 //						label.setText("帐号列表 (共 " + ls.get(0)
 //								+ " 条):");
-						label_1.setText(ls.get(1));
+						label_1.setText(ls.get(1));						
+						table.setSelection(0);
 					}
 				});
 				break;
@@ -499,6 +578,7 @@ public class SSZS implements Observer{
 //						label.setText("帐号列表 (共 " + ls.get(0)
 //								+ " 条):");
 						label_5.setText(ls.get(1));
+						table_1.setSelection(0);
 					}
 				});
 				break;
@@ -564,5 +644,4 @@ public class SSZS implements Observer{
 				break;
 		}
 	}
-
 }

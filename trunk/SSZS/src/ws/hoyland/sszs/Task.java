@@ -14,7 +14,6 @@ import javax.mail.Flags;
 import javax.mail.Folder;
 import javax.mail.Message;
 import javax.mail.Session;
-import javax.mail.Store;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -27,6 +26,9 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.params.CoreConnectionPNames;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONObject;
+
+import com.sun.mail.imap.IMAPFolder;
+import com.sun.mail.imap.IMAPStore;
 
 public class Task implements Runnable, Observer {
 
@@ -385,26 +387,43 @@ public class Task implements Runnable, Observer {
 		case 9: // 收邮件
 			info("等待5秒，接收邮件");
 			try {
-				Thread.sleep(1000*5);
+				try{
+					Thread.sleep(1000*5);
+				}catch(Exception e){
+					Thread.sleep(1000*4); //意外中断，继续等待
+				}
 				
 				Properties props = new Properties();
-				props.setProperty("mail.store.protocol", "pop3");
-				props.setProperty("mail.pop3.host", "pop3.163.com");
+//				props.setProperty("mail.store.protocol", "pop3");
+//				props.setProperty("mail.pop3.host", "pop3.163.com");
+				props.put("mail.imap.host", "imap.163.com");	            
+	            props.put("mail.imap.auth.plain.disable", "true");
+	             
 				Session session = Session.getDefaultInstance(props);
-				Store store = session.getStore("pop3");
+				session.setDebug(false); 
+				IMAPStore store = (IMAPStore)session.getStore("imap");
 				store.connect(this.mail, this.mpwd);
-				Folder folder = store.getFolder("INBOX");
+				IMAPFolder folder = (IMAPFolder)store.getFolder("INBOX");
 				folder.open(Folder.READ_WRITE);
 
 				// 全部邮件
 				Message[] messages = folder.getMessages();
 				
+				boolean seen = true;
 				//System.err.println(messages.length);
 				for (int i = messages.length-1; i >=0; i--) {
 					Message message = messages[i];
 					// 删除邮件
 					// message.setFlag(Flags.Flag.DELETED,true);
-					if(message.getSubject().startsWith("QQ号码申诉联系方式确认")){
+
+					Flags flags = message.getFlags();    
+					if (flags.contains(Flags.Flag.SEEN)){
+						seen = true;    
+					} else {    
+						seen = false;    
+					}
+		               
+					if(!seen&&message.getSubject().startsWith("QQ号码申诉联系方式确认")){
 						
 //						boolean isold = false;      
 //				        Flags flags = message.getFlags();      
@@ -418,12 +437,12 @@ public class Task implements Runnable, Observer {
 //				        }
 				        
 				        //if(!isold){
-							message.setFlag(Flags.Flag.SEEN, true);	// 标记为已读
-							String ssct = (String)message.getContent();
-							rc = ssct.substring(ssct.indexOf("<b class=\"red\">")+15, ssct.indexOf("<b class=\"red\">")+23);
+						message.setFlag(Flags.Flag.SEEN, true);	// 标记为已读
+						String ssct = (String)message.getContent();
+						rc = ssct.substring(ssct.indexOf("<b class=\"red\">")+15, ssct.indexOf("<b class=\"red\">")+23);
 							
-							System.err.println(rc);
-							break;
+						System.err.println(rc);
+						break;
 				        //}
 					}					
 				}

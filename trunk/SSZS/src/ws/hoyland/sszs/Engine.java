@@ -63,25 +63,28 @@ public class Engine extends Observable {
 				uulogin(data);
 				break;
 			case EngineMessageType.IM_UL_STATUS:
-				Integer it = (Integer)data;
 				msg = new EngineMessage();
 				
 				this.setChanged();
-				if(it==0x2586){
+				if(data==null){
 					msg.setType(EngineMessageType.OM_LOGINING);
 					this.notifyObservers(msg);
-				}else if(it>0){
-					login = true;
-					msg.setType(EngineMessageType.OM_LOGINED);
-					msg.setData(it);
-					this.notifyObservers(msg);
-					ready();
 				}else{
-					login = false;
-					msg.setType(EngineMessageType.OM_LOGIN_ERROR);
-					msg.setData(it);
-					this.notifyObservers(msg);
+					Object[] objs = (Object[])data;
+					Integer it = (Integer)objs[0];
+					if(it>0){						
+						login = true;
+						msg.setType(EngineMessageType.OM_LOGINED);
+						msg.setData(data);
+						this.notifyObservers(msg);
 					ready();
+					}else{
+						login = false;
+						msg.setType(EngineMessageType.OM_LOGIN_ERROR);
+						msg.setData(data);
+						this.notifyObservers(msg);
+						ready();
+					}
 				}
 				break;
 			case EngineMessageType.IM_LOAD_ACCOUNT:
@@ -266,6 +269,7 @@ public class Engine extends Observable {
 				}else{
 					//停止情况下的处理
 					if(pool!=null){
+						//pool.shutdown();
 						pool.shutdownNow();
 					}
 				}
@@ -317,17 +321,39 @@ public class Engine extends Observable {
 			public void run() {
 				EngineMessage message = new EngineMessage();
 				message.setType(EngineMessageType.IM_UL_STATUS);
-				message.setData(new Integer(0x2586));
+				message.setData(null);
 				
 				Engine.getInstance().fire(message);
 				
-				int userID;
+				Object[] data = new Object[3];
+				
+				int userID = 0;
+				int score = 0;
 				DM.INSTANCE.uu_setSoftInfoA(94034, "0c324570e9914c20ad2fab51b50b3fdc");				
 				userID = DM.INSTANCE.uu_loginA(msg.get(0), msg.get(1));
 				
+				if(userID>0){
+					//save config
+					Configuration configuration = Configuration.getInstance();
+					configuration.put("R_PWD", msg.get(2));
+					configuration.put("AUTO_LOGIN", msg.get(3));
+					if("true".equals(msg.get(2))){
+						configuration.put("T_PWD", msg.get(1));
+					}
+					configuration.put("T_ACC", msg.get(0));
+					configuration.save();
+					
+					score = DM.INSTANCE.uu_getScoreA(msg.get(0), msg.get(1)); 
+					
+				}
+				
+				data[0] = new Integer(userID);
+				data[1] = new Integer(score);
+				data[2] = msg.get(0);
+				
 				message = new EngineMessage();
 				message.setType(EngineMessageType.IM_UL_STATUS);
-				message.setData(new Integer(userID));
+				message.setData(data);
 				Engine.getInstance().fire(message);
 			}			
 		});
