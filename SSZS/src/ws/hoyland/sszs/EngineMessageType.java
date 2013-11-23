@@ -13,6 +13,8 @@ public class EngineMessageType {
 	public static final int IM_IMAGE_DATA = 0x1017;
 	public static final int IM_REQUIRE_MAIL = 0x1018;
 	public static final int IM_INFO = 0x1019;
+
+	public static final int IM_NO_EMAILS = 0x1020;
 	
 	//outgoing message
 	public static final int OM_LOGINING = 0x2010;

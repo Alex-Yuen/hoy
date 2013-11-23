@@ -103,7 +103,7 @@ public class SSZS implements Observer{
 			}
 			if("true".equals(configuration.getProperty("AUTO_LOGIN"))){
 				button_3.setSelection(true);
-				login();				
+				login();
 			}
 		}
 		
