@@ -37,7 +37,8 @@ public class Task implements Runnable, Observer {
 	private boolean fb = false; // break flag;
 //	private boolean fc = false; // continue flag;
 	private int idx = 0; // method index;
-
+	private Configuration configuration = Configuration.getInstance();
+	
 	// private boolean block = false;
 	// private TaskObject obj = null;
 
@@ -69,6 +70,8 @@ public class Task implements Runnable, Observer {
 	protected String mid = null;
 	private String mail = null;
 	private String mpwd = null;
+	
+	private boolean sf = false; //stop flag from engine
 
 	private final String UAG = "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1; QQDownload 734; Maxthon; .NET CLR 2.0.50727; .NET4.0C; .NET4.0E)";
 
@@ -390,6 +393,7 @@ public class Task implements Runnable, Observer {
 				try{
 					Thread.sleep(1000*5);
 				}catch(Exception e){
+					sf = true;
 					Thread.sleep(1000*4); //意外中断，继续等待
 				}
 				
@@ -492,6 +496,10 @@ public class Task implements Runnable, Observer {
 				} else if("2".equals(json.getString("ret_code"))){
 					info("继续申诉失败: 激活码错误，重新开始");
 					idx = 0;
+					
+					if(sf){ //已经收到停止信号
+						this.run = false;
+					}
 					break;
 				}
 				// System.err.println(line);
@@ -536,22 +544,22 @@ public class Task implements Runnable, Observer {
 				nvps.add(new BasicNameValuePair("pwdOldPW6", ""));
 				
 				nvps.add(new BasicNameValuePair("ddlLoginLocCountry1", "0"));
-				nvps.add(new BasicNameValuePair("ddlLoginLocProvince1", "19"));
-				nvps.add(new BasicNameValuePair("ddlLoginLocCity1", "21"));
+				nvps.add(new BasicNameValuePair("ddlLoginLocProvince1", String.valueOf(Integer.parseInt(configuration.getProperty("P1"))-1)));
+				nvps.add(new BasicNameValuePair("ddlLoginLocCity1", Integer.parseInt(configuration.getProperty("C1"))==0?"-1":configuration.getProperty("C1")));
 				nvps.add(new BasicNameValuePair("txtLoginLocCountry1", "国家"));
 				nvps.add(new BasicNameValuePair("txtLoginLocProvince1", "省份"));
 				nvps.add(new BasicNameValuePair("txtLoginLocCity1", "城市"));
 				
 				nvps.add(new BasicNameValuePair("ddlLoginLocCountry2", "0"));
-				nvps.add(new BasicNameValuePair("ddlLoginLocProvince2", "19"));
-				nvps.add(new BasicNameValuePair("ddlLoginLocCity2", "21"));
+				nvps.add(new BasicNameValuePair("ddlLoginLocProvince2", String.valueOf(Integer.parseInt(configuration.getProperty("P2"))-1)));
+				nvps.add(new BasicNameValuePair("ddlLoginLocCity2", Integer.parseInt(configuration.getProperty("C2"))==0?"-1":configuration.getProperty("C2")));
 				nvps.add(new BasicNameValuePair("txtLoginLocCountry2", "国家"));
 				nvps.add(new BasicNameValuePair("txtLoginLocProvince2", "省份"));
 				nvps.add(new BasicNameValuePair("txtLoginLocCity2", "城市"));
 				
 				nvps.add(new BasicNameValuePair("ddlLoginLocCountry3", "0"));
-				nvps.add(new BasicNameValuePair("ddlLoginLocProvince3", "19"));
-				nvps.add(new BasicNameValuePair("ddlLoginLocCity3", "21"));
+				nvps.add(new BasicNameValuePair("ddlLoginLocProvince3", String.valueOf(Integer.parseInt(configuration.getProperty("P3"))-1)));
+				nvps.add(new BasicNameValuePair("ddlLoginLocCity3", Integer.parseInt(configuration.getProperty("C3"))==0?"-1":configuration.getProperty("C3")));
 				nvps.add(new BasicNameValuePair("txtLoginLocCountry3", "国家"));
 				nvps.add(new BasicNameValuePair("txtLoginLocProvince3", "省份"));
 				nvps.add(new BasicNameValuePair("txtLoginLocCity3", "城市"));
@@ -724,11 +732,23 @@ public class Task implements Runnable, Observer {
 
 			switch (type) {
 			case EngineMessageType.OM_REQUIRE_MAIL:
-				String[] ms = (String[]) msg.getData();
-				System.err.println(ms[0] + "/" + ms[1] + "/" + ms[2]);
-				this.mid = ms[0];
-				this.mail = ms[1];
-				this.mpwd = ms[2];
+				if(msg.getData()!=null){
+					String[] ms = (String[]) msg.getData();
+					System.err.println(ms[0] + "/" + ms[1] + "/" + ms[2]);
+					this.mid = ms[0];
+					this.mail = ms[1];
+					this.mpwd = ms[2];
+				}else {
+					info("邮箱用尽, 退出线程");
+					this.run = false;
+					
+					//通知引擎
+					EngineMessage message = new EngineMessage();
+					//message.setTid(this.id);
+					message.setType(EngineMessageType.IM_NO_EMAILS);
+					// message.setData(obj);
+					Engine.getInstance().fire(message);
+				}
 				break;
 			default:
 				break;

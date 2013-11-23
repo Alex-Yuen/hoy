@@ -20,6 +20,7 @@ import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.DisposeEvent;
+import org.eclipse.swt.widgets.Group;
 
 public class Option extends Dialog implements Observer {
 
@@ -28,15 +29,53 @@ public class Option extends Dialog implements Observer {
 	private Text text;
 	private Text text_1;
 	private Configuration configuration = Configuration.getInstance();
+	private Combo combo;
 	private Spinner spinner;
 	private Spinner spinner_1;
-	private Button btnCheckButton;
-	private Button btnCheckButton_1;
-	private Spinner spinner_2;
-	private Spinner spinner_3;
-	private Combo combo;
-	private Spinner spinner_4;
-
+	private Combo combo_1;
+	private Combo combo_3;
+	private Combo combo_5;
+	private Combo combo_2;
+	private Combo combo_4;
+	private Combo combo_6;
+	
+	private String[][] cities = {
+			{"城市"},
+			{"北京"},
+			{"上海"},
+			{"天津"},
+			{"重庆"},
+			{"请选择城市","忘记了","石家庄","唐山","秦皇岛","邯郸","邢台","保定","张家口","承德","沧州","廊坊","衡水","其他"},
+			{"请选择城市","忘记了","太原","大同","阳泉","长治","晋城","朔州","晋中","运城","忻州","临汾","吕梁"},
+			{"请选择城市","忘记了","呼和浩特","包头","乌海","赤峰","通辽","鄂尔多斯","呼伦贝尔","乌兰察布盟","锡林郭勒盟","巴彦淖尔盟","阿拉善盟","兴安盟"},
+			{"请选择城市","忘记了","沈阳","大连","鞍山","抚顺","本溪","丹东","锦州","葫芦岛","营口","盘锦","阜新","辽阳","铁岭","朝阳"},
+			{"请选择城市","忘记了","长春","吉林市","四平","辽源","通化","白山","松原","白城","延边朝鲜族自治州"},
+			{"请选择城市","忘记了","哈尔滨","齐齐哈尔","鹤岗","双鸭山","鸡西","大庆","伊春","牡丹江","佳木斯","七台河","黑河","绥化","大兴安岭"},
+			{"请选择城市","忘记了","南京","无锡","徐州","常州","苏州","南通","连云港","淮安","盐城","扬州","镇江","泰州","宿迁","昆山"},
+			{"请选择城市","忘记了","杭州","宁波","温州","嘉兴","湖州","绍兴","金华","衢州舟山","台州","丽水"},
+			{"请选择城市","忘记了","合肥","芜湖","蚌埠","淮南","马鞍山","淮北","铜陵","安庆","黄山","滁州","阜阳","宿州","巢湖","六安","亳州","池州","宣城"},
+			{"请选择城市","忘记了","福州","厦门","莆田","三明","泉州","漳州","南平","龙岩","宁德"},
+			{"请选择城市","忘记了","南昌","景德镇","萍乡","新余","九江","鹰潭","赣州","吉安","宜春","抚州","上饶"},
+			{"请选择城市","忘记了","济南","青岛","淄博","枣庄","东营","潍坊","烟台","威海","济宁","泰安","日照","莱芜","德州","临沂","聊城","滨州","菏泽"},
+			{"请选择城市","忘记了","郑州","开封","洛阳","平顶山","焦作","鹤壁","新乡","安阳","濮阳","许昌","漯河","三门峡","南阳","商丘","信阳","周口","驻马店","济源"},
+			{"请选择城市","忘记了","武汉","黄石","襄樊","十堰","荆州","宜昌","荆门","鄂州","孝感","黄冈","咸宁","随州","仙桃","天门","潜江","神农架","恩施土家族苗族自治州"},
+			{"请选择城市","忘记了","长沙","株洲","永州","湘潭","衡阳","邵阳","岳阳","常德","张家界","益阳","郴州","怀化","娄底","湘西土家族苗族自治州"},
+			{"请选择城市","忘记了","广州","深圳","珠海","汕头","韶关","佛山","江门","湛江","茂名","肇庆","惠州","梅州","汕尾","河源","阳江","清远","东莞","中山","潮州","揭阳","云浮"},
+			{"请选择城市","忘记了","南宁","柳州","桂林","梧州","北海","防城港","钦州","贵港","玉林","百色","贺州","河池","来宾","崇左"},
+			{"请选择城市","忘记了","海口","三亚","五指山","琼海","儋州","文昌","万宁","东方","澄迈","定安","屯昌","临高","白沙黎族自治县昌","江黎族自治县","乐东黎族自治县","陵水黎族自治县","保亭黎族苗族自治县","琼中黎族苗族自治县"},
+			{"请选择城市","忘记了","成都","自贡","攀枝花","泸州","德阳","绵阳","广元","遂宁","内江","乐山","南充","宜宾","广安","达州","眉山","雅安","巴中","资阳","阿坝藏族羌族自治州","甘孜藏族自治州","凉山彝族自治州"},
+			{"请选择城市","忘记了","贵阳","六盘水","遵义","安顺","铜仁","毕节","黔西南布依族苗族自治州","黔东南苗族侗族自治州","黔南布依族苗族自治州"},
+			{"请选择城市","忘记了","昆明","曲靖","玉溪","保山","昭通","丽江","思茅","临沧","文山壮族苗族自治州","红河哈尼族彝族自治州","西双版纳傣族自治州","楚雄彝族自治州","大理白族自治州","德宏傣族景颇族自治州 ","怒江傈傈族自治州","迪庆藏族自治州"},
+			{"请选择城市","忘记了","拉萨","那曲","昌都","山南","日喀则","阿里","林芝"},
+			{"请选择城市","忘记了","西安","铜川","宝鸡","咸阳","渭南","延安","汉中","榆林","安康","商洛"},
+			{"请选择城市","忘记了","兰州","金昌","白银","天水","嘉峪关","武威","张掖","平凉","酒泉","庆阳","定西","陇南","临夏回族自治州","甘南藏族自治州"},
+			{"请选择城市","忘记了","西宁","海东","海北藏族自治州","黄南藏族自治州","海南藏族自治州","果洛藏族自治州","玉树藏族自治州","海西蒙古族藏族自治州"},
+			{"请选择城市","忘记了","银川","石嘴山","吴忠","固原"},
+			{"请选择城市","忘记了","乌鲁木齐","克拉玛依","石河子","阿拉尔","图木舒克","五家渠","吐鲁番","哈密","和田","阿克苏","喀什","克孜勒苏柯尔克孜自治州","巴音郭楞蒙古自治州","昌吉回族自治州","博尔塔拉蒙古自治州","伊犁哈萨克自治州"},
+			{"香港"},
+			{"澳门"},
+			{"请选择城市","忘记了","台北","高雄","基隆","台中","台南","新竹","嘉义","台北县","宜兰县","新竹县","桃园县","苗栗县","台中县","彰化县","南投县","嘉义县","云林县","台南县","高雄县","屏东县","台东县","花莲县","澎湖县"}
+	};
 	/**
 	 * Create the dialog.
 	 * @param parent
@@ -57,30 +96,42 @@ public class Option extends Dialog implements Observer {
 //				is.close();
 //			}			
 			if(this.configuration.size()>0){
-				spinner.setSelection(Integer.parseInt(this.configuration.getProperty("GROUP_QUANTITY")));
-				spinner_1.setSelection(Integer.parseInt(this.configuration.getProperty("TOKEN_QUANTITY")));
-				if(Integer.parseInt(this.configuration.getProperty("RECONN_GROUP_QUANTITY_FLAG"))==1){
-					btnCheckButton.setSelection(true);
-					spinner_2.setEnabled(true);
-					spinner_2.setSelection(Integer.parseInt(this.configuration.getProperty("RECONN_GROUP_QUANTITY")));
-				}else{
-					btnCheckButton.setSelection(false);
-					spinner_2.setEnabled(false);
-				}
+				combo_1.select(Integer.parseInt(this.configuration.getProperty("P1")));
+				combo_2.setItems(cities[combo_1.getSelectionIndex()]);
+				combo_2.select(Integer.parseInt(this.configuration.getProperty("C1")));
 				
-				if(Integer.parseInt(this.configuration.getProperty("RECONN_ACCOUNT_QUANTITY_FLAG"))==1){
-					btnCheckButton_1.setSelection(true);
-					spinner_3.setEnabled(true);
-					spinner_3.setSelection(Integer.parseInt(this.configuration.getProperty("RECONN_ACCOUNT_QUANTITY")));
-				}else{
-					btnCheckButton_1.setSelection(false);
-					spinner_3.setEnabled(false);
-				}
+				combo_3.select(Integer.parseInt(this.configuration.getProperty("P2")));
+				combo_4.setItems(cities[combo_3.getSelectionIndex()]);
+				combo_4.select(Integer.parseInt(this.configuration.getProperty("C2")));
+				
+				combo_5.select(Integer.parseInt(this.configuration.getProperty("P3")));
+				combo_6.setItems(cities[combo_5.getSelectionIndex()]);
+				combo_6.select(Integer.parseInt(this.configuration.getProperty("C3")));
+				
+				spinner.setSelection(Integer.parseInt(this.configuration.getProperty("EMAIL_TIMES")));				
+				//spinner_1.setSelection(Integer.parseInt(this.configuration.getProperty("TOKEN_QUANTITY")));
+//				if(Integer.parseInt(this.configuration.getProperty("RECONN_GROUP_QUANTITY_FLAG"))==1){
+//					btnCheckButton.setSelection(true);
+//					spinner_2.setEnabled(true);
+//					spinner_2.setSelection(Integer.parseInt(this.configuration.getProperty("RECONN_GROUP_QUANTITY")));
+//				}else{
+//					btnCheckButton.setSelection(false);
+//					spinner_2.setEnabled(false);
+//				}
+				
+//				if(Integer.parseInt(this.configuration.getProperty("RECONN_ACCOUNT_QUANTITY_FLAG"))==1){
+//					btnCheckButton_1.setSelection(true);
+//					spinner_3.setEnabled(true);
+//					spinner_3.setSelection(Integer.parseInt(this.configuration.getProperty("RECONN_ACCOUNT_QUANTITY")));
+//				}else{
+//					btnCheckButton_1.setSelection(false);
+//					spinner_3.setEnabled(false);
+//				}
 				
 				text.setText(this.configuration.getProperty("ADSL_ACCOUNT"));
 				text_1.setText(this.configuration.getProperty("ADSL_PASSWORD"));
 				
-				spinner_4.setSelection(Integer.parseInt(this.configuration.getProperty("THREAD_COUNT")));
+				spinner_1.setSelection(Integer.parseInt(this.configuration.getProperty("THREAD_COUNT")));
 			}
 		}catch(Exception e){
 			e.printStackTrace();
@@ -88,15 +139,21 @@ public class Option extends Dialog implements Observer {
 	}
 	
 	private void save(){
-		this.configuration.put("GROUP_QUANTITY", spinner.getText());
-		this.configuration.put("TOKEN_QUANTITY", spinner_1.getText());
-		this.configuration.put("RECONN_GROUP_QUANTITY_FLAG", btnCheckButton.getSelection()?"1":"0");
-		this.configuration.put("RECONN_GROUP_QUANTITY", spinner_2.getText());
-		this.configuration.put("RECONN_ACCOUNT_QUANTITY_FLAG", btnCheckButton_1.getSelection()?"1":"0");
-		this.configuration.put("RECONN_ACCOUNT_QUANTITY", spinner_3.getText());
+		this.configuration.put("EMAIL_TIMES", spinner.getText());
+//		this.configuration.put("RECONN_GROUP_QUANTITY_FLAG", btnCheckButton.getSelection()?"1":"0");
+//		this.configuration.put("RECONN_GROUP_QUANTITY", spinner_2.getText());
+//		this.configuration.put("RECONN_ACCOUNT_QUANTITY_FLAG", btnCheckButton_1.getSelection()?"1":"0");
+//		this.configuration.put("RECONN_ACCOUNT_QUANTITY", spinner_3.getText());
 		this.configuration.put("ADSL_ACCOUNT", text.getText());
 		this.configuration.put("ADSL_PASSWORD", text_1.getText());
-		this.configuration.put("THREAD_COUNT", spinner_4.getText());
+		this.configuration.put("THREAD_COUNT", spinner_1.getText());
+		
+		this.configuration.put("P1", String.valueOf(combo_1.getSelectionIndex()));
+		this.configuration.put("C1", String.valueOf(combo_2.getSelectionIndex()));
+		this.configuration.put("P2", String.valueOf(combo_3.getSelectionIndex()));
+		this.configuration.put("C2", String.valueOf(combo_4.getSelectionIndex()));
+		this.configuration.put("P3", String.valueOf(combo_5.getSelectionIndex()));
+		this.configuration.put("C3", String.valueOf(combo_6.getSelectionIndex()));
 		
 		this.configuration.save();
 	}
@@ -160,82 +217,81 @@ public class Option extends Dialog implements Observer {
 		Composite composite = new Composite(tabFolder, SWT.NONE);
 		tbtmNewItem.setControl(composite);
 		
-		Label lblNewLabel = new Label(composite, SWT.NONE);
-		lblNewLabel.setBounds(10, 13, 112, 17);
-		lblNewLabel.setText("每个号码发送群数:");
+		Group group = new Group(composite, SWT.NONE);
+		group.setText("常用QQ的地点");
+		group.setBounds(0, 0, 416, 185);
 		
-		spinner = new Spinner(composite, SWT.BORDER);
-		spinner.setMaximum(99999);
-		spinner.setMinimum(-1);
-		spinner.setSelection(-1);
-		spinner.setBounds(128, 10, 69, 20);
+		Label label = new Label(group, SWT.NONE);
+		label.setText("2013年");
+		label.setBounds(9, 25, 46, 17);
 		
-		Label label = new Label(composite, SWT.NONE);
-		label.setText("每个令牌发送群数:");
-		label.setBounds(10, 42, 112, 17);
+		combo_1 = new Combo(group, SWT.NONE);
+		combo_1.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				combo_2.removeAll();
+				combo_2.setItems(cities[combo_1.getSelectionIndex()]);
+				combo_2.select(0);
+			}
+		});
+		combo_1.setItems(new String[] {"省份", "北京", "上海", "天津", "重庆", "河北", "山西", "内蒙古", "辽宁", "吉林", "黑龙江", "江苏", "浙江", "安徽", "福建", "江西", "山东", "河南", "湖北", "湖南", "广东", "广西", "海南", "四川", "贵州", "云南", "西藏", "陕西", "甘肃", "青海", "宁夏", "新疆", "香港", "澳门", "台湾"});
+		combo_1.setBounds(61, 21, 69, 25);
+		combo_1.select(0);
 		
-		spinner_1 = new Spinner(composite, SWT.BORDER);
-		spinner_1.setMaximum(99999);
-		spinner_1.setMinimum(-1);
-		spinner_1.setSelection(-1);
-		spinner_1.setBounds(128, 39, 69, 20);
+		combo_2 = new Combo(group, SWT.NONE);
+		combo_2.setItems(new String[] {"城市"});
+		combo_2.setBounds(136, 21, 174, 25);
+		combo_2.select(0);
 		
-		Label label_2 = new Label(composite, SWT.NONE);
-		label_2.setText("线程数量：");
-		label_2.setBounds(10, 71, 112, 17);
+		Label label_4 = new Label(group, SWT.NONE);
+		label_4.setText("2012年");
+		label_4.setBounds(9, 57, 46, 17);
 		
-		spinner_4 = new Spinner(composite, SWT.BORDER);
-		spinner_4.setMinimum(1);
-		spinner_4.setSelection(1);
-		spinner_4.setBounds(128, 68, 47, 20);
+		combo_3 = new Combo(group, SWT.NONE);
+		combo_3.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				combo_4.removeAll();
+				combo_4.setItems(cities[combo_3.getSelectionIndex()]);
+				combo_4.select(0);
+			}
+		});
+		combo_3.setItems(new String[] {"省份", "北京", "上海", "天津", "重庆", "河北", "山西", "内蒙古", "辽宁", "吉林", "黑龙江", "江苏", "浙江", "安徽", "福建", "江西", "山东", "河南", "湖北", "湖南", "广东", "广西", "海南", "四川", "贵州", "云南", "西藏", "陕西", "甘肃", "青海", "宁夏", "新疆", "香港", "澳门", "台湾"});
+		combo_3.setBounds(61, 53, 69, 25);
+		combo_3.select(0);
+		
+		combo_4 = new Combo(group, SWT.NONE);
+		combo_4.setItems(new String[] {"城市"});
+		combo_4.setBounds(136, 53, 174, 25);
+		combo_4.select(0);
+		
+		Label label_6 = new Label(group, SWT.NONE);
+		label_6.setText("2011年");
+		label_6.setBounds(9, 88, 46, 17);
+		
+		combo_5 = new Combo(group, SWT.NONE);
+		combo_5.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				combo_6.removeAll();
+				combo_6.setItems(cities[combo_5.getSelectionIndex()]);
+				combo_6.select(0);
+			}
+		});
+		combo_5.setItems(new String[] {"省份", "北京", "上海", "天津", "重庆", "河北", "山西", "内蒙古", "辽宁", "吉林", "黑龙江", "江苏", "浙江", "安徽", "福建", "江西", "山东", "河南", "湖北", "湖南", "广东", "广西", "海南", "四川", "贵州", "云南", "西藏", "陕西", "甘肃", "青海", "宁夏", "新疆", "香港", "澳门", "台湾"});
+		combo_5.setBounds(61, 84, 69, 25);
+		combo_5.select(0);
+		
+		combo_6 = new Combo(group, SWT.NONE);
+		combo_6.setItems(new String[] {"城市"});
+		combo_6.setBounds(136, 84, 174, 25);
+		combo_6.select(0);
 		
 		TabItem tbtmNewItem_1 = new TabItem(tabFolder, SWT.NONE);
 		tbtmNewItem_1.setText("高级");
 		
 		Composite composite_1 = new Composite(tabFolder, SWT.NONE);
 		tbtmNewItem_1.setControl(composite_1);
-		
-		btnCheckButton = new Button(composite_1, SWT.CHECK);
-		btnCheckButton.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				if(btnCheckButton.getSelection()){
-					spinner_2.setEnabled(true);
-				}else{
-					spinner_2.setEnabled(false);
-				}
-			}
-		});
-		btnCheckButton.setBounds(10, 14, 69, 17);
-		btnCheckButton.setText("群数重拨");
-		
-		btnCheckButton_1 = new Button(composite_1, SWT.CHECK);
-		btnCheckButton_1.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				if(btnCheckButton_1.getSelection()){
-					spinner_3.setEnabled(true);
-				}else{
-					spinner_3.setEnabled(false);
-				}				
-			}
-		});
-		btnCheckButton_1.setBounds(10, 42, 69, 17);
-		btnCheckButton_1.setText("帐号重拨");
-		
-		spinner_2 = new Spinner(composite_1, SWT.BORDER);
-		spinner_2.setMaximum(99999);
-		spinner_2.setMinimum(1);
-		spinner_2.setSelection(10);
-		spinner_2.setEnabled(false);
-		spinner_2.setBounds(92, 11, 87, 20);
-		
-		spinner_3 = new Spinner(composite_1, SWT.BORDER);
-		spinner_3.setMaximum(99999);
-		spinner_3.setMinimum(1);
-		spinner_3.setSelection(10);
-		spinner_3.setEnabled(false);
-		spinner_3.setBounds(92, 39, 87, 20);
 		
 		Label lblNewLabel_1 = new Label(composite_1, SWT.NONE);
 		lblNewLabel_1.setEnabled(false);
@@ -244,7 +300,7 @@ public class Option extends Dialog implements Observer {
 		
 		combo = new Combo(composite_1, SWT.NONE);
 		combo.setEnabled(false);
-		combo.setBounds(91, 65, 88, 23);
+		combo.setBounds(77, 69, 88, 23);
 		combo.setText("宽带连接");
 		
 		Label lblNewLabel_2 = new Label(composite_1, SWT.NONE);
@@ -252,14 +308,33 @@ public class Option extends Dialog implements Observer {
 		lblNewLabel_2.setText("宽带帐号:");
 		
 		text = new Text(composite_1, SWT.BORDER);
-		text.setBounds(92, 96, 139, 20);
+		text.setBounds(77, 99, 139, 20);
 		
 		Label label_1 = new Label(composite_1, SWT.NONE);
 		label_1.setText("宽带密码:");
 		label_1.setBounds(10, 125, 61, 17);
 		
 		text_1 = new Text(composite_1, SWT.BORDER | SWT.PASSWORD);
-		text_1.setBounds(92, 122, 139, 20);
+		text_1.setBounds(77, 125, 139, 20);
+		
+		Label label_2 = new Label(composite_1, SWT.NONE);
+		label_2.setText("邮箱复用:");
+		label_2.setBounds(10, 13, 61, 17);
+		
+		spinner = new Spinner(composite_1, SWT.BORDER);
+		spinner.setMaximum(10);
+		spinner.setMinimum(1);
+		spinner.setSelection(2);
+		spinner.setBounds(77, 13, 47, 20);
+		
+		spinner_1 = new Spinner(composite_1, SWT.BORDER);
+		spinner_1.setMinimum(1);
+		spinner_1.setSelection(1);
+		spinner_1.setBounds(77, 39, 47, 20);
+		
+		Label label_3 = new Label(composite_1, SWT.NONE);
+		label_3.setText("线程数量:");
+		label_3.setBounds(10, 39, 61, 17);
 		
 		Button btnNewButton = new Button(shell, SWT.NONE);
 		btnNewButton.addSelectionListener(new SelectionAdapter() {

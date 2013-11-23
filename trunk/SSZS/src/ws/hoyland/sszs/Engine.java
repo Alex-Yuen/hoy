@@ -32,7 +32,9 @@ public class Engine extends Observable {
 	private boolean running = false;
 	private ThreadPoolExecutor pool;
 	private int mindex = 0;
-	
+	private int mcount = 0;
+	private Configuration configuration = Configuration.getInstance();
+		
 	private Engine(){
 		
 	}
@@ -268,10 +270,7 @@ public class Engine extends Observable {
 					}
 				}else{
 					//停止情况下的处理
-					if(pool!=null){
-						//pool.shutdown();
-						pool.shutdownNow();
-					}
+					shutdown();
 				}
 				break;
 			case EngineMessageType.IM_IMAGE_DATA:				
@@ -285,9 +284,15 @@ public class Engine extends Observable {
 			case EngineMessageType.IM_REQUIRE_MAIL:
 				
 				//Random rnd = new Random();
-				String[] ms = mails.get(mindex++).split("----");
-				if(mindex==mails.size()){
-					mindex = 0;
+				if(mcount==Integer.parseInt(configuration.getProperty("EMAIL_TIMES"))){
+					mindex++;
+				}
+				
+				String[] ms = null;
+				
+				if(mindex<mails.size()){
+					ms = mails.get(mindex).split("----");
+					mcount++;
 				}
 				
 				msg = new EngineMessage();
@@ -307,9 +312,19 @@ public class Engine extends Observable {
 				this.setChanged();
 				this.notifyObservers(msg);
 				break;
+			case EngineMessageType.IM_NO_EMAILS:
+				shutdown();				
+				break;
 			default:
 				break;
 		}
+	}
+
+	private void shutdown() {
+		if(pool!=null){
+			//pool.shutdown();
+			pool.shutdownNow();		}
+		
 	}
 
 	@SuppressWarnings("unchecked")
@@ -334,7 +349,6 @@ public class Engine extends Observable {
 				
 				if(userID>0){
 					//save config
-					Configuration configuration = Configuration.getInstance();
 					configuration.put("R_PWD", msg.get(2));
 					configuration.put("AUTO_LOGIN", msg.get(3));
 					if("true".equals(msg.get(2))){
