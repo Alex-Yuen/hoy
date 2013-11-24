@@ -76,6 +76,9 @@ public class Task implements Runnable, Observer {
 	private boolean rec = false;//是否准备重拨
 	private boolean finish = false;
 	
+	private int tcconfirm = 0;//try count of confirm
+	private int tcback = 0;//try count of 回执
+	
 	private final String UAG = "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1; QQDownload 734; Maxthon; .NET CLR 2.0.50727; .NET4.0C; .NET4.0E)";
 
 	public Task(String line) {
@@ -498,8 +501,14 @@ public class Task implements Runnable, Observer {
 				store.close();
 				
 				if(rc==null){
-					info("找不到邮件[确认]，继续尝试");
+					tcconfirm++;					
 					idx = 9;
+					if(tcconfirm==3){
+						info("找不到邮件[确认]，退出("+tcconfirm+")");
+						this.run = false;
+					}else{
+						info("找不到邮件[确认]，继续尝试("+tcconfirm+")");
+					}
 					
 				}else{
 					info("找到邮件[确认]");
@@ -820,9 +829,15 @@ public class Task implements Runnable, Observer {
 				folder.close(true);
 				store.close();
 				
-				if(rc==null){
-					info("找不到邮件[回执]，继续尝试");
+				if(rc==null){					
+					tcback++;					
 					idx = 15;
+					if(tcback==3){
+						info("找不到邮件[回执]，退出("+tcback+")");
+						this.run = false;
+					}else{
+						info("找不到邮件[回执]，继续尝试("+tcback+")");
+					}
 				}else{
 					info("找到邮件[回执]");
 					idx++;
@@ -879,7 +894,7 @@ public class Task implements Runnable, Observer {
 				}
 				break;
 			case EngineMessageType.OM_RECONN: //系统准备重拨
-				rec = true;
+				rec = !rec;
 				break;
 			default:
 				break;

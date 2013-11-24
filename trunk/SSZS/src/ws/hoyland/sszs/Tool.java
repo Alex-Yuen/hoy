@@ -7,12 +7,13 @@ import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 
-import javax.mail.Flags;
 import javax.mail.Folder;
 import javax.mail.Message;
 import javax.mail.Session;
@@ -122,7 +123,8 @@ public class Tool extends Dialog {
 				running = !running;
 				if(running){
 					btnl.setText("停止(&S)");
-					long tm = System.currentTimeMillis();
+					DateFormat format = new java.text.SimpleDateFormat("yyyy年MM月dd日 hh时mm分ss秒");
+					String tm = format.format(new Date());
 					
 						File fff = new File(xpath + "申诉结果-" + tm + ".txt");
 						try {
@@ -165,28 +167,29 @@ public class Tool extends Dialog {
 									Session session = Session.getDefaultInstance(props);
 									session.setDebug(false); 
 									IMAPStore store = (IMAPStore)session.getStore("imap");
-									store.connect(ms[1], ms[2]);
+									store.connect(ms[4], ms[5]);
 									IMAPFolder folder = (IMAPFolder)store.getFolder("INBOX");
 									folder.open(Folder.READ_WRITE);
 	
 									// 全部邮件
 									Message[] messages = folder.getMessages();
 									
-									boolean seen = true;
+//									boolean seen = true;
 									//System.err.println(messages.length);
 									for (int k = messages.length-1; k >=0; k--) {
 										Message message = messages[k];
 										// 删除邮件
 										// message.setFlag(Flags.Flag.DELETED,true);
 	
-										Flags flags = message.getFlags();    
-										if (flags.contains(Flags.Flag.SEEN)){
-											seen = true;    
-										} else {    
-											seen = false;    
-										}
+//										Flags flags = message.getFlags();    
+//										if (flags.contains(Flags.Flag.SEEN)){
+//											seen = true;    
+//										} else {    
+//											seen = false;    
+//										}
 							               
-										if(!seen&&message.getSubject().startsWith("申诉结果")){
+										//if(!seen&&message.getSubject().startsWith("申诉结果")){
+										if(message.getSubject().startsWith("申诉结果")){
 											
 	//										boolean isold = false;      
 	//								        Flags flags = message.getFlags();      
@@ -204,7 +207,7 @@ public class Tool extends Dialog {
 												sc++;
 												final int fsc = sc;
 									        //if(!isold){
-												message.setFlag(Flags.Flag.SEEN, true);	// 标记为已读
+												//message.setFlag(Flags.Flag.SEEN, true);	// 标记为已读
 												//update UI
 												Display.getDefault().asyncExec(new Runnable() {
 													@Override
@@ -222,7 +225,7 @@ public class Tool extends Dialog {
 												System.err.println(link);
 												//写文件
 												try{
-													output.write(rcl+"----"+link+ "\r\n");
+													output.write(ms[1]+"----"+rcl+"----"+link+ "\r\n");
 													output.flush();
 												}catch(Exception e){
 													e.printStackTrace();
@@ -231,7 +234,7 @@ public class Tool extends Dialog {
 											}else if(ssct.contains("申诉未能通过审核")){											
 												fc++;
 												final int ffc = fc;
-												message.setFlag(Flags.Flag.SEEN, true);	// 标记为已读
+												//message.setFlag(Flags.Flag.SEEN, true);	// 标记为已读
 												//update UI
 												
 												Display.getDefault().asyncExec(new Runnable() {
@@ -295,6 +298,18 @@ public class Tool extends Dialog {
 		tableColumn_2.setWidth(100);
 		tableColumn_2.setText("密码");
 		
+		TableColumn tableColumn_5 = new TableColumn(table, SWT.NONE);
+		tableColumn_5.setWidth(100);
+		tableColumn_5.setText("回执编号");
+		
+		TableColumn tableColumn_6 = new TableColumn(table, SWT.NONE);
+		tableColumn_6.setWidth(100);
+		tableColumn_6.setText("邮箱帐号");
+		
+		TableColumn tableColumn_7 = new TableColumn(table, SWT.NONE);
+		tableColumn_7.setWidth(100);
+		tableColumn_7.setText("邮箱密码");
+		
 		TableColumn tableColumn_3 = new TableColumn(table, SWT.NONE);
 		tableColumn_3.setWidth(55);
 		tableColumn_3.setText("成功");
@@ -304,11 +319,11 @@ public class Tool extends Dialog {
 		tableColumn_4.setText("失败");
 		
 		Label lblNewLabel = new Label(shell, SWT.NONE);
-		lblNewLabel.setBounds(10, 10, 61, 17);
-		lblNewLabel.setText("邮件列表:");
+		lblNewLabel.setBounds(10, 10, 105, 17);
+		lblNewLabel.setText("申诉成功列表文件:");
 		
 		label = new Label(shell, SWT.BORDER | SWT.WRAP);
-		label.setBounds(77, 10, 296, 17);
+		label.setBounds(121, 10, 252, 17);
 		
 		Link link = new Link(shell, 0);
 		link.addSelectionListener(new SelectionAdapter() {
