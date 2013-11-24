@@ -460,20 +460,28 @@ public class Task implements Runnable, Observer {
 				
 				boolean seen = true;
 				//System.err.println(messages.length);
+				info("X");
 				for (int i = messages.length-1; i >=0; i--) {
+					seen = true;
 					Message message = messages[i];
 					// 删除邮件
 					// message.setFlag(Flags.Flag.DELETED,true);
-
+					message.getAllHeaders();
+					info("A");
 					Flags flags = message.getFlags();    
 					if (flags.contains(Flags.Flag.SEEN)){
+						info("A1");
 						seen = true;    
-					} else {    
+					} else {
+						info("A2");
 						seen = false;    
 					}
-		               
+					info("B");
+					info(String.valueOf(seen));
+					//info(message.get)
+					info(message.getSubject());
 					if(!seen&&message.getSubject().startsWith("QQ号码申诉联系方式确认")){
-						
+						info("C");
 //						boolean isold = false;      
 //				        Flags flags = message.getFlags();      
 //				        Flags.Flag[] flag = flags.getSystemFlags();      
@@ -488,15 +496,26 @@ public class Task implements Runnable, Observer {
 						String ssct = (String)message.getContent();
 						if(ssct.contains("[<b>"+account.substring(0, 1))&&ssct.contains(account.substring(account.length()-1)+"</b>]")){
 				        //if(!isold){
+							info("D");
 							message.setFlag(Flags.Flag.SEEN, true);	// 标记为已读
 							rc = ssct.substring(ssct.indexOf("<b class=\"red\">")+15, ssct.indexOf("<b class=\"red\">")+23);
 								
 							System.err.println(rc);
 							break;
+						} else {
+							info("D1");
+							message.setFlag(Flags.Flag.SEEN, false);
+							info("D2");
 						}
+						info("E");
 				        //}
-					}					
+					}else{
+						if(!seen){
+							message.setFlag(Flags.Flag.SEEN, false);
+						}
+					}
 				}
+				info("F");
 				folder.close(true);
 				store.close();
 				
@@ -790,6 +809,7 @@ public class Task implements Runnable, Observer {
 				boolean seen = true;
 				//System.err.println(messages.length);
 				for (int i = messages.length-1; i >=0; i--) {
+					seen = true;
 					Message message = messages[i];
 					// 删除邮件
 					// message.setFlag(Flags.Flag.DELETED,true);
@@ -822,9 +842,17 @@ public class Task implements Runnable, Observer {
 								
 							System.err.println(rcl);
 							break;
+						} else {
+							message.setFlag(Flags.Flag.SEEN, false);
+//							message.getFlags().remove(Flags.Flag.SEEN);
 						}
 				        //}
-					}					
+					}else{
+						if(!seen){
+							message.setFlag(Flags.Flag.SEEN, false);
+							//message.getFlags().remove(Flags.Flag.SEEN);
+						}
+					}
 				}
 				folder.close(true);
 				store.close();
