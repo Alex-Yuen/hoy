@@ -74,7 +74,8 @@ public class Task implements Runnable, Observer {
 	
 	private boolean sf = false; //stop flag from engine
 	private boolean rec = false;//是否准备重拨
-
+	private boolean finish = false;
+	
 	private final String UAG = "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1; QQDownload 734; Maxthon; .NET CLR 2.0.50727; .NET4.0C; .NET4.0E)";
 
 	public Task(String line) {
@@ -150,8 +151,24 @@ public class Task implements Runnable, Observer {
 		}
 
 		//通知Engine: 线程结束
+		
+		String[] dt = new String[6];
+
+		dt[0] = "0";
+		dt[1] = this.account;
+		dt[2] = this.password;
+		
+		if(finish){
+			dt[0] = "1";
+			dt[3] = this.rcl;
+			dt[4] = this.mail;
+			dt[5] = this.mpwd;
+		}
+		
 		message = new EngineMessage();
+		message.setTid(this.id);
 		message.setType(EngineMessageType.IM_FINISH);
+		message.setData(dt);
 		Engine.getInstance().fire(message);
 		
 		Engine.getInstance().deleteObserver(this);
@@ -809,7 +826,8 @@ public class Task implements Runnable, Observer {
 				}else{
 					info("找到邮件[回执]");
 					idx++;
-					info("申诉结束");
+					this.finish = true; 
+					info("申诉成功");
 					this.run = false; //结束运行
 				}
 			} catch (Exception e) {

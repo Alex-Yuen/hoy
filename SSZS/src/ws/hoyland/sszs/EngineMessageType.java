@@ -19,6 +19,8 @@ public class EngineMessageType {
 	public static final int IM_FINISH = 0x1021;
 	public static final int IM_START = 0x1022;
 	
+	public static final int IM_EXIT = 0x1023;
+	
 	//outgoing message
 	public static final int OM_LOGINING = 0x2010;
 	public static final int OM_LOGINED = 0x2011;
