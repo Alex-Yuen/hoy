@@ -267,7 +267,7 @@ public class SSZS implements Observer{
 		});
 		button_2.setText("开始");
 		button_2.setEnabled(false);
-		button_2.setBounds(340, 103, 149, 73);
+		button_2.setBounds(340, 103, 149, 34);
 		
 		Label lblAb = new Label(group, SWT.NONE);
 		lblAb.setText("XA:");
@@ -333,6 +333,16 @@ public class SSZS implements Observer{
 		label_19.setForeground(SWTResourceManager.getColor(0, 0, 0));
 		label_19.setBackground(SWTResourceManager.getColor(SWT.COLOR_WIDGET_BACKGROUND));
 		label_19.setBounds(174, 103, 149, 73);
+		
+		Button button_4 = new Button(group, SWT.NONE);
+		button_4.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				//if()
+			}
+		});
+		button_4.setText("暂停");
+		button_4.setBounds(340, 142, 149, 34);
 		
 		Label label_20 = new Label(shlSszs, SWT.NONE);
 		label_20.setText("邮箱列表:");

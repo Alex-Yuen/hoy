@@ -18,7 +18,6 @@ import javax.mail.Folder;
 import javax.mail.Message;
 import javax.mail.Session;
 
-import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Dialog;
 import org.eclipse.swt.widgets.Display;
@@ -187,9 +186,12 @@ public class Tool extends Dialog {
 //										} else {    
 //											seen = false;    
 //										}
-							               
+
+										String ssct = (String)message.getContent();
+										String rcl = ssct.substring(ssct.indexOf("回执编号[")+5, ssct.indexOf("回执编号[")+15);
+										
 										//if(!seen&&message.getSubject().startsWith("申诉结果")){
-										if(message.getSubject().startsWith("申诉结果")){
+										if(message.getSubject().startsWith("申诉结果")&&ms[3].equals(rcl)){
 											
 	//										boolean isold = false;      
 	//								        Flags flags = message.getFlags();      
@@ -201,8 +203,8 @@ public class Tool extends Dialog {
 	//								                break;
 	//								            }
 	//								        }
-	
-											String ssct = (String)message.getContent();
+
+											
 											if(ssct.contains("申诉成功")){
 												sc++;
 												final int fsc = sc;
@@ -213,14 +215,13 @@ public class Tool extends Dialog {
 													@Override
 													public void run() {
 														TableItem tableItem = table.getItem(Integer.parseInt(ms[0])-1);
-														tableItem.setBackground(new Color(null, 255, 0, 0));
-														tableItem.setText(3, String.valueOf(fsc));
+														//tableItem.setBackground(new Color(null, 255, 0, 0));
+														tableItem.setText(6, String.valueOf(fsc));
 														table.setSelection(tableItem);
 													}
 												});
 												
-												String rcl = ssct.substring(ssct.indexOf("回执编号[")+5, ssct.indexOf("回执编号[")+15);
-												String link =  ssct.substring(ssct.indexOf("<a href=\"")+5, ssct.indexOf("\" target=\"_blank\">点此重新设置密码"));
+												String link =  ssct.substring(ssct.indexOf("<a style=\"color:red\" href=\"")+27, ssct.indexOf("\" target=\"_blank\"><span>点此重新设置密码"));
 												System.err.println(rcl);
 												System.err.println(link);
 												//写文件
@@ -243,7 +244,7 @@ public class Tool extends Dialog {
 														TableItem tableItem = table.getItem(Integer.parseInt(ms[0])-1);
 														//tableItem.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_BLUE)); 
 														//TableItem tableItem = table.getItem(Integer.parseInt(ms[0])-1);
-														tableItem.setText(4, String.valueOf(ffc));
+														tableItem.setText(7, String.valueOf(ffc));
 														table.setSelection(tableItem);
 													}
 												});
