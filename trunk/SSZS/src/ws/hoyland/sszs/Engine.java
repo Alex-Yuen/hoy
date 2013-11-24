@@ -1,9 +1,12 @@
 package ws.hoyland.sszs;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileWriter;
 import java.io.InputStreamReader;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -36,6 +39,12 @@ public class Engine extends Observable {
 	private int frecc = 0;//finished
 	
 	private int atrecc; //config data
+	
+	private BufferedWriter[] output = new BufferedWriter[4]; //成功，失败，未运行
+	private String[] fns = new String[]{"成功", "失败", "未运行帐号", "已使用邮箱"}; 
+	private URL url = Engine.class.getClassLoader().getResource("");
+	private String xpath = url.getPath();
+	private int lastTid = 0;
 	
 	private Engine(){
 		
@@ -244,6 +253,22 @@ public class Engine extends Observable {
 				this.notifyObservers(msg);
 				
 				if(running){
+					//创建日志文件
+					long tm = System.currentTimeMillis();
+					for(int i=0;i<output.length;i++){
+						File fff = new File(xpath + fns[i] + "-" + tm + ".txt");
+						try {
+							if (!fff.exists()) {
+								fff.createNewFile();
+							}
+							
+							output[i] = new BufferedWriter(
+									new FileWriter(fff));
+						} catch (Exception ex) {
+							ex.printStackTrace();
+						}
+					}
+					
 					int tc = Integer.parseInt(Configuration.getInstance().getProperty("THREAD_COUNT"));
 					int corePoolSize = tc;// minPoolSize
 					int maxPoolSize = tc;
@@ -334,6 +359,26 @@ public class Engine extends Observable {
 				}
 				break;
 			case EngineMessageType.IM_FINISH:
+				//写入日志
+				lastTid = message.getTid();
+				String[] dt = (String[])message.getData();
+				
+				if("1".equals(dt[0])){//成功
+					try{
+						output[0].write(dt[1]+"----"+dt[2]+"----"+dt[3]+"----"+dt[4]+"----"+dt[5] + "\r\n");
+						output[0].flush();
+					}catch(Exception e){
+						e.printStackTrace();
+					};
+				}else{//失败
+					try{
+						output[1].write(dt[1]+"----"+dt[2]+ "\r\n");
+						output[1].flush();
+					}catch(Exception e){
+						e.printStackTrace();
+					};
+				}
+				
 				frecc++;
 				
 				atrecc = Integer.parseInt(configuration.getProperty("AUTO_RECON"));
@@ -396,6 +441,11 @@ public class Engine extends Observable {
 					
 				}
 				break;
+			case EngineMessageType.IM_EXIT:
+				//关闭日志文件
+				shutdown();
+				System.exit(0);
+				break;
 			default:
 				break;
 		}
@@ -405,7 +455,54 @@ public class Engine extends Observable {
 		if(pool!=null){
 			//pool.shutdown();
 			pool.shutdownNow();	
-		}		
+		}
+				
+		//等待所有运行线程执行完毕，关闭日志文件
+		while(pool!=null&&pool.getActiveCount()!=0){
+			try{
+				Thread.sleep(1000);
+			}catch(Exception e){
+				//
+			}
+		}
+		
+		if(pool!=null){
+			//写入未运行帐号日志
+			try{
+				//if(lastTid!=-1){
+					for(int i=lastTid;i<accounts.size();i++){
+						String[] accl = accounts.get(i).split("----");
+						output[2].write(accl[1]+"----"+accl[2]+ "\r\n");
+						output[2].flush();
+					}
+				//}
+			}catch(Exception e){
+				e.printStackTrace();
+			};
+			//写入已使用邮箱日志
+			try{
+				//if(mindex!=-1){
+					for(int i=0;i<mindex+1;i++){
+						String[] ml = mails.get(i).split("----");
+						output[3].write(ml[1]+"----"+ml[2]+ "\r\n");
+						output[3].flush();
+					}
+				//}
+			}catch(Exception e){
+				e.printStackTrace();
+			};
+		}
+		
+		for(int i=0;i<output.length;i++){
+			try{
+				if(output[i]!=null){
+					output[i].close();
+					output[i] = null;
+				}
+			}catch(Exception ex){
+				ex.printStackTrace();
+			}
+		}
 	}
 
 	@SuppressWarnings("unchecked")

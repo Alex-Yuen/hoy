@@ -14,9 +14,11 @@ import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.wb.swt.SWTResourceManager;
+import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
@@ -76,6 +78,15 @@ public class SSZS implements Observer{
 	 */
 	public void open() {
 		Display display = Display.getDefault();
+		display.addFilter(SWT.KeyDown, new Listener(){
+			@Override
+			public void handleEvent(Event event) {
+				if ((event.stateMask & SWT.CTRL) != 0&&event.keyCode==116) { //CTRL+T
+                    new Tool(shlSszs, SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL).open();
+                }				
+			}             
+        });
+		
 		createContents();
 		load();
 		shlSszs.open();
@@ -121,7 +132,23 @@ public class SSZS implements Observer{
 			@Override
 			public void shellClosed(ShellEvent e) {
 				Engine.getInstance().deleteObserver(SSZS.this);
-				System.exit(0);
+				
+				e.doit = false;
+				
+				Thread t = new Thread(new Runnable(){
+
+					@Override
+					public void run() {
+						// TODO Auto-generated method stub
+
+						EngineMessage message = new EngineMessage();
+						message.setType(EngineMessageType.IM_EXIT);
+						Engine.getInstance().fire(message);
+					}
+					
+				});
+				t.start();
+				//System.exit(0);
 			}
 		});
 		shlSszs.setSize(713, 499);
@@ -224,9 +251,18 @@ public class SSZS implements Observer{
 		button_2.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				EngineMessage message = new EngineMessage();
-				message.setType(EngineMessageType.IM_PROCESS);
-				Engine.getInstance().fire(message);
+				Thread t = new Thread(new Runnable(){
+
+					@Override
+					public void run() {
+						EngineMessage message = new EngineMessage();
+						message.setType(EngineMessageType.IM_PROCESS);
+						Engine.getInstance().fire(message);
+					}
+					
+				});
+				
+				t.start();
 			}
 		});
 		button_2.setText("开始");
