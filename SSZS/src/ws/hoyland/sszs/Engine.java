@@ -7,8 +7,10 @@ import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Observable;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -40,8 +42,8 @@ public class Engine extends Observable {
 	
 	private int atrecc; //config data
 	
-	private BufferedWriter[] output = new BufferedWriter[4]; //成功，失败，未运行
-	private String[] fns = new String[]{"成功", "失败", "未运行帐号", "已使用邮箱"}; 
+	private BufferedWriter[] output = new BufferedWriter[5]; //成功，失败，未运行
+	private String[] fns = new String[]{"成功", "失败", "未运行帐号", "已使用邮箱", "未使用邮箱"}; 
 	private URL url = Engine.class.getClassLoader().getResource("");
 	private String xpath = url.getPath();
 	private int lastTid = 0;
@@ -254,7 +256,9 @@ public class Engine extends Observable {
 				
 				if(running){
 					//创建日志文件
-					long tm = System.currentTimeMillis();
+					//long tm = System.currentTimeMillis();
+					DateFormat format = new java.text.SimpleDateFormat("yyyy年MM月dd日 hh时mm分ss秒");
+					String tm = format.format(new Date());
 					for(int i=0;i<output.length;i++){
 						File fff = new File(xpath + fns[i] + "-" + tm + ".txt");
 						try {
@@ -411,7 +415,16 @@ public class Engine extends Observable {
 							}catch(Exception e){
 								e.printStackTrace();
 							}
-								
+							
+							//通知其他未阻塞线程，重拨结束，无需再进行等待
+							EngineMessage msg = new EngineMessage();
+							msg.setTid(-1); //所有task
+							msg.setType(EngineMessageType.OM_RECONN);
+							//msg.setData(message.getData());
+							
+							Engine.this.setChanged();
+							Engine.this.notifyObservers(msg);
+							
 							synchronized(ReconObject.getInstance()){
 								try{
 									ReconObject.getInstance().notifyAll();
@@ -486,6 +499,18 @@ public class Engine extends Observable {
 						String[] ml = mails.get(i).split("----");
 						output[3].write(ml[1]+"----"+ml[2]+ "\r\n");
 						output[3].flush();
+					}
+				//}
+			}catch(Exception e){
+				e.printStackTrace();
+			};
+			//未使用
+			try{
+				//if(mindex!=-1){
+					for(int i=mindex;i<mails.size();i++){
+						String[] ml = mails.get(i).split("----");
+						output[4].write(ml[1]+"----"+ml[2]+ "\r\n");
+						output[4].flush();
 					}
 				//}
 			}catch(Exception e){
