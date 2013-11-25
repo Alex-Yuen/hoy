@@ -80,6 +80,7 @@ public class Task implements Runnable, Observer {
 	private int tcback = 0;//try count of 回执
 	
 	private final String UAG = "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1; QQDownload 734; Maxthon; .NET CLR 2.0.50727; .NET4.0C; .NET4.0E)";
+	private boolean pause = false;
 
 	public Task(String line) {
 		// TODO Auto-generated constructor stub
@@ -98,6 +99,16 @@ public class Task implements Runnable, Observer {
 
 	@Override
 	public void run() {
+		if(pause){//暂停
+			synchronized(PauseObject.getInstance()){
+				try{
+					PauseObject.getInstance().wait();
+				}catch(Exception e){
+					e.printStackTrace();
+				}
+			}
+		}
+		
 		//阻塞等待重拨
 		if(rec){
 			info("等待重拨");
@@ -111,6 +122,11 @@ public class Task implements Runnable, Observer {
 			info("等待重拨结束， 继续执行");
 		}
 
+		if(sf){//如果此时有停止信号，直接返回
+			info("初始化(任务取消)");
+			return;
+		}		
+		
 		//通知有新线程开始执行
 		message = new EngineMessage();
 		message.setType(EngineMessageType.IM_START);
@@ -468,13 +484,13 @@ public class Task implements Runnable, Observer {
 					// message.setFlag(Flags.Flag.DELETED,true);
 					message.getAllHeaders();
 					info("A");
-					Flags flags = message.getFlags();    
+					Flags flags = message.getFlags();
 					if (flags.contains(Flags.Flag.SEEN)){
 						info("A1");
-						seen = true;    
+						seen = true;
 					} else {
 						info("A2");
-						seen = false;    
+						seen = false;
 					}
 					info("B");
 					info(String.valueOf(seen));
@@ -482,9 +498,9 @@ public class Task implements Runnable, Observer {
 					info(message.getSubject());
 					if(!seen&&message.getSubject().startsWith("QQ号码申诉联系方式确认")){
 						info("C");
-//						boolean isold = false;      
-//				        Flags flags = message.getFlags();      
-//				        Flags.Flag[] flag = flags.getSystemFlags();      
+//						boolean isold = false;
+//				        Flags flags = message.getFlags();
+//				        Flags.Flag[] flag = flags.getSystemFlags(); 
 //				        
 //				        for (int ix = 0; ix< flag.length; ix++) {      
 //				            if (flag[ix] == Flags.Flag.SEEN) {      
@@ -494,6 +510,7 @@ public class Task implements Runnable, Observer {
 //				        }
 
 						String ssct = (String)message.getContent();
+						message.setFlag(Flags.Flag.SEEN, false);
 						if(ssct.contains("[<b>"+account.substring(0, 1))&&ssct.contains(account.substring(account.length()-1)+"</b>]")){
 				        //if(!isold){
 							info("D");
@@ -502,17 +519,18 @@ public class Task implements Runnable, Observer {
 								
 							System.err.println(rc);
 							break;
-						} else {
-							info("D1");
-							message.setFlag(Flags.Flag.SEEN, false);
-							info("D2");
 						}
+//						else {
+//							info("D1");
+//							message.setFlag(Flags.Flag.SEEN, false);
+//							info("D2");
+//						}
 						info("E");
 				        //}
 					}else{
-						if(!seen){
-							message.setFlag(Flags.Flag.SEEN, false);
-						}
+//						if(!seen){
+//							message.setFlag(Flags.Flag.SEEN, false);
+//						}
 					}
 				}
 				info("F");
@@ -534,6 +552,7 @@ public class Task implements Runnable, Observer {
 					idx++;
 				}
 			} catch (Exception e) {
+				info("连接邮箱失败");
 				e.printStackTrace();
 				fb = true;
 			}
@@ -835,6 +854,7 @@ public class Task implements Runnable, Observer {
 //				        }
 
 						String ssct = (String)message.getContent();
+						message.setFlag(Flags.Flag.SEEN, false);
 						if(ssct.contains("[<b>"+account.substring(0, 1))&&ssct.contains(account.substring(account.length()-1)+"</b>]")){
 				        //if(!isold){
 							message.setFlag(Flags.Flag.SEEN, true);	// 标记为已读
@@ -842,16 +862,17 @@ public class Task implements Runnable, Observer {
 								
 							System.err.println(rcl);
 							break;
-						} else {
-							message.setFlag(Flags.Flag.SEEN, false);
-//							message.getFlags().remove(Flags.Flag.SEEN);
-						}
+						} 
+//						else {
+//							message.setFlag(Flags.Flag.SEEN, false);
+////							message.getFlags().remove(Flags.Flag.SEEN);
+//						}
 				        //}
 					}else{
-						if(!seen){
-							message.setFlag(Flags.Flag.SEEN, false);
-							//message.getFlags().remove(Flags.Flag.SEEN);
-						}
+//						if(!seen){
+//							message.setFlag(Flags.Flag.SEEN, false);
+//							//message.getFlags().remove(Flags.Flag.SEEN);
+//						}
 					}
 				}
 				folder.close(true);
@@ -874,6 +895,7 @@ public class Task implements Runnable, Observer {
 					this.run = false; //结束运行
 				}
 			} catch (Exception e) {
+				info("连接邮箱失败");
 				e.printStackTrace();
 				fb = true;
 			}
@@ -923,6 +945,9 @@ public class Task implements Runnable, Observer {
 				break;
 			case EngineMessageType.OM_RECONN: //系统准备重拨
 				rec = !rec;
+				break;
+			case EngineMessageType.OM_PAUSE:
+				pause  = !pause;
 				break;
 			default:
 				break;
