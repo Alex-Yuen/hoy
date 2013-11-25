@@ -47,6 +47,7 @@ public class Engine extends Observable {
 	private URL url = Engine.class.getClassLoader().getResource("");
 	private String xpath = url.getPath();
 	private int lastTid = 0;
+	private boolean pause = false;
 	
 	private Engine(){
 		
@@ -458,6 +459,23 @@ public class Engine extends Observable {
 				//关闭日志文件
 				shutdown();
 				System.exit(0);
+				break;
+			case EngineMessageType.IM_PAUSE:
+				pause = !pause;
+				
+				msg = new EngineMessage();
+				msg.setTid(-1); //所有task
+				msg.setType(EngineMessageType.OM_PAUSE);
+				//msg.setData(message.getData());
+				
+				this.setChanged();
+				this.notifyObservers(msg);	
+				
+				if(!pause){
+					synchronized(PauseObject.getInstance()){
+						PauseObject.getInstance().notifyAll();
+					}
+				}
 				break;
 			default:
 				break;

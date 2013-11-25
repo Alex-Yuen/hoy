@@ -55,6 +55,7 @@ public class SSZS implements Observer{
 	private Label label_9;
 	private Button button;
 	private Label label_6;
+	private Button button_4;
 
 	/**
 	 * Launch the application.
@@ -334,11 +335,20 @@ public class SSZS implements Observer{
 		label_19.setBackground(SWTResourceManager.getColor(SWT.COLOR_WIDGET_BACKGROUND));
 		label_19.setBounds(174, 103, 149, 73);
 		
-		Button button_4 = new Button(group, SWT.NONE);
+		button_4 = new Button(group, SWT.NONE);
+		button_4.setEnabled(false);
 		button_4.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				//if()
+				if("暂停".equals(button_4.getText())){
+					button_4.setText("继续");
+				}else{
+					button_4.setText("暂停");
+				}
+				
+				EngineMessage message = new EngineMessage();
+				message.setType(EngineMessageType.IM_PAUSE);
+				Engine.getInstance().fire(message);
 			}
 		});
 		button_4.setText("暂停");
@@ -651,9 +661,11 @@ public class SSZS implements Observer{
 						if((Boolean)msg.getData()){
 							status.setText("正在运行...");
 							button_2.setText("停止");
+							button_4.setEnabled(true);
 						}else{
 							status.setText("运行停止");
 							button_2.setText("开始");
+							button_4.setEnabled(false);
 						}
 					}				
 				});
