@@ -296,7 +296,10 @@ public class Engine extends Observable {
 							maxPoolSize, keepAliveTime, unit,
 							workQueue, handler);
 
-					for (int i = 0; i < accounts.size(); i++) {
+					Integer[] flidx = (Integer[]) message.getData();
+					
+					//for (int i = 0; i < accounts.size(); i++) {
+					for (int i = flidx[0]; i <= flidx[1]; i++) {
 						try {
 							Task task = new Task(accounts.get(i));
 							Engine.getInstance().addObserver(task);
@@ -322,17 +325,24 @@ public class Engine extends Observable {
 			case EngineMessageType.IM_REQUIRE_MAIL:
 				
 				//Random rnd = new Random();
+				System.err.println("X:A");
+				System.err.println("X1:"+mcount+"/"+mindex+"/"+mails.size()+"/"+message.getTid());
 				if(mcount==Integer.parseInt(configuration.getProperty("EMAIL_TIMES"))){
+					System.err.println("X:B");
 					mcount = 0;
 					mindex++;
 				}
 				
+				System.err.println("X:C");
 				String[] ms = null;
 				
 				if(mindex<mails.size()){
+					System.err.println("X:D");
 					ms = mails.get(mindex).split("----");
 					mcount++;
 				}
+				System.err.println("X:E");
+				System.err.println("X2:"+mcount+"/"+mindex+"/"+mails.size()+"/"+message.getTid());
 				
 				msg = new EngineMessage();
 				msg.setTid(message.getTid());
