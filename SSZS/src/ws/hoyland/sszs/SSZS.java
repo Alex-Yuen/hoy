@@ -33,6 +33,8 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
+import org.eclipse.swt.events.MouseAdapter;
+import org.eclipse.swt.events.MouseEvent;
 
 public class SSZS implements Observer{
 
@@ -64,7 +66,7 @@ public class SSZS implements Observer{
 	private Combo combo;
 	private int first = -1;
 	private int last = -1;
-
+	private int mfirst = -1;
 	
 	private Clipboard clipBoard = new Clipboard(Display.getDefault());
 	private Transfer textTransfer = TextTransfer.getInstance();
@@ -372,9 +374,10 @@ public class SSZS implements Observer{
 							last = table.getItemCount() - 1;
 						}
 						
-						Integer[] flidx = new Integer[2];
+						Integer[] flidx = new Integer[3];
 						flidx[0] = first;
 						flidx[1] = last;
+						flidx[2] = mfirst;
 						EngineMessage message = new EngineMessage();
 						message.setType(EngineMessageType.IM_PROCESS);
 						message.setData(flidx);
@@ -479,6 +482,22 @@ public class SSZS implements Observer{
 		label_20.setBounds(356, 1, 60, 17);
 		
 		table_1 = new Table(shlSszs, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI);
+		table_1.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseDoubleClick(MouseEvent e) {
+				//System.out.println(e.widget);
+				TableItem[] tis = table_1.getSelection();
+				int lidx = table_1.indexOf(tis[0]);
+				for(int i=0;i<lidx;i++){
+					table_1.getItem(i).setBackground(Display
+							.getDefault()
+							.getSystemColor(
+									SWT.COLOR_GRAY));
+				}
+				mfirst = lidx;
+				//System.out.println()
+			}
+		});
 		table_1.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
@@ -822,6 +841,7 @@ public class SSZS implements Observer{
 						}else{
 							first = -1;
 							last = -1;
+							mfirst = -1;
 							status.setText("运行停止");
 							button_2.setText("开始");
 							button_4.setEnabled(false);

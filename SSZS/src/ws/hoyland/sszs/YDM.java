@@ -20,7 +20,7 @@ public interface YDM extends Library {
 			int nTimeOut, StringBuilder pCodeResult);
 
 	public int YDM_DecodeByBytes(byte[] lpBuffer, int nNumberOfBytesToRead,
-			int nCodeType, String rsb);//StringBuilder pCodeResult //byte[] resultByte //String rsb
+			int nCodeType, byte[] resultByte);//StringBuilder pCodeResult //byte[] resultByte //String rsb
 
 	public int YDM_UploadByBytes(byte[] lpBuffer, int nNumberOfBytesToRead,
 			int nCodeType);

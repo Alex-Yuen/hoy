@@ -298,6 +298,7 @@ public class Engine extends Observable {
 
 					Integer[] flidx = (Integer[]) message.getData();
 					
+					mindex = flidx[2]; //mfirst of SSZS
 					//for (int i = 0; i < accounts.size(); i++) {
 					for (int i = flidx[0]; i <= flidx[1]; i++) {
 						try {
@@ -429,57 +430,67 @@ public class Engine extends Observable {
 									+ password;
 							try{
 								Thread.sleep(1000*Integer.parseInt(configuration.getProperty("RECON_DELAY")));
+								boolean fo = true;
+								boolean fi = true;
 								
-								while(true){
+								while(fo){
 									String result = execute(cut);
 									
 									if (result
 											.indexOf("没有连接") == -1) {
-										result = execute(link);
-										if (result
-												.indexOf("已连接") > 0) {
-											//cf = true;
-											URL url = new URL("http://iframe.ip138.com/ic.asp");
-											InputStream is = url.openStream();
-											BufferedReader br = new BufferedReader(new InputStreamReader(is, "GB2312"));  
-									        String line = null;
-									        StringBuffer sb = new StringBuffer();
-									        while ((line=br.readLine())!= null) {
-									        	sb.append(line);
-									        }
-									
-											String ip = sb.toString();
-											//System.out.println(ip);
-									        int index = ip.indexOf("您的IP是：[");
-									        ip = ip.substring(index+7);
-									        
-									        index = ip.indexOf("]");
-									        ip = ip.substring(0, index);																							        
-									        System.err.println("ip="+ip);
-											if(ips.containsKey(ip)){
-												long time = ips.get(ip);
-												if(System.currentTimeMillis()-time>=1*60*60*1000){
-													System.err.println("IP重复，但超过1小时，拨号成功:"+ip);
-													ips.put(ip, System.currentTimeMillis());
-													break;
+										fo = false; // 断线成功，将跳出外循环
+										
+										while(fi){
+											result = execute(link);
+											if (result
+													.indexOf("已连接") > 0) {
+												//cf = true;
+												URL url = new URL("http://iframe.ip138.com/ic.asp");
+												InputStream is = url.openStream();
+												BufferedReader br = new BufferedReader(new InputStreamReader(is, "GB2312"));  
+										        String line = null;
+										        StringBuffer sb = new StringBuffer();
+										        while ((line=br.readLine())!= null) {
+										        	sb.append(line);
+										        }
+										
+												String ip = sb.toString();
+												//System.out.println(ip);
+										        int index = ip.indexOf("您的IP是：[");
+										        ip = ip.substring(index+7);
+										        
+										        index = ip.indexOf("]");
+										        ip = ip.substring(0, index);																							        
+										        System.err.println("ip="+ip);
+												if(ips.containsKey(ip)){
+													long time = ips.get(ip);
+													if(System.currentTimeMillis()-time>=1*60*60*1000){
+														System.err.println("IP重复，但超过1小时，拨号成功:"+ip);
+														ips.put(ip, System.currentTimeMillis());
+														fi = false;//跳出内循环
+														//break;
+													}else{
+														System.err.println("IP重复，未超过1小时，重新拨号:"+ip);
+														fo = true;
+														fi = true;
+														//continue;
+													}
 												}else{
-													System.err.println("IP重复，未超过1小时，重新拨号:"+ip);
-													continue;
+													System.err.println("IP不重复，拨号成功:"+ip);
+													ips.put(ip, new Long(System.currentTimeMillis()));
+													 fi = false;
+													//break;
 												}
-											}else{
-												System.err.println("IP不重复，拨号成功:"+ip);
-												ips.put(ip, new Long(System.currentTimeMillis()));
+											}else {
+												System.err.println("连接失败");
 												break;
 											}
-										}else {
-											System.err.println("连接失败");
-											break;
-										}
+										}//while in
 									}else {
 										System.err.println("没有连接");
-										break;
+										//break;
 									}
-								}//end while
+								}//while out
 							}catch(Exception e){
 								e.printStackTrace();
 							}
