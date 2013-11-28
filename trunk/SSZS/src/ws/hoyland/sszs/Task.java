@@ -261,9 +261,20 @@ public class Task implements Runnable, Observer {
 			try {
 				byte[] by = baos.toByteArray();
 				byte[] resultByte = new byte[30]; // 为识别结果申请内存空间
-				codeID = DM.INSTANCE.uu_recognizeByCodeTypeAndBytesA(by,
-						by.length, 1, resultByte); // 调用识别函数,resultBtye为识别结果
+//				StringBuilder rsb = new StringBuilder(30);
+				
+				if(Engine.getInstance().getCptType()==0){
+					codeID = YDM.INSTANCE.YDM_DecodeByBytes(by, by.length, 1004, resultByte);
+				}else{
+					codeID = DM.INSTANCE.uu_recognizeByCodeTypeAndBytesA(by,
+							by.length, 1, resultByte); // 调用识别函数,resultBtye为识别结果
+				}
+				
+				
+				
 				result = new String(resultByte, "UTF-8").trim();
+				//result = rsb.toString();
+				System.out.println("---"+result);
 
 				idx++;
 			} catch (Exception e) {
@@ -354,9 +365,15 @@ public class Task implements Runnable, Observer {
 		case 6:
 			info("验证码错误，报告异常");
 			try {
-				int reportErrorResult = DM.INSTANCE.uu_reportError(codeID);
+				//
+				int reportErrorResult = -1;
+				if(Engine.getInstance().getCptType()==0){
+					reportErrorResult = YDM.INSTANCE.YDM_Report(codeID, false);
+				}else{
+					reportErrorResult = DM.INSTANCE.uu_reportError(codeID);
+				}
 				System.err.println(reportErrorResult);
-				// TODO, send to UI
+				
 				idx = 0; // 重新开始
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -438,7 +455,18 @@ public class Task implements Runnable, Observer {
 				response = client.execute(post);
 				entity = response.getEntity();
 
-				// line = EntityUtils.toString(entity);
+				line = EntityUtils.toString(entity);
+				
+				if(line.contains("申诉过于频繁")){
+					//通知出现申诉频繁
+					message = new EngineMessage();
+					message.setType(EngineMessageType.IM_FREQ);
+
+					//System.err.println("["+this.account+"]"+info);
+					Engine.getInstance().fire(message);
+					run = false;
+					break;
+				}
 
 				// System.err.println(line);
 

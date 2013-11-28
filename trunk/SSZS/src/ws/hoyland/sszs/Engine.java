@@ -5,13 +5,16 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Observable;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
@@ -31,7 +34,7 @@ public class Engine extends Observable {
 	private List<String> accounts;
 	private List<String> mails;
 	private boolean login = false;
-	private boolean cptType = true;
+	private int cptType = 0;
 	private boolean running = false;
 	private ThreadPoolExecutor pool;
 	private int mindex = 0;
@@ -48,6 +51,9 @@ public class Engine extends Observable {
 	private String xpath = url.getPath();
 	private int lastTid = 0;
 	private boolean pause = false;
+	private boolean freq = false;
+	
+	private Map<String, Long> ips = new HashMap<String ,Long>();
 	
 	private Engine(){
 		
@@ -76,7 +82,7 @@ public class Engine extends Observable {
 				//this.setChanged();
 				break;
 			case EngineMessageType.IM_USERLOGIN:
-				uulogin(data);
+				login(data);
 				break;
 			case EngineMessageType.IM_UL_STATUS:
 				msg = new EngineMessage();
@@ -243,8 +249,8 @@ public class Engine extends Observable {
 				}
 				break;
 			case EngineMessageType.IM_CAPTCHA_TYPE:
-				cptType = (Boolean)message.getData();
-				ready();				
+				cptType = (Integer)message.getData();
+				ready();
 				break;
 			case EngineMessageType.IM_PROCESS:
 				running = !running;
@@ -360,7 +366,7 @@ public class Engine extends Observable {
 					//msg.setData(message.getData());
 					
 					this.setChanged();
-					this.notifyObservers(msg);					
+					this.notifyObservers(msg);
 				}
 				break;
 			case EngineMessageType.IM_FINISH:
@@ -387,8 +393,15 @@ public class Engine extends Observable {
 				frecc++;
 				
 				atrecc = Integer.parseInt(configuration.getProperty("AUTO_RECON"));
-				if(atrecc!=0&&atrecc==frecc){//执行重拨
-					frecc = 0;
+				if((atrecc!=0&&atrecc==frecc)||(freq==true&&frecc==recc)){//执行重拨
+					
+					if(freq==true&&frecc==recc){
+						freq = false;
+						recc = 0;
+						frecc = 0;
+					}else{
+						frecc = 0;
+					}
 					
 					Thread t = new Thread(new Runnable(){
 
@@ -407,12 +420,56 @@ public class Engine extends Observable {
 							try{
 								Thread.sleep(1000*Integer.parseInt(configuration.getProperty("RECON_DELAY")));
 								
-								String result = execute(cut);
-								
-								if (result
-										.indexOf("没有连接") == -1) {
-									result = execute(link);
-								}
+								while(true){
+									String result = execute(cut);
+									
+									if (result
+											.indexOf("没有连接") == -1) {
+										result = execute(link);
+										if (result
+												.indexOf("已连接") > 0) {
+											//cf = true;
+											URL url = new URL("http://iframe.ip138.com/ic.asp");
+											InputStream is = url.openStream();
+											BufferedReader br = new BufferedReader(new InputStreamReader(is, "GB2312"));  
+									        String line = null;
+									        StringBuffer sb = new StringBuffer();
+									        while ((line=br.readLine())!= null) {
+									        	sb.append(line);
+									        }
+									
+											String ip = sb.toString();
+											//System.out.println(ip);
+									        int index = ip.indexOf("您的IP是：[");
+									        ip = ip.substring(index+7);
+									        
+									        index = ip.indexOf("]");
+									        ip = ip.substring(0, index);																							        
+									        System.err.println("ip="+ip);
+											if(ips.containsKey(ip)){
+												long time = ips.get(ip);
+												if(System.currentTimeMillis()-time>=1*60*60*1000){
+													System.err.println("IP重复，但超过1小时，拨号成功:"+ip);
+													ips.put(ip, System.currentTimeMillis());
+													break;
+												}else{
+													System.err.println("IP重复，未超过1小时，重新拨号:"+ip);
+													continue;
+												}
+											}else{
+												System.err.println("IP不重复，拨号成功:"+ip);
+												ips.put(ip, new Long(System.currentTimeMillis()));
+												break;
+											}
+										}else {
+											System.err.println("连接失败");
+											break;
+										}
+									}else {
+										System.err.println("没有连接");
+										break;
+									}
+								}//end while
 							}catch(Exception e){
 								e.printStackTrace();
 							}
@@ -477,6 +534,19 @@ public class Engine extends Observable {
 					}
 				}
 				break;
+			case EngineMessageType.IM_FREQ:
+//				recc = 0;
+//				frecc = 0;
+				freq = true;
+				//通知其他需要重拨
+				msg = new EngineMessage();
+				msg.setTid(-1); //所有task
+				msg.setType(EngineMessageType.OM_RECONN);
+				//msg.setData(message.getData());
+				
+				this.setChanged();
+				this.notifyObservers(msg);
+				break;
 			default:
 				break;
 		}
@@ -485,7 +555,7 @@ public class Engine extends Observable {
 	private void shutdown() {
 		if(pool!=null){
 			//pool.shutdown();
-			pool.shutdownNow();	
+			pool.shutdownNow();
 		}
 				
 		//等待所有运行线程执行完毕，关闭日志文件
@@ -497,44 +567,47 @@ public class Engine extends Observable {
 			}
 		}
 		
-		if(pool!=null){
+		//if(pool!=null){
 			//写入未运行帐号日志
 			try{
 				//if(lastTid!=-1){
+				if(output[2]!=null){
 					for(int i=lastTid;i<accounts.size();i++){
 						String[] accl = accounts.get(i).split("----");
 						output[2].write(accl[1]+"----"+accl[2]+ "\r\n");
 						output[2].flush();
 					}
-				//}
+				}
 			}catch(Exception e){
 				e.printStackTrace();
 			};
 			//写入已使用邮箱日志
 			try{
 				//if(mindex!=-1){
+				if(output[3]!=null){
 					for(int i=0;i<mindex+1;i++){
 						String[] ml = mails.get(i).split("----");
 						output[3].write(ml[1]+"----"+ml[2]+ "\r\n");
 						output[3].flush();
 					}
-				//}
+				}
 			}catch(Exception e){
 				e.printStackTrace();
 			};
 			//未使用
 			try{
 				//if(mindex!=-1){
+				if(output[4]!=null){
 					for(int i=mindex;i<mails.size();i++){
 						String[] ml = mails.get(i).split("----");
 						output[4].write(ml[1]+"----"+ml[2]+ "\r\n");
 						output[4].flush();
 					}
-				//}
+				}
 			}catch(Exception e){
 				e.printStackTrace();
 			};
-		}
+		//}
 		
 		for(int i=0;i<output.length;i++){
 			try{
@@ -549,7 +622,7 @@ public class Engine extends Observable {
 	}
 
 	@SuppressWarnings("unchecked")
-	private void uulogin(Object message){
+	private void login(Object message){
 		final List<String> msg = (List<String>)message;
 		
 		Thread t = new Thread(new Runnable(){
@@ -565,8 +638,20 @@ public class Engine extends Observable {
 				
 				int userID = 0;
 				int score = 0;
-				DM.INSTANCE.uu_setSoftInfoA(94034, "0c324570e9914c20ad2fab51b50b3fdc");				
-				userID = DM.INSTANCE.uu_loginA(msg.get(0), msg.get(1));
+				
+				if(cptType==0){
+					YDM.INSTANCE.YDM_SetAppInfo(66, "1c67c6d83effe082803066704a398229");
+				}else{
+					DM.INSTANCE.uu_setSoftInfoA(94034, "0c324570e9914c20ad2fab51b50b3fdc");
+				}
+				//
+				
+				//
+				if(cptType==0){
+					userID = YDM.INSTANCE.YDM_Login(msg.get(0), msg.get(1));
+				}else{
+					userID = DM.INSTANCE.uu_loginA(msg.get(0), msg.get(1));
+				}
 				
 				if(userID>0){
 					//save config
@@ -576,9 +661,15 @@ public class Engine extends Observable {
 						configuration.put("T_PWD", msg.get(1));
 					}
 					configuration.put("T_ACC", msg.get(0));
+					configuration.put("CPT_TYPE", msg.get(4));
 					configuration.save();
 					
-					score = DM.INSTANCE.uu_getScoreA(msg.get(0), msg.get(1)); 
+					// 
+					if(cptType==0){
+						score = YDM.INSTANCE.YDM_GetBalance(msg.get(0), msg.get(1));
+					}else{
+						score = DM.INSTANCE.uu_getScoreA(msg.get(0), msg.get(1));
+					}
 					
 				}
 				
@@ -597,7 +688,7 @@ public class Engine extends Observable {
 	}
 	
 	private void ready(){
-		if(accounts!=null&&accounts.size()>0&&mails!=null&&mails.size()>0&&(!cptType||(cptType&&login))){
+		if(accounts!=null&&accounts.size()>0&&mails!=null&&mails.size()>0&&(cptType==2||(cptType!=2&&login))){
 			EngineMessage msg = new EngineMessage();
 	        msg.setType(EngineMessageType.OM_READY);
 	        this.setChanged();
@@ -608,5 +699,9 @@ public class Engine extends Observable {
 	        this.setChanged();
 			this.notifyObservers(msg);
 		}
+	}
+	
+	public int getCptType(){
+		return this.cptType;
 	}
 }

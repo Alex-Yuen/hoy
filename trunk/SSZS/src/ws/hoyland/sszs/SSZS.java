@@ -27,6 +27,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.widgets.Combo;
 
 public class SSZS implements Observer{
 
@@ -44,7 +45,6 @@ public class SSZS implements Observer{
 	private Text text_1;
 	private Text text_3;
 	private Button btnDenglu;
-	private Button btnUu;
 	private Label label_2;
 	private Label label_3;
 	private Button button_1;
@@ -56,6 +56,7 @@ public class SSZS implements Observer{
 	private Button button;
 	private Label label_6;
 	private Button button_4;
+	private Combo combo;
 
 	/**
 	 * Launch the application.
@@ -94,7 +95,7 @@ public class SSZS implements Observer{
 
 		EngineMessage message = new EngineMessage();
 		message.setType(EngineMessageType.IM_CAPTCHA_TYPE);
-		message.setData(btnUu.getSelection());
+		message.setData(combo.getSelectionIndex());
 		Engine.getInstance().fire(message);
 		
 		shlSszs.layout();
@@ -109,6 +110,8 @@ public class SSZS implements Observer{
 		Configuration configuration = Configuration.getInstance();
 		if(configuration.size()>0){
 			text_1.setText(configuration.getProperty("T_ACC"));
+			combo.select(Integer.parseInt(configuration.getProperty("CPT_TYPE")));
+			
 			if("true".equals(configuration.getProperty("R_PWD"))){
 				button_1.setSelection(true);
 				text_3.setText(configuration.getProperty("T_PWD"));
@@ -383,39 +386,6 @@ public class SSZS implements Observer{
 		group_1.setText("识别方式");
 		group_1.setBounds(0, 268, 213, 176);
 		
-		btnUu = new Button(group_1, SWT.CHECK);
-		btnUu.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				if(btnUu.getSelection()){
-					label_2.setEnabled(true);
-					label_3.setEnabled(true);
-					text_3.setEnabled(true);
-					text_1.setEnabled(true);
-					button_1.setEnabled(true);
-					button_3.setEnabled(true);
-					btnDenglu.setEnabled(true);
-				}else{
-					label_2.setEnabled(false);
-					label_3.setEnabled(false);
-					text_3.setEnabled(false);
-					text_1.setEnabled(false);
-					button_1.setEnabled(false);
-					button_3.setEnabled(false);
-					btnDenglu.setEnabled(false);					
-				}
-				
-				EngineMessage message = new EngineMessage();
-				message.setType(EngineMessageType.IM_CAPTCHA_TYPE);
-				message.setData(btnUu.getSelection());
-				Engine.getInstance().fire(message);
-				//ready();
-			}
-		});
-		btnUu.setText("使用UU输入验证码:");
-		btnUu.setSelection(true);
-		btnUu.setBounds(10, 21, 132, 17);
-		
 		label_2 = new Label(group_1, SWT.NONE);
 		label_2.setText("帐号:");
 		label_2.setBounds(10, 46, 43, 17);
@@ -472,7 +442,7 @@ public class SSZS implements Observer{
 				option.open();
 			}
 		});
-		link_1.setBounds(174, 21, 24, 17);
+		link_1.setBounds(174, 19, 24, 17);
 		link_1.setText("<a>设置</a>");
 		
 		button = new Button(group_1, SWT.NONE);
@@ -485,7 +455,8 @@ public class SSZS implements Observer{
 				text_1.setVisible(true);
 				text_3.setVisible(true);
 				btnDenglu.setVisible(true);
-				btnUu.setVisible(true);
+				//btnUu.setVisible(true);
+				combo.setEnabled(true);
 				label_3.setVisible(true);
 
 				lblNewLabel.setVisible(false);
@@ -505,6 +476,38 @@ public class SSZS implements Observer{
 		label_6 = new Label(group_1, SWT.NONE);
 		label_6.setText("题分:");
 		label_6.setBounds(10, 70, 43, 17);
+		
+		combo = new Combo(group_1, SWT.NONE);
+		combo.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				if(combo.getSelectionIndex()!=2){
+					label_2.setEnabled(true);
+					label_3.setEnabled(true);
+					text_3.setEnabled(true);
+					text_1.setEnabled(true);
+					button_1.setEnabled(true);
+					button_3.setEnabled(true);
+					btnDenglu.setEnabled(true);
+				}else{
+					label_2.setEnabled(false);
+					label_3.setEnabled(false);
+					text_3.setEnabled(false);
+					text_1.setEnabled(false);
+					button_1.setEnabled(false);
+					button_3.setEnabled(false);
+					btnDenglu.setEnabled(false);					
+				}
+				
+				EngineMessage message = new EngineMessage();
+				message.setType(EngineMessageType.IM_CAPTCHA_TYPE);
+				message.setData(combo.getSelectionIndex());
+				Engine.getInstance().fire(message);
+			}
+		});
+		combo.setItems(new String[] {"云打码", "悠悠云", "手动输入"});
+		combo.setBounds(10, 15, 97, 23);
+		combo.select(0);
 
 	}
 
@@ -514,6 +517,7 @@ public class SSZS implements Observer{
 		params.add(text_3.getText());
 		params.add(String.valueOf(button_1.getSelection()));
 		params.add(String.valueOf(button_3.getSelection()));
+		params.add(String.valueOf(combo.getSelectionIndex()));
 		
 		EngineMessage message = new EngineMessage();
 		message.setType(EngineMessageType.IM_USERLOGIN);
@@ -553,7 +557,8 @@ public class SSZS implements Observer{
 						button.setVisible(true);
 						label_6.setVisible(true);
 						
-						btnUu.setVisible(false);
+						//btnUu.setVisible(false);
+						combo.setEnabled(false);
 						button_1.setVisible(false);
 						button_3.setVisible(false);
 						text_1.setVisible(false);
