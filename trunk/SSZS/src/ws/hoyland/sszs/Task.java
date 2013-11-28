@@ -261,13 +261,16 @@ public class Task implements Runnable, Observer {
 			try {
 				byte[] by = baos.toByteArray();
 				byte[] resultByte = new byte[30]; // 为识别结果申请内存空间
-//				StringBuilder rsb = new StringBuilder(30);
-				String rsb = new String();
+//				StringBuffer rsb = new StringBuffer(30);
+//				String rsb = new String("0000");
 				
 				if(Engine.getInstance().getCptType()==0){
-					codeID = YDM.INSTANCE.YDM_DecodeByBytes(by, by.length, 1004, rsb);//result byte
-					result = rsb;
-					
+					codeID = YDM.INSTANCE.YDM_DecodeByBytes(by, by.length, 1004, resultByte);//result byte
+					result = "xxxx";
+					for(int i=0;i<resultByte.length;i++){
+						System.out.println(resultByte[i]);
+					}
+					System.out.println("TTT:"+codeID);
 				}else{
 					codeID = DM.INSTANCE.uu_recognizeByCodeTypeAndBytesA(by,
 							by.length, 1, resultByte); // 调用识别函数,resultBtye为识别结果
