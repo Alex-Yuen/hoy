@@ -21,7 +21,8 @@ public class EngineMessageType {
 	
 	public static final int IM_EXIT = 0x1023;
 	public static final int IM_PAUSE = 0x1024;
-	
+
+	public static final int IM_FREQ = 0x1025; //申诉频繁
 	//outgoing message
 	public static final int OM_LOGINING = 0x2010;
 	public static final int OM_LOGINED = 0x2011;
