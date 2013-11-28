@@ -165,7 +165,7 @@ public class Tool extends Dialog {
 
 					for (int i = 0; i < mails.size(); i++) {
 						try {
-							pool.execute(new TS(output, table, mails.get(i)));
+							pool.execute(new TS(pool, output, table, mails.get(i)));
 						} catch (Exception ex) {
 							ex.printStackTrace();
 						}
@@ -309,8 +309,10 @@ class TS implements Runnable {
 	private BufferedWriter output;
 	private Table table;
 	private String mails;
+	private ThreadPoolExecutor pool;
 	
-	public TS(BufferedWriter output, Table table, String mails){
+	public TS(ThreadPoolExecutor pool, BufferedWriter output, Table table, String mails){
+		this.pool = pool;
 		this.output = output;
 		this.table = table;
 		this.mails = mails;
@@ -495,6 +497,11 @@ class TS implements Runnable {
 					});
 		} catch (Exception e) {
 			e.printStackTrace();
+			try{
+				pool.execute(new TS(this.pool, this.output, this.table, this.mails));
+			}catch(Exception ex){
+				ex.printStackTrace();
+			}
 		}
 	}
 }
