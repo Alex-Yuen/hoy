@@ -7,6 +7,9 @@ import java.util.Observable;
 import java.util.Observer;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.dnd.Clipboard;
+import org.eclipse.swt.dnd.TextTransfer;
+import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.events.ShellAdapter;
 import org.eclipse.swt.events.ShellEvent;
 import org.eclipse.swt.graphics.Image;
@@ -28,6 +31,8 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Combo;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.MenuItem;
 
 public class SSZS implements Observer{
 
@@ -57,7 +62,16 @@ public class SSZS implements Observer{
 	private Label label_6;
 	private Button button_4;
 	private Combo combo;
+	private int first = -1;
+	private int last = -1;
 
+	
+	private Clipboard clipBoard = new Clipboard(Display.getDefault());
+	private Transfer textTransfer = TextTransfer.getInstance();
+	private MenuItem mntmc;
+	private MenuItem mntmc_1;
+	private MenuItem mntml;
+	private MenuItem mntmNewItem;
 	/**
 	 * Launch the application.
 	 * @param args
@@ -193,7 +207,25 @@ public class SSZS implements Observer{
 		link.setText("<a>导入...</a>");
 		link.setBounds(314, 1, 36, 17);
 		
-		table = new Table(shlSszs, SWT.BORDER | SWT.FULL_SELECTION);
+		table = new Table(shlSszs, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI);
+		table.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				TableItem[] tis = table.getSelection();
+				if(tis.length==0){
+					mntmc_1.setEnabled(false);
+					mntml.setEnabled(false);
+					mntmNewItem.setEnabled(false);
+				}else{
+					//ready();
+					if(button_2.getEnabled()){
+						mntml.setEnabled(true);
+						mntmNewItem.setEnabled(true);
+					}
+					mntmc_1.setEnabled(true);
+				}
+			}
+		});
 		table.setLinesVisible(true);
 		table.setHeaderVisible(true);
 		table.setBounds(0, 24, 350, 238);
@@ -213,6 +245,79 @@ public class SSZS implements Observer{
 		TableColumn tableColumn_4 = new TableColumn(table, SWT.NONE);
 		tableColumn_4.setWidth(98);
 		tableColumn_4.setText("状态");
+		
+		Menu menu_1 = new Menu(table);
+		table.setMenu(menu_1);
+		
+		mntml = new MenuItem(menu_1, SWT.NONE);
+		mntml.setEnabled(false);
+		mntml.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				TableItem[] tis = table.getSelection();
+				if(tis.length==0){
+					return;
+				}
+				first = table.indexOf(tis[0]);
+				last = first;
+				
+				Event ex = new Event();
+				ex.widget = button_2;
+				//主动触发button点击事件				
+				button_2.notifyListeners(SWT.Selection, ex);
+//				for(int i=0;i<tis.length;i++){
+//					
+//					sb.append(tis[i].getText(0)+"----"+tis[i].getText(1)+"----"+tis[i].getText(2)+"----"+tis[i].getText(3)+"\r\n");					
+//					//System.out.println("OK");
+//				}
+				//TTT
+			}
+		});
+		mntml.setText("只执行选定行(&L)");
+		
+		mntmNewItem = new MenuItem(menu_1, SWT.NONE);
+		mntmNewItem.setEnabled(false);
+		mntmNewItem.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				TableItem[] tis = table.getSelection();
+				if(tis.length==0){
+					return;
+				}
+				first = table.indexOf(tis[0]);
+				last = table.getItemCount()-1;
+				
+				Event ex = new Event();
+				ex.widget = button_2;
+				//主动触发button点击事件				
+				button_2.notifyListeners(SWT.Selection, ex);
+			}
+		});
+		mntmNewItem.setText("从选定行开始执行(&S)");
+		
+		MenuItem menuItem_1 = new MenuItem(menu_1, SWT.SEPARATOR);
+		menuItem_1.setText("-");
+		
+		mntmc_1 = new MenuItem(menu_1, SWT.NONE);
+		mntmc_1.setEnabled(false);
+		mntmc_1.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				TableItem[] tis = table.getSelection();
+				if(tis.length==0){
+					return;
+				}
+				StringBuffer sb = new StringBuffer();
+				for(int i=0;i<tis.length;i++){
+					sb.append(tis[i].getText(0)+"----"+tis[i].getText(1)+"----"+tis[i].getText(2)+"----"+tis[i].getText(3)+"\r\n");					
+					//System.out.println("OK");
+				}
+
+				clipBoard.setContents(new String[]{sb.toString()}, new Transfer[]{textTransfer});
+				clipBoard.dispose();
+			}
+		});
+		mntmc_1.setText("复制(&C)");
 		
 		label_5 = new Label(shlSszs, SWT.BORDER | SWT.WRAP);
 		label_5.setBounds(422, 1, 225, 17);
@@ -259,8 +364,20 @@ public class SSZS implements Observer{
 
 					@Override
 					public void run() {
+						//System.out.println("EEF");
+						if(first==-1){
+							first = 0;
+						}
+						if(last==-1){
+							last = table.getItemCount() - 1;
+						}
+						
+						Integer[] flidx = new Integer[2];
+						flidx[0] = first;
+						flidx[1] = last;
 						EngineMessage message = new EngineMessage();
 						message.setType(EngineMessageType.IM_PROCESS);
+						message.setData(flidx);
 						Engine.getInstance().fire(message);
 					}
 					
@@ -361,7 +478,18 @@ public class SSZS implements Observer{
 		label_20.setText("邮箱列表:");
 		label_20.setBounds(356, 1, 60, 17);
 		
-		table_1 = new Table(shlSszs, SWT.BORDER | SWT.FULL_SELECTION);
+		table_1 = new Table(shlSszs, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI);
+		table_1.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				TableItem[] tis = table_1.getSelection();
+				if(tis.length==0){
+					mntmc.setEnabled(false);
+				}else{
+					mntmc.setEnabled(true);
+				}
+			}
+		});
 		table_1.setLinesVisible(true);
 		table_1.setHeaderVisible(true);
 		table_1.setBounds(356, 24, 350, 238);
@@ -381,6 +509,30 @@ public class SSZS implements Observer{
 		TableColumn tableColumn_11 = new TableColumn(table_1, SWT.NONE);
 		tableColumn_11.setWidth(98);
 		tableColumn_11.setText("使用次数");
+		
+		Menu menu = new Menu(table_1);
+		table_1.setMenu(menu);
+		
+		mntmc = new MenuItem(menu, SWT.NONE);
+		mntmc.setEnabled(false);
+		mntmc.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				TableItem[] tis = table_1.getSelection();
+				if(tis.length==0){
+					return;
+				}
+				StringBuffer sb = new StringBuffer();
+				for(int i=0;i<tis.length;i++){
+					sb.append(tis[i].getText(0)+"----"+tis[i].getText(1)+"----"+tis[i].getText(2)+"----"+tis[i].getText(3)+"\r\n");					
+					//System.out.println("OK");
+				}
+
+				clipBoard.setContents(new String[]{sb.toString()}, new Transfer[]{textTransfer});
+				clipBoard.dispose();
+			}
+		});
+		mntmc.setText("复制(&C)");
 		
 		group_1 = new Group(shlSszs, SWT.NONE);
 		group_1.setText("识别方式");
@@ -668,6 +820,8 @@ public class SSZS implements Observer{
 							button_2.setText("停止");
 							button_4.setEnabled(true);
 						}else{
+							first = -1;
+							last = -1;
 							status.setText("运行停止");
 							button_2.setText("开始");
 							button_4.setEnabled(false);
