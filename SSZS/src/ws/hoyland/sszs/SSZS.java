@@ -362,17 +362,18 @@ public class SSZS implements Observer{
 		button_2.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
+				if(first==-1){
+					first = 0;
+				}
+				if(last==-1){
+					last = table.getItemCount() - 1;
+				}
+				
 				Thread t = new Thread(new Runnable(){
 
 					@Override
 					public void run() {
 						//System.out.println("EEF");
-						if(first==-1){
-							first = 0;
-						}
-						if(last==-1){
-							last = table.getItemCount() - 1;
-						}
 						
 						Integer[] flidx = new Integer[3];
 						flidx[0] = first;
@@ -493,6 +494,12 @@ public class SSZS implements Observer{
 							.getDefault()
 							.getSystemColor(
 									SWT.COLOR_GRAY));
+				}
+				for(int i=lidx;i<table_1.getItemCount();i++){
+					table_1.getItem(i).setBackground(Display
+							.getDefault()
+							.getSystemColor(
+									SWT.COLOR_WHITE));
 				}
 				mfirst = lidx;
 				//System.out.println()
