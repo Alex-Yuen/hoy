@@ -6,7 +6,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.InputStreamReader;
-import java.net.InetAddress;
 import java.net.URL;
 import java.text.DateFormat;
 import java.util.ArrayList;
@@ -455,7 +454,7 @@ public class Engine extends Observable {
 											result = execute(link);
 											if (result
 													.indexOf("已连接") > 0) {
-
+												//1
 //												URL url = new URL("http://iframe.ip138.com/ic.asp");
 //												InputStream is = url.openStream();
 //												BufferedReader br = new BufferedReader(new InputStreamReader(is, "GB2312"));  
@@ -472,8 +471,25 @@ public class Engine extends Observable {
 //										        
 //										        index = ip.indexOf("]");
 //										        ip = ip.substring(0, index);
-												InetAddress addr = InetAddress.getLocalHost();
-												String ip = addr.getHostAddress().toString();
+										        
+										        // 2
+//												InetAddress addr = InetAddress.getLocalHost();
+//												String ip = addr.getHostAddress().toString();
+												
+												//3
+												result = execute("ipconfig");
+												result = result.substring(result.indexOf("宽带连接"));
+												if(result.indexOf("IP Address")!=-1){
+													result = result.substring(result.indexOf("IP Address"));
+												}
+												if(result.indexOf("IPv4 地址")!=-1){
+													result = result.substring(result.indexOf("IPv4 地址"));
+												}
+												
+												result = result.substring(result.indexOf(":")+2);
+												result = result.substring(0, result.indexOf(" ")-1);
+												
+												String ip = result;
 												
 										        System.err.println("ip="+ip);
 												if(ips.containsKey(ip)){

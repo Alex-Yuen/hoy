@@ -1,6 +1,7 @@
 package ws.hoyland.sszs;
 
-import java.net.InetAddress;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 
 public class Test {
 
@@ -99,13 +100,42 @@ public class Test {
 //		}catch(Exception e){
 //			e.printStackTrace();
 //		}
+//		try{
+//			InetAddress addr = InetAddress.getLocalHost();
+//			String ip=addr.getHostAddress().toString();//获得本机IP
+//			System.out.println(ip);
+//		}catch(Exception e){
+//			e.printStackTrace();
+//		}
+		
 		try{
-			InetAddress addr = InetAddress.getLocalHost();
-			String ip=addr.getHostAddress().toString();//获得本机IP
-			System.out.println(ip);
+		String result = new Test().execute("ipconfig");
+		//result = result.substring(result.indexOf("宽带连接"));
+		if(result.indexOf("IP Address")!=-1){
+			result = result.substring(result.indexOf("IP Address"));
+		}
+		if(result.indexOf("IPv4 地址")!=-1){
+			result = result.substring(result.indexOf("IPv4 地址"));
+		}
+		
+		result = result.substring(result.indexOf(":")+2);
+		//System.out.println(result);
+		result = result.substring(0, result.indexOf(" ")-1);
+		System.out.println(result+".");
 		}catch(Exception e){
 			e.printStackTrace();
 		}
 	}
 
+	public String execute(String cmd) throws Exception {
+		Process p = Runtime.getRuntime().exec("cmd /c " + cmd);
+		StringBuilder result = new StringBuilder();
+		BufferedReader br = new BufferedReader(new InputStreamReader(
+				p.getInputStream(), "GB2312"));
+		String line;
+		while ((line = br.readLine()) != null) {
+			result.append(line + "\n");
+		}
+		return result.toString();
+	}
 }
