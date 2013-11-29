@@ -450,7 +450,7 @@ public class Engine extends Observable {
 										
 										tfi = 0;
 										
-										while(fi&&tfi<4){
+										while(fi&&("true".equals(configuration.getProperty("AWCONN"))||("false".equals(configuration.getProperty("AWCONN"))&&tfi<4))){
 											result = execute(link);
 											if (result
 													.indexOf("已连接") > 0) {
@@ -496,9 +496,9 @@ public class Engine extends Observable {
 													//break;
 												}
 											}else {
-												System.err.println("连接失败");
+												System.err.println("连接失败("+tfi+")");
 												try{
-													Thread.sleep(1000);
+													Thread.sleep(1000*30);
 												}catch(Exception e){
 													e.printStackTrace();
 												}
@@ -507,9 +507,9 @@ public class Engine extends Observable {
 											}
 										}//while in
 									}else {
-										System.err.println("没有连接");
+										System.err.println("没有连接("+tfo+")");
 										try{
-											Thread.sleep(1000);
+											Thread.sleep(1000*30);
 										}catch(Exception e){
 											e.printStackTrace();
 										}

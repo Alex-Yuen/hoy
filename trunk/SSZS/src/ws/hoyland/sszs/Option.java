@@ -78,6 +78,7 @@ public class Option extends Dialog implements Observer {
 	private Spinner spinner_1;
 	private Spinner spinner_2;
 	private Spinner spinner_3;
+	private Button btnCheckButton;
 	/**
 	 * Create the dialog.
 	 * @param parent
@@ -137,6 +138,13 @@ public class Option extends Dialog implements Observer {
 				
 				spinner_2.setSelection(Integer.parseInt(this.configuration.getProperty("AUTO_RECON")));
 				spinner_3.setSelection(Integer.parseInt(this.configuration.getProperty("RECON_DELAY")));
+				
+				if("true".equals(configuration.getProperty("AWCONN"))){
+					btnCheckButton.setSelection(true);
+				}else{
+					btnCheckButton.setSelection(false);
+				}
+				//btnCheckButton.setSelection(Boolean.parseBoolean(this.configuration.getProperty("AWCONN")));
 			}
 		}catch(Exception e){
 			e.printStackTrace();
@@ -162,6 +170,7 @@ public class Option extends Dialog implements Observer {
 		
 		this.configuration.put("AUTO_RECON", spinner_2.getText());
 		this.configuration.put("RECON_DELAY", spinner_3.getText());
+		this.configuration.put("AWCONN", String.valueOf(btnCheckButton.getSelection()));		
 		
 		this.configuration.save();
 	}
@@ -367,6 +376,10 @@ public class Option extends Dialog implements Observer {
 		Label label_8 = new Label(composite_1, SWT.NONE);
 		label_8.setText("秒");
 		label_8.setBounds(128, 43, 37, 17);
+		
+		btnCheckButton = new Button(composite_1, SWT.CHECK);
+		btnCheckButton.setBounds(235, 14, 120, 17);
+		btnCheckButton.setText("无限重拨(默认3次)");
 		
 		Button btnNewButton = new Button(shell, SWT.NONE);
 		btnNewButton.addSelectionListener(new SelectionAdapter() {
