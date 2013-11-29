@@ -1,14 +1,6 @@
 package ws.hoyland.sszs;
 
-import java.util.Properties;
-
-import javax.mail.Flags;
-import javax.mail.Folder;
-import javax.mail.Message;
-import javax.mail.Session;
-
-import com.sun.mail.imap.IMAPFolder;
-import com.sun.mail.imap.IMAPStore;
+import java.net.InetAddress;
 
 public class Test {
 
@@ -37,73 +29,80 @@ public class Test {
 		
 //		String account = "12345678";
 //		System.out.println(account.substring(account.length()-1));
+//		try{
+//			Properties props = new Properties();
+//	//		props.setProperty("mail.store.protocol", "pop3");
+//	//		props.setProperty("mail.pop3.host", "pop3.163.com");
+//			props.put("mail.imap.host", "imap.163.com");	            
+//	        props.put("mail.imap.auth.plain.disable", "true");
+//	         
+//			Session session = Session.getDefaultInstance(props);
+//			session.setDebug(false); 
+//			IMAPStore store = (IMAPStore)session.getStore("imap");
+//			store.connect("bingfan105310@163.com", "bianyxw0461");
+//			IMAPFolder folder = (IMAPFolder)store.getFolder("INBOX");
+//			folder.open(Folder.READ_WRITE);
+//	
+//			// 全部邮件
+//			Message[] messages = folder.getMessages();
+//			
+//			boolean seen = true;
+//			//System.err.println(messages.length);
+//			
+//			
+//			for (int i = messages.length-1; i >=0; i--) {
+//				seen = true;
+//				Message message = messages[i];
+//				// 删除邮件
+//				// message.setFlag(Flags.Flag.DELETED,true);
+//				message.getAllHeaders();
+//	
+//				Flags flags = message.getFlags();    
+//				if (flags.contains(Flags.Flag.SEEN)){
+//					//info("A1");
+//					seen = true;    
+//				} else {
+//					//info("A2");
+//					seen = false;    
+//				}
+//	
+//				if(!seen){
+//					System.out.println(String.valueOf(seen));
+//					//info(message.get)
+//					System.out.println(message.getSubject());
+//					System.out.println((String)message.getContent());
+//					flags = message.getFlags();    
+//					if (flags.contains(Flags.Flag.SEEN)){
+//						//info("A1");
+//						seen = true;    
+//					} else {
+//						//info("A2");
+//						seen = false;    
+//					}
+//					System.out.println(String.valueOf(seen));
+//					//message.setFlag(Flags.Flag.SEEN, false);
+//
+//					try{
+//						Thread.sleep(5000);
+//					}
+//					catch(Exception e){
+//						e.printStackTrace();
+//						
+//					}
+//					message.setFlag(Flags.Flag.SEEN, false);
+//					
+//				}
+//				if(!seen){
+//					//message.setFlag(Flags.Flag.SEEN, false);
+//				}
+//			}
+//		}catch(Exception e){
+//			e.printStackTrace();
+//		}
 		try{
-			Properties props = new Properties();
-	//		props.setProperty("mail.store.protocol", "pop3");
-	//		props.setProperty("mail.pop3.host", "pop3.163.com");
-			props.put("mail.imap.host", "imap.163.com");	            
-	        props.put("mail.imap.auth.plain.disable", "true");
-	         
-			Session session = Session.getDefaultInstance(props);
-			session.setDebug(false); 
-			IMAPStore store = (IMAPStore)session.getStore("imap");
-			store.connect("bingfan105310@163.com", "bianyxw0461");
-			IMAPFolder folder = (IMAPFolder)store.getFolder("INBOX");
-			folder.open(Folder.READ_WRITE);
-	
-			// 全部邮件
-			Message[] messages = folder.getMessages();
-			
-			boolean seen = true;
-			//System.err.println(messages.length);
-			
-			
-			for (int i = messages.length-1; i >=0; i--) {
-				seen = true;
-				Message message = messages[i];
-				// 删除邮件
-				// message.setFlag(Flags.Flag.DELETED,true);
-				message.getAllHeaders();
-	
-				Flags flags = message.getFlags();    
-				if (flags.contains(Flags.Flag.SEEN)){
-					//info("A1");
-					seen = true;    
-				} else {
-					//info("A2");
-					seen = false;    
-				}
-	
-				if(!seen){
-					System.out.println(String.valueOf(seen));
-					//info(message.get)
-					System.out.println(message.getSubject());
-					System.out.println((String)message.getContent());
-					flags = message.getFlags();    
-					if (flags.contains(Flags.Flag.SEEN)){
-						//info("A1");
-						seen = true;    
-					} else {
-						//info("A2");
-						seen = false;    
-					}
-					System.out.println(String.valueOf(seen));
-					//message.setFlag(Flags.Flag.SEEN, false);
-
-					try{
-						Thread.sleep(5000);
-					}
-					catch(Exception e){
-						e.printStackTrace();
-						
-					}
-					message.setFlag(Flags.Flag.SEEN, false);
-					
-				}
-				if(!seen){
-					//message.setFlag(Flags.Flag.SEEN, false);
-				}
-			}
+			InetAddress addr = InetAddress.getLocalHost();
+			String ip=addr.getHostAddress().toString();//获得本机IP
+			System.out.println(ip);
 		}catch(Exception e){
 			e.printStackTrace();
 		}

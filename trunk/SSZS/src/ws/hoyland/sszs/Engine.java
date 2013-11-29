@@ -5,8 +5,8 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
-import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.InetAddress;
 import java.net.URL;
 import java.text.DateFormat;
 import java.util.ArrayList;
@@ -447,6 +447,7 @@ public class Engine extends Observable {
 									if (result
 											.indexOf("没有连接") == -1) {
 										fo = false; // 断线成功，将跳出外循环
+										fi = true;
 										
 										tfi = 0;
 										
@@ -454,23 +455,26 @@ public class Engine extends Observable {
 											result = execute(link);
 											if (result
 													.indexOf("已连接") > 0) {
-												//cf = true;
-												URL url = new URL("http://iframe.ip138.com/ic.asp");
-												InputStream is = url.openStream();
-												BufferedReader br = new BufferedReader(new InputStreamReader(is, "GB2312"));  
-										        String line = null;
-										        StringBuffer sb = new StringBuffer();
-										        while ((line=br.readLine())!= null) {
-										        	sb.append(line);
-										        }
-										
-												String ip = sb.toString();
-												//System.out.println(ip);
-										        int index = ip.indexOf("您的IP是：[");
-										        ip = ip.substring(index+7);
-										        
-										        index = ip.indexOf("]");
-										        ip = ip.substring(0, index);																							        
+
+//												URL url = new URL("http://iframe.ip138.com/ic.asp");
+//												InputStream is = url.openStream();
+//												BufferedReader br = new BufferedReader(new InputStreamReader(is, "GB2312"));  
+//										        String line = null;
+//										        StringBuffer sb = new StringBuffer();
+//										        while ((line=br.readLine())!= null) {
+//										        	sb.append(line);
+//										        }
+//										
+//												String ip = sb.toString();
+//												
+//										        int index = ip.indexOf("您的IP是：[");
+//										        ip = ip.substring(index+7);
+//										        
+//										        index = ip.indexOf("]");
+//										        ip = ip.substring(0, index);
+												InetAddress addr = InetAddress.getLocalHost();
+												String ip = addr.getHostAddress().toString();
+												
 										        System.err.println("ip="+ip);
 												if(ips.containsKey(ip)){
 													long time = ips.get(ip);
@@ -483,7 +487,7 @@ public class Engine extends Observable {
 													}else{
 														System.err.println("IP重复，未超过1小时，重新拨号:"+ip);
 														fo = true;
-														fi = true;
+														fi = false;
 														tfo = 0;
 														st = false;
 														//continue;
