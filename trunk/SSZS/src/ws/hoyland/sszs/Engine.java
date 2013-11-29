@@ -299,6 +299,9 @@ public class Engine extends Observable {
 					Integer[] flidx = (Integer[]) message.getData();
 					
 					mindex = flidx[2]; //mfirst of SSZS
+					if(mindex==-1){
+						mindex = 0;
+					}
 					//for (int i = 0; i < accounts.size(); i++) {
 					for (int i = flidx[0]; i <= flidx[1]; i++) {
 						try {
@@ -422,7 +425,8 @@ public class Engine extends Observable {
 						@Override
 						public void run() {
 							System.err.println("正在重拨");
-							
+
+							boolean st = false;
 							String cut = "rasdial 宽带连接 /disconnect";
 							String link = "rasdial 宽带连接 "
 									+ account
@@ -433,14 +437,19 @@ public class Engine extends Observable {
 								boolean fo = true;
 								boolean fi = true;
 								
-								while(fo){
+								int tfo = 0;
+								int tfi = 0;
+								
+								while(fo&&tfo<4){
 									String result = execute(cut);
 									
 									if (result
 											.indexOf("没有连接") == -1) {
 										fo = false; // 断线成功，将跳出外循环
 										
-										while(fi){
+										tfi = 0;
+										
+										while(fi&&tfi<4){
 											result = execute(link);
 											if (result
 													.indexOf("已连接") > 0) {
@@ -468,26 +477,42 @@ public class Engine extends Observable {
 														System.err.println("IP重复，但超过1小时，拨号成功:"+ip);
 														ips.put(ip, System.currentTimeMillis());
 														fi = false;//跳出内循环
+														st = true;
 														//break;
 													}else{
 														System.err.println("IP重复，未超过1小时，重新拨号:"+ip);
 														fo = true;
 														fi = true;
+														tfo = 0;
+														st = false;
 														//continue;
 													}
 												}else{
 													System.err.println("IP不重复，拨号成功:"+ip);
 													ips.put(ip, new Long(System.currentTimeMillis()));
-													 fi = false;
+													fi = false;
+													st = true;
 													//break;
 												}
 											}else {
 												System.err.println("连接失败");
-												break;
+												try{
+													Thread.sleep(1000);
+												}catch(Exception e){
+													e.printStackTrace();
+												}
+												tfi++;//允许3次循环
+												//break;
 											}
 										}//while in
 									}else {
 										System.err.println("没有连接");
+										try{
+											Thread.sleep(1000);
+										}catch(Exception e){
+											e.printStackTrace();
+										}
+										tfo++; //允许3次循环
 										//break;
 									}
 								}//while out
@@ -495,24 +520,28 @@ public class Engine extends Observable {
 								e.printStackTrace();
 							}
 							
-							//通知其他未阻塞线程，重拨结束，无需再进行等待
-							EngineMessage msg = new EngineMessage();
-							msg.setTid(-1); //所有task
-							msg.setType(EngineMessageType.OM_RECONN);
-							//msg.setData(message.getData());
-							
-							Engine.this.setChanged();
-							Engine.this.notifyObservers(msg);
-							
-							synchronized(ReconObject.getInstance()){
-								try{
-									ReconObject.getInstance().notifyAll();
-								}catch(Exception e){
-									e.printStackTrace();
+							if(st){
+								//通知其他未阻塞线程，重拨结束，无需再进行等待
+								EngineMessage msg = new EngineMessage();
+								msg.setTid(-1); //所有task
+								msg.setType(EngineMessageType.OM_RECONN);
+								//msg.setData(message.getData());
+								
+								Engine.this.setChanged();
+								Engine.this.notifyObservers(msg);
+								
+								synchronized(ReconObject.getInstance()){
+									try{
+										ReconObject.getInstance().notifyAll();
+									}catch(Exception e){
+										e.printStackTrace();
+									}
 								}
+								
+								System.err.println("重拨结束");
+							}else{
+								System.err.println("重拨失败");
 							}
-							
-							System.err.println("重拨结束");
 						}
 						
 						private String execute(String cmd) throws Exception {
