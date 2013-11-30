@@ -79,6 +79,7 @@ public class Option extends Dialog implements Observer {
 	private Spinner spinner_2;
 	private Spinner spinner_3;
 	private Button btnCheckButton;
+	private Spinner spinner_4;
 	/**
 	 * Create the dialog.
 	 * @param parent
@@ -139,6 +140,8 @@ public class Option extends Dialog implements Observer {
 				spinner_2.setSelection(Integer.parseInt(this.configuration.getProperty("AUTO_RECON")));
 				spinner_3.setSelection(Integer.parseInt(this.configuration.getProperty("RECON_DELAY")));
 				
+				spinner_4.setSelection(Integer.parseInt(this.configuration.getProperty("READ_TC")));
+				
 				if("true".equals(configuration.getProperty("AWCONN"))){
 					btnCheckButton.setSelection(true);
 				}else{
@@ -160,6 +163,7 @@ public class Option extends Dialog implements Observer {
 		this.configuration.put("ADSL_ACCOUNT", text.getText());
 		this.configuration.put("ADSL_PASSWORD", text_1.getText());
 		this.configuration.put("THREAD_COUNT", spinner_1.getText());
+		this.configuration.put("READ_TC", spinner_4.getText());
 		
 		this.configuration.put("P1", String.valueOf(combo_1.getSelectionIndex()));
 		this.configuration.put("C1", String.valueOf(combo_2.getSelectionIndex()));
@@ -380,6 +384,16 @@ public class Option extends Dialog implements Observer {
 		btnCheckButton = new Button(composite_1, SWT.CHECK);
 		btnCheckButton.setBounds(235, 14, 120, 17);
 		btnCheckButton.setText("无限重拨(默认3次)");
+		
+		spinner_4 = new Spinner(composite_1, SWT.BORDER);
+		spinner_4.setMaximum(10);
+		spinner_4.setMinimum(1);
+		spinner_4.setSelection(2);
+		spinner_4.setBounds(300, 40, 45, 23);
+		
+		Label label_9 = new Label(composite_1, SWT.NONE);
+		label_9.setText("读取线程:");
+		label_9.setBounds(233, 43, 61, 17);
 		
 		Button btnNewButton = new Button(shell, SWT.NONE);
 		btnNewButton.addSelectionListener(new SelectionAdapter() {
