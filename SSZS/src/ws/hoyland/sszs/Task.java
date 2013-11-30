@@ -4,7 +4,9 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.net.URLEncoder;
+import java.text.DateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
@@ -895,7 +897,7 @@ public class Task implements Runnable, Observer {
 				        //if(!isold){
 							message.setFlag(Flags.Flag.SEEN, true);	// 标记为已读
 							rcl = ssct.substring(ssct.indexOf("<b class=\"red\">")+15, ssct.indexOf("<b class=\"red\">")+25);
-								
+							
 							System.err.println(rcl);
 							break;
 						} 
@@ -914,11 +916,11 @@ public class Task implements Runnable, Observer {
 				folder.close(true);
 				store.close();
 				
-				if(rc==null){					
+				if(rcl==null){					
 					tcback++;					
 					idx = 15;
 					if(tcback==3){
-						info("找不到邮件[回执]，退出("+tcback+")");
+						info("找不到邮件[回执]，退出("+tcback+")->"+this.mail+"----"+this.mpwd);
 						this.run = false;
 					}else{
 						info("找不到邮件[回执]，继续尝试("+tcback+")");
@@ -948,7 +950,10 @@ public class Task implements Runnable, Observer {
 		message.setType(EngineMessageType.IM_INFO);
 		message.setData(info);
 
-		System.err.println("["+this.account+"]"+info);
+		DateFormat format = new java.text.SimpleDateFormat("yyyy/MM/dd hh:mm:ss");
+		String tm = format.format(new Date());
+		
+		System.err.println("["+this.account+"]"+info+"("+tm+")");
 		Engine.getInstance().fire(message);
 	}
 	
