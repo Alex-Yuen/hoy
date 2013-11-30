@@ -80,6 +80,7 @@ public class Option extends Dialog implements Observer {
 	private Spinner spinner_3;
 	private Button btnCheckButton;
 	private Spinner spinner_4;
+	private Spinner spinner_5;
 	/**
 	 * Create the dialog.
 	 * @param parent
@@ -141,6 +142,7 @@ public class Option extends Dialog implements Observer {
 				spinner_3.setSelection(Integer.parseInt(this.configuration.getProperty("RECON_DELAY")));
 				
 				spinner_4.setSelection(Integer.parseInt(this.configuration.getProperty("READ_TC")));
+				spinner_5.setSelection(Integer.parseInt(this.configuration.getProperty("MAIL_ITV")));
 				
 				if("true".equals(configuration.getProperty("AWCONN"))){
 					btnCheckButton.setSelection(true);
@@ -164,6 +166,7 @@ public class Option extends Dialog implements Observer {
 		this.configuration.put("ADSL_PASSWORD", text_1.getText());
 		this.configuration.put("THREAD_COUNT", spinner_1.getText());
 		this.configuration.put("READ_TC", spinner_4.getText());
+		this.configuration.put("MAIL_ITV", spinner_5.getText());
 		
 		this.configuration.put("P1", String.valueOf(combo_1.getSelectionIndex()));
 		this.configuration.put("C1", String.valueOf(combo_2.getSelectionIndex()));
@@ -326,6 +329,15 @@ public class Option extends Dialog implements Observer {
 		spinner_1.setMinimum(1);
 		spinner_1.setSelection(1);
 		spinner_1.setBounds(77, 36, 47, 20);
+		
+		spinner_5 = new Spinner(composite, SWT.BORDER);
+		spinner_5.setMaximum(50);
+		spinner_5.setSelection(3);
+		spinner_5.setBounds(238, 7, 47, 23);
+		
+		Label label_10 = new Label(composite, SWT.NONE);
+		label_10.setText("邮箱间隔(秒):");
+		label_10.setBounds(153, 10, 79, 17);
 		
 		TabItem tbtmNewItem_1 = new TabItem(tabFolder, SWT.NONE);
 		tbtmNewItem_1.setText("高级");
