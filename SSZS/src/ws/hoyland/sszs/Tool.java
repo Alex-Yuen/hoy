@@ -59,6 +59,7 @@ public class Tool extends Dialog {
 	private String xpath = url.getPath();
 	private boolean running = false;
 	private ThreadPoolExecutor pool;
+	private Configuration configuration = Configuration.getInstance();
 	
 	/**
 	 * Create the dialog.
@@ -147,7 +148,7 @@ public class Tool extends Dialog {
 						ex.printStackTrace();
 					}
 
-					int tc = 1;
+					int tc = Integer.parseInt(configuration.getProperty("READ_TC"));
 					int corePoolSize = tc;// minPoolSize
 					int maxPoolSize = tc;
 					int maxTaskSize = (1024 + 512) * 100 * 40;// 缓冲队列
@@ -310,12 +311,15 @@ class TS implements Runnable {
 	private Table table;
 	private String mails;
 	private ThreadPoolExecutor pool;
+	private String[] msx = null;
 	
 	public TS(ThreadPoolExecutor pool, BufferedWriter output, Table table, String mails){
 		this.pool = pool;
 		this.output = output;
 		this.table = table;
 		this.mails = mails;
+		this.msx = mails.split(
+				"----");
 	}
 
 	@Override
@@ -323,8 +327,7 @@ class TS implements Runnable {
 		try {
 			int sc = 0;
 			int fc = 0;
-			final String[] ms = mails.split(
-					"----");
+			final String[] ms = msx;
 
 			Display.getDefault().asyncExec(
 					new Runnable() {
@@ -494,10 +497,35 @@ class TS implements Runnable {
 							// String.valueOf(ffc));
 							table.setSelection(tableItem);
 						}
-					});
+					}
+			);
 		} catch (Exception e) {
 			e.printStackTrace();
+			Display.getDefault().asyncExec(
+					new Runnable() {
+						@Override
+						public void run() {
+							TableItem tableItem = table.getItem(Integer
+									.parseInt(msx[0]) - 1);
+							tableItem
+									.setForeground(Display
+											.getDefault()
+											.getSystemColor(
+													SWT.COLOR_RED));
+							// TableItem tableItem =
+							// table.getItem(Integer.parseInt(ms[0])-1);
+							// tableItem.setText(4,
+							// String.valueOf(ffc));
+							table.setSelection(tableItem);
+						}
+					}
+			);
 			try{
+				System.err.print("读取工具 : 收取邮件出错，新建任务运行.[");
+				for(int i=0;i<msx.length;i++){
+					System.err.print(msx[i]+"----");
+				}
+				System.err.println();
 				pool.execute(new TS(this.pool, this.output, this.table, this.mails));
 			}catch(Exception ex){
 				ex.printStackTrace();
