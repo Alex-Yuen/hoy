@@ -196,6 +196,7 @@ public class Task implements Runnable, Observer {
 	}
 
 	private void process(int index) {
+		int itv = Integer.parseInt(this.configuration.getProperty("MAIL_ITV"));
 		switch (index) {
 		case 0:
 			info("正在请求验证码");
@@ -487,10 +488,10 @@ public class Task implements Runnable, Observer {
 			}
 			break;
 		case 9: // 收邮件 
-			info("等待5秒，接收邮件[确认]");
+			info("等待"+itv+"秒，接收邮件[确认]");
 			try {
 				try{
-					Thread.sleep(1000*5);
+					Thread.sleep(1000*itv);
 				}catch(Exception e){
 					sf = true;
 					Thread.sleep(1000*4); //意外中断，继续等待
@@ -837,11 +838,11 @@ public class Task implements Runnable, Observer {
 			
 			break;
 		case 15:
-			//获取回执编号
-			info("等待5秒，接收邮件[回执]");
+			//获取回执编号			
+			info("等待"+itv+"秒，接收邮件[回执]");
 			try {
 				try{
-					Thread.sleep(1000*5);
+					Thread.sleep(1000*itv);
 				}catch(Exception e){
 					sf = true;
 					Thread.sleep(1000*4); //意外中断，继续等待
