@@ -986,6 +986,7 @@ public class Task implements Runnable, Observer {
 				}
 				break;
 			case EngineMessageType.OM_RECONN: //系统准备重拨
+				System.err.println("TASK RECEIVED RECONN:"+rec);
 				rec = !rec;
 				break;
 			case EngineMessageType.OM_PAUSE:

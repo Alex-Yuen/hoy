@@ -371,6 +371,7 @@ public class Engine extends Observable {
 			case EngineMessageType.IM_START: //IM_FINISH
 				recc++;
 				atrecc = Integer.parseInt(configuration.getProperty("AUTO_RECON"));
+				System.err.println("通知重拨:"+atrecc+"/"+recc);
 				if(atrecc!=0&&atrecc==recc){//重拨的触发条件
 					recc = 0;
 					
@@ -407,13 +408,16 @@ public class Engine extends Observable {
 				frecc++;
 				
 				atrecc = Integer.parseInt(configuration.getProperty("AUTO_RECON"));
+				System.err.println(atrecc+"/"+frecc+"/"+freq+"/"+recc);
 				if((atrecc!=0&&atrecc==frecc)||(freq==true&&frecc==recc)){//执行重拨
-					
+					System.err.println("Y0");
 					if(freq==true&&frecc==recc){
+						System.err.println("Y1");
 						freq = false;
 						recc = 0;
 						frecc = 0;
 					}else{
+						System.err.println("Y2");
 						frecc = 0;
 					}
 					
