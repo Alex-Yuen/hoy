@@ -409,7 +409,10 @@ public class Engine extends Observable {
 				
 				atrecc = Integer.parseInt(configuration.getProperty("AUTO_RECON"));
 				System.err.println(atrecc+"/"+frecc+"/"+freq+"/"+recc);
-				if((atrecc!=0&&atrecc==frecc)||(freq==true&&frecc==recc)){//执行重拨
+				//System.err.println("ACT:"+pool.getActiveCount());
+				//只剩下当前线程，因为START时候发出停止新后之后，可能有遗漏线程已经开始执行了，需等待最后一个线程执行完毕
+				
+				if((atrecc!=0&&atrecc<=frecc&&pool.getActiveCount()==1)||(freq==true&&frecc==recc)){//执行重拨 第二个条件不一定可行
 					System.err.println("Y0");
 					if(freq==true&&frecc==recc){
 						System.err.println("Y1");
@@ -446,7 +449,7 @@ public class Engine extends Observable {
 								
 								while(fo&&tfo<4){
 									String result = execute(cut);
-									
+									System.err.println("CUT:"+result);
 									if (result
 											.indexOf("没有连接") == -1) {
 										fo = false; // 断线成功，将跳出外循环
@@ -456,8 +459,10 @@ public class Engine extends Observable {
 										
 										while(fi&&("true".equals(configuration.getProperty("AWCONN"))||("false".equals(configuration.getProperty("AWCONN"))&&tfi<4))){
 											result = execute(link);
+											System.err.println("LINK:"+result);
 											if (result
-													.indexOf("已连接") > 0) {
+													.indexOf("已连接") > 0 || result
+													.indexOf("已经连接") > 0) {
 												//1
 //												URL url = new URL("http://iframe.ip138.com/ic.asp");
 //												InputStream is = url.openStream();
