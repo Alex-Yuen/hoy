@@ -369,227 +369,231 @@ public class Engine extends Observable {
 				shutdown();				
 				break;
 			case EngineMessageType.IM_START: //IM_FINISH
-				recc++;
-				atrecc = Integer.parseInt(configuration.getProperty("AUTO_RECON"));
-				System.err.println("通知重拨:"+atrecc+"/"+recc);
-				if(atrecc!=0&&atrecc==recc){//重拨的触发条件
-					recc = 0;
-					
-					msg = new EngineMessage();
-					msg.setTid(-1); //所有task
-					msg.setType(EngineMessageType.OM_RECONN);
-					//msg.setData(message.getData());
-					
-					this.setChanged();
-					this.notifyObservers(msg);
+				synchronized(StartObject.getInstance()){
+					recc++;
+					atrecc = Integer.parseInt(configuration.getProperty("AUTO_RECON"));
+					System.err.println("通知重拨:"+atrecc+"/"+recc);
+					if(atrecc!=0&&atrecc==recc){//重拨的触发条件
+						recc = 0;
+						
+						msg = new EngineMessage();
+						msg.setTid(-1); //所有task
+						msg.setType(EngineMessageType.OM_RECONN);
+						//msg.setData(message.getData());
+						
+						this.setChanged();
+						this.notifyObservers(msg);
+					}
 				}
 				break;
 			case EngineMessageType.IM_FINISH:
-				//写入日志
-				lastTid = message.getTid();
-				String[] dt = (String[])message.getData();
-				
-				if("1".equals(dt[0])){//成功
-					try{
-						output[0].write(dt[1]+"----"+dt[2]+"----"+dt[3]+"----"+dt[4]+"----"+dt[5] + "\r\n");
-						output[0].flush();
-					}catch(Exception e){
-						e.printStackTrace();
-					};
-				}else{//失败
-					try{
-						output[1].write(dt[1]+"----"+dt[2]+ "\r\n");
-						output[1].flush();
-					}catch(Exception e){
-						e.printStackTrace();
-					};
-				}
-				
-				frecc++;
-				
-				atrecc = Integer.parseInt(configuration.getProperty("AUTO_RECON"));
-				System.err.println(atrecc+"/"+frecc+"/"+freq+"/"+recc);
-				//System.err.println("ACT:"+pool.getActiveCount());
-				//只剩下当前线程，因为START时候发出停止新后之后，可能有遗漏线程已经开始执行了，需等待最后一个线程执行完毕
-				
-				if((atrecc!=0&&atrecc<=frecc&&pool.getActiveCount()==1)||(freq==true&&frecc==recc)){//执行重拨 第二个条件不一定可行
-					System.err.println("Y0");
-					if(freq==true&&frecc==recc){
-						System.err.println("Y1");
-						freq = false;
-						recc = 0;
-						frecc = 0;
-					}else{
-						System.err.println("Y2");
-						frecc = 0;
+				synchronized(FinishObject.getInstance()){
+					//写入日志
+					lastTid = message.getTid();
+					String[] dt = (String[])message.getData();
+					
+					if("1".equals(dt[0])){//成功
+						try{
+							output[0].write(dt[1]+"----"+dt[2]+"----"+dt[3]+"----"+dt[4]+"----"+dt[5] + "\r\n");
+							output[0].flush();
+						}catch(Exception e){
+							e.printStackTrace();
+						};
+					}else{//失败
+						try{
+							output[1].write(dt[1]+"----"+dt[2]+ "\r\n");
+							output[1].flush();
+						}catch(Exception e){
+							e.printStackTrace();
+						};
 					}
 					
-					Thread t = new Thread(new Runnable(){
-
-						final String account = configuration.getProperty("ADSL_ACCOUNT");
-						final String password = configuration.getProperty("ADSL_PASSWORD");
+					frecc++;
+					
+					atrecc = Integer.parseInt(configuration.getProperty("AUTO_RECON"));
+					System.err.println(atrecc+"/"+frecc+"/"+freq+"/"+recc);
+					//System.err.println("ACT:"+pool.getActiveCount());
+					//只剩下当前线程，因为START时候发出停止新后之后，可能有遗漏线程已经开始执行了，需等待最后一个线程执行完毕
+					
+					if((atrecc!=0&&atrecc==frecc)||(freq==true&&frecc==recc)){//执行重拨 第二个条件不一定可行
+						System.err.println("Y0");
+						if(freq==true&&frecc==recc){
+							System.err.println("Y1");
+							freq = false;
+							recc = 0;
+							frecc = 0;
+						}else{
+							System.err.println("Y2");
+							frecc = 0;
+						}
 						
-						@Override
-						public void run() {
-							System.err.println("正在重拨");
-
-							boolean st = false;
-							String cut = "rasdial 宽带连接 /disconnect";
-							String link = "rasdial 宽带连接 "
-									+ account
-									+ " "
-									+ password;
-							try{
-								Thread.sleep(1000*Integer.parseInt(configuration.getProperty("RECON_DELAY")));
-								boolean fo = true;
-								boolean fi = true;
-								
-								int tfo = 0;
-								int tfi = 0;
-								
-								while(fo&&tfo<4){
-									String result = execute(cut);
-									System.err.println("CUT:"+result);
-									if (result
-											.indexOf("没有连接") == -1) {
-										fo = false; // 断线成功，将跳出外循环
-										fi = true;
-										
-										tfi = 0;
-										
-										while(fi&&("true".equals(configuration.getProperty("AWCONN"))||("false".equals(configuration.getProperty("AWCONN"))&&tfi<4))){
-											result = execute(link);
-											System.err.println("LINK:"+result);
-											if (result
-													.indexOf("已连接") > 0 || result
-													.indexOf("已经连接") > 0) {
-												//1
-//												URL url = new URL("http://iframe.ip138.com/ic.asp");
-//												InputStream is = url.openStream();
-//												BufferedReader br = new BufferedReader(new InputStreamReader(is, "GB2312"));  
-//										        String line = null;
-//										        StringBuffer sb = new StringBuffer();
-//										        while ((line=br.readLine())!= null) {
-//										        	sb.append(line);
-//										        }
-//										
-//												String ip = sb.toString();
-//												
-//										        int index = ip.indexOf("您的IP是：[");
-//										        ip = ip.substring(index+7);
-//										        
-//										        index = ip.indexOf("]");
-//										        ip = ip.substring(0, index);
-										        
-										        // 2
-//												InetAddress addr = InetAddress.getLocalHost();
-//												String ip = addr.getHostAddress().toString();
-												
-												//3
-												result = execute("ipconfig");
-												result = result.substring(result.indexOf("宽带连接"));
-												if(result.indexOf("IP Address")!=-1){
-													result = result.substring(result.indexOf("IP Address"));
-												}
-												if(result.indexOf("IPv4 地址")!=-1){
-													result = result.substring(result.indexOf("IPv4 地址"));
-												}
-												
-												result = result.substring(result.indexOf(":")+2);
-												result = result.substring(0, result.indexOf(" ")-1);
-												
-												String ip = result;
-												
-										        System.err.println("ip="+ip);
-												if(ips.containsKey(ip)){
-													long time = ips.get(ip);
-													if(System.currentTimeMillis()-time>=1*60*60*1000){
-														System.err.println("IP重复，但超过1小时，拨号成功:"+ip);
-														ips.put(ip, System.currentTimeMillis());
-														fi = false;//跳出内循环
+						Thread t = new Thread(new Runnable(){
+	
+							final String account = configuration.getProperty("ADSL_ACCOUNT");
+							final String password = configuration.getProperty("ADSL_PASSWORD");
+							
+							@Override
+							public void run() {
+								System.err.println("正在重拨");
+	
+								boolean st = false;
+								String cut = "rasdial 宽带连接 /disconnect";
+								String link = "rasdial 宽带连接 "
+										+ account
+										+ " "
+										+ password;
+								try{
+									Thread.sleep(1000*Integer.parseInt(configuration.getProperty("RECON_DELAY")));
+									boolean fo = true;
+									boolean fi = true;
+									
+									int tfo = 0;
+									int tfi = 0;
+									
+									while(fo&&tfo<4){
+										String result = execute(cut);
+										System.err.println("CUT:"+result);
+										if (result
+												.indexOf("没有连接") == -1) {
+											fo = false; // 断线成功，将跳出外循环
+											fi = true;
+											
+											tfi = 0;
+											
+											while(fi&&("true".equals(configuration.getProperty("AWCONN"))||("false".equals(configuration.getProperty("AWCONN"))&&tfi<4))){
+												result = execute(link);
+												System.err.println("LINK:"+result);
+												if (result
+														.indexOf("已连接") > 0 || result
+														.indexOf("已经连接") > 0) {
+													//1
+	//												URL url = new URL("http://iframe.ip138.com/ic.asp");
+	//												InputStream is = url.openStream();
+	//												BufferedReader br = new BufferedReader(new InputStreamReader(is, "GB2312"));  
+	//										        String line = null;
+	//										        StringBuffer sb = new StringBuffer();
+	//										        while ((line=br.readLine())!= null) {
+	//										        	sb.append(line);
+	//										        }
+	//										
+	//												String ip = sb.toString();
+	//												
+	//										        int index = ip.indexOf("您的IP是：[");
+	//										        ip = ip.substring(index+7);
+	//										        
+	//										        index = ip.indexOf("]");
+	//										        ip = ip.substring(0, index);
+											        
+											        // 2
+	//												InetAddress addr = InetAddress.getLocalHost();
+	//												String ip = addr.getHostAddress().toString();
+													
+													//3
+													result = execute("ipconfig");
+													result = result.substring(result.indexOf("宽带连接"));
+													if(result.indexOf("IP Address")!=-1){
+														result = result.substring(result.indexOf("IP Address"));
+													}
+													if(result.indexOf("IPv4 地址")!=-1){
+														result = result.substring(result.indexOf("IPv4 地址"));
+													}
+													
+													result = result.substring(result.indexOf(":")+2);
+													result = result.substring(0, result.indexOf(" ")-1);
+													
+													String ip = result;
+													
+											        System.err.println("ip="+ip);
+													if(ips.containsKey(ip)){
+														long time = ips.get(ip);
+														if(System.currentTimeMillis()-time>=1*60*60*1000){
+															System.err.println("IP重复，但超过1小时，拨号成功:"+ip);
+															ips.put(ip, System.currentTimeMillis());
+															fi = false;//跳出内循环
+															st = true;
+															//break;
+														}else{
+															System.err.println("IP重复，未超过1小时，重新拨号:"+ip);
+															fo = true;
+															fi = false;
+															tfo = 0;
+															st = false;
+															//continue;
+														}
+													}else{
+														System.err.println("IP不重复，拨号成功:"+ip);
+														ips.put(ip, new Long(System.currentTimeMillis()));
+														fi = false;
 														st = true;
 														//break;
-													}else{
-														System.err.println("IP重复，未超过1小时，重新拨号:"+ip);
-														fo = true;
-														fi = false;
-														tfo = 0;
-														st = false;
-														//continue;
 													}
-												}else{
-													System.err.println("IP不重复，拨号成功:"+ip);
-													ips.put(ip, new Long(System.currentTimeMillis()));
-													fi = false;
-													st = true;
+												}else {
+													System.err.println("连接失败("+tfi+")");
+													try{
+														Thread.sleep(1000*30);
+													}catch(Exception e){
+														e.printStackTrace();
+													}
+													tfi++;//允许3次循环
 													//break;
 												}
-											}else {
-												System.err.println("连接失败("+tfi+")");
-												try{
-													Thread.sleep(1000*30);
-												}catch(Exception e){
-													e.printStackTrace();
-												}
-												tfi++;//允许3次循环
-												//break;
+											}//while in
+										}else {
+											System.err.println("没有连接("+tfo+")");
+											try{
+												Thread.sleep(1000*30);
+											}catch(Exception e){
+												e.printStackTrace();
 											}
-										}//while in
-									}else {
-										System.err.println("没有连接("+tfo+")");
+											tfo++; //允许3次循环
+											//break;
+										}
+									}//while out
+								}catch(Exception e){
+									e.printStackTrace();
+								}
+								
+								if(st){
+									//通知其他未阻塞线程，重拨结束，无需再进行等待
+									EngineMessage msg = new EngineMessage();
+									msg.setTid(-1); //所有task
+									msg.setType(EngineMessageType.OM_RECONN);
+									//msg.setData(message.getData());
+									
+									Engine.this.setChanged();
+									Engine.this.notifyObservers(msg);
+									
+									synchronized(ReconObject.getInstance()){
 										try{
-											Thread.sleep(1000*30);
+											ReconObject.getInstance().notifyAll();
 										}catch(Exception e){
 											e.printStackTrace();
 										}
-										tfo++; //允许3次循环
-										//break;
 									}
-								}//while out
-							}catch(Exception e){
-								e.printStackTrace();
+									
+									System.err.println("重拨结束");
+								}else{
+									System.err.println("重拨失败");
+								}
 							}
 							
-							if(st){
-								//通知其他未阻塞线程，重拨结束，无需再进行等待
-								EngineMessage msg = new EngineMessage();
-								msg.setTid(-1); //所有task
-								msg.setType(EngineMessageType.OM_RECONN);
-								//msg.setData(message.getData());
-								
-								Engine.this.setChanged();
-								Engine.this.notifyObservers(msg);
-								
-								synchronized(ReconObject.getInstance()){
-									try{
-										ReconObject.getInstance().notifyAll();
-									}catch(Exception e){
-										e.printStackTrace();
-									}
+							private String execute(String cmd) throws Exception {
+								Process p = Runtime.getRuntime().exec("cmd /c " + cmd);
+								StringBuilder result = new StringBuilder();
+								BufferedReader br = new BufferedReader(new InputStreamReader(
+										p.getInputStream(), "GB2312"));
+								String line;
+								while ((line = br.readLine()) != null) {
+									result.append(line + "\n");
 								}
-								
-								System.err.println("重拨结束");
-							}else{
-								System.err.println("重拨失败");
+								return result.toString();
 							}
-						}
+							
+						});
 						
-						private String execute(String cmd) throws Exception {
-							Process p = Runtime.getRuntime().exec("cmd /c " + cmd);
-							StringBuilder result = new StringBuilder();
-							BufferedReader br = new BufferedReader(new InputStreamReader(
-									p.getInputStream(), "GB2312"));
-							String line;
-							while ((line = br.readLine()) != null) {
-								result.append(line + "\n");
-							}
-							return result.toString();
-						}
+						t.start();
 						
-					});
-					
-					t.start();
-					
+					}
 				}
 				break;
 			case EngineMessageType.IM_EXIT:
