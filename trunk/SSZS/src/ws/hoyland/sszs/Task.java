@@ -127,7 +127,7 @@ public class Task implements Runnable, Observer {
 		if(sf){//如果此时有停止信号，直接返回
 			info("初始化(任务取消)");
 			return;
-		}		
+		}
 		
 		//通知有新线程开始执行
 		message = new EngineMessage();
@@ -986,7 +986,7 @@ public class Task implements Runnable, Observer {
 				}
 				break;
 			case EngineMessageType.OM_RECONN: //系统准备重拨
-				System.err.println("TASK RECEIVED RECONN:"+rec);
+				//System.err.println("TASK RECEIVED RECONN:"+rec);
 				rec = !rec;
 				break;
 			case EngineMessageType.OM_PAUSE:
