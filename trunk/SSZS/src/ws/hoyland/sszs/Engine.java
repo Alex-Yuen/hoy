@@ -372,7 +372,7 @@ public class Engine extends Observable {
 				synchronized(StartObject.getInstance()){
 					recc++;
 					atrecc = Integer.parseInt(configuration.getProperty("AUTO_RECON"));
-					System.err.println("通知重拨:"+atrecc+"/"+recc);
+					System.err.println("通知重拨:"+atrecc+"/"+recc+"/"+frecc);
 					if(atrecc!=0&&atrecc==recc){//重拨的触发条件
 						recc = 0;
 						
