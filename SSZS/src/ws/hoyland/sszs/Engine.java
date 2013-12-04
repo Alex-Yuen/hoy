@@ -369,7 +369,7 @@ public class Engine extends Observable {
 				shutdown();				
 				break;
 			case EngineMessageType.IM_START: //IM_FINISH
-				synchronized(StartObject.getInstance()){
+				
 					recc++;
 					atrecc = Integer.parseInt(configuration.getProperty("AUTO_RECON"));
 					System.err.println("通知重拨:"+atrecc+"/"+recc+"/"+frecc);
@@ -384,10 +384,9 @@ public class Engine extends Observable {
 						this.setChanged();
 						this.notifyObservers(msg);
 					}
-				}
+				
 				break;
 			case EngineMessageType.IM_FINISH:
-				synchronized(FinishObject.getInstance()){
 					//写入日志
 					lastTid = message.getTid();
 					String[] dt = (String[])message.getData();
@@ -594,7 +593,6 @@ public class Engine extends Observable {
 						t.start();
 						
 					}
-				}
 				break;
 			case EngineMessageType.IM_EXIT:
 				//关闭日志文件
