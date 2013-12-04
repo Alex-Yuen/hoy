@@ -52,6 +52,8 @@ public class Engine extends Observable {
 	private boolean pause = false;
 	private boolean freq = false;
 	
+	private int pc = 0;//pause count;
+	
 	private Map<String, Long> ips = new HashMap<String ,Long>();
 	
 	private Engine(){
@@ -454,17 +456,20 @@ public class Engine extends Observable {
 										System.err.println("CUT:"+result);
 										if (result
 												.indexOf("没有连接") == -1) {
+											System.err.println("CUT1");
 											fo = false; // 断线成功，将跳出外循环
 											fi = true;
 											
 											tfi = 0;
-											
+											System.err.println("CUT2:"+fi+"/"+configuration.getProperty("AWCONN")+"/"+tfi);
 											while(fi&&("true".equals(configuration.getProperty("AWCONN"))||("false".equals(configuration.getProperty("AWCONN"))&&tfi<4))){
+												System.err.println("CUT3");
 												result = execute(link);
 												System.err.println("LINK:"+result);
 												if (result
 														.indexOf("已连接") > 0 || result
 														.indexOf("已经连接") > 0) {
+													System.err.println("CUT4");
 													//1
 	//												URL url = new URL("http://iframe.ip138.com/ic.asp");
 	//												InputStream is = url.openStream();
@@ -527,6 +532,7 @@ public class Engine extends Observable {
 														//break;
 													}
 												}else {
+													System.err.println("CUT5");
 													System.err.println("连接失败("+tfi+")");
 													try{
 														Thread.sleep(1000*30);
@@ -538,6 +544,7 @@ public class Engine extends Observable {
 												}
 											}//while in
 										}else {
+											System.err.println("CUT6");
 											System.err.println("没有连接("+tfo+")");
 											try{
 												Thread.sleep(1000*30);
@@ -602,6 +609,10 @@ public class Engine extends Observable {
 			case EngineMessageType.IM_PAUSE:
 				pause = !pause;
 				
+				if(pause){
+					pc = 0; //pause count;
+				}
+				
 				msg = new EngineMessage();
 				msg.setTid(-1); //所有task
 				msg.setType(EngineMessageType.OM_PAUSE);
@@ -610,10 +621,29 @@ public class Engine extends Observable {
 				this.setChanged();
 				this.notifyObservers(msg);	
 				
-				if(!pause){
+				if(!pause){//继续运行
+					//新建成功文件
+					DateFormat format = new java.text.SimpleDateFormat("yyyy年MM月dd日 hh时mm分ss秒");
+					String tm = format.format(new Date());
+					//for(int i=0;i<output.length;i++){
+						File fff = new File(xpath + fns[0] + "-" + tm + ".txt");
+						try {
+							if (!fff.exists()) {
+								fff.createNewFile();
+							}
+							
+							output[0] = new BufferedWriter(
+									new FileWriter(fff));
+						} catch (Exception ex) {
+							ex.printStackTrace();
+						}
+					//}
+					
 					synchronized(PauseObject.getInstance()){
 						PauseObject.getInstance().notifyAll();
 					}
+				}else{// 停止情况下，关闭output[0]
+					//see EngineMessageType.IM_PAUSE_COUNT
 				}
 				break;
 			case EngineMessageType.IM_FREQ:
@@ -628,6 +658,20 @@ public class Engine extends Observable {
 				
 				this.setChanged();
 				this.notifyObservers(msg);
+				break;
+			case EngineMessageType.IM_PAUSE_COUNT:
+				pc++;
+				if(pc==Integer.parseInt(Configuration.getInstance().getProperty("THREAD_COUNT"))){
+					//关闭output[0]
+					try{
+						if(output[0]!=null){
+							output[0].close();
+							output[0] = null;
+						}
+					}catch(Exception e){
+						e.printStackTrace();
+					}
+				}
 				break;
 			default:
 				break;

@@ -105,6 +105,12 @@ public class Task implements Runnable, Observer {
 		
 		if(pause){//暂停
 			info("暂停运行");
+			synchronized(PauseCountObject.getInstance()){
+				message = new EngineMessage();
+				message.setType(EngineMessageType.IM_PAUSE_COUNT);
+				Engine.getInstance().fire(message);
+			}
+			
 			synchronized(PauseObject.getInstance()){
 				try{
 					PauseObject.getInstance().wait();
@@ -114,7 +120,6 @@ public class Task implements Runnable, Observer {
 			}
 		}
 
-		synchronized(StartObject.getInstance()){
 			
 			//阻塞等待重拨
 			if(rec){
@@ -133,7 +138,8 @@ public class Task implements Runnable, Observer {
 				info("初始化(任务取消)");
 				return;
 			}
-			
+
+		synchronized(StartObject.getInstance()){	
 			//通知有新线程开始执行
 			message = new EngineMessage();
 			message.setType(EngineMessageType.IM_START);
