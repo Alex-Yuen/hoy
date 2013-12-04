@@ -101,7 +101,10 @@ public class Task implements Runnable, Observer {
 
 	@Override
 	public void run() {
+		info("开始运行");
+		
 		if(pause){//暂停
+			info("暂停运行");
 			synchronized(PauseObject.getInstance()){
 				try{
 					PauseObject.getInstance().wait();
@@ -110,29 +113,32 @@ public class Task implements Runnable, Observer {
 				}
 			}
 		}
-		
-		//阻塞等待重拨
-		if(rec){
-			info("等待重拨");
-			synchronized(ReconObject.getInstance()){
-				try{
-					ReconObject.getInstance().wait();
-				}catch(Exception e){
-					e.printStackTrace();
-				}
-			}
-			info("等待重拨结束， 继续执行");
-		}
 
-		if(sf){//如果此时有停止信号，直接返回
-			info("初始化(任务取消)");
-			return;
+		synchronized(StartObject.getInstance()){
+			
+			//阻塞等待重拨
+			if(rec){
+				info("等待重拨");
+				synchronized(ReconObject.getInstance()){
+					try{
+						ReconObject.getInstance().wait();
+					}catch(Exception e){
+						e.printStackTrace();
+					}
+				}
+				info("等待重拨结束， 继续执行");
+			}
+	
+			if(sf){//如果此时有停止信号，直接返回
+				info("初始化(任务取消)");
+				return;
+			}
+			
+			//通知有新线程开始执行
+			message = new EngineMessage();
+			message.setType(EngineMessageType.IM_START);
+			Engine.getInstance().fire(message);
 		}
-		
-		//通知有新线程开始执行
-		message = new EngineMessage();
-		message.setType(EngineMessageType.IM_START);
-		Engine.getInstance().fire(message);
 		
 		// System.err.println(line);
 		while (run&&!sf) { //正常运行，以及未收到停止信号
@@ -186,13 +192,17 @@ public class Task implements Runnable, Observer {
 			dt[5] = this.mpwd;
 		}
 		
-		message = new EngineMessage();
-		message.setTid(this.id);
-		message.setType(EngineMessageType.IM_FINISH);
-		message.setData(dt);
-		Engine.getInstance().fire(message);
+
+		synchronized(FinishObject.getInstance()){
+			message = new EngineMessage();
+			message.setTid(this.id);
+			message.setType(EngineMessageType.IM_FINISH);
+			message.setData(dt);
+			Engine.getInstance().fire(message);
+		}
 		
 		Engine.getInstance().deleteObserver(this);
+		
 	}
 
 	private void process(int index) {
