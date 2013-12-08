@@ -504,8 +504,8 @@ public class Engine extends Observable {
 													
 													result = result.substring(result.indexOf(":")+2);
 													result = result.substring(0, result.indexOf(" ")-1);
-													
-													String ip = result;
+													//String ip = result;
+													String ip = result.substring(0, result.lastIndexOf("."));
 													
 											        System.err.println("ip="+ip);
 													if(ips.containsKey(ip)){
