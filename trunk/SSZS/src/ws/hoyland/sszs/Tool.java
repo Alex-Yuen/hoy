@@ -60,6 +60,9 @@ public class Tool extends Dialog {
 	private boolean running = false;
 	private ThreadPoolExecutor pool;
 	private Configuration configuration = Configuration.getInstance();
+	private Label lblNewLabel_1;
+	private int suc = 0;
+	private int total = 0;
 	
 	/**
 	 * Create the dialog.
@@ -166,7 +169,7 @@ public class Tool extends Dialog {
 
 					for (int i = 0; i < mails.size(); i++) {
 						try {
-							pool.execute(new TS(pool, output, table, mails.get(i)));
+							pool.execute(new TS(Tool.this, pool, output, table, mails.get(i)));
 						} catch (Exception ex) {
 							ex.printStackTrace();
 						}
@@ -271,7 +274,9 @@ public class Tool extends Dialog {
 							}
 							i++;
 						}
-
+						
+						total = mails.size();
+						refresh();
 						reader.close();
 						isr.close();
 						is.close();
@@ -289,6 +294,14 @@ public class Tool extends Dialog {
 		});
 		link.setText("<a>导入...</a>");
 		link.setBounds(396, 10, 36, 17);
+		
+		lblNewLabel_1 = new Label(shell, SWT.NONE);
+		lblNewLabel_1.setBounds(465, 56, 148, 17);
+		lblNewLabel_1.setText("0 / 0 = 0%");
+		
+		Label lblNewLabel_2 = new Label(shell, SWT.NONE);
+		lblNewLabel_2.setBounds(465, 33, 61, 17);
+		lblNewLabel_2.setText("统计:");
 	}
 
 	private void st() {
@@ -304,6 +317,21 @@ public class Tool extends Dialog {
 			}
 		}
 	}
+	
+	public void refresh(){
+		Display.getDefault().asyncExec(
+				new Runnable() {
+					@Override
+					public void run() {
+						lblNewLabel_1.setText(suc+"/"+total+" = "+100*suc/total+"%");
+					}
+				}
+		);
+	}
+
+	public synchronized void inc() {
+		suc++;		
+	}
 }
 
 class TS implements Runnable {
@@ -312,8 +340,10 @@ class TS implements Runnable {
 	private String mails;
 	private ThreadPoolExecutor pool;
 	private String[] msx = null;
+	private Tool tool = null;
 	
-	public TS(ThreadPoolExecutor pool, BufferedWriter output, Table table, String mails){
+	public TS(Tool tool, ThreadPoolExecutor pool, BufferedWriter output, Table table, String mails){
+		this.tool = tool;
 		this.pool = pool;
 		this.output = output;
 		this.table = table;
@@ -406,6 +436,7 @@ class TS implements Runnable {
 					// }
 
 					if (ssct.contains("申诉成功")) {
+						tool.inc();
 						sc++;
 						final int fsc = sc;
 						// if(!isold){
@@ -499,7 +530,7 @@ class TS implements Runnable {
 						}
 					}
 			);
-		} catch (Exception e) {
+		} catch (Exception e) {			
 			e.printStackTrace();
 			Display.getDefault().asyncExec(
 					new Runnable() {
@@ -526,10 +557,12 @@ class TS implements Runnable {
 					System.err.print(msx[i]+"----");
 				}
 				System.err.println();
-				pool.execute(new TS(this.pool, this.output, this.table, this.mails));
+				pool.execute(new TS(this.tool, this.pool, this.output, this.table, this.mails));
 			}catch(Exception ex){
 				ex.printStackTrace();
 			}
+		}finally{
+			tool.refresh();
 		}
 	}
 }

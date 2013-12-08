@@ -123,23 +123,23 @@ public class Test {
 //			e.printStackTrace();
 //		}
 		
-//		try{
-//		String result = new Test().execute("ipconfig");
-//		//result = result.substring(result.indexOf("宽带连接"));
-//		if(result.indexOf("IP Address")!=-1){
-//			result = result.substring(result.indexOf("IP Address"));
-//		}
-//		if(result.indexOf("IPv4 地址")!=-1){
-//			result = result.substring(result.indexOf("IPv4 地址"));
-//		}
-//		
-//		result = result.substring(result.indexOf(":")+2);
-//		//System.out.println(result);
-//		result = result.substring(0, result.indexOf(" ")-1);
-//		System.out.println(result+".");
-//		}catch(Exception e){
-//			e.printStackTrace();
-//		}
+		try{
+		String result = new Test().execute("ipconfig");
+		//result = result.substring(result.indexOf("宽带连接"));
+		if(result.indexOf("IP Address")!=-1){
+			result = result.substring(result.indexOf("IP Address"));
+		}
+		if(result.indexOf("IPv4 地址")!=-1){
+			result = result.substring(result.indexOf("IPv4 地址"));
+		}
+		
+		result = result.substring(result.indexOf(":")+2);
+		//System.out.println(result);
+		result = result.substring(0, result.indexOf(" ")-1);
+		System.out.println(result.substring(0, result.lastIndexOf("."))+"*");
+		}catch(Exception e){
+			e.printStackTrace();
+		}
 		
 		try{
 			String UAG = "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1; QQDownload 734; Maxthon; .NET CLR 2.0.50727; .NET4.0C; .NET4.0E)";
