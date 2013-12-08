@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.security.KeyStore;
+import java.text.DecimalFormat;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
@@ -123,61 +124,67 @@ public class Test {
 //			e.printStackTrace();
 //		}
 		
-		try{
-		String result = new Test().execute("ipconfig");
-		//result = result.substring(result.indexOf("宽带连接"));
-		if(result.indexOf("IP Address")!=-1){
-			result = result.substring(result.indexOf("IP Address"));
-		}
-		if(result.indexOf("IPv4 地址")!=-1){
-			result = result.substring(result.indexOf("IPv4 地址"));
-		}
+//		try{
+//		String result = new Test().execute("ipconfig");
+//		//result = result.substring(result.indexOf("宽带连接"));
+//		if(result.indexOf("IP Address")!=-1){
+//			result = result.substring(result.indexOf("IP Address"));
+//		}
+//		if(result.indexOf("IPv4 地址")!=-1){
+//			result = result.substring(result.indexOf("IPv4 地址"));
+//		}
+//		
+//		result = result.substring(result.indexOf(":")+2);
+//		//System.out.println(result);
+//		result = result.substring(0, result.indexOf(" ")-1);
+//		System.out.println(result.substring(0, result.lastIndexOf("."))+"*");
+//		}catch(Exception e){
+//			e.printStackTrace();
+//		}
+//		
+//		try{
+//			String UAG = "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1; QQDownload 734; Maxthon; .NET CLR 2.0.50727; .NET4.0C; .NET4.0E)";
+//			
+//			HttpClient client = new DefaultHttpClient();
+//			client.getParams().setParameter(
+//					CoreConnectionPNames.CONNECTION_TIMEOUT, 5000);
+//			client.getParams().setParameter(CoreConnectionPNames.SO_TIMEOUT, 5000);
+//			
+//			HttpHost proxy = new HttpHost("222.79.136.76", 18186);
+//			client.getParams().setParameter(ConnRouteParams.DEFAULT_PROXY, proxy);
+//			 
+//			 KeyStore trustStore  = KeyStore.getInstance(KeyStore.getDefaultType());
+//		      InputStream instream = Test.class.getResourceAsStream("/my.truststore");
+//		      //密匙库的密码
+//		      trustStore.load(instream, "Hoy133".toCharArray());
+//		      //注册密匙库
+//		      SSLSocketFactory socketFactory = new SSLSocketFactory(trustStore);
+//		      //不校验域名
+//		      socketFactory.setHostnameVerifier(SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
+//		      Scheme sch = new Scheme("https", 443, socketFactory);
+//		      client.getConnectionManager().getSchemeRegistry().register(sch);
+//		      //获得HttpGet对象
+//		      HttpGet httpGet = null;
+//		      httpGet = new HttpGet("https://ynote.youdao.com/login/acc/reg/query?app=client&product=YNOTE&ClientVer=30500000000&GUID=PCacef4b7bf9ee6a1d3&LoginFormABTest=LoginFormATest&client_ver=30500000000&device_id=PCacef4b7bf9ee6a1d3&device_name=ZHU-PC&device_type=PC&os=Windows&os_ver=Windows%207&vendor=null");
+//		      //发送请求
+//		      HttpResponse response = client.execute(httpGet);
+//		      //输出返回值
+//		      InputStream is = response.getEntity().getContent();
+//		      BufferedReader br = new BufferedReader(new InputStreamReader(is));
+//		      String line = "";
+//		      while((line = br.readLine())!=null){
+//		          System.out.println(line);
+//		      }
+//			
+//		}catch(Exception e){
+//			e.printStackTrace();
+//		}
 		
-		result = result.substring(result.indexOf(":")+2);
-		//System.out.println(result);
-		result = result.substring(0, result.indexOf(" ")-1);
-		System.out.println(result.substring(0, result.lastIndexOf("."))+"*");
-		}catch(Exception e){
-			e.printStackTrace();
-		}
-		
-		try{
-			String UAG = "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1; QQDownload 734; Maxthon; .NET CLR 2.0.50727; .NET4.0C; .NET4.0E)";
-			
-			HttpClient client = new DefaultHttpClient();
-			client.getParams().setParameter(
-					CoreConnectionPNames.CONNECTION_TIMEOUT, 5000);
-			client.getParams().setParameter(CoreConnectionPNames.SO_TIMEOUT, 5000);
-			
-			HttpHost proxy = new HttpHost("222.79.136.76", 18186);
-			client.getParams().setParameter(ConnRouteParams.DEFAULT_PROXY, proxy);
-			 
-			 KeyStore trustStore  = KeyStore.getInstance(KeyStore.getDefaultType());
-		      InputStream instream = Test.class.getResourceAsStream("/my.truststore");
-		      //密匙库的密码
-		      trustStore.load(instream, "Hoy133".toCharArray());
-		      //注册密匙库
-		      SSLSocketFactory socketFactory = new SSLSocketFactory(trustStore);
-		      //不校验域名
-		      socketFactory.setHostnameVerifier(SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
-		      Scheme sch = new Scheme("https", 443, socketFactory);
-		      client.getConnectionManager().getSchemeRegistry().register(sch);
-		      //获得HttpGet对象
-		      HttpGet httpGet = null;
-		      httpGet = new HttpGet("https://ynote.youdao.com/login/acc/reg/query?app=client&product=YNOTE&ClientVer=30500000000&GUID=PCacef4b7bf9ee6a1d3&LoginFormABTest=LoginFormATest&client_ver=30500000000&device_id=PCacef4b7bf9ee6a1d3&device_name=ZHU-PC&device_type=PC&os=Windows&os_ver=Windows%207&vendor=null");
-		      //发送请求
-		      HttpResponse response = client.execute(httpGet);
-		      //输出返回值
-		      InputStream is = response.getEntity().getContent();
-		      BufferedReader br = new BufferedReader(new InputStreamReader(is));
-		      String line = "";
-		      while((line = br.readLine())!=null){
-		          System.out.println(line);
-		      }
-			
-		}catch(Exception e){
-			e.printStackTrace();
-		}
+		double i = 2200;
+		double k = 2309;
+		DecimalFormat df2  = new DecimalFormat("0.00");  
+		System.out.println(i*100/k);
+		System.out.println(df2.format(i*100/k));
 	}
 
 	public String execute(String cmd) throws Exception {

@@ -41,6 +41,7 @@ public class Engine extends Observable {
 	private Configuration configuration = Configuration.getInstance();
 	private int recc = 0;//reconnect count
 	private int frecc = 0;//finished
+	private String cip = null; //current ip
 	
 	private int atrecc; //config data
 	
@@ -395,7 +396,7 @@ public class Engine extends Observable {
 					
 					if("1".equals(dt[0])){//成功
 						try{
-							output[0].write(dt[1]+"----"+dt[2]+"----"+dt[3]+"----"+dt[4]+"----"+dt[5] + "\r\n");
+							output[0].write(dt[1]+"----"+dt[2]+"----"+dt[3]+"----"+dt[4]+"----"+dt[5]+"----"+cip + "\r\n");
 							output[0].flush();
 						}catch(Exception e){
 							e.printStackTrace();
@@ -505,6 +506,7 @@ public class Engine extends Observable {
 													result = result.substring(result.indexOf(":")+2);
 													result = result.substring(0, result.indexOf(" ")-1);
 													//String ip = result;
+													String rip = result;
 													String ip = result.substring(0, result.lastIndexOf("."));
 													
 											        System.err.println("ip="+ip);
@@ -512,6 +514,7 @@ public class Engine extends Observable {
 														long time = ips.get(ip);
 														if(System.currentTimeMillis()-time>=1*60*60*1000){
 															System.err.println("IP重复，但超过1小时，拨号成功:"+ip);
+															cip = rip;
 															ips.put(ip, System.currentTimeMillis());
 															fi = false;//跳出内循环
 															st = true;
@@ -526,6 +529,7 @@ public class Engine extends Observable {
 														}
 													}else{
 														System.err.println("IP不重复，拨号成功:"+ip);
+														cip = rip;
 														ips.put(ip, new Long(System.currentTimeMillis()));
 														fi = false;
 														st = true;
