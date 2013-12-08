@@ -8,6 +8,7 @@ import java.io.FileWriter;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.text.DateFormat;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -323,7 +324,8 @@ public class Tool extends Dialog {
 				new Runnable() {
 					@Override
 					public void run() {
-						lblNewLabel_1.setText(suc+"/"+total+" = "+100*suc/total+"%");
+						DecimalFormat df  = new DecimalFormat("0.00");
+						lblNewLabel_1.setText(suc+"/"+total+" = "+df.format((double)(100*suc)/(double)total)+"%");
 					}
 				}
 		);
