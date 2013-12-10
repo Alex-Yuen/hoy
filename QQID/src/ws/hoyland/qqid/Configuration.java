@@ -34,7 +34,7 @@ public class Configuration extends Properties {
 
 	public void save(){		
 		try{
-			URL url = ClassLoader.getSystemResource("sszs.ini");
+			URL url = ClassLoader.getSystemResource("qqid.ini");
 			File file = new File(url.toURI());
 			OutputStream os = new FileOutputStream(file);
 			store(os, null);
