@@ -146,7 +146,7 @@ public class QQID implements Observer{
 	protected void createContents() {		
 		shlSszs = new Shell(Display.getDefault(), SWT.SHELL_TRIM ^ SWT.MAX
 				^ SWT.RESIZE);
-		shlSszs.setImage(SWTResourceManager.getImage(QQID.class, "/ws/hoyland/sszs/logo.ico"));
+		shlSszs.setImage(SWTResourceManager.getImage(QQID.class, "/ws/hoyland/qqid/logo.ico"));
 		
 		shlSszs.addShellListener(new ShellAdapter() {
 			@Override
@@ -172,7 +172,7 @@ public class QQID implements Observer{
 			}
 		});
 		shlSszs.setSize(713, 499);
-		shlSszs.setText("申诉助手");
+		shlSszs.setText("好友助手");
 
 		Rectangle bounds = Display.getDefault().getPrimaryMonitor().getBounds();
 		Rectangle rect = shlSszs.getBounds();
