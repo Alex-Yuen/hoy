@@ -504,7 +504,7 @@ public class Engine extends Observable {
 													}
 													
 													result = result.substring(result.indexOf(":")+2);
-													result = result.substring(0, result.indexOf(" ")-1);
+													result = result.substring(0, result.indexOf("\n "));
 													//String ip = result;
 													String rip = result;
 													String ip = result.substring(0, result.lastIndexOf("."));
