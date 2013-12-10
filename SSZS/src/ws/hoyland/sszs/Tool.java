@@ -55,7 +55,7 @@ public class Tool extends Dialog {
 	private List<String> mails;
 	private Button btnl;
 
-	private BufferedWriter output = null;
+	private BufferedWriter[] output = new BufferedWriter[2];
 	private URL url = Tool.class.getClassLoader().getResource("");
 	private String xpath = url.getPath();
 	private boolean running = false;
@@ -64,6 +64,7 @@ public class Tool extends Dialog {
 	private Label lblNewLabel_1;
 	private int suc = 0;
 	private int total = 0;
+	private String[] fns = new String[]{"申诉结果", "申诉成功-IP"};
 	
 	/**
 	 * Create the dialog.
@@ -141,15 +142,17 @@ public class Tool extends Dialog {
 							"yyyy年MM月dd日 hh时mm分ss秒");
 					String tm = format.format(new Date());
 
-					File fff = new File(xpath + "申诉结果-" + tm + ".txt");
-					try {
-						if (!fff.exists()) {
-							fff.createNewFile();
-						}
-
-						output = new BufferedWriter(new FileWriter(fff));
-					} catch (Exception ex) {
-						ex.printStackTrace();
+					for(int i=0;i<output.length;i++){
+						File fff = new File(xpath + fns[i]+"-" + tm + ".txt");
+						try {
+							if (!fff.exists()) {
+								fff.createNewFile();
+							}
+	
+							output[i] = new BufferedWriter(new FileWriter(fff));
+						} catch (Exception ex) {
+							ex.printStackTrace();
+					}
 					}
 
 					int tc = Integer.parseInt(configuration.getProperty("READ_TC"));
@@ -254,6 +257,7 @@ public class Tool extends Dialog {
 
 								List<String> lns = new ArrayList<String>();
 								lns.addAll(Arrays.asList(line.split("----")));
+								lns.remove(lns.size()-1); //删除IP记录
 								lns.add("0");
 								lns.add("0");
 								// if (lns.size() == 3) {
@@ -310,11 +314,13 @@ public class Tool extends Dialog {
 			pool.shutdownNow();
 		}
 		
-		if (output != null) {
-			try {
-				output.close();
-			} catch (Exception e) {
-				e.printStackTrace();
+		for(int i=0;i<output.length;i++){
+			if (output[i] != null) {
+				try {
+					output[i].close();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 			}
 		}
 	}
@@ -337,14 +343,14 @@ public class Tool extends Dialog {
 }
 
 class TS implements Runnable {
-	private BufferedWriter output;
+	private BufferedWriter[] output;
 	private Table table;
 	private String mails;
 	private ThreadPoolExecutor pool;
 	private String[] msx = null;
 	private Tool tool = null;
 	
-	public TS(Tool tool, ThreadPoolExecutor pool, BufferedWriter output, Table table, String mails){
+	public TS(Tool tool, ThreadPoolExecutor pool, BufferedWriter[] output, Table table, String mails){
 		this.tool = tool;
 		this.pool = pool;
 		this.output = output;
@@ -470,11 +476,18 @@ class TS implements Runnable {
 						//System.err.println(link);
 						// 写文件
 						try {
-							if(output!=null){
-								output.write(ms[1] + "----"
+							if(output[0]!=null){
+								output[0].write(ms[1] + "----"
 										//+ rcl + "----"
 										+ link + "\r\n");
-								output.flush();
+								output[0].flush();
+							}
+							
+							if(output[1]!=null){
+								output[1].write(ms[1] + "----"
+										//+ rcl + "----"
+										+ ms[6] + "\r\n");
+								output[1].flush();
 							}
 						} catch (Exception e) {
 							e.printStackTrace();
