@@ -3,6 +3,7 @@ package ws.hoyland.qqid;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
+import java.io.IOException;
 import java.net.URLEncoder;
 import java.text.DateFormat;
 import java.util.ArrayList;
@@ -17,15 +18,21 @@ import javax.mail.Folder;
 import javax.mail.Message;
 import javax.mail.Session;
 
+import org.apache.http.Header;
+import org.apache.http.HeaderElement;
 import org.apache.http.HttpEntity;
+import org.apache.http.HttpException;
 import org.apache.http.HttpResponse;
+import org.apache.http.HttpResponseInterceptor;
 import org.apache.http.NameValuePair;
+import org.apache.http.client.entity.GzipDecompressingEntity;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.params.CoreConnectionPNames;
+import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONObject;
 
@@ -54,6 +61,7 @@ public class Task implements Runnable, Observer {
 	// private HttpUriRequest request = null;
 	private List<NameValuePair> nvps = null;
 
+	private String loginSig =null;
 	private String sig = null;
 	// private byte[] ib = null;
 	// private byte[] image = null;
@@ -81,7 +89,8 @@ public class Task implements Runnable, Observer {
 	private int tcconfirm = 0;//try count of confirm
 	private int tcback = 0;//try count of 回执
 	
-	private final String UAG = "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1; QQDownload 734; Maxthon; .NET CLR 2.0.50727; .NET4.0C; .NET4.0E)";
+	//private final String UAG = "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1; QQDownload 734; Maxthon; .NET CLR 2.0.50727; .NET4.0C; .NET4.0E)";
+	private final String UAG = "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:25.0) Gecko/20100101 Firefox/25.0";
 	private boolean pause = false;
 
 	public Task(String line) {
@@ -97,11 +106,35 @@ public class Task implements Runnable, Observer {
 		client.getParams().setParameter(
 				CoreConnectionPNames.CONNECTION_TIMEOUT, 5000);
 		client.getParams().setParameter(CoreConnectionPNames.SO_TIMEOUT, 5000);
+		
+		//gzip 过滤器
+		client.addResponseInterceptor(new HttpResponseInterceptor() {
+
+			@Override
+			public void process(HttpResponse response, HttpContext context)
+					throws HttpException, IOException {
+				 HttpEntity entity = response.getEntity();  
+			        Header ceheader = entity.getContentEncoding();  
+			        if (ceheader != null) {  
+			            HeaderElement[] codecs = ceheader.getElements();  
+			            for (int i = 0; i < codecs.length; i++) {  
+			                if (codecs[i].getName().equalsIgnoreCase("gzip")) {  
+			                    response.setEntity(new GzipDecompressingEntity(  
+			                            response.getEntity()));  
+			                    return;  
+			                }  
+			            }  
+			        }  
+				
+			}  			
+		  
+		});  
 	}
 
 	@Override
 	public void run() {
 		info("开始运行");
+		idx = 1;
 		
 		if(pause){//暂停
 			info("暂停运行");
@@ -212,7 +245,8 @@ public class Task implements Runnable, Observer {
 	}
 
 	private void process(int index) {
-		int itv = Integer.parseInt(this.configuration.getProperty("MAIL_ITV"));
+		//int itv = Integer.parseInt(this.configuration.getProperty("MAIL_ITV"));
+		int itv = 0;
 		switch (index) {
 		case 0:
 			info("正在请求验证码");
@@ -240,41 +274,107 @@ public class Task implements Runnable, Observer {
 				fb = true;
 			}
 			break;
-		case 1:
+		case 1:			
 			try {
-				get = new HttpGet("http://captcha.qq.com/getimgbysig?sig="
-						+ URLEncoder.encode(this.sig, "UTF-8"));
+				get = new HttpGet("http://ui.ptlogin2.qq.com/cgi-bin/login?appid=1006102&daid=1&style=13&s_url=http://id.qq.com/index.html");
 
 				get.setHeader("User-Agent", UAG);
 				get.setHeader("Content-Type", "text/html");
-				get.setHeader("Accept", "text/html, */*");
+				get.setHeader("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
+				get.setHeader("Accept-Language", "zh-cn,zh;q=0.8,en-us;q=0.5,en;q=0.3");
+				get.setHeader("Accept-Encoding", "gzip, deflate");
+				get.setHeader("Referer", "http://id.qq.com/login/ptlogin.html");
+				get.setHeader("Connection", "keep-alive");				
 
 				response = client.execute(get);
 				entity = response.getEntity();
 
-				DataInputStream in = new DataInputStream(entity.getContent());
-				baos = new ByteArrayOutputStream();
-				byte[] barray = new byte[1024];
-				int size = -1;
-				while ((size = in.read(barray)) != -1) {
-					baos.write(barray, 0, size);
-				}
-				ByteArrayInputStream bais = new ByteArrayInputStream(
-						baos.toByteArray());
-
-				message = new EngineMessage();
-				message.setType(EngineMessageType.IM_IMAGE_DATA);
-				message.setData(bais);
-
-				Engine.getInstance().fire(message);
-
+				line = EntityUtils.toString(entity);
+				//",clienti
+				loginSig = line.substring(line.indexOf(",login_sig:\"")+12, line.indexOf("\",clientip"));
+				System.err.println(loginSig);
+								
 				idx++;
 			} catch (Exception e) {
 				e.printStackTrace();
 				fb = true;
 			}
 			break;
-		case 2:
+		case 2:			
+			try {
+				get = new HttpGet("http://ui.ptlogin2.qq.com/cgi-bin/report?id=358191&t="+Math.random());
+
+				get.setHeader("User-Agent", UAG);
+				//get.setHeader("Content-Type", "text/html");
+				get.setHeader("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
+				get.setHeader("Accept-Language", "zh-cn,zh;q=0.8,en-us;q=0.5,en;q=0.3");
+				get.setHeader("Accept-Encoding", "gzip, deflate");
+				get.setHeader("Referer", "http://ui.ptlogin2.qq.com/cgi-bin/login?appid=1006102&daid=1&style=13&s_url=http://id.qq.com/index.html");
+				get.setHeader("Connection", "keep-alive");				
+
+				response = client.execute(get);
+				entity = response.getEntity();
+
+//				line = EntityUtils.toString(entity);
+//				System.err.println(line);
+								
+				idx++;
+			} catch (Exception e) {
+				e.printStackTrace();
+				fb = true;
+			}
+			break;
+		case 3:			
+			try {
+				get = new HttpGet("http://check.ptlogin2.qq.com/check?regmaster=&uin="+this.account+"&appid=1006102&js_ver=10059&js_type=1&login_sig="+loginSig+"&u1=http%3A%2F%2Fid.qq.com%2Findex.html&r="+Math.random());
+
+				get.setHeader("User-Agent", UAG);
+				//get.setHeader("Content-Type", "text/html");
+				get.setHeader("Accept", "*/*");
+				get.setHeader("Accept-Language", "zh-cn,zh;q=0.8,en-us;q=0.5,en;q=0.3");
+				get.setHeader("Accept-Encoding", "gzip, deflate");
+				get.setHeader("Referer", "http://ui.ptlogin2.qq.com/cgi-bin/login?appid=1006102&daid=1&style=13&s_url=http://id.qq.com/index.html");
+				get.setHeader("Connection", "keep-alive");				
+
+				response = client.execute(get);
+				entity = response.getEntity();
+
+				line = EntityUtils.toString(entity);
+				System.err.println(line);
+								
+				idx++;
+			} catch (Exception e) {
+				e.printStackTrace();
+				fb = true;
+			}
+			//run = false;
+			break;
+		case 4:
+			try {
+				get = new HttpGet("http://ptlogin2.qq.com/login?u="+this.account+"&p=4C466AFF67B349CB54AF5D02F6589CBA&verifycode=!RQM&aid=1006102&u1=http%3A%2F%2Fid.qq.com%2Findex.html&h=1&ptredirect=1&ptlang=2052&daid=1&from_ui=1&dumy=&low_login_enable=0&regmaster=&fp=loginerroralert&action=4-9-1386680630213&mibao_css=&t=1&g=1&js_ver=10059&js_type=1&login_sig="+loginSig+"&pt_rsa=0");
+
+				get.setHeader("User-Agent", UAG);
+				//get.setHeader("Content-Type", "text/html");
+				get.setHeader("Accept", "*/*");
+				get.setHeader("Accept-Language", "zh-cn,zh;q=0.8,en-us;q=0.5,en;q=0.3");
+				get.setHeader("Accept-Encoding", "gzip, deflate");
+				get.setHeader("Referer", "http://ui.ptlogin2.qq.com/cgi-bin/login?appid=1006102&daid=1&style=13&s_url=http://id.qq.com/index.html");
+				get.setHeader("Connection", "keep-alive");				
+
+				response = client.execute(get);
+				entity = response.getEntity();
+
+				line = EntityUtils.toString(entity);
+				System.err.println(line);
+								
+				idx++;
+			} catch (Exception e) {
+				e.printStackTrace();
+				fb = true;
+			}
+			run = false;
+			break;
+		case 32:
 			// 根据情况，阻塞或者提交验证码到UU
 			info("正在识别验证码");
 			try {
@@ -309,7 +409,7 @@ public class Task implements Runnable, Observer {
 				fb = true;
 			}
 			break;
-		case 3:
+		case 33:
 			info("开始申诉");
 			try {
 				get = new HttpGet("http://aq.qq.com/cn2/appeal/appeal_index");
@@ -330,7 +430,7 @@ public class Task implements Runnable, Observer {
 				fb = true;
 			}
 			break;
-		case 4:
+		case 34:
 			info("检查申诉帐号");
 			try {
 				get = new HttpGet(

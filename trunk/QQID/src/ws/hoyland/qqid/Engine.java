@@ -11,9 +11,7 @@ import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Observable;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
@@ -36,26 +34,27 @@ public class Engine extends Observable {
 	private int cptType = 0;
 	private boolean running = false;
 	private ThreadPoolExecutor pool;
-	private int mindex = 0;
-	private int mcount = 0;
+	//private int mindex = 0;
+	//private int mcount = 0;
 	private Configuration configuration = Configuration.getInstance();
-	private int recc = 0;//reconnect count
-	private int frecc = 0;//finished
-	private String cip = null; //current ip
+//	private int recc = 0;//reconnect count
+//	private int frecc = 0;//finished
+//	private String cip = null; //current ip
 	
-	private int atrecc; //config data
+//	private int atrecc; //config data
 	
-	private BufferedWriter[] output = new BufferedWriter[5]; //成功，失败，未运行
-	private String[] fns = new String[]{"成功", "失败", "未运行帐号", "已使用邮箱", "未使用邮箱"}; 
+	private BufferedWriter[] output = new BufferedWriter[3]; //成功，失败，未运行
+	//private String[] fns = new String[]{"成功", "失败", "未运行帐号", "已使用邮箱", "未使用邮箱"}; 
+	private String[] fns = new String[]{"成功", "失败", "未运行帐号"};
 	private URL url = Engine.class.getClassLoader().getResource("");
 	private String xpath = url.getPath();
 	private int lastTid = 0;
 	private boolean pause = false;
-	private boolean freq = false;
+	//private boolean freq = false;
 	
 	private int pc = 0;//pause count;
 	
-	private Map<String, Long> ips = new HashMap<String ,Long>();
+	//private Map<String, Long> ips = new HashMap<String ,Long>();
 	
 	private Engine(){
 		
@@ -300,10 +299,13 @@ public class Engine extends Observable {
 
 					Integer[] flidx = (Integer[]) message.getData();
 					
+					/**
 					mindex = flidx[2]; //mfirst of SSZS
 					if(mindex==-1){
 						mindex = 0;
-					}
+					}**/
+					
+					
 					//for (int i = 0; i < accounts.size(); i++) {
 					for (int i = flidx[0]; i <= flidx[1]; i++) {
 						try {
@@ -328,37 +330,37 @@ public class Engine extends Observable {
 				this.notifyObservers(msg);
 				
 				break;
-			case EngineMessageType.IM_REQUIRE_MAIL:
-
-				String[] ms = null;
-				synchronized(MailObject.getInstance()){
-					//Random rnd = new Random();
-					System.err.println("X:A");
-					System.err.println("X1:"+mcount+"/"+mindex+"/"+mails.size()+"/"+message.getTid());
-					if(mcount==Integer.parseInt(configuration.getProperty("EMAIL_TIMES"))){
-						System.err.println("X:B");
-						mcount = 0;
-						mindex++;
-					}
-					
-					System.err.println("X:C");
-					
-					if(mindex<mails.size()){
-						System.err.println("X:D");
-						ms = mails.get(mindex).split("----");
-						mcount++;
-					}
-					System.err.println("X:E");
-					System.err.println("X2:"+mcount+"/"+mindex+"/"+mails.size()+"/"+message.getTid());
-				}
-				msg = new EngineMessage();
-				msg.setTid(message.getTid());
-				msg.setType(EngineMessageType.OM_REQUIRE_MAIL);
-				msg.setData(ms);
-				this.setChanged();
-				this.notifyObservers(msg);
-				
-				break;
+//			case EngineMessageType.IM_REQUIRE_MAIL:
+//
+//				String[] ms = null;
+//				synchronized(MailObject.getInstance()){
+//					//Random rnd = new Random();
+//					System.err.println("X:A");
+//					System.err.println("X1:"+mcount+"/"+mindex+"/"+mails.size()+"/"+message.getTid());
+//					if(mcount==Integer.parseInt(configuration.getProperty("EMAIL_TIMES"))){
+//						System.err.println("X:B");
+//						mcount = 0;
+//						mindex++;
+//					}
+//					
+//					System.err.println("X:C");
+//					
+//					if(mindex<mails.size()){
+//						System.err.println("X:D");
+//						ms = mails.get(mindex).split("----");
+//						mcount++;
+//					}
+//					System.err.println("X:E");
+//					System.err.println("X2:"+mcount+"/"+mindex+"/"+mails.size()+"/"+message.getTid());
+//				}
+//				msg = new EngineMessage();
+//				msg.setTid(message.getTid());
+//				msg.setType(EngineMessageType.OM_REQUIRE_MAIL);
+//				msg.setData(ms);
+//				this.setChanged();
+//				this.notifyObservers(msg);
+//				
+//				break;
 			case EngineMessageType.IM_INFO:
 				msg = new EngineMessage();
 				msg.setTid(message.getTid());
@@ -373,6 +375,7 @@ public class Engine extends Observable {
 				break;
 			case EngineMessageType.IM_START: //IM_FINISH
 				
+				/**
 					recc++;
 					atrecc = Integer.parseInt(configuration.getProperty("AUTO_RECON"));
 					System.err.println("通知重拨:"+atrecc+"/"+recc+"/"+frecc);
@@ -387,7 +390,7 @@ public class Engine extends Observable {
 						this.setChanged();
 						this.notifyObservers(msg);
 					}
-				
+				**/
 				break;
 			case EngineMessageType.IM_FINISH:
 					//写入日志
@@ -396,7 +399,8 @@ public class Engine extends Observable {
 					
 					if("1".equals(dt[0])){//成功
 						try{
-							output[0].write(dt[1]+"----"+dt[2]+"----"+dt[3]+"----"+dt[4]+"----"+dt[5]+"----"+cip + "\r\n");
+//							output[0].write(dt[1]+"----"+dt[2]+"----"+dt[3]+"----"+dt[4]+"----"+dt[5]+"----"+cip + "\r\n");
+							output[1].write(dt[1]+"----"+dt[2]+ "\r\n");
 							output[0].flush();
 						}catch(Exception e){
 							e.printStackTrace();
@@ -410,6 +414,7 @@ public class Engine extends Observable {
 						};
 					}
 					
+					/**
 					frecc++;
 					
 					atrecc = Integer.parseInt(configuration.getProperty("AUTO_RECON"));
@@ -601,9 +606,10 @@ public class Engine extends Observable {
 							
 						});
 						
-						t.start();
+						//t.start();
 						
 					}
+					**/
 				break;
 			case EngineMessageType.IM_EXIT:
 				//关闭日志文件
@@ -650,19 +656,19 @@ public class Engine extends Observable {
 					//see EngineMessageType.IM_PAUSE_COUNT
 				}
 				break;
-			case EngineMessageType.IM_FREQ:
-//				recc = 0;
-//				frecc = 0;
-				freq = true;
-				//通知其他需要重拨
-				msg = new EngineMessage();
-				msg.setTid(-1); //所有task
-				msg.setType(EngineMessageType.OM_RECONN);
-				//msg.setData(message.getData());
-				
-				this.setChanged();
-				this.notifyObservers(msg);
-				break;
+//			case EngineMessageType.IM_FREQ:
+////				recc = 0;
+////				frecc = 0;
+//				freq = true;
+//				//通知其他需要重拨
+//				msg = new EngineMessage();
+//				msg.setTid(-1); //所有task
+//				msg.setType(EngineMessageType.OM_RECONN);
+//				//msg.setData(message.getData());
+//				
+//				this.setChanged();
+//				this.notifyObservers(msg);
+//				break;
 			case EngineMessageType.IM_PAUSE_COUNT:
 				pc++;
 				if(pc==Integer.parseInt(Configuration.getInstance().getProperty("THREAD_COUNT"))){
@@ -711,6 +717,8 @@ public class Engine extends Observable {
 			}catch(Exception e){
 				e.printStackTrace();
 			};
+			
+			/**
 			//写入已使用邮箱日志
 			try{
 				//if(mindex!=-1){
@@ -724,6 +732,8 @@ public class Engine extends Observable {
 			}catch(Exception e){
 				e.printStackTrace();
 			};
+			**/
+			/**
 			//未使用
 			try{
 				//if(mindex!=-1){
@@ -737,6 +747,7 @@ public class Engine extends Observable {
 			}catch(Exception e){
 				e.printStackTrace();
 			};
+			**/
 		//}
 		
 		for(int i=0;i<output.length;i++){
@@ -818,7 +829,8 @@ public class Engine extends Observable {
 	}
 	
 	private void ready(){
-		if(accounts!=null&&accounts.size()>0&&mails!=null&&mails.size()>0&&(cptType==2||(cptType!=2&&login))){
+		//if(accounts!=null&&accounts.size()>0&&mails!=null&&mails.size()>0&&(cptType==2||(cptType!=2&&login))){
+		if(accounts!=null&&accounts.size()>0&&(cptType==2||(cptType!=2&&login))){
 			EngineMessage msg = new EngineMessage();
 	        msg.setType(EngineMessageType.OM_READY);
 	        this.setChanged();
