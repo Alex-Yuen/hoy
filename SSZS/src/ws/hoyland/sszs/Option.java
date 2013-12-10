@@ -81,6 +81,7 @@ public class Option extends Dialog implements Observer {
 	private Button btnCheckButton;
 	private Spinner spinner_4;
 	private Spinner spinner_5;
+	private Button btnIp;
 	/**
 	 * Create the dialog.
 	 * @param parent
@@ -149,6 +150,13 @@ public class Option extends Dialog implements Observer {
 				}else{
 					btnCheckButton.setSelection(false);
 				}
+				
+				if("true".equals(configuration.getProperty("REC_TYPE"))){
+					btnIp.setSelection(true);
+				}else{
+					btnIp.setSelection(false);
+				}
+				
 				//btnCheckButton.setSelection(Boolean.parseBoolean(this.configuration.getProperty("AWCONN")));
 			}
 		}catch(Exception e){
@@ -177,7 +185,8 @@ public class Option extends Dialog implements Observer {
 		
 		this.configuration.put("AUTO_RECON", spinner_2.getText());
 		this.configuration.put("RECON_DELAY", spinner_3.getText());
-		this.configuration.put("AWCONN", String.valueOf(btnCheckButton.getSelection()));		
+		this.configuration.put("AWCONN", String.valueOf(btnCheckButton.getSelection()));
+		this.configuration.put("REC_TYPE", String.valueOf(btnIp.getSelection()));		
 		
 		this.configuration.save();
 	}
@@ -401,11 +410,15 @@ public class Option extends Dialog implements Observer {
 		spinner_4.setMaximum(10);
 		spinner_4.setMinimum(1);
 		spinner_4.setSelection(2);
-		spinner_4.setBounds(300, 40, 45, 23);
+		spinner_4.setBounds(302, 69, 45, 23);
 		
 		Label label_9 = new Label(composite_1, SWT.NONE);
 		label_9.setText("读取线程:");
-		label_9.setBounds(233, 43, 61, 17);
+		label_9.setBounds(235, 72, 61, 17);
+		
+		btnIp = new Button(composite_1, SWT.CHECK);
+		btnIp.setText("IP类似重拨");
+		btnIp.setBounds(235, 43, 120, 17);
 		
 		Button btnNewButton = new Button(shell, SWT.NONE);
 		btnNewButton.addSelectionListener(new SelectionAdapter() {

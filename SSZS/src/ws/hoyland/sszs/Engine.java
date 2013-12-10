@@ -52,6 +52,7 @@ public class Engine extends Observable {
 	private int lastTid = 0;
 	private boolean pause = false;
 	private boolean freq = false;
+	private String recflag = "false";
 	
 	private int pc = 0;//pause count;
 	
@@ -264,6 +265,7 @@ public class Engine extends Observable {
 				this.notifyObservers(msg);
 				
 				if(running){
+					recflag = configuration.getProperty("REC_TYPE"); //每次开始，读一次
 					//创建日志文件
 					//long tm = System.currentTimeMillis();
 					DateFormat format = new java.text.SimpleDateFormat("yyyy年MM月dd日 hh时mm分ss秒");
@@ -507,7 +509,10 @@ public class Engine extends Observable {
 													result = result.substring(0, result.indexOf("\n "));
 													//String ip = result;
 													String rip = result;
-													String ip = result.substring(0, result.lastIndexOf("."));
+													String ip = rip;
+													if("true".equals(recflag)){
+														ip = result.substring(0, result.lastIndexOf("."));
+													}
 													
 											        System.err.println("ip="+ip);
 													if(ips.containsKey(ip)){
