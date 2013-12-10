@@ -33,8 +33,6 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
-import org.eclipse.swt.events.MouseAdapter;
-import org.eclipse.swt.events.MouseEvent;
 
 public class QQID implements Observer{
 
@@ -42,12 +40,10 @@ public class QQID implements Observer{
 	
 	private Table table;
 	private Text text_2;
-	private Table table_1;
 	private Option option;
 	private Label status;
 	private Label label;
 	private Label label_1;
-	private Label label_5;
 	private Button button_2;
 	private Text text_1;
 	private Text text_3;
@@ -70,7 +66,6 @@ public class QQID implements Observer{
 	
 	private Clipboard clipBoard = new Clipboard(Display.getDefault());
 	private Transfer textTransfer = TextTransfer.getInstance();
-	private MenuItem mntmc;
 	private MenuItem mntmc_1;
 	private MenuItem mntml;
 	private MenuItem mntmNewItem;
@@ -100,7 +95,8 @@ public class QQID implements Observer{
 			@Override
 			public void handleEvent(Event event) {
 				if ((event.stateMask & SWT.CTRL) != 0&&event.keyCode==116) { //CTRL+T
-                    new Tool(shlSszs, SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL).open();
+					//not need here
+                    // new Tool(shlSszs, SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL).open();
                 }				
 			}             
         });
@@ -321,28 +317,6 @@ public class QQID implements Observer{
 		});
 		mntmc_1.setText("复制(&C)");
 		
-		label_5 = new Label(shlSszs, SWT.BORDER | SWT.WRAP);
-		label_5.setBounds(422, 1, 225, 17);
-		
-		Link link_3 = new Link(shlSszs, 0);
-		link_3.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				final FileDialog fileDlg = new FileDialog(shlSszs, SWT.OPEN);
-				fileDlg.setFilterPath(null);
-				fileDlg.setText("选择邮件列表");
-				String filePath = fileDlg.open();
-				if(filePath!=null){
-					EngineMessage message = new EngineMessage();
-					message.setType(EngineMessageType.IM_LOAD_MAIL);
-					message.setData(filePath);
-					Engine.getInstance().fire(message);
-				}
-			}
-		});
-		link_3.setText("<a>导入...</a>");
-		link_3.setBounds(670, 1, 36, 17);
-		
 		Group group = new Group(shlSszs, SWT.NONE);
 		group.setText("工作区");
 		group.setBounds(217, 268, 489, 176);
@@ -479,86 +453,8 @@ public class QQID implements Observer{
 		button_4.setBounds(340, 142, 149, 34);
 		
 		Label label_20 = new Label(shlSszs, SWT.NONE);
-		label_20.setText("邮箱列表:");
+		label_20.setText("系统日志:");
 		label_20.setBounds(356, 1, 60, 17);
-		
-		table_1 = new Table(shlSszs, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI);
-		table_1.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseDoubleClick(MouseEvent e) {
-				//System.out.println(e.widget);
-				TableItem[] tis = table_1.getSelection();
-				int lidx = table_1.indexOf(tis[0]);
-				for(int i=0;i<lidx;i++){
-					table_1.getItem(i).setBackground(Display
-							.getDefault()
-							.getSystemColor(
-									SWT.COLOR_GRAY));
-				}
-				for(int i=lidx;i<table_1.getItemCount();i++){
-					table_1.getItem(i).setBackground(Display
-							.getDefault()
-							.getSystemColor(
-									SWT.COLOR_WHITE));
-				}
-				mfirst = lidx;
-				//System.out.println()
-			}
-		});
-		table_1.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				TableItem[] tis = table_1.getSelection();
-				if(tis.length==0){
-					mntmc.setEnabled(false);
-				}else{
-					mntmc.setEnabled(true);
-				}
-			}
-		});
-		table_1.setLinesVisible(true);
-		table_1.setHeaderVisible(true);
-		table_1.setBounds(356, 24, 350, 238);
-		
-		TableColumn tableColumn_7 = new TableColumn(table_1, SWT.NONE);
-		tableColumn_7.setWidth(30);
-		tableColumn_7.setText("ID");
-		
-		TableColumn tableColumn_8 = new TableColumn(table_1, SWT.NONE);
-		tableColumn_8.setWidth(100);
-		tableColumn_8.setText("帐号");
-		
-		TableColumn tableColumn_9 = new TableColumn(table_1, SWT.NONE);
-		tableColumn_9.setWidth(100);
-		tableColumn_9.setText("密码");
-		
-		TableColumn tableColumn_11 = new TableColumn(table_1, SWT.NONE);
-		tableColumn_11.setWidth(98);
-		tableColumn_11.setText("使用次数");
-		
-		Menu menu = new Menu(table_1);
-		table_1.setMenu(menu);
-		
-		mntmc = new MenuItem(menu, SWT.NONE);
-		mntmc.setEnabled(false);
-		mntmc.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				TableItem[] tis = table_1.getSelection();
-				if(tis.length==0){
-					return;
-				}
-				StringBuffer sb = new StringBuffer();
-				for(int i=0;i<tis.length;i++){
-					sb.append(tis[i].getText(0)+"----"+tis[i].getText(1)+"----"+tis[i].getText(2)+"----"+tis[i].getText(3)+"\r\n");					
-					//System.out.println("OK");
-				}
-
-				clipBoard.setContents(new String[]{sb.toString()}, new Transfer[]{textTransfer});
-				clipBoard.dispose();
-			}
-		});
-		mntmc.setText("复制(&C)");
 		
 		group_1 = new Group(shlSszs, SWT.NONE);
 		group_1.setText("识别方式");
@@ -686,6 +582,9 @@ public class QQID implements Observer{
 		combo.setItems(new String[] {"云打码", "悠悠云", "手动输入"});
 		combo.setBounds(10, 15, 97, 23);
 		combo.select(0);
+		
+		Label lblNewLabel_1 = new Label(shlSszs, SWT.BORDER);
+		lblNewLabel_1.setBounds(355, 24, 351, 238);
 
 	}
 
@@ -789,38 +688,38 @@ public class QQID implements Observer{
 					}
 				});
 				break;
-			case EngineMessageType.OM_CLEAR_MAIL_TBL:
-				Display.getDefault().asyncExec(new Runnable() {
-					@Override
-					public void run() {
-						table_1.removeAll();
-					}				
-				});
-				break;
-			case EngineMessageType.OM_ADD_MAIL_TBIT:
-				Display.getDefault().asyncExec(new Runnable() {
-					@Override
-					public void run() {
-						TableItem tableItem = new TableItem(
-								table_1, SWT.NONE);
-						tableItem.setText((String[])msg.getData());
-						table_1.setSelection(tableItem);
-					}
-				});
-				break;
-			case EngineMessageType.OM_MAIL_LOADED:
-				Display.getDefault().asyncExec(new Runnable() {
-					@SuppressWarnings("unchecked")
-					@Override
-					public void run() {
-						List<String> ls = (List<String>)msg.getData();
-//						label.setText("帐号列表 (共 " + ls.get(0)
-//								+ " 条):");
-						label_5.setText(ls.get(1));
-						table_1.setSelection(0);
-					}
-				});
-				break;
+//			case EngineMessageType.OM_CLEAR_MAIL_TBL:
+//				Display.getDefault().asyncExec(new Runnable() {
+//					@Override
+//					public void run() {
+//						table_1.removeAll();
+//					}				
+//				});
+//				break;
+//			case EngineMessageType.OM_ADD_MAIL_TBIT:
+//				Display.getDefault().asyncExec(new Runnable() {
+//					@Override
+//					public void run() {
+//						TableItem tableItem = new TableItem(
+//								table_1, SWT.NONE);
+//						tableItem.setText((String[])msg.getData());
+//						table_1.setSelection(tableItem);
+//					}
+//				});
+//				break;
+//			case EngineMessageType.OM_MAIL_LOADED:
+//				Display.getDefault().asyncExec(new Runnable() {
+//					@SuppressWarnings("unchecked")
+//					@Override
+//					public void run() {
+//						List<String> ls = (List<String>)msg.getData();
+////						label.setText("帐号列表 (共 " + ls.get(0)
+////								+ " 条):");
+//						label_5.setText(ls.get(1));
+//						table_1.setSelection(0);
+//					}
+//				});
+//				break;
 			case EngineMessageType.OM_READY:
 				Display.getDefault().asyncExec(new Runnable() {
 					@Override
@@ -873,17 +772,17 @@ public class QQID implements Observer{
 					}
 				});
 				break;
-			case EngineMessageType.OM_REQUIRE_MAIL:
-				Display.getDefault().asyncExec(new Runnable() {
-					@Override
-					public void run() {
-						int mid = Integer.parseInt(((String[])msg.getData())[0]);
-						int mc = Integer.parseInt(table_1.getItem(mid-1).getText(3))+1;
-						table_1.getItem(mid-1).setText(3, String.valueOf(mc));
-						table_1.setSelection(mid-1);
-					}
-				});
-				break;
+//			case EngineMessageType.OM_REQUIRE_MAIL:
+//				Display.getDefault().asyncExec(new Runnable() {
+//					@Override
+//					public void run() {
+//						int mid = Integer.parseInt(((String[])msg.getData())[0]);
+//						int mc = Integer.parseInt(table_1.getItem(mid-1).getText(3))+1;
+//						table_1.getItem(mid-1).setText(3, String.valueOf(mc));
+//						table_1.setSelection(mid-1);
+//					}
+//				});
+//				break;
 			default:
 				break;
 		}
