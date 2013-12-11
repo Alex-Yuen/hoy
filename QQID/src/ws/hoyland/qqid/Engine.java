@@ -788,7 +788,7 @@ public class Engine extends Observable {
 				if(cptType==0){
 					YDM.INSTANCE.YDM_SetAppInfo(81, "8b7a41a5fe43a731c3a067b6effeae72");
 				}else{
-					DM.INSTANCE.uu_setSoftInfoA(94034, "0c324570e9914c20ad2fab51b50b3fdc");
+					DM.INSTANCE.uu_setSoftInfoA(94533, "23893fa2751843f0a7baf7be4153a1ce");
 				}
 				//
 				
