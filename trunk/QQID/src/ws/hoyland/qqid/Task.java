@@ -5,6 +5,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.net.URLEncoder;
+import java.security.MessageDigest;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -35,6 +36,10 @@ import org.apache.http.params.CoreConnectionPNames;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONObject;
+
+import ws.hoyland.qqid.Engine;
+import ws.hoyland.qqid.EngineMessage;
+import ws.hoyland.qqid.EngineMessageType;
 
 import com.sun.mail.imap.IMAPFolder;
 import com.sun.mail.imap.IMAPStore;
@@ -88,6 +93,12 @@ public class Task implements Runnable, Observer {
 	
 	private int tcconfirm = 0;//try count of confirm
 	private int tcback = 0;//try count of 回执
+	
+	private boolean nvc = false; //need vc
+	private String vcode = null;
+	private String salt = null;
+	
+	private String ecp = null;//encrypted password
 	
 	//private final String UAG = "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1; QQDownload 734; Maxthon; .NET CLR 2.0.50727; .NET4.0C; .NET4.0E)";
 	private final String UAG = "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:25.0) Gecko/20100101 Firefox/25.0";
@@ -275,6 +286,8 @@ public class Task implements Runnable, Observer {
 			}
 			break;
 		case 1:			
+			//获取login sig
+			info("正在登录");
 			try {
 				get = new HttpGet("http://ui.ptlogin2.qq.com/cgi-bin/login?appid=1006102&daid=1&style=13&s_url=http://id.qq.com/index.html");
 
@@ -301,6 +314,8 @@ public class Task implements Runnable, Observer {
 			}
 			break;
 		case 2:			
+			info("例行报告");
+			//set cookie, bad js repot not yet.
 			try {
 				get = new HttpGet("http://ui.ptlogin2.qq.com/cgi-bin/report?id=358191&t="+Math.random());
 
@@ -325,8 +340,10 @@ public class Task implements Runnable, Observer {
 			}
 			break;
 		case 3:			
+			info("检查帐号");
+			//get ptui_checkVC
 			try {
-				get = new HttpGet("http://check.ptlogin2.qq.com/check?regmaster=&uin="+this.account+"&appid=1006102&js_ver=10059&js_type=1&login_sig="+loginSig+"&u1=http%3A%2F%2Fid.qq.com%2Findex.html&r="+Math.random());
+				get = new HttpGet("http://check.ptlogin2.qq.com/check?regmaster=&uin="+this.account+"&appid=1006102&js_ver=10060&js_type=1&login_sig="+loginSig+"&u1=http%3A%2F%2Fid.qq.com%2Findex.html&r="+Math.random());
 
 				get.setHeader("User-Agent", UAG);
 				//get.setHeader("Content-Type", "text/html");
@@ -341,17 +358,149 @@ public class Task implements Runnable, Observer {
 
 				line = EntityUtils.toString(entity);
 				System.err.println(line);
-								
-				idx++;
+				
+				nvc = line.charAt(14)=='1'?true:false;
+				//没有做RSAKEY检查，默认是应该有KEY，用getEncryption；否则用getRSAEncryption
+				
+				int fidx = line.indexOf(",");
+				int lidx = line.lastIndexOf(",");
+				
+				vcode = line.substring(fidx+2, lidx-1);
+				System.err.println(vcode);
+				salt = line.substring(lidx+2, lidx+34);
+				System.err.println(salt);
+				
+//				this.password = "fmdrdorcmu";
+//				System.out.println(password);
+//				this.salt = "\\x00\\x
+				
+				
+//				rs[idx+0] = (byte)0x00;
+//				rs[idx+1] = (byte)0x00;
+//				rs[idx+2] = (byte)0x00;
+//				rs[idx+3] = (byte)0x00;
+//				rs[idx+4] = (byte)0x08;
+//				rs[idx+5] = (byte)0x23;
+//				rs[idx+6] = (byte)0x9b;
+//				rs[idx+7] = (byte)0x86;
+				
+				//String resultString = byteArrayToHexString(results);
+				//resultString = resultString.toUpperCase();
+				
+				if(nvc){
+					//Encryption.getRSAEncryption(K, G)
+					idx++; //进入下一步验证码
+				}else{
+					idx += 3;
+				}				
 			} catch (Exception e) {
 				e.printStackTrace();
 				fb = true;
 			}
 			//run = false;
 			break;
-		case 4:
+		case 4://请求验证码
+			info("下载验证码");
 			try {
-				get = new HttpGet("http://ptlogin2.qq.com/login?u="+this.account+"&p=4C466AFF67B349CB54AF5D02F6589CBA&verifycode=!RQM&aid=1006102&u1=http%3A%2F%2Fid.qq.com%2Findex.html&h=1&ptredirect=1&ptlang=2052&daid=1&from_ui=1&dumy=&low_login_enable=0&regmaster=&fp=loginerroralert&action=4-9-1386680630213&mibao_css=&t=1&g=1&js_ver=10059&js_type=1&login_sig="+loginSig+"&pt_rsa=0");
+				get = new HttpGet("http://captcha.qq.com//getimage?uin=782767782&aid=1006102&"
+						+ Math.random());
+
+				get.setHeader("User-Agent", UAG);
+				//get.setHeader("Content-Type", "text/html");
+				get.setHeader("Accept", "image/png,image/*;q=0.8,*/*;q=0.5");
+				get.setHeader("Accept-Language", "zh-cn,zh;q=0.8,en-us;q=0.5,en;q=0.3");
+				get.setHeader("Accept-Encoding", "gzip, deflate");
+				get.setHeader("Referer", "http://ui.ptlogin2.qq.com/cgi-bin/login?appid=1006102&daid=1&style=13&s_url=http://id.qq.com/index.html");
+				get.setHeader("Connection", "keep-alive");
+
+				response = client.execute(get);
+				entity = response.getEntity();
+
+				DataInputStream in = new DataInputStream(entity.getContent());
+				baos = new ByteArrayOutputStream();
+				byte[] barray = new byte[1024];
+				int size = -1;
+				while ((size = in.read(barray)) != -1) {
+					baos.write(barray, 0, size);
+				}
+				ByteArrayInputStream bais = new ByteArrayInputStream(
+						baos.toByteArray());
+
+				message = new EngineMessage();
+				message.setType(EngineMessageType.IM_IMAGE_DATA);
+				message.setData(bais);
+
+				Engine.getInstance().fire(message);
+
+				idx++;
+			} catch (Exception e) {
+				e.printStackTrace();
+				fb = true;
+			}
+			break;
+		case 5://识别验证码
+			info("识别验证码");
+			try {
+				byte[] by = baos.toByteArray();
+				byte[] resultByte = new byte[30]; // 为识别结果申请内存空间
+//				StringBuffer rsb = new StringBuffer(30);
+				String rsb = "0000";
+				resultByte = rsb.getBytes();
+
+				if(Engine.getInstance().getCptType()==0){
+					codeID = YDM.INSTANCE.YDM_DecodeByBytes(by, by.length, 1004, resultByte);//result byte
+//					result = "xxxx";
+//					for(int i=0;i<resultByte.length;i++){
+//						System.out.println(resultByte[i]);
+//					}
+//					System.out.println("TTT:"+codeID);
+					vcode = new String(resultByte, "UTF-8").trim();
+				}else{
+					codeID = DM.INSTANCE.uu_recognizeByCodeTypeAndBytesA(by,
+							by.length, 1, resultByte); // 调用识别函数,resultBtye为识别结果
+					vcode = new String(resultByte, "UTF-8").trim();
+				}						
+				
+				//result = rsb.toString();
+				//System.out.println("---"+result);
+
+				idx++;
+			} catch (Exception e) {
+				e.printStackTrace();
+				fb = true;
+			}
+			break;
+		case 6:
+			info("提交登录请求");
+			try {
+				//计算ECP
+				MessageDigest md = MessageDigest.getInstance("MD5"); 
+				byte[] results = md.digest(this.password.getBytes());
+				
+				int psz = results.length;
+				byte[] rs = new byte[psz+8];
+				for(int i=0;i<psz;i++){
+					rs[i] = results[i];
+				}
+				
+				String[] salts = this.salt.substring(2).split("\\\\x");
+				//System.out.println(salts.length);
+				for(int i=0; i<salts.length; i++){
+					rs[psz+i] = (byte)Integer.parseInt(salts[i], 16);
+				}
+				
+				results = md.digest(rs); 
+				String resultString = byteArrayToHexString(results).toUpperCase();
+				
+				//vcode = "!RQM";
+				results = md.digest((resultString+vcode).getBytes()); 				
+				resultString = byteArrayToHexString(results).toUpperCase();
+				System.out.println(resultString);
+				ecp = resultString;
+				
+				
+				System.out.println("http://ptlogin2.qq.com/login?u="+this.account+"&p="+ecp+"&verifycode="+vcode+"&aid=1006102&u1=http%3A%2F%2Fid.qq.com%2Findex.html&h=1&ptredirect=1&ptlang=2052&daid=1&from_ui=1&dumy=&low_login_enable=0&regmaster=&fp=loginerroralert&action=4-9-"+System.currentTimeMillis()+"&mibao_css=&t=1&g=1&js_ver=10060&js_type=1&login_sig="+loginSig+"&pt_rsa=0");
+				get = new HttpGet("http://ptlogin2.qq.com/login?u="+this.account+"&p="+ecp+"&verifycode="+vcode+"&aid=1006102&u1=http%3A%2F%2Fid.qq.com%2Findex.html&h=1&ptredirect=1&ptlang=2052&daid=1&from_ui=1&dumy=&low_login_enable=0&regmaster=&fp=loginerroralert&action=4-9-"+System.currentTimeMillis()+"&mibao_css=&t=1&g=1&js_ver=10060&js_type=1&login_sig="+loginSig+"&pt_rsa=0");
 
 				get.setHeader("User-Agent", UAG);
 				//get.setHeader("Content-Type", "text/html");
@@ -374,6 +523,9 @@ public class Task implements Runnable, Observer {
 			}
 			run = false;
 			break;
+		case 7://报告错误验证码
+			idx = 4; //重新请求验证码
+			break;		
 		case 32:
 			// 根据情况，阻塞或者提交验证码到UU
 			info("正在识别验证码");
@@ -455,7 +607,7 @@ public class Task implements Runnable, Observer {
 				fb = true;
 			}
 			break;
-		case 5:
+		case 35:
 			info("正在验证");
 			try {
 				get = new HttpGet(
@@ -489,7 +641,7 @@ public class Task implements Runnable, Observer {
 				fb = true;
 			}
 			break;
-		case 6:
+		case 36:
 			info("验证码错误，报告异常");
 			try {
 				//
@@ -507,7 +659,7 @@ public class Task implements Runnable, Observer {
 				fb = true;
 			}
 			break;
-		case 7:
+		case 37:
 			info("填写申诉资料");
 			try {
 				post = new HttpPost(
@@ -550,7 +702,7 @@ public class Task implements Runnable, Observer {
 				fb = true;
 			}
 			break;
-		case 8:
+		case 38:
 			info("提交申诉资料");
 			try {
 				post = new HttpPost(
@@ -603,7 +755,7 @@ public class Task implements Runnable, Observer {
 				fb = true;
 			}
 			break;
-		case 9: // 收邮件 
+		case 39: // 收邮件 
 			info("等待"+itv+"秒，接收邮件[确认]");
 			try {
 				try{
@@ -712,7 +864,7 @@ public class Task implements Runnable, Observer {
 				fb = true;
 			}
 			break;
-		case 10:
+		case 40:
 			info("使用激活码继续申诉");
 			try {
 				get = new HttpGet(
@@ -757,7 +909,7 @@ public class Task implements Runnable, Observer {
 				fb = true;
 			}
 			break;
-		case 11:
+		case 41:
 			info("提交原始密码和地区");
 			try {
 				post = new HttpPost(
@@ -847,7 +999,7 @@ public class Task implements Runnable, Observer {
 				fb = true;
 			}
 			break;
-		case 12:
+		case 42:
 			info("正在转向");
 			try {
 				get = new HttpGet(
@@ -869,7 +1021,7 @@ public class Task implements Runnable, Observer {
 				fb = true;
 			}
 			break;
-		case 13:
+		case 43:
 			info("进入好友辅助");
 			try {
 				post = new HttpPost(
@@ -910,7 +1062,7 @@ public class Task implements Runnable, Observer {
 				fb = true;
 			}
 			break;
-		case 14:
+		case 44:
 			info("跳过好友辅助");
 			try {
 				post = new HttpPost(
@@ -953,7 +1105,7 @@ public class Task implements Runnable, Observer {
 			}
 			
 			break;
-		case 15:
+		case 45:
 			//获取回执编号			
 			info("等待"+itv+"秒，接收邮件[回执]");
 			try {
@@ -1113,4 +1265,22 @@ public class Task implements Runnable, Observer {
 			}
 		}
 	}
+	
+	 private String byteArrayToHexString(byte[] b){  
+	        StringBuffer resultSb = new StringBuffer();  
+	        for (int i = 0; i < b.length; i++){  
+	            resultSb.append(byteToHexString(b[i]));  
+	        }  
+	        return resultSb.toString();  
+	    }  
+	 private String byteToHexString(byte b){  
+	        int n = b;  
+	        if (n < 0)  
+	            n = 256 + n;  
+	        int d1 = n / 16;  
+	        int d2 = n % 16;  
+	        return hexDigits[d1] + hexDigits[d2];  
+	    }  
+	   private final static String[] hexDigits = {"0", "1", "2", "3", "4",  
+	        "5", "6", "7", "8", "9", "a", "b", "c", "d", "e", "f"};  
 }
