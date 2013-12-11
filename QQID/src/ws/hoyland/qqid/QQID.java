@@ -261,6 +261,7 @@ public class QQID implements Observer{
 				
 				Event ex = new Event();
 				ex.widget = button_2;
+				//ex.data = "1";
 				//主动触发button点击事件				
 				button_2.notifyListeners(SWT.Selection, ex);
 //				for(int i=0;i<tis.length;i++){
@@ -287,6 +288,7 @@ public class QQID implements Observer{
 				
 				Event ex = new Event();
 				ex.widget = button_2;
+				//ex.data = "2";
 				//主动触发button点击事件				
 				button_2.notifyListeners(SWT.Selection, ex);
 			}
@@ -335,7 +337,7 @@ public class QQID implements Observer{
 		button_2 = new Button(group, SWT.NONE);
 		button_2.addSelectionListener(new SelectionAdapter() {
 			@Override
-			public void widgetSelected(SelectionEvent e) {
+			public void widgetSelected(final SelectionEvent e) {
 				if(first==-1){
 					first = 0;
 				}
@@ -353,6 +355,11 @@ public class QQID implements Observer{
 						flidx[0] = first;
 						flidx[1] = last;
 						flidx[2] = mfirst;
+//						if(e.data==null){
+//							flidx[3] = 0;
+//						}else{
+//							flidx[3] = Integer.parseInt(e.data.toString());
+//						}
 						EngineMessage message = new EngineMessage();
 						message.setType(EngineMessageType.IM_PROCESS);
 						message.setData(flidx);

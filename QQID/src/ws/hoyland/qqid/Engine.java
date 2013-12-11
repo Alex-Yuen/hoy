@@ -255,6 +255,11 @@ public class Engine extends Observable {
 				break;
 			case EngineMessageType.IM_PROCESS:
 				running = !running;
+//				if(flidx[3]!=0){ //直接点击情况下，不要切换状态
+//					running = !running;
+//				}
+
+				Integer[] flidx = (Integer[]) message.getData();
 				
 				msg = new EngineMessage();
 				msg.setType(EngineMessageType.OM_RUNNING);
@@ -297,7 +302,7 @@ public class Engine extends Observable {
 							maxPoolSize, keepAliveTime, unit,
 							workQueue, handler);
 
-					Integer[] flidx = (Integer[]) message.getData();
+					
 					
 					/**
 					mindex = flidx[2]; //mfirst of SSZS
