@@ -2,6 +2,7 @@ package ws.hoyland.qqid;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.text.DecimalFormat;
 
@@ -175,10 +176,10 @@ public class Test {
 //		DecimalFormat df2  = new DecimalFormat("0.00");  
 //		System.out.println(i*100/k);
 //		System.out.println(df2.format(i*100/k));
-		
+		//BB6FC290E67EBADD7ADE4A5C2C0AA7C4
 		try{
 			MessageDigest md = MessageDigest.getInstance("MD5"); 
-			byte[] results = md.digest("fmdrdorcmu".getBytes()); 
+			byte[] results = md.digest("jkastwmjor".getBytes()); 
 			String resultString = byteArrayToHexString(results);
 			resultString = resultString.toUpperCase();
 			//System.out.println(resultString.toUpperCase());
@@ -261,10 +262,10 @@ public class Test {
 			rs[idx+1] = (byte)0x00;
 			rs[idx+2] = (byte)0x00;
 			rs[idx+3] = (byte)0x00;
-			rs[idx+4] = (byte)0x08;
-			rs[idx+5] = (byte)0x23;
-			rs[idx+6] = (byte)0x9b;
-			rs[idx+7] = (byte)0x86;
+			rs[idx+4] = (byte)0x24;
+			rs[idx+5] = (byte)0x19;
+			rs[idx+6] = (byte)0x09;
+			rs[idx+7] = (byte)0xc9;
 			
 //			System.out.println(rs.length);
 //			
@@ -301,7 +302,7 @@ public class Test {
 //				rs[idx+i] = vb[i]; 
 //			}
 //			System.out.println(rs.length);
-			results = md.digest((resultString+"!RQM").getBytes()); 
+			results = md.digest((resultString+"eena".toUpperCase()).getBytes()); 
 			
 			resultString = byteArrayToHexString(results).toUpperCase();
 			System.out.println(resultString);
@@ -313,6 +314,9 @@ public class Test {
 //			resultString = byteArrayToHexString(results).toUpperCase();
 //			
 //			System.out.println(resultString);
+			
+			
+			System.out.println(encryptSkey("@tMVppQ7kx").intValue());
 		}catch(Exception e){
 			e.printStackTrace();
 		}
@@ -347,4 +351,15 @@ public class Test {
 		}
 		return result.toString();
 	}
+	
+	public static BigInteger encryptSkey(String sKey){
+		   BigInteger i = BigInteger.valueOf(5381);
+		   int j = 0;
+		   int k = sKey.length();
+		   while(j<k){
+			   i = i + (i<<5 + (byte)sKey.charAt(j));
+			   j++;
+		   }
+		   return new BigInteger("2147483648").and(BigInteger.valueOf(i));
+	   }
 }
