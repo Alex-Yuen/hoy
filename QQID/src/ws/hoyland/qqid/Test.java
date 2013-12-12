@@ -180,7 +180,7 @@ public class Test {
 		try{
 			
 			MessageDigest md = MessageDigest.getInstance("MD5"); 
-			byte[] results = md.digest("rvsrtydsyp".getBytes()); 
+			byte[] results = md.digest("uefnqosrwa".getBytes()); 
 			String resultString = byteArrayToHexString(results);
 			resultString = resultString.toUpperCase();
 			//System.out.println(resultString.toUpperCase());
@@ -263,10 +263,10 @@ public class Test {
 			rs[idx+1] = (byte)0x00;
 			rs[idx+2] = (byte)0x00;
 			rs[idx+3] = (byte)0x00;
-			rs[idx+4] = (byte)0x1f;
-			rs[idx+5] = (byte)0xa9;
-			rs[idx+6] = (byte)0xb0;
-			rs[idx+7] = (byte)0xe4;
+			rs[idx+4] = (byte)0x3a;
+			rs[idx+5] = (byte)0x1d;
+			rs[idx+6] = (byte)0xc0;
+			rs[idx+7] = (byte)0x6b;
 			
 //			System.out.println(rs.length);
 //			
@@ -290,7 +290,7 @@ public class Test {
 //			
 			results = md.digest(rs); 
 			resultString = byteArrayToHexString(results).toUpperCase();
-			System.out.println(resultString);
+			//System.out.println(resultString);
 			
 //			byte[] vb = "!RQM".toUpperCase().getBytes();
 //			
@@ -303,7 +303,7 @@ public class Test {
 //				rs[idx+i] = vb[i]; 
 //			}
 //			System.out.println(rs.length);
-			results = md.digest((resultString+"zenk".toUpperCase()).getBytes()); 
+			results = md.digest((resultString+"mmpa".toUpperCase()).getBytes()); 
 			
 			resultString = byteArrayToHexString(results).toUpperCase();
 			System.out.println(resultString);
@@ -318,6 +318,10 @@ public class Test {
 			
 			
 			System.out.println(encryptSkey("@tMVppQ7kx"));
+			
+			String v = "12434-234234-";
+			v = v.substring(0, v.length()-1);
+			System.out.println(v);
 		}catch(Exception e){
 			e.printStackTrace();
 		}
