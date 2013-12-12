@@ -178,8 +178,9 @@ public class Test {
 //		System.out.println(df2.format(i*100/k));
 		//BB6FC290E67EBADD7ADE4A5C2C0AA7C4
 		try{
+			
 			MessageDigest md = MessageDigest.getInstance("MD5"); 
-			byte[] results = md.digest("jkastwmjor".getBytes()); 
+			byte[] results = md.digest("rvsrtydsyp".getBytes()); 
 			String resultString = byteArrayToHexString(results);
 			resultString = resultString.toUpperCase();
 			//System.out.println(resultString.toUpperCase());
@@ -262,10 +263,10 @@ public class Test {
 			rs[idx+1] = (byte)0x00;
 			rs[idx+2] = (byte)0x00;
 			rs[idx+3] = (byte)0x00;
-			rs[idx+4] = (byte)0x24;
-			rs[idx+5] = (byte)0x19;
-			rs[idx+6] = (byte)0x09;
-			rs[idx+7] = (byte)0xc9;
+			rs[idx+4] = (byte)0x1f;
+			rs[idx+5] = (byte)0xa9;
+			rs[idx+6] = (byte)0xb0;
+			rs[idx+7] = (byte)0xe4;
 			
 //			System.out.println(rs.length);
 //			
@@ -302,7 +303,7 @@ public class Test {
 //				rs[idx+i] = vb[i]; 
 //			}
 //			System.out.println(rs.length);
-			results = md.digest((resultString+"eena".toUpperCase()).getBytes()); 
+			results = md.digest((resultString+"zenk".toUpperCase()).getBytes()); 
 			
 			resultString = byteArrayToHexString(results).toUpperCase();
 			System.out.println(resultString);
@@ -316,7 +317,7 @@ public class Test {
 //			System.out.println(resultString);
 			
 			
-			System.out.println(encryptSkey("@tMVppQ7kx").intValue());
+			System.out.println(encryptSkey("@tMVppQ7kx"));
 		}catch(Exception e){
 			e.printStackTrace();
 		}
@@ -352,14 +353,27 @@ public class Test {
 		return result.toString();
 	}
 	
-	public static BigInteger encryptSkey(String sKey){
-		   BigInteger i = BigInteger.valueOf(5381);
+	//2045554247
+	public static long encryptSkey(String sKey){
+		   long i = 5381;
 		   int j = 0;
 		   int k = sKey.length();
+//		   System.out.println(6190419136L&0XFFFFFFFFL);
 		   while(j<k){
-			   i = i + (i<<5 + (byte)sKey.charAt(j));
+			   long n = i<<5;
+			   if((n&0x80000000L)==0x80000000L){//最高位为1
+				   n = n | 0xFFFFFFFF00000000L;
+			   }else {
+				   n = n & 0XFFFFFFFFL;
+			   }
+//			   System.out.println(i);
+//			   System.out.println(n);
+//			   System.out.println((byte)sKey.charAt(j));
+			   i = i + (n + (byte)sKey.charAt(j));
+			   //System.out.println((byte)sKey.charAt(j));
+//			   System.out.println("------->"+i);
 			   j++;
 		   }
-		   return new BigInteger("2147483648").and(BigInteger.valueOf(i));
+		   return i & 2147483647L;
 	   }
 }

@@ -4,7 +4,6 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
-import java.math.BigInteger;
 import java.net.URLEncoder;
 import java.security.MessageDigest;
 import java.text.DateFormat;
@@ -32,11 +31,13 @@ import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.params.ClientPNames;
+import org.apache.http.cookie.Cookie;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.params.CoreConnectionPNames;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import ws.hoyland.qqid.Engine;
@@ -507,7 +508,7 @@ public class Task implements Runnable, Observer {
 				ecp = resultString;
 				
 				
-				//System.out.println("http://ptlogin2.qq.com/login?u="+this.account+"&p="+ecp+"&verifycode="+vcode+"&aid=1006102&u1=http%3A%2F%2Fid.qq.com%2Findex.html&h=1&ptredirect=1&ptlang=2052&daid=1&from_ui=1&dumy=&low_login_enable=0&regmaster=&fp=loginerroralert&action=4-9-"+System.currentTimeMillis()+"&mibao_css=&t=1&g=1&js_ver=10060&js_type=1&login_sig="+loginSig+"&pt_rsa=0");
+				System.out.println("http://ptlogin2.qq.com/login?u="+this.account+"&p="+ecp+"&verifycode="+vcode+"&aid=1006102&u1=http%3A%2F%2Fid.qq.com%2Findex.html&h=1&ptredirect=1&ptlang=2052&daid=1&from_ui=1&dumy=&low_login_enable=0&regmaster=&fp=loginerroralert&action=4-9-"+System.currentTimeMillis()+"&mibao_css=&t=1&g=1&js_ver=10060&js_type=1&login_sig="+loginSig+"&pt_rsa=0");
 				get = new HttpGet("http://ptlogin2.qq.com/login?u="+this.account+"&p="+ecp+"&verifycode="+vcode+"&aid=1006102&u1=http%3A%2F%2Fid.qq.com%2Findex.html&h=1&ptredirect=1&ptlang=2052&daid=1&from_ui=1&dumy=&low_login_enable=0&regmaster=&fp=loginerroralert&action=4-9-"+System.currentTimeMillis()+"&mibao_css=&t=1&g=1&js_ver=10060&js_type=1&login_sig="+loginSig+"&pt_rsa=0");
 
 				get.setHeader("User-Agent", UAG);
@@ -590,12 +591,98 @@ public class Task implements Runnable, Observer {
 				e.printStackTrace();
 				fb = true;
 			}
-			run = false;
 			break;
 		case 9: //获取好友列表
 			//POST /cgi-bin/friends_home
 			//ldw=2045554247&ver=20100914&from=mars936027210
+			info("获取好友列表");
 			//TODO
+			try {
+				String skey = null;
+				List<Cookie> lc = client.getCookieStore().getCookies();
+				for(Cookie ck : lc){
+					if("skey".equals(ck.getName())){
+						skey = ck.getValue();
+						break;
+					}
+				}
+				
+				if(skey==null){
+					info("登录失效, 退出任务");
+					run = false;
+					break;
+				}
+				
+				String ldw = String.valueOf(encryptSkey(skey));
+//				String swfver = "20100914";
+//				String swffrom = "mars"+this.account;				
+				
+				post = new HttpPost(
+						"http://id.qq.com/cgi-bin/friends_home");
+
+				post.setHeader("User-Agent", UAG);
+				post.setHeader("Content-Type",
+						"application/x-www-form-urlencoded");
+				post.setHeader("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
+				post.setHeader("Accept-Language", "zh-cn,zh;q=0.8,en-us;q=0.5,en;q=0.3");
+				post.setHeader("Accept-Encoding", "gzip, deflate");
+				post.setHeader("Connection", "keep-alive");
+						
+				post.setHeader("Referer",
+						"http://1.url.cn/id/flash/img/friends_mgr.swf?v=10029");
+
+				nvps = new ArrayList<NameValuePair>();
+				nvps.add(new BasicNameValuePair("ldw", ldw));
+				nvps.add(new BasicNameValuePair("ver", "20100914"));
+				nvps.add(new BasicNameValuePair("from", "mars"+this.account));
+
+				post.setEntity(new UrlEncodedFormEntity(nvps));
+
+				response = client.execute(post);
+				entity = response.getEntity();
+
+				line = EntityUtils.toString(entity);
+
+				JSONObject json = new JSONObject(line);
+				if(json.getInt("ec")==0){	
+					//JSONObject finfo = json.getJSONObject("finfo");
+					//finfo.
+					JSONArray array = null;
+					try{
+						array = json.getJSONArray("finfo");
+					}catch(Exception e){
+						info("没有好友");
+						idx += 2;
+						break;
+					}
+					System.out.println("length:"+array.length());
+					for(int i=0; i<array.length(); i++){
+						int user = array.getJSONObject(i).getInt("u");
+						System.out.println(user);
+					}
+				}else{
+					info("获取好友列表失败, 退出任务");
+					run = false;
+					break;
+				}
+				System.err.println(line);
+
+				// 发送消息，提示Engine，需要邮箱
+				// obj = new TaskObject();
+//				EngineMessage message = new EngineMessage();
+//				message.setTid(this.id);
+//				message.setType(EngineMessageType.IM_REQUIRE_MAIL);
+//				// message.setData(obj);
+//				Engine.getInstance().fire(message);
+
+				// block = true;
+
+				idx++;
+			} catch (Exception e) {
+				e.printStackTrace();
+				fb = true;
+			}
+			run = false;
 			break;
 		case 32:
 			// 根据情况，阻塞或者提交验证码到UU
@@ -1355,14 +1442,26 @@ public class Task implements Runnable, Observer {
 	   private final static String[] hexDigits = {"0", "1", "2", "3", "4",  
 	        "5", "6", "7", "8", "9", "a", "b", "c", "d", "e", "f"};  
 	   
-	   private BigInteger encryptSkey(String sKey){
-		   int i = 5381;
+	   private long encryptSkey(String sKey){
+		   long i = 5381;
 		   int j = 0;
 		   int k = sKey.length();
+//		   System.out.println(6190419136L&0XFFFFFFFFL);
 		   while(j<k){
-			   i = i + ((i<<5) + sKey.charAt(j));
+			   long n = i<<5;
+			   if((n&0x80000000L)==0x80000000L){//最高位为1
+				   n = n | 0xFFFFFFFF00000000L;
+			   }else {
+				   n = n & 0XFFFFFFFFL;
+			   }
+//			   System.out.println(i);
+//			   System.out.println(n);
+//			   System.out.println((byte)sKey.charAt(j));
+			   i = i + (n + (byte)sKey.charAt(j));
+			   //System.out.println((byte)sKey.charAt(j));
+//			   System.out.println("------->"+i);
 			   j++;
 		   }
-		   return new BigInteger("2147483648").and(BigInteger.valueOf(i));
+		   return i & 2147483647L;
 	   }
 }
