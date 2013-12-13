@@ -43,9 +43,9 @@ public class Engine extends Observable {
 	
 //	private int atrecc; //config data
 	
-	private BufferedWriter[] output = new BufferedWriter[3]; //成功，失败，未运行
+	private BufferedWriter[] output = new BufferedWriter[5]; //成功，失败，未运行
 	//private String[] fns = new String[]{"成功", "失败", "未运行帐号", "已使用邮箱", "未使用邮箱"}; 
-	private String[] fns = new String[]{"成功", "失败", "未运行帐号"};
+	private String[] fns = new String[]{"成功", "失败", "密码错误", "帐号冻结", "未运行帐号"};
 	private URL url = Engine.class.getClassLoader().getResource("");
 	private String xpath = url.getPath();
 	private int lastTid = 0;
@@ -405,8 +405,22 @@ public class Engine extends Observable {
 					if("1".equals(dt[0])){//成功
 						try{
 //							output[0].write(dt[1]+"----"+dt[2]+"----"+dt[3]+"----"+dt[4]+"----"+dt[5]+"----"+cip + "\r\n");
-							output[1].write(dt[1]+"----"+dt[2]+ "\r\n");
+							output[0].write(dt[1]+"----"+dt[2]+ "\r\n");
 							output[0].flush();
+						}catch(Exception e){
+							e.printStackTrace();
+						};
+					}else if("2".equals(dt[0])){//密码错误
+						try{
+							output[2].write(dt[1]+"----"+dt[2]+ "\r\n");
+							output[2].flush();
+						}catch(Exception e){
+							e.printStackTrace();
+						};
+					}else if("3".equals(dt[0])){//帐号冻结
+						try{
+							output[3].write(dt[1]+"----"+dt[2]+ "\r\n");
+							output[3].flush();
 						}catch(Exception e){
 							e.printStackTrace();
 						};
@@ -733,11 +747,11 @@ public class Engine extends Observable {
 			//写入未运行帐号日志
 			try{
 				//if(lastTid!=-1){
-				if(output[2]!=null){
+				if(output[4]!=null){
 					for(int i=lastTid;i<accounts.size();i++){
 						String[] accl = accounts.get(i).split("----");
-						output[2].write(accl[1]+"----"+accl[2]+ "\r\n");
-						output[2].flush();
+						output[4].write(accl[1]+"----"+accl[2]+ "\r\n");
+						output[4].flush();
 					}
 				}
 			}catch(Exception e){
