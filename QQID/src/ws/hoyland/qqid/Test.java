@@ -3,6 +3,7 @@ package ws.hoyland.qqid;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.math.BigInteger;
+import java.net.URLEncoder;
 import java.security.MessageDigest;
 import java.text.DecimalFormat;
 
@@ -317,11 +318,16 @@ public class Test {
 //			System.out.println(resultString);
 			
 			
-			System.out.println(encryptSkey("@tMVppQ7kx"));
+			System.out.println(encryptSkey("@FB38DDedE"));//@tMVppQ7kx
 			
 			String v = "12434-234234-";
 			v = v.substring(0, v.length()-1);
 			System.out.println(v);
+			
+			long t = System.currentTimeMillis()|0XFFFFFFFF00000000L;
+			System.out.println(t);
+			
+			System.out.println(URLEncoder.encode("-", "UTF-8"));
 		}catch(Exception e){
 			e.printStackTrace();
 		}

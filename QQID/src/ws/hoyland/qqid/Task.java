@@ -25,6 +25,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.params.ClientPNames;
 import org.apache.http.cookie.Cookie;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.params.CoreConnectionPNames;
@@ -44,7 +45,7 @@ public class Task implements Runnable, Observer {
 	private boolean fb = false; // break flag;
 //	private boolean fc = false; // continue flag;
 	private int idx = 0; // method index;
-	private Configuration configuration = Configuration.getInstance();
+//	private Configuration configuration = Configuration.getInstance();
 	
 	// private boolean block = false;
 	// private TaskObject obj = null;
@@ -61,9 +62,15 @@ public class Task implements Runnable, Observer {
 	private List<NameValuePair> nvps = null;
 
 	private String loginSig =null;
-	private String sig = null;
+//	private String sig = null;
 	// private byte[] ib = null;
 	// private byte[] image = null;
+
+	private String ulist = "";
+	private int uc = 0;
+	
+	private String uolist = "";
+	private int uoc = 0;
 
 	private EngineMessage message = null;
 	private int id = 0;
@@ -73,10 +80,11 @@ public class Task implements Runnable, Observer {
 	private ByteArrayOutputStream baos = null;
 	private int codeID = -1;
 	private List<String> ux = new ArrayList<String>(); //好友列表
+	private List<String> uox = new ArrayList<String>(); //单向好友列表
 	
 	private String ldw = null;
 	
-	private String rc = null; //red code in mail
+	//private String rc = null; //red code in mail
 	private String rcl = null; //回执编号
 
 	protected String mid = null;
@@ -111,8 +119,8 @@ public class Task implements Runnable, Observer {
 
 		client = new DefaultHttpClient();
 		client.getParams().setParameter(
-				CoreConnectionPNames.CONNECTION_TIMEOUT, 5000);
-		client.getParams().setParameter(CoreConnectionPNames.SO_TIMEOUT, 5000);
+				CoreConnectionPNames.CONNECTION_TIMEOUT, 8000);
+		client.getParams().setParameter(CoreConnectionPNames.SO_TIMEOUT, 8000);
 		client.getParams().setParameter(ClientPNames.HANDLE_REDIRECTS, false); //不自动跳转
 		 
 		//gzip 过滤器
@@ -190,6 +198,7 @@ public class Task implements Runnable, Observer {
 		// System.err.println(line);
 		while (run&&!sf) { //正常运行，以及未收到停止信号
 			if (fb) {
+				info("网络异常, 任务退出");
 				break;
 			}
 //			if (fc) {
@@ -557,6 +566,9 @@ public class Task implements Runnable, Observer {
 					System.err.println(checksigUrl);
 					info("登录成功");
 					idx += 2;
+				}else if(line.startsWith("ptuiCB('3'")){ //您输入的帐号或密码不正确，请重新输入
+					info("帐号帐号或密码不正确, 退出任务");
+					run = false;
 				}else{
 					// ptuiCB('19' 暂停使用
 					// ptuiCB('7' 网络连接异常
@@ -675,10 +687,10 @@ public class Task implements Runnable, Observer {
 						array = json.getJSONArray("finfo");
 					}catch(Exception e){
 						info("没有好友");
-						idx += 2;
+						idx = 16; //转入判断单向好友
 						break;
 					}
-					//System.out.println("length:"+array.length());
+					System.out.println("length:"+array.length());
 					//uxc = array.length();
 					for(int i=0; i<array.length(); i++){
 						long user = array.getJSONObject(i).getLong("u");
@@ -701,15 +713,18 @@ public class Task implements Runnable, Observer {
 			info("删除好友");
 			try {
 				//取50个好友
-				String ulist = "";
-				int uc = 0;
-				for(uc=0;uc<ux.size()&&uc<50;uc++){
-					ulist += ux.get(uc)+"-";
-					ux.remove(uc);
-				}
-				
-				if(ulist.endsWith("-")){
-					ulist = ulist.substring(0, ulist.length()-1);
+				//int uc = 0;
+				System.out.println("ux.size="+ux.size());
+				if(uc==0){//未尝试删除情况下
+					int uxl = ux.size();
+					for(uc=0;uc<uxl&&uc<50;uc++){
+						ulist += ux.get(0)+"%2D";
+						ux.remove(0);
+					}
+					
+					if(ulist.endsWith("%2D")){
+						ulist = ulist.substring(0, ulist.length()-3);
+					}
 				}
 				System.err.println("ulist:"+ulist);
 				
@@ -727,9 +742,10 @@ public class Task implements Runnable, Observer {
 				post.setHeader("Referer",
 						"http://1.url.cn/id/flash/img/friends_mgr.swf?v=10029");
 
+				/**
 				nvps = new ArrayList<NameValuePair>();
 				nvps.add(new BasicNameValuePair("ldw", ldw));
-				nvps.add(new BasicNameValuePair("t", String.valueOf(uc+1)));
+				nvps.add(new BasicNameValuePair("t", String.valueOf(uc)));
 				if(dfnvc){
 					dfnvc = false;
 					nvps.add(new BasicNameValuePair("vc", vcode));
@@ -741,12 +757,18 @@ public class Task implements Runnable, Observer {
 				nvps.add(new BasicNameValuePair("sppkey", ""));
 
 				post.setEntity(new UrlEncodedFormEntity(nvps));
-
+				**/
+				
+				post.setEntity(new StringEntity("ldw="+ldw+"&t=2&vc="+(dfnvc?vcode:"")+"&u="+ulist+"&k=&sppkey="));
+				if(dfnvc){//标记不再需要验证码
+					dfnvc = false;
+				}
+				
 				response = client.execute(post);
 				entity = response.getEntity();
 
 				line = EntityUtils.toString(entity);
-
+				System.err.println(line);
 				json = new JSONObject(line);
 				if(json.getInt("ec")==0){	
 					//JSONObject finfo = json.getJSONObject("finfo");
@@ -765,7 +787,9 @@ public class Task implements Runnable, Observer {
 //						System.out.println(user);
 //					}
 					info("删除成功");
-					//判断是继续删除，还是去到idx = 15， 16 (异常，删除单向好友)
+					uc = 0;//表示删除成功，如果需要再次删除，则根据uc = 0 继续读取列表
+					ulist = "";
+					//判断是继续删除，还是去到idx =  16 (删除单向好友)
 					if(ux.size()!=0){
 						idx = 12;
 						break;
@@ -776,7 +800,8 @@ public class Task implements Runnable, Observer {
 				}else if(json.getInt("ec")==6){//请求验证码
 					idx++;
 					break;
-				}else{
+				}else{ //可能有验证码错误，在此处理， idx = 15;
+					//TODO
 					info("删除好友失败, 退出任务");
 					run = false;
 					break;
@@ -879,9 +904,8 @@ public class Task implements Runnable, Observer {
 		case 16://获取单向好友
 			info("获取单向好友列表");
 			try {
-				//TODO
 				post = new HttpPost(
-						"http://id.qq.com/cgi-bin/friends_home");
+						"http://id.qq.com/cgi-bin/odd");
 
 				post.setHeader("User-Agent", UAG);
 				post.setHeader("Content-Type",
@@ -894,19 +918,23 @@ public class Task implements Runnable, Observer {
 				post.setHeader("Referer",
 						"http://1.url.cn/id/flash/img/friends_mgr.swf?v=10029");
 
+				/**
 				nvps = new ArrayList<NameValuePair>();
+				nvps.add(new BasicNameValuePair("k", ""));
+				nvps.add(new BasicNameValuePair("t", String.valueOf(System.currentTimeMillis()|0XFFFFFFFF00000000L)));
 				nvps.add(new BasicNameValuePair("ldw", ldw));
-				nvps.add(new BasicNameValuePair("ver", "20100914"));
-				nvps.add(new BasicNameValuePair("from", "mars"+this.account));
 
 				post.setEntity(new UrlEncodedFormEntity(nvps));
+				**/
+				
+				post.setEntity(new StringEntity("k=&t="+String.valueOf(System.currentTimeMillis()|0XFFFFFFFF00000000L).replaceAll("-", "%2D")+"&ldw="+ldw));
 
 				response = client.execute(post);
 				entity = response.getEntity();
 
 				line = EntityUtils.toString(entity);
 
-				//System.err.println(line);
+				System.err.println(line);
 				
 				json = new JSONObject(line);
 				if(json.getInt("ec")==0){	
@@ -914,9 +942,9 @@ public class Task implements Runnable, Observer {
 					//finfo.
 					
 					try{
-						array = json.getJSONArray("finfo");
+						array = json.getJSONArray("ls");
 					}catch(Exception e){
-						info("没有好友");
+						info("没有单向好友");
 						idx += 2;
 						break;
 					}
@@ -924,16 +952,211 @@ public class Task implements Runnable, Observer {
 					//uxc = array.length();
 					for(int i=0; i<array.length(); i++){
 						long user = array.getJSONObject(i).getLong("u");
-						ux.add(String.valueOf(user));
+						uox.add(String.valueOf(user));
 						//System.out.println(user);
 					}
 				}else{
-					info("获取好友列表失败, 退出任务");
+					info("获取单向好友列表失败, 退出任务");
 					run = false;
 					break;
 				}
 
 				idx++;
+			} catch (Exception e) {
+				e.printStackTrace();
+				fb = true;
+			}
+			break;
+		case 17: //删除好友
+			info("删除单向好友");
+			try {
+				//取50个好友
+				//TODO
+				//int uc = 0;
+				System.out.println("uox.size="+uox.size());
+				if(uoc==0){//未尝试删除情况下
+					int uxl = uox.size();
+					for(uoc=0;uoc<uxl&&uoc<50;uoc++){
+						uolist += uox.get(0)+"%2D";
+						uox.remove(0);
+					}
+					
+					if(uolist.endsWith("%2D")){
+						uolist = uolist.substring(0, uolist.length()-3);
+					}
+				}
+				System.err.println("uolist:"+uolist);
+				
+				post = new HttpPost(
+						"http://id.qq.com/cgi-bin/odd_del");
+
+				post.setHeader("User-Agent", UAG);
+				post.setHeader("Content-Type",
+						"application/x-www-form-urlencoded");
+				post.setHeader("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
+				post.setHeader("Accept-Language", "zh-cn,zh;q=0.8,en-us;q=0.5,en;q=0.3");
+				post.setHeader("Accept-Encoding", "gzip, deflate");
+				post.setHeader("Connection", "keep-alive");
+						
+				post.setHeader("Referer",
+						"http://1.url.cn/id/flash/img/friends_mgr.swf?v=10029");
+
+				/**
+				nvps = new ArrayList<NameValuePair>();
+				nvps.add(new BasicNameValuePair("ldw", ldw));
+				nvps.add(new BasicNameValuePair("t", String.valueOf(uc)));
+				if(dfnvc){
+					dfnvc = false;
+					nvps.add(new BasicNameValuePair("vc", vcode));
+				}else{
+					nvps.add(new BasicNameValuePair("vc", ""));
+				}
+				nvps.add(new BasicNameValuePair("u", ulist));
+				nvps.add(new BasicNameValuePair("k", ""));
+				nvps.add(new BasicNameValuePair("sppkey", ""));
+
+				post.setEntity(new UrlEncodedFormEntity(nvps));
+				**/
+				
+				post.setEntity(new StringEntity("ldw="+ldw+"&vc="+(dfnvc?vcode:"")+"&u="+uolist+"&k=&sppkey="));
+				if(dfnvc){//标记不再需要验证码
+					dfnvc = false;
+				}
+				
+				response = client.execute(post);
+				entity = response.getEntity();
+
+				line = EntityUtils.toString(entity);
+				System.err.println(line);
+				json = new JSONObject(line);
+				if(json.getInt("ec")==0){	
+					//JSONObject finfo = json.getJSONObject("finfo");
+					//finfo.
+					/////成功
+//					try{
+//						array = json.getJSONArray("finfo");
+//					}catch(Exception e){
+//						info("没有好友");
+//						idx += 2;
+//						break;
+//					}
+//					System.out.println("length:"+array.length());
+//					for(int i=0; i<array.length(); i++){
+//						long user = array.getJSONObject(i).getLong("u");
+//						System.out.println(user);
+//					}
+					info("删除成功");
+					uoc = 0;//表示删除成功，如果需要再次删除，则根据uoc = 0 继续读取列表
+					uolist = "";
+					//判断是继续删除，还是结束
+					if(uox.size()!=0){
+						idx = 17;
+						break;
+					}else {
+						//idx++; //任务结束
+						info("操作成功");
+						run = false;
+						break;
+					}
+				}else if(json.getInt("ec")==6){//请求验证码
+					idx++;
+					break;
+				}else{ //可能有验证码错误，在此处理， idx = 20;
+					//TODO
+					info("删除单向好友失败, 退出任务");
+					run = false;
+					break;
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+				fb = true;
+			}
+			//run = false;
+			break;
+		case 18: //删除好友出验证码
+			info("下载验证码[删除单向好友]");
+			try {
+				get = new HttpGet("http://captcha.qq.com//getimage?uin="+this.account+"&aid=2000201&"
+						+ Math.random());
+
+				get.setHeader("User-Agent", UAG);
+				//get.setHeader("Content-Type", "text/html");
+				get.setHeader("Accept", "image/png,image/*;q=0.8,*/*;q=0.5");
+				get.setHeader("Accept-Language", "zh-cn,zh;q=0.8,en-us;q=0.5,en;q=0.3");
+				get.setHeader("Accept-Encoding", "gzip, deflate");
+				get.setHeader("Referer", "http://1.url.cn/id/flash/img/friends_mgr.swf?v=10029");
+				get.setHeader("Connection", "keep-alive");
+
+				response = client.execute(get);
+				entity = response.getEntity();
+
+				DataInputStream in = new DataInputStream(entity.getContent());
+				baos = new ByteArrayOutputStream();
+				byte[] barray = new byte[1024];
+				int size = -1;
+				while ((size = in.read(barray)) != -1) {
+					baos.write(barray, 0, size);
+				}
+				ByteArrayInputStream bais = new ByteArrayInputStream(
+						baos.toByteArray());
+
+				message = new EngineMessage();
+				message.setType(EngineMessageType.IM_IMAGE_DATA);
+				message.setData(bais);
+
+				Engine.getInstance().fire(message);
+
+				idx++;
+			} catch (Exception e) {
+				e.printStackTrace();
+				fb = true;
+			}
+			break;
+		case 19:
+			info("识别验证码[删除单向好友]");
+			try {
+				byte[] by = baos.toByteArray();
+				byte[] resultByte = new byte[30]; // 为识别结果申请内存空间
+//				StringBuffer rsb = new StringBuffer(30);
+				String rsb = "0000";
+				resultByte = rsb.getBytes();
+
+				if(Engine.getInstance().getCptType()==0){
+					codeID = YDM.INSTANCE.YDM_DecodeByBytes(by, by.length, 1004, resultByte);//result byte
+//					result = "xxxx";
+//					for(int i=0;i<resultByte.length;i++){
+//						System.out.println(resultByte[i]);
+//					}
+//					System.out.println("TTT:"+codeID);
+					vcode = new String(resultByte, "UTF-8").trim();
+				}else{
+					codeID = DM.INSTANCE.uu_recognizeByCodeTypeAndBytesA(by,
+							by.length, 1, resultByte); // 调用识别函数,resultBtye为识别结果
+					vcode = new String(resultByte, "UTF-8").trim();
+				}						
+				
+				//result = rsb.toString();
+				//System.out.println("---"+result);
+				dfnvc = true; //del f need vc
+				idx = 17; //继续删除单向好友
+			} catch (Exception e) {
+				e.printStackTrace();
+				fb = true;
+			}
+			break;
+		case 20://报告错误验证码
+			info("验证码错误，报告异常[删除单向好友]");
+			try {
+				//
+				int reportErrorResult = -1;
+				if(Engine.getInstance().getCptType()==0){
+					reportErrorResult = YDM.INSTANCE.YDM_Report(codeID, false);
+				}else{
+					reportErrorResult = DM.INSTANCE.uu_reportError(codeID);
+				}
+				System.err.println(reportErrorResult);
+				
+				idx = 18; // 重新请求验证码 
 			} catch (Exception e) {
 				e.printStackTrace();
 				fb = true;

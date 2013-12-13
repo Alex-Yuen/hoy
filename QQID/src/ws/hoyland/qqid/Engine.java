@@ -378,7 +378,7 @@ public class Engine extends Observable {
 			case EngineMessageType.IM_NO_EMAILS:
 				shutdown();				
 				break;
-			case EngineMessageType.IM_START: //IM_FINISH
+			case EngineMessageType.IM_START: 
 				
 				/**
 					recc++;
@@ -419,6 +419,27 @@ public class Engine extends Observable {
 						};
 					}
 					
+					System.err.println("--------------act count:"+pool.getActiveCount());
+					if(pool.getActiveCount()==1){ //当前是最后一个线程
+						//TODO						
+						running = !running;
+						
+						msg = new EngineMessage();
+						msg.setType(EngineMessageType.OM_RUNNING);
+						msg.setData(running);
+						this.setChanged();
+						this.notifyObservers(msg);
+						
+						//自动关闭
+						Thread t = new Thread(new Runnable(){
+							@Override
+							public void run() {
+								shutdown();
+							}							
+						});
+						t.start();
+						//shutdown();
+					}
 					/**
 					frecc++;
 					
