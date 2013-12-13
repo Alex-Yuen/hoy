@@ -945,7 +945,7 @@ public class Task implements Runnable, Observer {
 						array = json.getJSONArray("ls");
 					}catch(Exception e){
 						info("没有单向好友");
-						idx += 2;
+						idx = 21;
 						break;
 					}
 					//System.out.println("length:"+array.length());
@@ -1054,8 +1054,9 @@ public class Task implements Runnable, Observer {
 						break;
 					}else {
 						//idx++; //任务结束
-						info("操作成功");
-						run = false;
+//						info("操作成功");
+//						run = false;
+						idx = 21;
 						break;
 					}
 				}else if(json.getInt("ec")==6){//请求验证码
@@ -1161,6 +1162,10 @@ public class Task implements Runnable, Observer {
 				e.printStackTrace();
 				fb = true;
 			}
+			break;
+		case 21:			
+			info("操作成功");
+			run = false;
 			break;
 		default:
 			break;
