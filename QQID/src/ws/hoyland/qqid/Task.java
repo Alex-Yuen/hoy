@@ -93,7 +93,7 @@ public class Task implements Runnable, Observer {
 	
 	private boolean sf = false; //stop flag from engine
 	private boolean rec = false;//是否准备重拨
-	private boolean finish = false;
+	private int finish = 0;
 	
 	private boolean nvc = false; //need vc
 	private String vcode = null;
@@ -140,10 +140,8 @@ public class Task implements Runnable, Observer {
 			                    return;  
 			                }  
 			            }  
-			        }  
-				
-			}  			
-		  
+			        }  				
+			}		  
 		});  
 	}
 
@@ -237,12 +235,12 @@ public class Task implements Runnable, Observer {
 		
 		String[] dt = new String[6];
 
-		dt[0] = "0";
+		dt[0] = String.valueOf(finish);
 		dt[1] = this.account;
 		dt[2] = this.password;
 		
-		if(finish){
-			dt[0] = "1";
+		if(finish==1){//成功
+			//dt[0] = "1";
 			dt[3] = this.rcl;
 			dt[4] = this.mail;
 			dt[5] = this.mpwd;
@@ -567,7 +565,12 @@ public class Task implements Runnable, Observer {
 					info("登录成功");
 					idx += 2;
 				}else if(line.startsWith("ptuiCB('3'")){ //您输入的帐号或密码不正确，请重新输入
+					finish = 2;
 					info("帐号帐号或密码不正确, 退出任务");
+					run = false;
+				}else if(line.startsWith("ptuiCB('19'")){ //帐号冻结，提示暂时无法登录
+					finish = 3;
+					info("帐号冻结");
 					run = false;
 				}else{
 					// ptuiCB('19' 暂停使用
@@ -1163,7 +1166,8 @@ public class Task implements Runnable, Observer {
 				fb = true;
 			}
 			break;
-		case 21:			
+		case 21:
+			finish = 1;
 			info("操作成功");
 			run = false;
 			break;
