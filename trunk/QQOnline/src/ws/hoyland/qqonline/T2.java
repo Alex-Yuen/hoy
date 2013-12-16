@@ -151,6 +151,8 @@ public class T2 {
 			//System.out.println(Converts.bytesToHexString(loginip));
 			//------------------------------------------------------------------------------
 			//0836
+			seq++;
+			
 			//第一段
 			bsofplain = new ByteArrayOutputStream();
 			bsofplain.write(genKey(4));
@@ -224,7 +226,7 @@ public class T2 {
 			//byte[] kk = Converts.hexStringToByte(Long.toHexString(crc.getValue()).toUpperCase());
 			//System.out.println(Converts.bytesToHexString(kk));
 			
-			//整段
+			//对一、二段和 0x00, 0x18 进行加密
 			bsofplain = new ByteArrayOutputStream();
 			bsofplain.write(new byte[]{
 					0x01, 0x12,
@@ -236,22 +238,80 @@ public class T2 {
 			});
 			//00 0F // 长度
 			//48 46 5A 4D 43 5A 35 44 4A 50 30 53 4A 46 35 // 计算机名
+			
 			bsofplain.write(new byte[]{
-					0x00, 0x05, 0x00, 0x06, 0x00, 0x02,
-					0x02, (byte)0xDD, (byte)0xA5, 0x23 
+					0x00, 0x05, 0x00, 0x06, 0x00, 0x02
 			});
+			bsofplain.write(Converts.hexStringToByte(Integer.toHexString(Integer.valueOf(account)).toUpperCase()));
 			bsofplain.write(new byte[]{
 					0x06
 			});
-			//first length
-			//first
+			bsofplain.write(new byte[]{
+					(byte)first.length
+					//first length
+			});
+			bsofplain.write(first);		//first
+			
 			bsofplain.write(new byte[]{
 					0x1A
 			});
-			//second length
-			//second
-			///....
+			bsofplain.write(new byte[]{
+					(byte)second.length
+					//second length
+			});
+			bsofplain.write(second);		//second
+			bsofplain.write(new byte[]{
+					0x00, 0x18, 0x00, 0x16, 0x00, 0x01,
+					0x00, 0x00, 0x04, 0x36, 0x06, 0x00, 0x05, 0x11, 0x00, 0x00, 0x01, 0x00 
+					//00 00 04 36 00 00 00 01 00 00 14 9B?
+			});
+			bsofplain.write(Converts.hexStringToByte(Integer.toHexString(Integer.valueOf(account)).toUpperCase()));
+			bsofplain.write(new byte[]{
+					0x00, 0x00,  // 记住密码00 01
+					0x00, 0x00, 0x01, 0x03, 0x00, 0x14, 0x00, 0x01, // 固定
+					0x00, 0x10 //长度
+			});
+			bsofplain.write(genKey(0x10));//机器固定验证key
+			bsofplain.write(new byte[]{
+					0x00, 0x32, 0x00, 0x37, 0x3E, 0x00, 0x37, 0x01, 0x03, 0x04, 0x02, 0x00, 0x00, 0x04, 0x00	//固定
+			});
+			bsofplain.write(new byte[]{
+					0x22, (byte)0x88, // unknow
+					(byte)0x00, 0x00, 0x00, 0x00, 0x03, 0x5A, 0x44, 0x22, (byte)0x00, 
+					(byte)0xFC, (byte)0xCF, 0x68, (byte)0xF5, 0x53, 0x26, 0x3B, (byte)0xB8, (byte)0xE6, 0x61, 0x76, (byte)0xF1, (byte)0x9D, 0x1C, 0x7A, (byte)0xD8,
+					(byte)0xA9, (byte)0xAE, 0x04, (byte)0xE0, (byte)0xD6, (byte)0xBF, (byte)0xBA, (byte)0x8F, 0x55, (byte)0xF0, 0x36, 0x7A, (byte)0xF7, (byte)0xD6, (byte)0xED, (byte)0x92 // unknow是一个验证，未知算法，可以用随机的，0826包不返回0018的数据，0018的数据也可以直接随机
+			});
+			bsofplain.write(new byte[]{
+					0x68, 0x01, 0x14, 0x00, 0x1D, 0x01, 0x02	//固定
+			});
+			bsofplain.write(new byte[]{
+					0x00, 0x19  // 长度
+			});
+			bsofplain.write(ecdhkey);
+			bsofplain.write(new byte[]{
+					0x01, 0x02, 0x00, 0x62, 0x00, 0x01 //固定
+			});
+			bsofplain.write(new byte[]{
+					0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 // 应该是用于出现验证码时计算key，全放0，后面可以直接用0826send key解密
+			});
+			bsofplain.write(new byte[]{
+					0x00, 0x38  // 长度
+			});
+			bsofplain.write(genKey(0x38));
+			bsofplain.write(new byte[]{
+					0x00, 0x14  // 长度
+			});
+			
+			crcs[0] = new byte[]{
+					0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00// 应该是用于出现验证码时计算key，全放0，后面可以直接用0826send key解密 
+			};
+			baos.write(crcs[0]);
+			crc.update(crcs[0]);
+			bsofplain.write(reverse(Converts.hexStringToByte(Long.toHexString(crc.getValue()).toUpperCase()))); // here should reverse
+						
+			//用于ecdh算法，加密发送
 			key0836_send = genKey(0x10);
+			
 			
 			//------------------------------------------------------------------------------
 			//00BA
@@ -295,6 +355,14 @@ public class T2 {
 		byte[] rs = new byte[index+1];
 		for(int i=0;i<rs.length;i++){
 			rs[i] = src[i];
+		}
+		return rs;
+	}
+	
+	public static byte[] reverse(byte[] src){
+		byte[] rs = new byte[src.length];
+		for(int i=0;i<rs.length;i++){
+			rs[i] = src[src.length-1-i];
 		}
 		return rs;
 	}
