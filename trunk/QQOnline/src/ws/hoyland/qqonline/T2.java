@@ -1,6 +1,7 @@
 package ws.hoyland.qqonline;
 
 import java.io.ByteArrayOutputStream;
+import java.math.BigInteger;
 import java.net.*;
 import java.util.Random;
 import java.util.zip.CRC32;
@@ -311,7 +312,16 @@ public class T2 {
 						
 			//用于ecdh算法，加密发送
 			key0836_send = genKey(0x10);
-			
+			BigInteger root = new BigInteger("711");
+			BigInteger d = new BigInteger("04928D8850673088B343264E0C6BACB8496D697799F37211DEB25BB73906CB089FEA9639B4E0260498B51A992D50813DA8",
+					16);//B8008767A628A4F53BCB84C13C961A55BF87607DAA5BE0BA3AC2E0CB778E494579BD444F699885F4968CD9028BB3FC6FA657D532F1718F581669BDC333F83DC3
+			BigInteger e = new BigInteger(key0836_send);
+
+			// generate my crypt-pub-key
+			byte[] fcpk = Converts.hexStringToByte(root.modPow(e, d).toString(16).toUpperCase());			
+			//0x04, 0x92, 0x8D, 0x88, 0x50, 0x67, 0x30, 0x88, 0xB3, 0x43, 0x26, 0x4E, 0x0C, 0x6B, 0xAC, 0xB8, 0x49, 0x6D, 0x69, 0x77, 0x99, 0xF3, 0x72, 0x11, 0xDE, 0xB2, 0x5B, 0xB7, 0x39, 0x06, 0xCB, 0x08, 0x9F, 0xEA, 0x96, 0x39, 0xB4, 0xE0, 0x26, 0x04, 0x98, 0xB5, 0x1A, 0x99, 0x2D, 0x50, 0x81, 0x3D, 0xA8,
+			System.out.println(Converts.bytesToHexString(fcpk));
+			// should be 25 长度
 			
 			//------------------------------------------------------------------------------
 			//00BA
