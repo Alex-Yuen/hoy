@@ -40,8 +40,8 @@ public class T2 {
 		byte[] key0825 = null;
 		byte[] ecdhkey = null;
 		byte[] token = null;
-		byte[] key0836_recv = null;
-		byte[] key0836_send = null;
+		byte[] key0836 = null;
+		byte[] key0836x = null;
 		byte[] pwdkey = null;
 		
 		Crypter crypter = new Crypter();
@@ -64,7 +64,13 @@ public class T2 {
 				redirect = false;
 				seq++;
 				key0825 = genKey(0x10);
-				ecdhkey = genKey(0x19);
+				
+				//根据随机的内置KEY, 生成ECDH KEY
+				//ecdhkey = genKey(0x19);
+				{
+					key0836x = genKey(0x10);
+					ecdhkey = null;
+				}
 				
 				baos = new ByteArrayOutputStream();
 				baos.write(new byte[]{
@@ -177,8 +183,8 @@ public class T2 {
 					(byte)0xE3, 0x04, 0x2B, (byte)0xB2, (byte)0xF7, (byte)0xEA, 0x62, 0x40, (byte)0x99, 0x62, (byte)0x81, 0x11, 0x44, 0x52, 0x17, 0x22
 					// F0 F0 F0 F0 F0 F0 F0 F0 F0 F0 F0 F0 F0 F0 F0 F0 ?
 			});
-			key0836_recv = genKey(0x10);
-			bsofplain.write(key0836_recv);
+			key0836 = genKey(0x10);
+			bsofplain.write(key0836);
 			
 			//pwdkey
 			ByteArrayOutputStream bsofpwd = new ByteArrayOutputStream();
@@ -219,7 +225,7 @@ public class T2 {
 			});
 			bsofplain.write(crcs[2]);
 			
-			byte[] second = crypter.encrypt(bsofplain.toByteArray(), key0836_recv);
+			byte[] second = crypter.encrypt(bsofplain.toByteArray(), key0836);
 			System.err.println(second.length);
 			//System.out.println(Converts.bytesToHexString(second));
 			//System.out.println(Converts.bytesToHexString(crcs[1]));
@@ -311,11 +317,11 @@ public class T2 {
 			bsofplain.write(reverse(Converts.hexStringToByte(Long.toHexString(crc.getValue()).toUpperCase()))); // here should reverse
 						
 			//用于ecdh算法，加密发送
-			key0836_send = genKey(0x10);
+			key0836x = genKey(0x10);
 			BigInteger root = new BigInteger("711");
 			BigInteger d = new BigInteger("04928D8850673088B343264E0C6BACB8496D697799F37211DEB25BB73906CB089FEA9639B4E0260498B51A992D50813DA8",
 					16);//B8008767A628A4F53BCB84C13C961A55BF87607DAA5BE0BA3AC2E0CB778E494579BD444F699885F4968CD9028BB3FC6FA657D532F1718F581669BDC333F83DC3
-			BigInteger e = new BigInteger(key0836_send);
+			BigInteger e = new BigInteger(key0836x);
 
 			// generate my crypt-pub-key
 			byte[] fcpk = Converts.hexStringToByte(root.modPow(e, d).toString(16).toUpperCase());			
