@@ -14,5 +14,6 @@
 	<classpathentry kind="lib" path="D:/Juno/plugins/org.eclipse.ui.workbench_3.104.0.v20130204-164612.jar" sourcepath="D:/Juno/plugins/org.eclipse.ui.workbench_3.104.0.v20130204-164612.jar"/>
 	<classpathentry kind="lib" path="D:/Juno/plugins/com.ibm.icu_4.4.2.v20110823.jar" sourcepath="D:/Juno/plugins/com.ibm.icu_4.4.2.v20110823.jar"/>
 	<classpathentry kind="lib" path="D:/Juno/plugins/org.eclipse.ui.forms_3.5.200.v20120705-114351.jar" sourcepath="D:/Juno/plugins/org.eclipse.ui.forms_3.5.200.v20120705-114351.jar"/>
+	<classpathentry kind="lib" path="lib/bcprov-jdk15on-150.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
