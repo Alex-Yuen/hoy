@@ -46,4 +46,5 @@ public class EngineMessageType {
 	public static final int OM_INFO = 0x2024;
 	public static final int OM_RECONN = 0x2025;
 	public static final int OM_PAUSE = 0x2026;
+	public static final int OM_NP = 0x2027; //need pause
 }
