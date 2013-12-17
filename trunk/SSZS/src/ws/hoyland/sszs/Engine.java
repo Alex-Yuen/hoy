@@ -41,9 +41,13 @@ public class Engine extends Observable {
 	private Configuration configuration = Configuration.getInstance();
 	private int recc = 0;//reconnect count
 	private int frecc = 0;//finished
-	private String cip = null; //current ip
+	//private String cip = null; //current ip
 	
 	private int atrecc; //config data
+	
+	private int pausec = 0;
+	private int fpausec = 0;
+	private int atpausec;
 	
 	private BufferedWriter[] output = new BufferedWriter[5]; //成功，失败，未运行
 	private String[] fns = new String[]{"成功", "失败", "未运行帐号", "已使用邮箱", "未使用邮箱"}; 
@@ -135,7 +139,12 @@ public class Engine extends Observable {
 							line = i + "----" + line;
 							accounts.add(line);
 							List<String> lns = new ArrayList<String>();
-							lns.addAll(Arrays.asList(line.split("----")));
+
+							//lns.addAll(Arrays.asList(line.split("----")));
+							String[] lnsprep = line.split("----");
+							lns.add(lnsprep[0]);
+							lns.add(lnsprep[1]);
+							lns.add(lnsprep[2]);
 							lns.add("初始化");
 //							if (lns.size() == 3) {
 //								lns.add("0");
@@ -374,6 +383,21 @@ public class Engine extends Observable {
 				shutdown();				
 				break;
 			case EngineMessageType.IM_START: 
+					//优先处理暂停
+					pausec++;
+					atpausec = Integer.parseInt(configuration.getProperty("ACC_ITV_COUNT"));
+					//暂停通知的触发
+					if("true".equals(configuration.getProperty("ACC_ITV_FLAG"))&&pausec==atpausec){
+						pausec = 0;
+						
+						msg = new EngineMessage();
+						msg.setTid(-1); //所有task
+						msg.setType(EngineMessageType.OM_NP); //need pause
+						//msg.setData(message.getData());
+						
+						this.setChanged();
+						this.notifyObservers(msg);
+					}
 				
 					recc++;
 					atrecc = Integer.parseInt(configuration.getProperty("AUTO_RECON"));
@@ -398,7 +422,8 @@ public class Engine extends Observable {
 					
 					if("1".equals(dt[0])){//成功
 						try{
-							output[0].write(dt[1]+"----"+dt[2]+"----"+dt[3]+"----"+dt[4]+"----"+dt[5]+"----"+cip + "\r\n");
+							//output[0].write(dt[1]+"----"+dt[2]+"----"+dt[3]+"----"+dt[4]+"----"+dt[5]+"----"+cip + "\r\n");
+							output[0].write(dt[1]+"----"+dt[2]+"----"+dt[3]+"----"+dt[4]+"----"+dt[5]+ "\r\n");
 							output[0].flush();
 						}catch(Exception e){
 							e.printStackTrace();
@@ -434,6 +459,39 @@ public class Engine extends Observable {
 						t.start();
 						//shutdown();
 					}
+					
+					fpausec++;
+					atpausec = Integer.parseInt(configuration.getProperty("ACC_ITV_COUNT"));
+					//执行暂停
+					if("true".equals(configuration.getProperty("ACC_ITV_FLAG"))&&fpausec==atpausec){
+						fpausec = 0;
+						try{
+							System.err.println("自动暂停...");
+							Thread.sleep(1000*Integer.parseInt(configuration.getProperty("ACC_ITV_PERIOD")));
+							
+							//所有线程切换状态
+							msg = new EngineMessage();
+							msg.setTid(-1); //所有task
+							msg.setType(EngineMessageType.OM_NP); 
+							//msg.setData(message.getData());
+							
+							Engine.this.setChanged();
+							Engine.this.notifyObservers(msg);
+							
+							synchronized(PauseXObject.getInstance()){
+								try{
+									PauseXObject.getInstance().notifyAll();
+								}catch(Exception e){
+									e.printStackTrace();
+								}
+							}
+							
+							System.err.println("自动暂停完毕, 继续运行...");
+						}catch(Exception e){
+							e.printStackTrace();
+						}
+					}
+					
 					
 					frecc++;
 					
@@ -542,7 +600,7 @@ public class Engine extends Observable {
 														long time = ips.get(ip);
 														if(System.currentTimeMillis()-time>=1*60*60*1000){
 															System.err.println("IP重复，但超过1小时，拨号成功:"+ip);
-															cip = rip;
+															//cip = rip;
 															ips.put(ip, System.currentTimeMillis());
 															fi = false;//跳出内循环
 															st = true;
@@ -557,7 +615,7 @@ public class Engine extends Observable {
 														}
 													}else{
 														System.err.println("IP不重复，拨号成功:"+ip);
-														cip = rip;
+														//cip = rip;
 														ips.put(ip, new Long(System.currentTimeMillis()));
 														fi = false;
 														st = true;

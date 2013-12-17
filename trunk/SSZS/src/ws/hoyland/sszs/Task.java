@@ -62,6 +62,7 @@ public class Task implements Runnable, Observer {
 	private int id = 0;
 	private String account = null;
 	private String password = null;
+	private String[] pwds = null;
 
 	private ByteArrayOutputStream baos = null;
 	private int codeID = -1;
@@ -76,6 +77,7 @@ public class Task implements Runnable, Observer {
 	
 	private boolean sf = false; //stop flag from engine
 	private boolean rec = false;//是否准备重拨
+	private boolean np = false;//是否准备暂停
 	private boolean finish = false;
 	
 	private int tcconfirm = 0;//try count of confirm
@@ -91,6 +93,11 @@ public class Task implements Runnable, Observer {
 		this.account = ls[1];
 		this.password = ls[2];
 
+		pwds = new String[ls.length-2];
+		for(int i=0;i<pwds.length;i++){
+			pwds[i] = ls[i+2];
+		}
+		
 		this.run = true;
 
 		client = new DefaultHttpClient();
@@ -120,6 +127,19 @@ public class Task implements Runnable, Observer {
 			}
 		}
 
+		//阻塞等待暂停
+		if(np){
+			info("等待系统暂停");
+			synchronized(PauseXObject.getInstance()){
+				try{
+					PauseXObject.getInstance().wait();
+				}catch(Exception e){
+					e.printStackTrace();
+				}
+			}
+			info("等待系统暂停结束， 继续执行");
+		}
+		
 			
 			//阻塞等待重拨
 			if(rec){
@@ -678,17 +698,17 @@ public class Task implements Runnable, Observer {
 				nvps.add(new BasicNameValuePair("txtBackFromFd", ""));
 				nvps.add(new BasicNameValuePair("txtEmailVerifyCode", this.rc));
 				nvps.add(new BasicNameValuePair("txtOldPW1", ""));
-				nvps.add(new BasicNameValuePair("pwdOldPW1", ""));
+				nvps.add(new BasicNameValuePair("pwdOldPW1", this.password));
 				nvps.add(new BasicNameValuePair("txtOldPW2", ""));
-				nvps.add(new BasicNameValuePair("pwdOldPW2", this.password));
+				nvps.add(new BasicNameValuePair("pwdOldPW2", (this.pwds.length>1)?this.pwds[1]:""));
 				nvps.add(new BasicNameValuePair("txtOldPW3", ""));
-				nvps.add(new BasicNameValuePair("pwdOldPW3", ""));
+				nvps.add(new BasicNameValuePair("pwdOldPW3", (this.pwds.length>2)?this.pwds[2]:""));
 				nvps.add(new BasicNameValuePair("txtOldPW4", ""));
-				nvps.add(new BasicNameValuePair("pwdOldPW4", ""));
+				nvps.add(new BasicNameValuePair("pwdOldPW4", (this.pwds.length>3)?this.pwds[3]:""));
 				nvps.add(new BasicNameValuePair("txtOldPW5", ""));
-				nvps.add(new BasicNameValuePair("pwdOldPW5", ""));
+				nvps.add(new BasicNameValuePair("pwdOldPW5", (this.pwds.length>4)?this.pwds[4]:""));
 				nvps.add(new BasicNameValuePair("txtOldPW6", ""));
-				nvps.add(new BasicNameValuePair("pwdOldPW6", ""));
+				nvps.add(new BasicNameValuePair("pwdOldPW6", (this.pwds.length>5)?this.pwds[5]:""));
 				
 				nvps.add(new BasicNameValuePair("ddlLoginLocCountry1", "0"));
 				nvps.add(new BasicNameValuePair("ddlLoginLocProvince1", String.valueOf(Integer.parseInt(configuration.getProperty("P1"))-1)));
@@ -1004,6 +1024,10 @@ public class Task implements Runnable, Observer {
 			case EngineMessageType.OM_RECONN: //系统准备重拨
 				//System.err.println("TASK RECEIVED RECONN:"+rec);
 				rec = !rec;
+				break;
+			case EngineMessageType.OM_NP: //系统准备暂停
+				//System.err.println("TASK RECEIVED RECONN:"+rec);
+				np = !np;
 				break;
 			case EngineMessageType.OM_PAUSE:
 				pause  = !pause;

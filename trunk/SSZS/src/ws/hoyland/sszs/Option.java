@@ -82,6 +82,9 @@ public class Option extends Dialog implements Observer {
 	private Spinner spinner_4;
 	private Spinner spinner_5;
 	private Button btnIp;
+	private Button button;
+	private Spinner spinner_6;
+	private Spinner spinner_7;
 	/**
 	 * Create the dialog.
 	 * @param parent
@@ -156,7 +159,17 @@ public class Option extends Dialog implements Observer {
 				}else{
 					btnIp.setSelection(false);
 				}
-				
+				if("true".equals(configuration.getProperty("ACC_ITV_FLAG"))){
+					button.setSelection(true);
+					spinner_6.setEnabled(true);
+					spinner_7.setEnabled(true);
+				}else{
+					button.setSelection(false);
+					spinner_6.setEnabled(false);
+					spinner_7.setEnabled(false);
+				}
+				spinner_6.setSelection(Integer.parseInt(this.configuration.getProperty("ACC_ITV_COUNT")));
+				spinner_7.setSelection(Integer.parseInt(this.configuration.getProperty("ACC_ITV_PERIOD")));
 				//btnCheckButton.setSelection(Boolean.parseBoolean(this.configuration.getProperty("AWCONN")));
 			}
 		}catch(Exception e){
@@ -186,8 +199,12 @@ public class Option extends Dialog implements Observer {
 		this.configuration.put("AUTO_RECON", spinner_2.getText());
 		this.configuration.put("RECON_DELAY", spinner_3.getText());
 		this.configuration.put("AWCONN", String.valueOf(btnCheckButton.getSelection()));
-		this.configuration.put("REC_TYPE", String.valueOf(btnIp.getSelection()));		
+		this.configuration.put("REC_TYPE", String.valueOf(btnIp.getSelection()));
 		
+		this.configuration.put("ACC_ITV_FLAG", String.valueOf(button.getSelection()));		
+		this.configuration.put("ACC_ITV_COUNT", spinner_6.getText());
+		this.configuration.put("ACC_ITV_PERIOD", spinner_7.getText());
+				
 		this.configuration.save();
 	}
 
@@ -326,7 +343,7 @@ public class Option extends Dialog implements Observer {
 		
 		Label label_3 = new Label(composite, SWT.NONE);
 		label_3.setText("线程数量:");
-		label_3.setBounds(10, 36, 61, 17);
+		label_3.setBounds(10, 38, 61, 17);
 		
 		spinner = new Spinner(composite, SWT.BORDER);
 		spinner.setMaximum(10);
@@ -347,6 +364,32 @@ public class Option extends Dialog implements Observer {
 		Label label_10 = new Label(composite, SWT.NONE);
 		label_10.setText("邮箱间隔(秒):");
 		label_10.setBounds(153, 10, 79, 17);
+		
+		spinner_6 = new Spinner(composite, SWT.BORDER);
+		spinner_6.setEnabled(false);
+		spinner_6.setMaximum(999);
+		spinner_6.setMinimum(1);
+		spinner_6.setSelection(5);
+		spinner_6.setBounds(191, 35, 47, 23);
+		
+		Label label_12 = new Label(composite, SWT.NONE);
+		label_12.setText("个帐号，暂停");
+		label_12.setBounds(244, 38, 80, 17);
+		
+		spinner_7 = new Spinner(composite, SWT.BORDER);
+		spinner_7.setEnabled(false);
+		spinner_7.setMaximum(60);
+		spinner_7.setMinimum(1);
+		spinner_7.setSelection(1);
+		spinner_7.setBounds(330, 35, 47, 23);
+		
+		Label label_13 = new Label(composite, SWT.NONE);
+		label_13.setText("分钟");
+		label_13.setBounds(383, 38, 29, 17);
+		
+		button = new Button(composite, SWT.CHECK);
+		button.setBounds(153, 38, 33, 17);
+		button.setText("每");
 		
 		TabItem tbtmNewItem_1 = new TabItem(tabFolder, SWT.NONE);
 		tbtmNewItem_1.setText("高级");
