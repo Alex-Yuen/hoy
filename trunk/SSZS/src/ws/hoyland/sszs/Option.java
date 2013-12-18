@@ -388,6 +388,18 @@ public class Option extends Dialog implements Observer {
 		label_13.setBounds(383, 38, 29, 17);
 		
 		button = new Button(composite, SWT.CHECK);
+		button.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				if(button.getSelection()){
+					spinner_6.setEnabled(true);
+					spinner_7.setEnabled(true);
+				}else{
+					spinner_6.setEnabled(false);
+					spinner_7.setEnabled(false);
+				}
+			}
+		});
 		button.setBounds(153, 38, 33, 17);
 		button.setText("每");
 		
