@@ -1,7 +1,6 @@
 package ws.hoyland.qqonline;
 
 import java.io.ByteArrayOutputStream;
-import java.math.BigInteger;
 import java.net.*;
 import java.security.KeyFactory;
 import java.security.KeyPair;
