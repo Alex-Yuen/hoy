@@ -117,7 +117,7 @@ public class Engine extends Observable {
 				}
 				break;
 			case EngineMessageType.IM_LOAD_ACCOUNT:
-				String path = (String)message.getData();
+				String[] paths = ((String)message.getData()).split("\\|");
 				
 				try {
 					msg = new EngineMessage();
@@ -127,7 +127,8 @@ public class Engine extends Observable {
 					this.notifyObservers(msg);
 					
 					accounts = new ArrayList<String>();
-					File ipf = new File(path);
+					
+					File ipf = new File(paths[1]);
 					FileInputStream is = new FileInputStream(ipf);
 					InputStreamReader isr = new InputStreamReader(
 							is);
@@ -136,15 +137,15 @@ public class Engine extends Observable {
 					int i = 1;
 					while ((line = reader.readLine()) != null) {
 						if (!line.equals("")) {
-							line = i + "----" + line;
+							line = paths[0]+"----"+i + "----" + line;
 							accounts.add(line);
 							List<String> lns = new ArrayList<String>();
-
+							
 							//lns.addAll(Arrays.asList(line.split("----")));
 							String[] lnsprep = line.split("----");
-							lns.add(lnsprep[0]);
 							lns.add(lnsprep[1]);
 							lns.add(lnsprep[2]);
+							lns.add(lnsprep[3]);
 							lns.add("初始化");
 //							if (lns.size() == 3) {
 //								lns.add("0");
@@ -175,7 +176,7 @@ public class Engine extends Observable {
 					if (accounts.size() > 0) {
 						List<String> params = new ArrayList<String>();
 						params.add(String.valueOf(accounts.size()));
-						params.add(path);
+						params.add(paths[1]);
 						
 						msg = new EngineMessage();
 				        msg.setType(EngineMessageType.OM_ACCOUNT_LOADED);
@@ -191,7 +192,7 @@ public class Engine extends Observable {
 				}
 				break;
 			case EngineMessageType.IM_LOAD_MAIL:
-				path = (String)message.getData();
+				String path = (String)message.getData();
 				
 				try {
 					msg = new EngineMessage();

@@ -74,6 +74,7 @@ public class SSZS implements Observer{
 	private MenuItem mntmc_1;
 	private MenuItem mntml;
 	private MenuItem mntmNewItem;
+	private Menu menu_2;
 	/**
 	 * Launch the application.
 	 * @param args
@@ -191,23 +192,79 @@ public class SSZS implements Observer{
 		label_1.setBounds(66, 1, 225, 17);
 		
 		Link link = new Link(shlSszs, 0);
-		link.addSelectionListener(new SelectionAdapter() {
+		link.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseUp(MouseEvent e) {
+				if(e.button==1){
+					//menu.
+					menu_2.setVisible(true);
+					return;
+				}else {
+					menu_2.setVisible(false);
+					return;
+				}
+				
+				
+				//System.out.println("OK:"+e.button);
+			}
+		});
+//		link.addSelectionListener(new SelectionAdapter() {
+//			@Override
+//			public void widgetSelected(SelectionEvent e) {
+//				final FileDialog fileDlg = new FileDialog(shlSszs, SWT.OPEN);
+//				fileDlg.setFilterPath(null);
+//				fileDlg.setText("选择帐号文件");
+//				String filePath = fileDlg.open();
+//				if(filePath!=null){
+//					EngineMessage message = new EngineMessage();
+//					message.setType(EngineMessageType.IM_LOAD_ACCOUNT);
+//					message.setData(filePath);
+//					Engine.getInstance().fire(message);
+//				}
+//			}
+//		});
+		link.setText("<a>导入...</a>");
+		link.setBounds(314, 1, 36, 17);
+		
+		menu_2 = new Menu(link);
+		menu_2.setVisible(false);
+		link.setMenu(menu_2);
+		
+		MenuItem mntmNewItem_1 = new MenuItem(menu_2, SWT.NONE);
+		mntmNewItem_1.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				final FileDialog fileDlg = new FileDialog(shlSszs, SWT.OPEN);
 				fileDlg.setFilterPath(null);
-				fileDlg.setText("选择帐号文件");
+				fileDlg.setText("选择帐号文件[常规导入]");
 				String filePath = fileDlg.open();
 				if(filePath!=null){
 					EngineMessage message = new EngineMessage();
 					message.setType(EngineMessageType.IM_LOAD_ACCOUNT);
-					message.setData(filePath);
+					message.setData("S|"+filePath);
 					Engine.getInstance().fire(message);
 				}
 			}
 		});
-		link.setText("<a>导入...</a>");
-		link.setBounds(314, 1, 36, 17);
+		mntmNewItem_1.setText("常规导入...");
+		
+		MenuItem mntmNewItem_2 = new MenuItem(menu_2, SWT.NONE);
+		mntmNewItem_2.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				final FileDialog fileDlg = new FileDialog(shlSszs, SWT.OPEN);
+				fileDlg.setFilterPath(null);
+				fileDlg.setText("选择帐号文件[带历史密码导入]");
+				String filePath = fileDlg.open();
+				if(filePath!=null){
+					EngineMessage message = new EngineMessage();
+					message.setType(EngineMessageType.IM_LOAD_ACCOUNT);
+					message.setData("H|"+filePath);
+					Engine.getInstance().fire(message);
+				}
+			}
+		});
+		mntmNewItem_2.setText("带历史密码导入...");
 		
 		table = new Table(shlSszs, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI);
 		table.addSelectionListener(new SelectionAdapter() {
