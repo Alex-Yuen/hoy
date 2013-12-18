@@ -6,14 +6,17 @@ import java.security.SecureRandom;
 import java.security.Security;
 import java.security.interfaces.ECPublicKey;
 import java.security.spec.ECGenParameterSpec;
-import java.security.spec.ECParameterSpec;
-import java.security.spec.ECPoint;
+//import java.security.spec.ECParameterSpec;
 
-import org.bouncycastle.crypto.AsymmetricCipherKeyPair;
-import org.bouncycastle.crypto.generators.ECKeyPairGenerator;
-import org.bouncycastle.crypto.params.ECPublicKeyParameters;
+import org.bouncycastle.jcajce.provider.asymmetric.ec.BCECPublicKey;
+import org.bouncycastle.math.ec.ECPoint;
 
-import sun.security.ec.NamedCurve;
+//import org.bouncycastle.crypto.AsymmetricCipherKeyPair;
+//import org.bouncycastle.crypto.generators.ECKeyPairGenerator;
+//import org.bouncycastle.crypto.params.ECPublicKeyParameters;
+//import org.bouncycastle.jcajce.provider.asymmetric.ec.BCECPublicKey;
+//
+//import sun.security.ec.NamedCurve;
 
 //import org.bouncycastle.jcajce.provider.asymmetric.ec.BCECPublicKey;
 //import org.bouncycastle.asn1.x9.ECNamedCurveTable;
@@ -42,15 +45,15 @@ public class ECDH {
 			
 //			EllipticCurve curve = new EllipticCurve(
 //				new ECFieldFp(new BigInteger("FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFEE37", 16)), 
-//				new BigInteger("000000000000000000000000000000000000000000000000", 16),
-//				new BigInteger("000000000000000000000000000000000000000000000003", 16)
+//				new BigInteger("000000000000000000000000000000000000000000000000", 16),x
+//				new BigInteger("000000000000000000000000000000000000000000000003", 16)y
 //			);
 //
 //			ECParameterSpec ecSpec = new ECParameterSpec(
 //				curve, 
 //				new ECPoint(
-//					new BigInteger("DB4FF10EC057E9AE26B07D0280B7F4341DA5D1B1EAE06C7D", 16), 
-//					new BigInteger("9b2f2f6d9c5628a7844163d015be86344082aa88d95e2f9d", 16)
+//					new BigInteger("DB4FF10EC057E9AE26B07D0280B7F4341DA5D1B1EAE06C7D", 16), a
+//					new BigInteger("9b2f2f6d9c5628a7844163d015be86344082aa88d95e2f9d", 16)b
 //				), 
 //				new BigInteger("FFFFFFFFFFFFFFFFFFFFFFFE26F2FC170F69466A74DEFD8D", 16), 
 //				1
@@ -58,26 +61,30 @@ public class ECDH {
 			//ECParameterSpec ecSpec = NamedCurve.getECParameterSpec("secp192k1");
 			ECGenParameterSpec ecSpec = new ECGenParameterSpec("secp192k1");
 			
-			ECKeyPairGenerator ECKeyPairGen = new ECKeyPairGenerator();
+			//ECKeyPairGenerator ECKeyPairGen = new ECKeyPairGenerator();
 			
-			//keyGen.initialize(ecSpec, new SecureRandom()); //公私钥 工厂
-			ECKeyPairGen.init(ecSpec);
+			keyGen.initialize(ecSpec, new SecureRandom()); //公私钥 工厂
+			//ECKeyPairGen.init(ecSpec);
+			//AsymmetricCipher
+			KeyPair pair = keyGen.generateKeyPair(); //生成公私钥
 			
-			AsymmetricCipherKeyPair pair = keyGen.generateKeyPair(); //生成公私钥
 			
+			//BCECPublicKey pubKey = (BCECPublicKey)pair.getPublic();
 			
-			ECPublicKeyParameters pubKey = (ECPublicKeyParameters)pair.getPublic();
+			//ECPublicKey cpk =(ECPublicKey) pair.getPublic();
+			BCECPublicKey cpk =(BCECPublicKey) pair.getPublic();
+			ECPoint point = cpk.getQ();
 			
-			ECPublicKey cpk =(ECPublicKey) pair.getPublic();
 //			System.out.println(pair.getPublic().getEncoded().length);
 //			System.out.println(cpk.getEncoded().length);
 //			ECPoint point = cpk.getQ();
 			
-			ECPoint point = cpk.getW();
+			//ECPoint point = cpk.getW();
 			//ecSpec.getCurve().e
 
+			//point.
 			System.out.println(cpk.getEncoded().length);
-			System.out.println(Converts.bytesToHexString(pair.getPublic().getEncoded()));
+			System.out.println(Converts.bytesToHexString(cpk.getEncoded()));
 			//cpk.engineGetQ()
 //			ecPubKeyParams.getW()
 			

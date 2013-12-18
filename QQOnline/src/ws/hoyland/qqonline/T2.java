@@ -68,8 +68,10 @@ public class T2 {
 				//根据随机的内置KEY, 生成ECDH KEY
 				//ecdhkey = genKey(0x19);
 				{
-					key0836x = genKey(0x10);
+					key0836x = null;//genKey(0x10);
 					ecdhkey = null;
+					
+					//ecdhkey 随机生成的公钥，然后key0836x 即为共享秘密，由算法计算得出
 				}
 				
 				baos = new ByteArrayOutputStream();
