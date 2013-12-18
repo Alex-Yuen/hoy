@@ -467,7 +467,7 @@ public class Engine extends Observable {
 						fpausec = 0;
 						try{
 							System.err.println("自动暂停...");
-							Thread.sleep(1000*Integer.parseInt(configuration.getProperty("ACC_ITV_PERIOD")));
+							Thread.sleep(60*1000*Integer.parseInt(configuration.getProperty("ACC_ITV_PERIOD")));
 							
 							//所有线程切换状态
 							msg = new EngineMessage();
