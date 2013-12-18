@@ -85,17 +85,22 @@ public class Task implements Runnable, Observer {
 	
 	private final String UAG = "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1; QQDownload 734; Maxthon; .NET CLR 2.0.50727; .NET4.0C; .NET4.0E)";
 	private boolean pause = false;
+	private boolean standard = true;
 
 	public Task(String line) {
 		// TODO Auto-generated constructor stub
 		String[] ls = line.split("----");
-		this.id = Integer.parseInt(ls[0]);
-		this.account = ls[1];
-		this.password = ls[2];
+		this.id = Integer.parseInt(ls[1]);
+		this.account = ls[2];
+		this.password = ls[3];
+		
+		if("H".equals(ls[0])){
+			standard = false;
+		}
 
-		pwds = new String[ls.length-2];
+		pwds = new String[ls.length-3];
 		for(int i=0;i<pwds.length;i++){
-			pwds[i] = ls[i+2];
+			pwds[i] = ls[i+3];
 		}
 		
 		this.run = true;
@@ -700,15 +705,15 @@ public class Task implements Runnable, Observer {
 				nvps.add(new BasicNameValuePair("txtOldPW1", ""));
 				nvps.add(new BasicNameValuePair("pwdOldPW1", this.password));
 				nvps.add(new BasicNameValuePair("txtOldPW2", ""));
-				nvps.add(new BasicNameValuePair("pwdOldPW2", (this.pwds.length>1)?this.pwds[1]:""));
+				nvps.add(new BasicNameValuePair("pwdOldPW2", (this.pwds.length>1&&!standard)?this.pwds[1]:""));
 				nvps.add(new BasicNameValuePair("txtOldPW3", ""));
-				nvps.add(new BasicNameValuePair("pwdOldPW3", (this.pwds.length>2)?this.pwds[2]:""));
+				nvps.add(new BasicNameValuePair("pwdOldPW3", (this.pwds.length>2&&!standard)?this.pwds[2]:""));
 				nvps.add(new BasicNameValuePair("txtOldPW4", ""));
-				nvps.add(new BasicNameValuePair("pwdOldPW4", (this.pwds.length>3)?this.pwds[3]:""));
+				nvps.add(new BasicNameValuePair("pwdOldPW4", (this.pwds.length>3&&!standard)?this.pwds[3]:""));
 				nvps.add(new BasicNameValuePair("txtOldPW5", ""));
-				nvps.add(new BasicNameValuePair("pwdOldPW5", (this.pwds.length>4)?this.pwds[4]:""));
+				nvps.add(new BasicNameValuePair("pwdOldPW5", (this.pwds.length>4&&!standard)?this.pwds[4]:""));
 				nvps.add(new BasicNameValuePair("txtOldPW6", ""));
-				nvps.add(new BasicNameValuePair("pwdOldPW6", (this.pwds.length>5)?this.pwds[5]:""));
+				nvps.add(new BasicNameValuePair("pwdOldPW6", (this.pwds.length>5&&!standard)?this.pwds[5]:""));
 				
 				nvps.add(new BasicNameValuePair("ddlLoginLocCountry1", "0"));
 				nvps.add(new BasicNameValuePair("ddlLoginLocProvince1", String.valueOf(Integer.parseInt(configuration.getProperty("P1"))-1)));
