@@ -1,6 +1,8 @@
 package ws.hoyland.qqonline;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.net.*;
 import java.security.KeyFactory;
 import java.security.KeyPair;
@@ -57,9 +59,10 @@ public class T2 {
 		byte[] buffer = null;
 		byte[] content = null;
 		
-		ByteArrayOutputStream baos = null; 
-		
+		ByteArrayOutputStream baos = null; 		
 		ByteArrayOutputStream bsofplain = null; 
+		
+		ByteArrayOutputStream bsofpng = null; 
 		
 		byte[] key0825 = null;
 		byte[] ecdhkey = null;
@@ -68,11 +71,7 @@ public class T2 {
 		byte[] key0836x = null;
 		byte[] pwdkey = null;
 		byte[] key00BA = null;
-		byte[] data00BA = null;
-		
-		byte[] data00BA0 = null;
-		byte[] data00BA1 = null;
-		byte[] data00BA2 = null;
+//		byte[] data00BA = null;
 		
 		Crypter crypter = new Crypter();
 		byte[] encrypt = null;
@@ -218,7 +217,7 @@ public class T2 {
 			//0836
 			do{
 				seq++;
-				nvc = false;
+				//nvc = false;
 				
 				//第一段
 				bsofplain = new ByteArrayOutputStream();
@@ -350,6 +349,10 @@ public class T2 {
 				});
 				bsofplain.write(genKey(0x10));//机器固定验证key
 				
+				//如果是验证码已经识别后的情况，需要加入一段数据
+				if(nvc){
+					//TODO
+				}
 				//SP5不需要?
 	//			bsofplain.write(new byte[]{
 	//					0x00, 0x32, 0x00, 0x37, 0x3E, 0x00, 0x37, 0x01, 0x03, 0x04, 0x02, 0x00, 0x00, 0x04, 0x00	//固定
@@ -446,28 +449,56 @@ public class T2 {
 				buffer = pack(buffer);
 //				System.out.println(buffer.length);
 //				System.out.println(Converts.bytesToHexString(buffer));
+				nvc = false; //清空nvc状态
 				
 				//175密码错误，871需要验证码
 				if(buffer.length==871){
 					//00BA 处理验证码
 					System.out.println("需要验证码处理");
-					nvc = true;
-					//------------------------------------------------------------------------------
-					//00BA
-
-					data00BA = genKey(0x15);
-					//data00BA0 = token;
-					data00BA1 = genKey(0x28);
-					data00BA2 = genKey(0x10);
+					nvc = true; //需要再次请求0836
+					bsofpng = new ByteArrayOutputStream();
 					
-					byte pidx = 0x00;
-					//下载验证码数据
-					do{
+					content = slice(buffer, 14, buffer.length-15);
+					decrypt = crypter.decrypt(content, key0836x);
+					
+					//截取png数据，以及相关key, data
+					//token = slice(decrypt, 22, 0x38); //new token?
+					byte[] ilbs = slice(decrypt, 22+0x38, 2);
+					int imglen = ilbs[0]*0x100 + (ilbs[1] & 0xFF);
+					
+					//byte[] png = slice(decrypt, 24+0x38, imglen);
+					bsofpng.write(slice(decrypt, 24+0x38, imglen));
+					//System.out.println(Converts.bytesToHexString(png));
+					dlvc = (slice(decrypt, 25+0x38+imglen, 1)[0]==1);
+					System.out.println("dlvc:"+dlvc);
+					System.out.println("imglen:"+imglen);
+					
+					//no use?
+//					byte[] key0836r = slice(decrypt, 25+0x38+imglen, 0x10);
+					
+					//System.out.println(Converts.bytesToHexString(decrypt));
+					byte[] tokenfor00ba = slice(decrypt, 28+0x38+imglen, 0x28);
+					//System.out.println(Converts.bytesToHexString(tokenfor00ba));
+					byte[] keyfor00ba = slice(decrypt, 32+0x38+0x28+imglen, 0x10);
+					//System.out.println(Converts.bytesToHexString(keyfor00ba));
+					
+
+//					//data00BA0 = token;
+//					data00BA1 = genKey(0x28);
+//					data00BA2 = genKey(0x10);
+//					
+//					byte pidx = 0x00;
+					//需要继续下载验证码数据
+					if(dlvc){
+						//00BA-1: 继续下载验证码
+						
 						seq++;
 						dlvc = false;
-						key00BA = genKey(0x10);
 						
-						pidx++;
+						key00BA = genKey(0x10);
+//						data00BA = genKey(0x15);
+//						data00BA1 = genKey(0x28);
+//						data00BA2 = genKey(0x10);
 						
 						bsofplain = new ByteArrayOutputStream();
 						bsofplain.write(new byte[]{
@@ -487,7 +518,7 @@ public class T2 {
 						bsofplain.write(new byte[]{
 								0x00, 0x15
 						});
-						bsofplain.write(data00BA);
+						bsofplain.write(genKey(0x15));
 						 
 						bsofplain.write(new byte[]{
 								0x13, 0x00, 0x05, 0x00, 0x00, 0x00, 0x00, 
@@ -497,12 +528,12 @@ public class T2 {
 						bsofplain.write(new byte[]{
 								0x00, 0x28
 						});
-						bsofplain.write(data00BA1);
+						bsofplain.write(tokenfor00ba);
 						
 						bsofplain.write(new byte[]{
 								0x00, 0x10
 						});
-						bsofplain.write(data00BA2);				
+						bsofplain.write(keyfor00ba);				
 						
 						encrypt = crypter.encrypt(bsofplain.toByteArray(), key00BA);
 						
@@ -524,7 +555,7 @@ public class T2 {
 						
 						buf = baos.toByteArray();
 						
-						System.out.println("00BA["+Converts.bytesToHexString(key00BA)+"]");
+						System.out.println("00BA-1["+Converts.bytesToHexString(key00BA)+"]");
 						System.out.println(Converts.bytesToHexString(baos.toByteArray()));			
 						
 						dpOut = new DatagramPacket(buf, buf.length, InetAddress.getByName(ip), 8000);
@@ -547,21 +578,108 @@ public class T2 {
 						//data00BA1 = slice(decrypt, 386, 0x28);
 						//data00BA2 = slice(decrypt, 407, 0x10);
 						
-						//key00BA = data00BA2; //TODO ?
+						//key00BA = data00BA2; 
 						
 						byte[] imglenbs = slice(decrypt, 10+0x38, 2);
 						//System.out.println(Converts.bytesToHexString(imglenbs));
-						int imglen = imglenbs[0]*0x100 + (imglenbs[1] & 0xFF);
-						byte[] png = slice(decrypt, 12+0x38, 700);
+						imglen = imglenbs[0]*0x100 + (imglenbs[1] & 0xFF);
+						bsofpng.write(slice(decrypt, 12+0x38, imglen));
 						//System.out.println(Converts.bytesToHexString(png));
-						dlvc = (slice(decrypt, 713+0x38, 1)[0]==1);
+						dlvc = (slice(decrypt, 13+0x38+imglen, 1)[0]==1);
 						System.out.println("dlvc:"+dlvc);
 						System.out.println("imglen:"+imglen);
 						
-						System.out.println(decrypt.length);
+//						System.out.println(decrypt.length);
+						System.out.println("XXX");
 						System.out.println(Converts.bytesToHexString(decrypt));
 						
-					}while(dlvc);
+					}
+
+					//TODO 将改成自动识别
+					 File file = new File("c:/t.png");
+					 FileOutputStream fileOutputStream  = new FileOutputStream(file);
+					//写到文件中
+					 fileOutputStream.write(bsofpng.toByteArray());
+					 //reader.close();
+					 bsofpng.close();
+					 fileOutputStream.close();
+					
+					//00BA-2: 提交验证码
+					//-------------------------------------------------------------
+					seq++;
+					key00BA = genKey(0x10);					
+					bsofplain = new ByteArrayOutputStream();
+					
+					bsofplain.write(new byte[]{
+							0x00, 0x01, 0x00, 0x00, 0x08, 0x04, 0x01, (byte)0xE0, 
+							0x00, 0x00, 0x04, 0x11, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x12, (byte)0xD3 
+					});
+
+					bsofplain.write(new byte[]{
+							0x00, 0x38
+					});
+					bsofplain.write(token);
+					bsofplain.write(new byte[]{
+							0x01, 0x01
+					});
+					
+					bsofplain.write(new byte[]{
+							0x00, 0x15
+					});
+					bsofplain.write(genKey(0x15));
+					 
+					bsofplain.write(new byte[]{
+							0x14, 0x00, 0x05, 0x00, 0x00, 0x00, 0x00
+					});
+					bsofplain.write(new byte[]{
+							0x00, 0x04, // 验证码长度
+							0x79, 0x6F, 0x6F, 0x62 
+					});
+					bsofplain.write(new byte[]{
+							0x00, 0x28
+					});
+					bsofplain.write(tokenfor00ba);
+					
+					bsofplain.write(new byte[]{
+							0x00, 0x10
+					});
+					bsofplain.write(keyfor00ba);	
+					
+					encrypt = crypter.encrypt(bsofplain.toByteArray(), key00BA);
+					
+					baos = new ByteArrayOutputStream();
+					baos.write(new byte[]{
+							0x02, 0x34, 0x4B, 0x00, (byte)0xBA
+					});
+					baos.write(Converts.hexStringToByte(Integer.toHexString(seq).toUpperCase()));
+					baos.write(Converts.hexStringToByte(Integer.toHexString(Integer.valueOf(account)).toUpperCase()));
+					baos.write(new byte[]{
+							0x03, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00, 0x66, (byte)0xA2, 0x00, 0x00, 0x00, 0x00
+					});
+					baos.write(key00BA);
+					baos.write(encrypt);
+					baos.write(new byte[]{
+							0x03
+					});
+					
+					buf = baos.toByteArray();
+					
+					System.out.println("00BA-2["+Converts.bytesToHexString(key00BA)+"]");
+					System.out.println(Converts.bytesToHexString(baos.toByteArray()));			
+					
+					dpOut = new DatagramPacket(buf, buf.length, InetAddress.getByName(ip), 8000);
+					ds.send(dpOut);
+					
+					//IN:
+					buffer = new byte[1024];
+					dpIn = new DatagramPacket(buffer, buffer.length);
+									
+					ds.receive(dpIn);					
+					buffer = pack(buffer);
+					
+					content = slice(buffer, 14, buffer.length-15);
+					decrypt = crypter.decrypt(content, key00BA);
+					System.out.println(Converts.bytesToHexString(decrypt));
 					
 					return;
 				}else if(buffer.length==175){
