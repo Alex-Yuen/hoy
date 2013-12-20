@@ -37,8 +37,8 @@ public class T2 {
 		int userID = YDM.INSTANCE.YDM_Login("hoyland", "Hoy133");
 		System.out.println("userID:"+userID);
 		
-		String account = "593298007";
-		String password = "uxzkwjwnmj";
+		String account = "744625551";
+		String password = "981019.*";
 		String ip = "183.60.19.100";//默认IP
 		byte[] ips = new byte[]{
 				(byte)183, (byte)60, (byte)19, (byte)100
@@ -160,9 +160,12 @@ public class T2 {
 				bsofplain.write(new byte[]{
 						0x00, 0x00, 0x00, 0x00, 0x03, 0x09, 0x00, 0x08, 0x00, 0x01
 				});
-				bsofplain.write(ips);
+//				bsofplain.write(ips);
 				bsofplain.write(new byte[]{
-						0x00, 0x02, 0x00, 0x36, 0x00, 0x12, 0x00, 0x02, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+						0x00, 0x00, 0x00, 0x00 
+				});
+				bsofplain.write(new byte[]{
+						0x00, 0x04, 0x00, 0x36, 0x00, 0x12, 0x00, 0x02, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 						0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x14, 0x00, 0x1D, 0x01, 0x02 
 				});
 				bsofplain.write(new byte[]{
@@ -532,10 +535,19 @@ public class T2 {
 						bsofplain = new ByteArrayOutputStream();
 						bsofplain.write(new byte[]{
 								0x00, 0x02, 0x00, 0x00, 0x08, 0x04, 0x01, (byte)0xE0, 
-								0x00, 0x00, 0x04, 0x36, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x14, (byte)0x9B,
-								0x00 //?
+								0x00, 0x00, 0x04, 0x36, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x14, (byte)0x9B
 						});
 	
+						if(!rv){
+							bsofplain.write(new byte[]{
+									0x00
+							});
+						}else{
+							bsofplain.write(new byte[]{
+									0x01
+							});
+						}
+						
 						bsofplain.write(new byte[]{
 								0x00, 0x38
 						});
@@ -577,7 +589,8 @@ public class T2 {
 							bsofplain.write(new byte[]{
 									0x00, 0x38
 							});
-							bsofplain.write(genKey(0x38));
+							//bsofplain.write(genKey(0x38));
+							bsofplain.write(tokenfor00ba);
 						}
 						
 						
@@ -626,7 +639,7 @@ public class T2 {
 						if(!rv){
 							content = slice(buffer, 14, buffer.length-15);
 							decrypt = crypter.decrypt(content, key0836x);//??????!!!!!! 第二次才是key00ba
-							
+							System.out.println(Converts.bytesToHexString(decrypt));
 							byte[] imglenbs = slice(decrypt, 10+0x38, 2);
 							//System.out.println(Converts.bytesToHexString(imglenbs));
 							imglen = imglenbs[0]*0x100 + (imglenbs[1] & 0xFF);
@@ -639,7 +652,7 @@ public class T2 {
 							//需要更新 tokenfor00ba keyfor00ba ?
 							//tokenfor00ba = slice(decrypt, 16+0x38+imglen, 0x28);
 							//keyfor00ba = slice(decrypt, 18+0x38+0x28+imglen, 0x10);
-							
+							tokenfor00ba = slice(decrypt, 10, 0x38);
 							
 							byte[] by = bsofpng.toByteArray();
 							//resultByte = new byte[30]; // 为识别结果申请内存空间
@@ -686,7 +699,7 @@ public class T2 {
 				}else if(buffer.length==175){
 					System.out.println("用户名或密码错误, 退出任务");
 					return;
-				}				
+				} 
 
 //				System.out.println(decrypt.length);
 //				System.out.println(Converts.bytesToHexString(decrypt));
@@ -694,11 +707,42 @@ public class T2 {
 			
 			//正常情况下的 key0836x解密
 			content = slice(buffer, 14, buffer.length-15);
-			decrypt = crypter.decrypt(content, key0836x);
+			decrypt = crypter.decrypt(content, key0836);
 			
-			
+			System.out.println(Converts.bytesToHexString(decrypt));
+			//需解释出某些值供 0828使用
 			//------------------------------------------------------------------------------
 			//0828
+			seq++;
+			
+			bsofplain = new ByteArrayOutputStream();
+			bsofplain.write(new byte[]{
+					0x00, 0x07, 0x00, (byte)0x88, 0x00, 0x04
+			});
+			bsofplain.write(logintime); //TODO
+			bsofplain.write(loginip); //TODO
+			bsofplain.write(new byte[]{
+					0x00, 0x00, 0x00, 0x00
+			});
+			
+			
+			baos = new ByteArrayOutputStream();
+			baos.write(new byte[]{
+					0x02, 0x34, 0x4B, 0x08, 0x28
+			});
+			baos.write(Converts.hexStringToByte(Integer.toHexString(seq).toUpperCase()));
+			baos.write(Converts.hexStringToByte(Integer.toHexString(Integer.valueOf(account)).toUpperCase()));
+			baos.write(new byte[]{
+					0x03, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00, 0x66, (byte)0xA2, 0x00, 0x30, 0x00, 0x30
+			});
+			baos.write(new byte[]{
+					0x00, 0x38
+			});
+			baos.write(token);
+			baos.write(encrypt);
+			baos.write(new byte[]{
+					0x03
+			});
 			
 		}catch(Exception e){
 			e.printStackTrace();
