@@ -78,6 +78,8 @@ public class T2 {
 		byte[] key00BA = null;
 //		byte[] data00BA = null;
 		
+		byte[] key0828 = null;
+		
 		byte[] vctoken = null;
 		byte[] resultByte = null;
 		
@@ -351,6 +353,7 @@ public class T2 {
 				bsofplain.write(new byte[]{
 						0x00, 0x18, 0x00, 0x16, 0x00, 0x01,
 						0x00, 0x00, 0x04, 0x36, 0x06, 0x00, 0x05, 0x11, 0x00, 0x00, 0x01, 0x00 
+						//0x00, 0x00, 0x04, 0x36, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x14, (byte)0x9B
 						//00 00 04 36 00 00 00 01 00 00 14 9B?
 				});
 				bsofplain.write(Converts.hexStringToByte(Integer.toHexString(Integer.valueOf(account)).toUpperCase()));
@@ -711,6 +714,10 @@ public class T2 {
 			
 			System.out.println(Converts.bytesToHexString(decrypt));
 			//需解释出某些值供 0828使用
+			key0828 = slice(decrypt, 7, 0x10);
+			String rbof0836 = Converts.bytesToHexString(decrypt);
+			
+			//Converts.bytesToHexString(decrypt).indexOf(")
 			//------------------------------------------------------------------------------
 			//0828
 			seq++;
@@ -719,12 +726,78 @@ public class T2 {
 			bsofplain.write(new byte[]{
 					0x00, 0x07, 0x00, (byte)0x88, 0x00, 0x04
 			});
-			bsofplain.write(logintime); //TODO
-			bsofplain.write(loginip); //TODO
+			bsofplain.write(slice(decrypt, rbof0836.indexOf("00080004")/2+4, 4));
+			bsofplain.write(slice(decrypt, rbof0836.indexOf("00080004")/2+8, 4));
 			bsofplain.write(new byte[]{
 					0x00, 0x00, 0x00, 0x00
 			});
-			
+			bsofplain.write(new byte[]{
+					0x00, 0x78
+			});
+			bsofplain.write(slice(decrypt, rbof0836.indexOf("00000000")/2+6, 0x78));
+			bsofplain.write(new byte[]{
+					0x00, 0x0C, 0x00, 0x16, 0x00, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
+			});
+			bsofplain.write(ips);
+			bsofplain.write(new byte[]{
+					0x1F, 0x40
+			});
+			bsofplain.write(new byte[]{
+					0x00, 0x00, 0x00, 0x00, 0x00, 0x15, 0x00, 0x30, 0x00, 0x01
+			});
+			bsofplain.write(new byte[]{
+					0x01, (byte)0xF0, (byte)0xEC, (byte)0xF0, (byte)0x9A,
+					0x00, 0x10
+			});
+			bsofplain.write(pwdkey);
+			bsofplain.write(new byte[]{
+					0x02, 0x02, (byte)0xAC, 0x7A, (byte)0xB7, 0x77,
+					0x00, 0x10
+			});
+			bsofplain.write(key0836);
+			bsofplain.write(new byte[]{
+					0x00, 0x36, 0x00, 0x12, 0x00, 0x02, 0x00, 0x01, 0x00, 0x00, 0x00, // 固定
+					0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, // 固定 如果有验证码的包第一位为13
+					0x00, 0x18, 0x00, 0x16, 0x00, 0x01, // 固定
+					0x00, 0x00, 0x04, 0x36, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x14, (byte)0x9B
+			});
+			bsofplain.write(Converts.hexStringToByte(Integer.toHexString(Integer.valueOf(account)).toUpperCase()));
+			bsofplain.write(new byte[]{
+					0x00, 0x00, 0x00, 0x00, 0x00, 0x1F, 0x00, 0x22, 0x00, 0x01
+			});
+			bsofplain.write(genKey(0x20));// 32位机器码如果不正确0828包会返回
+			bsofplain.write(new byte[]{
+					0x01, 0x05, 0x00, 0x30, 0x00, 0x01, 0x01, 0x02
+			});
+			bsofplain.write(new byte[]{
+					0x00, 0x14, 0x01, 0x01,
+					0x00, 0x10
+			});
+			bsofplain.write(genKey(0x10));
+			bsofplain.write(new byte[]{
+					0x00, 0x14, 0x01, 0x02,
+					0x00, 0x10
+			});
+			bsofplain.write(genKey(0x10));
+			bsofplain.write(new byte[]{
+					0x01, 0x0B, 0x00, 0x38, 0x00, 0x01
+			});
+			bsofplain.write(genKey(0x10)); // QQ file MD5 //TODO
+			bsofplain.write(new byte[]{
+					(byte)0xF8, //flag
+					0x10, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02 // 固定
+			});
+			bsofplain.write(new byte[]{
+					0x00, 0x18
+			});
+			bsofplain.write(genKey(0x18)); // 0836 receive token3, 没有收到?
+			bsofplain.write(new byte[]{
+					0x00, 0x00, 0x00, 0x2D, 0x00, 0x06, 0x00, 0x01, // 固定
+					(byte)0xC0, (byte)0xA8, 0x01, 0x66 // 本地IP
+			});
+
+			encrypt = crypter.encrypt(bsofplain.toByteArray(), key0828);
+			System.out.println(Converts.bytesToHexString(encrypt));		
 			
 			baos = new ByteArrayOutputStream();
 			baos.write(new byte[]{
@@ -743,6 +816,24 @@ public class T2 {
 			baos.write(new byte[]{
 					0x03
 			});
+			
+			buf = baos.toByteArray();
+			
+			System.out.println("0828["+Converts.bytesToHexString(key0828)+"]");
+			System.out.println(Converts.bytesToHexString(baos.toByteArray()));			
+			
+			dpOut = new DatagramPacket(buf, buf.length, InetAddress.getByName(ip), 8000);
+			ds.send(dpOut);
+			
+			//IN:
+			buffer = new byte[1024];
+			dpIn = new DatagramPacket(buffer, buffer.length);
+							
+			ds.receive(dpIn);
+			
+			buffer = pack(buffer);
+			System.out.println(buffer.length);
+			System.out.println(Converts.bytesToHexString(buffer));
 			
 		}catch(Exception e){
 			e.printStackTrace();
