@@ -23,6 +23,7 @@ import org.bouncycastle.math.ec.ECPoint;
 
 import sun.security.ec.NamedCurve;
 
+import ws.hoyland.util.YDM;
 import ws.hoyland.util.Converts;
 import ws.hoyland.util.Crypter;
 
@@ -32,8 +33,12 @@ public class T2 {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		String account = "287705149";
-		String password = "ghsjiygrtr";
+		YDM.INSTANCE.YDM_SetAppInfo(105, "4c0e22fb79a8afff2331d34786364b68");
+		int userID = YDM.INSTANCE.YDM_Login("hoyland", "Hoy133");
+		System.out.println("userID:"+userID);
+		
+		String account = "593298007";
+		String password = "uxzkwjwnmj";
 		String ip = "183.60.19.100";//默认IP
 		byte[] ips = new byte[]{
 				(byte)183, (byte)60, (byte)19, (byte)100
@@ -73,10 +78,14 @@ public class T2 {
 		byte[] key00BA = null;
 //		byte[] data00BA = null;
 		
+		byte[] vctoken = null;
+		byte[] resultByte = null;
+		
 		Crypter crypter = new Crypter();
 		byte[] encrypt = null;
 		byte[] decrypt = null;
 
+		
 		CRC32 crc = new CRC32();
 		
 		boolean redirect = false;
@@ -351,7 +360,21 @@ public class T2 {
 				
 				//如果是验证码已经识别后的情况，需要加入一段数据
 				if(nvc){
-					//TODO
+					bsofplain.write(new byte[]{
+							0x01, 0x10, 0x00, 0x3C, 0x00, 0x01
+					});
+					bsofplain.write(new byte[]{
+							0x00, 0x38
+					});
+					bsofplain.write(vctoken);
+					/////TODO
+					/**
+					【注意这个位置 如果是有验证码已经识别了验证码，需要在这个地方加上识别验证码返回的token
+					01 10 00 3C 00 01
+					00 00 // 识别验证码返回token长度
+					00 00 00 00 00 ..... // 识别验证码返回token
+					】
+					**/
 				}
 				//SP5不需要?
 	//			bsofplain.write(new byte[]{
@@ -447,8 +470,8 @@ public class T2 {
 				ds.receive(dpIn);
 				//还需判断buffer 121等位置，看是否是转向，也可能是104字节，不需转向
 				buffer = pack(buffer);
-//				System.out.println(buffer.length);
-//				System.out.println(Converts.bytesToHexString(buffer));
+				//System.out.println(buffer.length);
+				//System.out.println("OUT:"+Converts.bytesToHexString(buffer));
 				nvc = false; //清空nvc状态
 				
 				//175密码错误，871需要验证码
@@ -476,11 +499,11 @@ public class T2 {
 					//no use?
 //					byte[] key0836r = slice(decrypt, 25+0x38+imglen, 0x10);
 					
-					//System.out.println(Converts.bytesToHexString(decrypt));
+					System.out.println(Converts.bytesToHexString(decrypt));
 					byte[] tokenfor00ba = slice(decrypt, 28+0x38+imglen, 0x28);
 					//System.out.println(Converts.bytesToHexString(tokenfor00ba));
 					byte[] keyfor00ba = slice(decrypt, 32+0x38+0x28+imglen, 0x10);
-					//System.out.println(Converts.bytesToHexString(keyfor00ba));
+					//System.out.println("keyfor00ba:"+Converts.bytesToHexString(keyfor00ba));
 					
 
 //					//data00BA0 = token;
@@ -489,8 +512,14 @@ public class T2 {
 //					
 //					byte pidx = 0x00;
 					//需要继续下载验证码数据
-					if(dlvc){
-						//00BA-1: 继续下载验证码
+					boolean rv = false; //request verify
+					
+					do{
+						//00BA: 继续下载验证码
+						//-----------------------------------------------------------
+						if(!dlvc){
+							rv = true; //此次发送验证请求
+						}
 						
 						seq++;
 						dlvc = false;
@@ -502,8 +531,9 @@ public class T2 {
 						
 						bsofplain = new ByteArrayOutputStream();
 						bsofplain.write(new byte[]{
-								0x00, 0x01, 0x00, 0x00, 0x08, 0x04, 0x01, (byte)0xE0, 
-								0x00, 0x00, 0x04, 0x11, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x12, (byte)0xD3 
+								0x00, 0x02, 0x00, 0x00, 0x08, 0x04, 0x01, (byte)0xE0, 
+								0x00, 0x00, 0x04, 0x36, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x14, (byte)0x9B,
+								0x00 //?
 						});
 	
 						bsofplain.write(new byte[]{
@@ -512,23 +542,44 @@ public class T2 {
 						bsofplain.write(token);
 						
 						bsofplain.write(new byte[]{
-								0x01, 0x01
+								0x01, 0x02
 						});
 						
 						bsofplain.write(new byte[]{
-								0x00, 0x15
+								0x00, 0x19
 						});
-						bsofplain.write(genKey(0x15));
-						 
-						bsofplain.write(new byte[]{
-								0x13, 0x00, 0x05, 0x00, 0x00, 0x00, 0x00, 
-								0x01
-						});
+						bsofplain.write(ecdhkey);
 						
-						bsofplain.write(new byte[]{
-								0x00, 0x28
-						});
-						bsofplain.write(tokenfor00ba);
+						if(!rv){ //继续下载验证码
+							bsofplain.write(new byte[]{
+									0x13, 0x00, 0x05, 0x00, 0x00, 0x00, 0x00, 0x01
+									
+							});
+							
+
+							bsofplain.write(new byte[]{
+									0x00, 0x28
+							});
+							bsofplain.write(tokenfor00ba);
+							
+						}else{ //发送验证请求
+							bsofplain.write(new byte[]{
+									0x14, 0x00, 0x05, 0x00, 0x00, 0x00, 0x00, 0x00
+							});
+							bsofplain.write(new byte[]{
+									0x04 // 验证码长度
+							});
+//							byte[] ccode = new byte[]{
+//								0x79, 0x6F, 0x6F, 0x62 
+//							};
+							bsofplain.write(resultByte);							
+
+							bsofplain.write(new byte[]{
+									0x00, 0x38
+							});
+							bsofplain.write(genKey(0x38));
+						}
+						
 						
 						bsofplain.write(new byte[]{
 								0x00, 0x10
@@ -555,7 +606,7 @@ public class T2 {
 						
 						buf = baos.toByteArray();
 						
-						System.out.println("00BA-1["+Converts.bytesToHexString(key00BA)+"]");
+						System.out.println("00BA["+Converts.bytesToHexString(key00BA)+"]");
 						System.out.println(Converts.bytesToHexString(baos.toByteArray()));			
 						
 						dpOut = new DatagramPacket(buf, buf.length, InetAddress.getByName(ip), 8000);
@@ -568,120 +619,70 @@ public class T2 {
 						ds.receive(dpIn);
 						
 						buffer = pack(buffer);
-//						System.out.println(buffer.length);
-//						System.out.println(Converts.bytesToHexString(buffer));
+						System.out.println(buffer.length);
+						System.out.println(Converts.bytesToHexString(buffer));
 						
-						content = slice(buffer, 14, buffer.length-15);
-						decrypt = crypter.decrypt(content, key00BA);
 						
-						//data00BA0 = slice(decrypt, 10, 0x38);
-						//data00BA1 = slice(decrypt, 386, 0x28);
-						//data00BA2 = slice(decrypt, 407, 0x10);
-						
-						//key00BA = data00BA2; 
-						
-						byte[] imglenbs = slice(decrypt, 10+0x38, 2);
-						//System.out.println(Converts.bytesToHexString(imglenbs));
-						imglen = imglenbs[0]*0x100 + (imglenbs[1] & 0xFF);
-						bsofpng.write(slice(decrypt, 12+0x38, imglen));
-						//System.out.println(Converts.bytesToHexString(png));
-						dlvc = (slice(decrypt, 13+0x38+imglen, 1)[0]==1);
-						System.out.println("dlvc:"+dlvc);
-						System.out.println("imglen:"+imglen);
-						
+						if(!rv){
+							content = slice(buffer, 14, buffer.length-15);
+							decrypt = crypter.decrypt(content, key0836x);//??????!!!!!! 第二次才是key00ba
+							
+							byte[] imglenbs = slice(decrypt, 10+0x38, 2);
+							//System.out.println(Converts.bytesToHexString(imglenbs));
+							imglen = imglenbs[0]*0x100 + (imglenbs[1] & 0xFF);
+							bsofpng.write(slice(decrypt, 12+0x38, imglen));
+							//System.out.println(Converts.bytesToHexString(png));
+							dlvc = (slice(decrypt, 13+0x38+imglen, 1)[0]==1);
+							System.out.println("dlvc:"+dlvc);
+							System.out.println("imglen:"+imglen);
+							
+							//需要更新 tokenfor00ba keyfor00ba ?
+							//tokenfor00ba = slice(decrypt, 16+0x38+imglen, 0x28);
+							//keyfor00ba = slice(decrypt, 18+0x38+0x28+imglen, 0x10);
+							
+							
+							byte[] by = bsofpng.toByteArray();
+							//resultByte = new byte[30]; // 为识别结果申请内存空间
+//							StringBuffer rsb = new StringBuffer(30);
+							String rsb = "0000";
+							resultByte = rsb.getBytes();
+
+							int codeID = YDM.INSTANCE.YDM_DecodeByBytes(by, by.length, 1004, resultByte);//result byte
+//								result = "xxxx";
+//								for(int i=0;i<resultByte.length;i++){
+//									System.out.println(resultByte[i]);
+//								}
+//								System.out.println("TTT:"+codeID);
+							String result = new String(resultByte, "UTF-8").trim();
+							
+							System.out.println("result:"+resultByte.length+":"+result);
+								
+							//TODO 将改成自动识别
+							/**
+							File file = new File("c:/t.png");
+							FileOutputStream fileOutputStream  = new FileOutputStream(file);
+							//写到文件中
+							fileOutputStream.write(bsofpng.toByteArray());
+							//reader.close();
+							bsofpng.close();
+							fileOutputStream.close();
+							**/
+						}else{
+							content = slice(buffer, 14, buffer.length-15);
+							decrypt = crypter.decrypt(content, key00BA);
+							//获取vctoken
+							vctoken = slice(decrypt, 10, 0x38); 
+							System.out.println("KK1:");
+							System.out.println(Converts.bytesToHexString(decrypt));
+							System.out.println(Converts.bytesToHexString(vctoken));
+						}
 //						System.out.println(decrypt.length);
-						System.out.println("XXX");
-						System.out.println(Converts.bytesToHexString(decrypt));
+//						System.out.println("XXX");
+//						System.out.println(Converts.bytesToHexString(decrypt));
 						
-					}
+					}while(!rv);//提交验证码后，则退出
 
-					//TODO 将改成自动识别
-					 File file = new File("c:/t.png");
-					 FileOutputStream fileOutputStream  = new FileOutputStream(file);
-					//写到文件中
-					 fileOutputStream.write(bsofpng.toByteArray());
-					 //reader.close();
-					 bsofpng.close();
-					 fileOutputStream.close();
-					
-					//00BA-2: 提交验证码
-					//-------------------------------------------------------------
-					seq++;
-					key00BA = genKey(0x10);					
-					bsofplain = new ByteArrayOutputStream();
-					
-					bsofplain.write(new byte[]{
-							0x00, 0x01, 0x00, 0x00, 0x08, 0x04, 0x01, (byte)0xE0, 
-							0x00, 0x00, 0x04, 0x11, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x12, (byte)0xD3 
-					});
-
-					bsofplain.write(new byte[]{
-							0x00, 0x38
-					});
-					bsofplain.write(token);
-					bsofplain.write(new byte[]{
-							0x01, 0x01
-					});
-					
-					bsofplain.write(new byte[]{
-							0x00, 0x15
-					});
-					bsofplain.write(genKey(0x15));
-					 
-					bsofplain.write(new byte[]{
-							0x14, 0x00, 0x05, 0x00, 0x00, 0x00, 0x00
-					});
-					bsofplain.write(new byte[]{
-							0x00, 0x04, // 验证码长度
-							0x79, 0x6F, 0x6F, 0x62 
-					});
-					bsofplain.write(new byte[]{
-							0x00, 0x28
-					});
-					bsofplain.write(tokenfor00ba);
-					
-					bsofplain.write(new byte[]{
-							0x00, 0x10
-					});
-					bsofplain.write(keyfor00ba);	
-					
-					encrypt = crypter.encrypt(bsofplain.toByteArray(), key00BA);
-					
-					baos = new ByteArrayOutputStream();
-					baos.write(new byte[]{
-							0x02, 0x34, 0x4B, 0x00, (byte)0xBA
-					});
-					baos.write(Converts.hexStringToByte(Integer.toHexString(seq).toUpperCase()));
-					baos.write(Converts.hexStringToByte(Integer.toHexString(Integer.valueOf(account)).toUpperCase()));
-					baos.write(new byte[]{
-							0x03, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00, 0x66, (byte)0xA2, 0x00, 0x00, 0x00, 0x00
-					});
-					baos.write(key00BA);
-					baos.write(encrypt);
-					baos.write(new byte[]{
-							0x03
-					});
-					
-					buf = baos.toByteArray();
-					
-					System.out.println("00BA-2["+Converts.bytesToHexString(key00BA)+"]");
-					System.out.println(Converts.bytesToHexString(baos.toByteArray()));			
-					
-					dpOut = new DatagramPacket(buf, buf.length, InetAddress.getByName(ip), 8000);
-					ds.send(dpOut);
-					
-					//IN:
-					buffer = new byte[1024];
-					dpIn = new DatagramPacket(buffer, buffer.length);
-									
-					ds.receive(dpIn);					
-					buffer = pack(buffer);
-					
-					content = slice(buffer, 14, buffer.length-15);
-					decrypt = crypter.decrypt(content, key00BA);
-					System.out.println(Converts.bytesToHexString(decrypt));
-					
-					return;
+					//return;
 				}else if(buffer.length==175){
 					System.out.println("用户名或密码错误, 退出任务");
 					return;
@@ -691,7 +692,7 @@ public class T2 {
 //				System.out.println(Converts.bytesToHexString(decrypt));
 			}while(nvc);
 			
-			//key0836x解密
+			//正常情况下的 key0836x解密
 			content = slice(buffer, 14, buffer.length-15);
 			decrypt = crypter.decrypt(content, key0836x);
 			
