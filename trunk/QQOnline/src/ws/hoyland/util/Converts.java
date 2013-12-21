@@ -23,6 +23,9 @@ public final class Converts {
 	 * @return
 	 */
 	public static byte[] hexStringToByte(String hex) {
+		if(hex.length()%2!=0){
+			hex = "0"+hex;
+		}
 		int len = (hex.length() / 2);
 		byte[] result = new byte[len];
 		char[] achar = hex.toCharArray();

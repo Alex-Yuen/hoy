@@ -17,12 +17,18 @@ public class T4 {
 //		while(names.hasMoreElements()){
 //			System.out.println(names.nextElement());
 //		}
+		
+		//09  CD FE F2
+		//9CDFEF
 		String d = "PPSM";
 		byte[] bs = d.getBytes();
 		for(int i=0;i<bs.length;i++){
 			System.out.println(bs[i]);
 		}
 		System.out.println(Converts.bytesToHexString(d.getBytes()));
+		System.out.println(Integer.toHexString(Integer.valueOf(164495090)).toUpperCase());
+		//byte[] xx = Converts.hexStringToByte("9cdfef2".toUpperCase());
+		System.out.println(Converts.bytesToHexString(Converts.hexStringToByte(Integer.toHexString(Integer.valueOf(164495090)).toUpperCase())));
 	}
 
 }
