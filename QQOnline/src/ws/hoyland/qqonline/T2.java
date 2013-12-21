@@ -715,6 +715,7 @@ public class T2 {
 			System.out.println(Converts.bytesToHexString(decrypt));
 			//需解释出某些值供 0828使用
 			key0828 = slice(decrypt, 7, 0x10);
+			byte[] tokenfor0828 = slice(decrypt, 9+0x10, 0x38);
 			String rbof0836 = Converts.bytesToHexString(decrypt);
 			
 			//Converts.bytesToHexString(decrypt).indexOf(")
@@ -726,8 +727,9 @@ public class T2 {
 			bsofplain.write(new byte[]{
 					0x00, 0x07, 0x00, (byte)0x88, 0x00, 0x04
 			});
-			bsofplain.write(slice(decrypt, rbof0836.indexOf("00080004")/2+4, 4));
-			bsofplain.write(slice(decrypt, rbof0836.indexOf("00080004")/2+8, 4));
+			System.err.println(Converts.bytesToHexString(slice(decrypt, rbof0836.indexOf("00880004")/2+4, 4)));
+			bsofplain.write(slice(decrypt, rbof0836.indexOf("00880004")/2+4, 4));
+			bsofplain.write(slice(decrypt, rbof0836.indexOf("00880004")/2+8, 4));
 			bsofplain.write(new byte[]{
 					0x00, 0x00, 0x00, 0x00
 			});
@@ -751,7 +753,7 @@ public class T2 {
 			});
 			bsofplain.write(pwdkey);
 			bsofplain.write(new byte[]{
-					0x02, 0x02, (byte)0xAC, 0x7A, (byte)0xB7, 0x77,
+					0x02, (byte)0xAC, 0x7A, (byte)0xB7, 0x77,
 					0x00, 0x10
 			});
 			bsofplain.write(key0836);
@@ -782,7 +784,10 @@ public class T2 {
 			bsofplain.write(new byte[]{
 					0x01, 0x0B, 0x00, 0x38, 0x00, 0x01
 			});
-			bsofplain.write(genKey(0x10)); // QQ file MD5 //TODO
+			bsofplain.write(new byte[]{
+					(byte)0xCF, (byte)0x99, (byte)0xD8, (byte)0xE3, 0x79, (byte)0x95, 0x2A, (byte)0xF1, (byte)0xCA, 0x6D, (byte)0xEC, 0x42, 0x0A, (byte)0xC7, (byte)0xC5, 0x10// QQ file MD5 //TODO
+			});			
+			//bsofplain.write(genKey(0x10)); 
 			bsofplain.write(new byte[]{
 					(byte)0xF8, //flag
 					0x10, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02 // 固定
@@ -795,7 +800,7 @@ public class T2 {
 					0x00, 0x00, 0x00, 0x2D, 0x00, 0x06, 0x00, 0x01, // 固定
 					(byte)0xC0, (byte)0xA8, 0x01, 0x66 // 本地IP
 			});
-
+			System.out.println("V:"+Converts.bytesToHexString(bsofplain.toByteArray()));	
 			encrypt = crypter.encrypt(bsofplain.toByteArray(), key0828);
 			System.out.println(Converts.bytesToHexString(encrypt));		
 			
@@ -811,7 +816,7 @@ public class T2 {
 			baos.write(new byte[]{
 					0x00, 0x38
 			});
-			baos.write(token);
+			baos.write(tokenfor0828);
 			baos.write(encrypt);
 			baos.write(new byte[]{
 					0x03
