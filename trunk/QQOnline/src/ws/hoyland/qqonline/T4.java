@@ -1,6 +1,7 @@
 package ws.hoyland.qqonline;
 
 import java.util.Enumeration;
+import java.util.zip.CRC32;
 
 import org.bouncycastle.asn1.x9.ECNamedCurveTable;
 
@@ -29,6 +30,24 @@ public class T4 {
 		System.out.println(Integer.toHexString(Integer.valueOf(164495090)).toUpperCase());
 		//byte[] xx = Converts.hexStringToByte("9cdfef2".toUpperCase());
 		System.out.println(Converts.bytesToHexString(Converts.hexStringToByte(Integer.toHexString(Integer.valueOf(164495090)).toUpperCase())));
+		
+		CRC32 crc = new CRC32();
+		crc.reset();
+		crc.update(new byte[]{
+				0x62, (byte)0x98, 0x45, 0x7F, 0x7E, 0x2C, 0x0D, (byte)0xD8, (byte)0x9E, (byte)0x8B, (byte)0xF7, 0x4B, (byte)0xF9, (byte)0x9F, (byte)0x93, 0x31
+		});
+		
+		System.out.println(Long.toHexString(crc.getValue()).toUpperCase());
+		crc.update(new byte[]{
+				0x65, (byte)0x94, 0x0E, 0x7E, (byte)0xC9, (byte)0x83, 0x36, 0x69, 0x1E, (byte)0x87, 0x63, 0x77, 0x73, 0x41, 0x43, (byte)0xEB
+		});
+		System.out.println(Long.toHexString(crc.getValue()).toUpperCase());
+		
+		crc.reset();
+		crc.update(new byte[]{
+				0x65, (byte)0x94, 0x0E, 0x7E, (byte)0xC9, (byte)0x83, 0x36, 0x69, 0x1E, (byte)0x87, 0x63, 0x77, 0x73, 0x41, 0x43, (byte)0xEB
+		});
+		System.out.println(Long.toHexString(crc.getValue()).toUpperCase());
 	}
 
 }
