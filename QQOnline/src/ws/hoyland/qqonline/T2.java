@@ -37,7 +37,7 @@ public class T2 {
 		int userID = YDM.INSTANCE.YDM_Login("hoyland", "Hoy133");
 		System.out.println("userID:"+userID);
 		
-		String account = "1627389787"; //1627389787 //744625551
+		String account = "68159276"; //1627389787 //744625551
 		String password = "981019.*";
 		String ip = "183.60.19.100";//默认IP
 		byte[] ips = new byte[]{
