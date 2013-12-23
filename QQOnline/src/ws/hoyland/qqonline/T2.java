@@ -37,7 +37,7 @@ public class T2 {
 		int userID = YDM.INSTANCE.YDM_Login("hoyland", "Hoy133");
 		System.out.println("userID:"+userID);
 		
-		String account = "744625551";
+		String account = "1627389787"; //1627389787 //744625551
 		String password = "981019.*";
 		String ip = "183.60.19.100";//默认IP
 		byte[] ips = new byte[]{
@@ -79,6 +79,8 @@ public class T2 {
 //		byte[] data00BA = null;
 		
 		byte[] key0828 = null;
+		byte[] key0828recv = null;
+		byte[] sessionkey = null;
 		
 		byte[] vctoken = null;
 		byte[] resultByte = null;
@@ -242,8 +244,9 @@ public class T2 {
 				});
 				bsofplain.write(Converts.hexStringToByte(Integer.toHexString(Integer.valueOf(account)).toUpperCase()));
 				bsofplain.write(new byte[]{
-						0x00, 0x00, 0x04, 0x36, 0x06, 0x00, 0x05, 0x11, 0x00, 0x00, 0x01, 0x00,
-						0x00, 0x00, 0x00 // 不记住密码
+						//0x00, 0x00, 0x04, 0x36, 0x06, 0x00, 0x05, 0x11, 0x00, 0x00, 0x01, 0x00,
+						0x00, 0x00, 0x04, 0x36, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x14, (byte)0x9B,
+						0x00, 0x00, 0x01 // 不记住密码
 				});
 				bsofplain.write(Converts.MD5Encode(password));
 				bsofplain.write(logintime);
@@ -252,9 +255,10 @@ public class T2 {
 				});
 				bsofplain.write(loginip);
 				bsofplain.write(new byte[]{
-						0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x0B,
+						0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x0B, 0x00,
 						0x00, 0x10,
-						(byte)0xE3, 0x04, 0x2B, (byte)0xB2, (byte)0xF7, (byte)0xEA, 0x62, 0x40, (byte)0x99, 0x62, (byte)0x81, 0x11, 0x44, 0x52, 0x17, 0x22
+						(byte)0xF0, (byte)0xF0, (byte)0xF0, (byte)0xF0, (byte)0xF0, (byte)0xF0, (byte)0xF0, (byte)0xF0, (byte)0xF0, (byte)0xF0, (byte)0xF0, (byte)0xF0, (byte)0xF0, (byte)0xF0, (byte)0xF0, (byte)0xF0
+						//(byte)0xE3, 0x04, 0x2B, (byte)0xB2, (byte)0xF7, (byte)0xEA, 0x62, 0x40, (byte)0x99, 0x62, (byte)0x81, 0x11, 0x44, 0x52, 0x17, 0x22
 						// F0 F0 F0 F0 F0 F0 F0 F0 F0 F0 F0 F0 F0 F0 F0 F0 ?
 				});
 				key0836 = genKey(0x10);
@@ -282,6 +286,7 @@ public class T2 {
 				bsofplain.write(new byte[]{
 						0x01
 				});
+				crc.reset();
 				crc.update(crcs[1]);
 				bsofplain.write(Converts.hexStringToByte(Long.toHexString(crc.getValue()).toUpperCase()));
 				bsofplain.write(new byte[]{
@@ -292,6 +297,7 @@ public class T2 {
 				bsofplain.write(new byte[]{
 						0x02
 				});
+				crc.reset();
 				crc.update(crcs[2]);
 				bsofplain.write(Converts.hexStringToByte(Long.toHexString(crc.getValue()).toUpperCase()));
 				bsofplain.write(new byte[]{
@@ -352,8 +358,8 @@ public class T2 {
 				bsofplain.write(second);		//second
 				bsofplain.write(new byte[]{
 						0x00, 0x18, 0x00, 0x16, 0x00, 0x01,
-						0x00, 0x00, 0x04, 0x36, 0x06, 0x00, 0x05, 0x11, 0x00, 0x00, 0x01, 0x00 
-						//0x00, 0x00, 0x04, 0x36, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x14, (byte)0x9B
+						//0x00, 0x00, 0x04, 0x36, 0x06, 0x00, 0x05, 0x11, 0x00, 0x00, 0x01, 0x00 
+						0x00, 0x00, 0x04, 0x36, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x14, (byte)0x9B //提示重新输入密码？
 						//00 00 04 36 00 00 00 01 00 00 14 9B?
 				});
 				bsofplain.write(Converts.hexStringToByte(Integer.toHexString(Integer.valueOf(account)).toUpperCase()));
@@ -362,7 +368,10 @@ public class T2 {
 						0x00, 0x00, 0x01, 0x03, 0x00, 0x14, 0x00, 0x01, // 固定
 						0x00, 0x10 //长度
 				});
-				bsofplain.write(genKey(0x10));//机器固定验证key
+				//bsofplain.write(genKey(0x10));//机器固定验证key
+				bsofplain.write(new byte[]{
+						0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 // 机器固定验证key
+				});
 				
 				//如果是验证码已经识别后的情况，需要加入一段数据
 				if(nvc){
@@ -417,8 +426,12 @@ public class T2 {
 						0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00// 应该是用于出现验证码时计算key，全放0，后面可以直接用0826send key解密 
 				};
 				bsofplain.write(crcs[0]);
-				crc.update(crcs[0]);
-				bsofplain.write(reverse(Converts.hexStringToByte(Long.toHexString(crc.getValue()).toUpperCase()))); // here should reverse
+				//crc.reset();
+				//crc.update(crcs[0]);
+				//bsofplain.write(reverse(Converts.hexStringToByte(Long.toHexString(crc.getValue()).toUpperCase()))); // here should reverse
+				bsofplain.write(new byte[]{
+						0x00, 0x00, 0x00, 0x00
+				});
 	
 				System.out.println("ZZ:"+bsofplain.toByteArray().length);
 				//用key0836x 进行加密
@@ -481,7 +494,7 @@ public class T2 {
 				ds.receive(dpIn);
 				//还需判断buffer 121等位置，看是否是转向，也可能是104字节，不需转向
 				buffer = pack(buffer);
-				//System.out.println(buffer.length);
+				System.out.println("TK:"+buffer.length);
 				//System.out.println("OUT:"+Converts.bytesToHexString(buffer));
 				nvc = false; //清空nvc状态
 				
@@ -678,7 +691,7 @@ public class T2 {
 							
 							System.out.println("result:"+resultByte.length+":"+result);
 								
-							//TODO 将改成自动识别
+						
 							/**
 							File file = new File("c:/t.png");
 							FileOutputStream fileOutputStream  = new FileOutputStream(file);
@@ -705,9 +718,23 @@ public class T2 {
 
 					//return;
 				}else if(buffer.length==175){
-					System.out.println("用户名或密码错误, 退出任务");
+					//System.out.println("用户名或密码错误, 退出任务");
+					byte[] ts = slice(buffer, 14, buffer.length-15);
+					ts = crypter.decrypt(ts, key0836x);
+					System.out.println(Converts.bytesToHexString(ts));
+					System.out.println(new String(slice(ts, 15, ts.length-15), "utf-8"));
 					return;
-				} 
+				}else if(buffer.length==95){					
+					byte[] ts = slice(buffer, 14, buffer.length-15);
+					ts = crypter.decrypt(ts, key0836x);
+					System.out.println(Converts.bytesToHexString(ts));
+					System.out.println(new String(slice(ts, 15, ts.length-15), "utf-8"));
+					return;
+//					System.out.println("LENGTH: 95");
+//					content = slice(buffer, 14, buffer.length-15);
+//					decrypt = crypter.decrypt(content, key0836x);
+//					System.out.println(Converts.bytesToHexString(decrypt));
+				}
 
 //				System.out.println(decrypt.length);
 //				System.out.println(Converts.bytesToHexString(decrypt));
@@ -722,7 +749,8 @@ public class T2 {
 			key0828 = slice(decrypt, 7, 0x10);
 			byte[] tokenfor0828 = slice(decrypt, 9+0x10, 0x38);
 			String rbof0836 = Converts.bytesToHexString(decrypt);
-			
+			key0828recv = slice(decrypt, rbof0836.indexOf("0000003C0002")/2+6, 0x10);
+			//00 00 00 3C 00 02
 			//Converts.bytesToHexString(decrypt).indexOf(")
 			//------------------------------------------------------------------------------
 			//0828
@@ -745,7 +773,7 @@ public class T2 {
 			bsofplain.write(new byte[]{
 					0x00, 0x78
 			});
-			bsofplain.write(slice(decrypt, rbof0836.indexOf("00000000")/2+6, 0x78));
+			bsofplain.write(slice(decrypt, rbof0836.indexOf("000000000078")/2+6, 0x78));
 			bsofplain.write(new byte[]{
 					0x00, 0x0C, 0x00, 0x16, 0x00, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 //TODO 06->00?
 			});
@@ -761,6 +789,7 @@ public class T2 {
 			bsofplain.write(new byte[]{
 					0x01
 			});
+			crc.reset();
 			crc.update(pwdkey);
 			bsofplain.write(Converts.hexStringToByte(Long.toHexString(crc.getValue()).toUpperCase()));
 			bsofplain.write(new byte[]{
@@ -771,6 +800,7 @@ public class T2 {
 			bsofplain.write(new byte[]{
 					0x02
 			});
+			crc.reset();
 			crc.update(key0836);
 			bsofplain.write(Converts.hexStringToByte(Long.toHexString(crc.getValue()).toUpperCase()));
 			bsofplain.write(new byte[]{
@@ -781,6 +811,7 @@ public class T2 {
 			bsofplain.write(new byte[]{
 					0x01
 			});
+			crc.reset();
 			crc.update(crcs[1]);
 			bsofplain.write(Converts.hexStringToByte(Long.toHexString(crc.getValue()).toUpperCase()));
 			bsofplain.write(new byte[]{
@@ -791,6 +822,7 @@ public class T2 {
 			bsofplain.write(new byte[]{
 					0x02
 			});
+			crc.reset();
 			crc.update(crcs[2]);
 			bsofplain.write(Converts.hexStringToByte(Long.toHexString(crc.getValue()).toUpperCase()));
 			bsofplain.write(new byte[]{
@@ -866,7 +898,7 @@ public class T2 {
 			baos.write(new byte[]{
 					//0x03, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00, 0x66, (byte)0xA2, 0x00, 0x30, 0x00, 0x30
 					//0x02, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00, 0x66, (byte)0xA2, 0x00, 0x30, 0x00, 0x3A
-					0x02, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00, 0x66, (byte)0xA2, 0x00, 0x30, 0x00, 0x3A
+					0x02, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00, 0x66, 0x68, 0x00, 0x30, 0x00, 0x3A//(byte)0xA2?
 			});
 			baos.write(new byte[]{
 					0x00, 0x38
@@ -895,8 +927,8 @@ public class T2 {
 			System.out.println(buffer.length);
 			System.out.println(Converts.bytesToHexString(buffer));
 			if(buffer.length==127){
-				System.out.println("您的网络环境可能发生了变化，为了您的帐号安全，请重新登录。");
-				System.out.println("退出任务");
+				//System.out.println("您的网络环境可能发生了变化，为了您的帐号安全，请重新登录。");
+				//System.out.println("退出任务");
 				
 				byte[] ts = slice(buffer, 14, buffer.length-15);
 				ts = crypter.decrypt(ts, key0828);
@@ -905,8 +937,59 @@ public class T2 {
 				return;
 			}else{
 				System.out.println("OK");
+				content = slice(buffer, 14, buffer.length-15);
+				System.out.println(Converts.bytesToHexString(key0828recv));
+				decrypt = crypter.decrypt(content, key0828recv);
+				System.out.println(decrypt.length);
+				System.out.println(Converts.bytesToHexString(decrypt));
+				
+				sessionkey = slice(decrypt, 63, 0x10);				
 			}
 			
+			//00EC 上线包
+			//-------------------------------------------------------------------
+			seq++;
+			
+			bsofplain = new ByteArrayOutputStream();
+			bsofplain.write(new byte[]{
+					0x01, 0x00, 0x0A
+			});
+			encrypt = crypter.encrypt(bsofplain.toByteArray(), sessionkey);
+			
+			baos = new ByteArrayOutputStream();
+			baos.write(new byte[]{
+					0x02, 0x34, 0x4B, 0x00, (byte)0xEC
+			});
+			baos.write(Converts.hexStringToByte(Integer.toHexString(seq).toUpperCase()));
+			baos.write(Converts.hexStringToByte(Integer.toHexString(Integer.valueOf(account)).toUpperCase()));
+			baos.write(new byte[]{
+					//0x03, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00, 0x66, (byte)0xA2, 0x00, 0x30, 0x00, 0x30
+					//0x02, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00, 0x66, (byte)0xA2, 0x00, 0x30, 0x00, 0x3A
+					//0x02, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00, 0x66, 0x68, 0x00, 0x30, 0x00, 0x3A//(byte)0xA2?
+					0x02, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00, 0x65, (byte)0xCA 
+			});
+			baos.write(encrypt);
+			baos.write(new byte[]{
+					0x03
+			});
+			
+			buf = baos.toByteArray();
+			
+			System.out.println("00EC["+Converts.bytesToHexString(sessionkey)+"]");
+			System.out.println(Converts.bytesToHexString(baos.toByteArray()));			
+			
+			dpOut = new DatagramPacket(buf, buf.length, InetAddress.getByName(ip), 8000);
+			ds.send(dpOut);
+			
+			//IN:
+			buffer = new byte[1024];
+			dpIn = new DatagramPacket(buffer, buffer.length);
+							
+			ds.receive(dpIn);
+			
+			buffer = pack(buffer);
+			System.out.println(buffer.length);
+			System.out.println(Converts.bytesToHexString(buffer));
 		}catch(Exception e){
 			e.printStackTrace();
 		}finally{
