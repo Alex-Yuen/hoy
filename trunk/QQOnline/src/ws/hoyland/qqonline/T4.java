@@ -1,6 +1,7 @@
 package ws.hoyland.qqonline;
 
 import java.util.Enumeration;
+import java.util.Random;
 import java.util.zip.CRC32;
 
 import org.bouncycastle.asn1.x9.ECNamedCurveTable;
@@ -50,7 +51,12 @@ public class T4 {
 		System.out.println(Long.toHexString(crc.getValue()).toUpperCase());
 		**/
 		long time = System.currentTimeMillis();
-		System.out.println(Integer.toHexString((int)(time&0xFF00)));
+		//System.out.println(Integer.toHexString((int)(time&0xFF00)));
+		System.out.println(Long.toHexString(time/1000).toUpperCase());
+		System.out.println((time));
+		
+		Random rnd = new Random();
+		System.out.println((short)rnd.nextInt(0xFFFF));
 		
 	}
 
