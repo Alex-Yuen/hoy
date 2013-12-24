@@ -1,8 +1,6 @@
 package ws.hoyland.qqonline;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.net.*;
 import java.security.KeyFactory;
 import java.security.KeyPair;
@@ -37,7 +35,7 @@ public class T2 {
 		int userID = YDM.INSTANCE.YDM_Login("hoyland", "Hoy133");
 		System.out.println("userID:"+userID);
 		
-		String account = "68159276"; //1627389787 //744625551
+		String account = "744625551"; //1627389787 //744625551
 		String password = "981019.*";
 		String ip = "183.60.19.100";//默认IP
 		byte[] ips = new byte[]{
@@ -976,7 +974,7 @@ public class T2 {
 			buf = baos.toByteArray();
 			
 			System.out.println("00EC["+Converts.bytesToHexString(sessionkey)+"]");
-			System.out.println(Converts.bytesToHexString(baos.toByteArray()));			
+			System.out.println(Converts.bytesToHexString(baos.toByteArray()));
 			
 			dpOut = new DatagramPacket(buf, buf.length, InetAddress.getByName(ip), 8000);
 			ds.send(dpOut);
@@ -988,8 +986,153 @@ public class T2 {
 			ds.receive(dpIn);
 			
 			buffer = pack(buffer);
-			System.out.println(buffer.length);
-			System.out.println(Converts.bytesToHexString(buffer));
+//			System.out.println(buffer.length);
+//			System.out.println(Converts.bytesToHexString(buffer));
+			
+			while(true){
+				//00CE接收消息
+				//--------------------------------------------------
+				buffer = new byte[1024];
+				dpIn = new DatagramPacket(buffer, buffer.length);
+				ds.receive(dpIn);
+				buffer = pack(buffer);
+//				System.out.println("P1:"+buffer.length);
+//				System.out.println(Converts.bytesToHexString(buffer));
+				
+				byte[] header = slice(buffer, 3, 2);
+				byte[] rh = slice(buffer, 0, 11);
+//				System.out.println("VV:"+header[0]+"|"+header[1]);
+				if(header[0]==0x00&&header[1]==(byte)0xCE){
+					content = slice(buffer, 14, buffer.length-15);
+					decrypt = crypter.decrypt(content, sessionkey);
+					System.out.println("00CE[RECV]:"+decrypt.length);
+					System.out.println(Converts.bytesToHexString(decrypt));
+					
+					//00CE的反馈
+					bsofplain = new ByteArrayOutputStream();
+					bsofplain.write(slice(decrypt, 0, 0x010));
+					encrypt = crypter.encrypt(bsofplain.toByteArray(), sessionkey);
+										
+					baos = new ByteArrayOutputStream();
+					baos.write(rh);
+					baos.write(new byte[]{
+							//0x03, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00, 0x66, (byte)0xA2, 0x00, 0x30, 0x00, 0x30
+							//0x02, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00, 0x66, (byte)0xA2, 0x00, 0x30, 0x00, 0x3A
+							//0x02, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00, 0x66, 0x68, 0x00, 0x30, 0x00, 0x3A//(byte)0xA2?
+							0x02, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00, 0x65, (byte)0xCA							
+							//02 00 00 00 01 							01 01 00 00 66 79? 
+					});
+					baos.write(encrypt);
+					baos.write(new byte[]{
+							0x03
+					});
+					
+					buf = baos.toByteArray();
+					
+					System.out.println("00CE[SEND]["+Converts.bytesToHexString(sessionkey)+"]");
+					System.out.println(Converts.bytesToHexString(baos.toByteArray()));
+					
+					dpOut = new DatagramPacket(buf, buf.length, InetAddress.getByName(ip), 8000);
+					ds.send(dpOut);
+					
+					//0319 ? 01C0?
+					//表示已经读取本消息
+					//----------------------------------------------
+					
+					//00CD回复消息
+					//----------------------------------------------
+					seq++;
+					bsofplain = new ByteArrayOutputStream();
+					bsofplain.write(slice(decrypt, 4, 0x04));
+					bsofplain.write(slice(decrypt, 0, 0x04));
+					bsofplain.write(new byte[]{			
+							0x00, 0x00, 0x00, 0x0D, 0x00, 0x01, 0x00, 0x04, 0x00, 0x00, 0x00, 0x00, 0x00, 0x03, 0x00, 0x01, 0x01,
+							0x34, 0x4B
+					});
+					bsofplain.write(slice(decrypt, 4, 0x04));
+					bsofplain.write(slice(decrypt, 0, 0x04));
+
+					byte[] tn = slice(decrypt, 0, 0x04);
+					byte[] msghd = new byte[20];
+					for(int i=0;i<4;i++){ 
+						msghd[i] = tn[i];
+					}
+					for(int i=0;i<sessionkey.length;i++){
+						msghd[i+4] = sessionkey[i];
+					}
+					bsofplain.write(Converts.MD5Encode(msghd));
+					bsofplain.write(new byte[]{
+							0x00, 0x0B
+					});
+					bsofplain.write(Converts.hexStringToByte(Integer.toHexString(seq+0x1111).toUpperCase()));
+					bsofplain.write(new byte[]{
+							0x52,(byte)0xB9,0x0E,(byte)0x94,  //时间
+							0x02,0x37,  //图标？
+							0x00,0x00,0x00,
+							0x00,  //是否有字体
+							0x01,  //分片数
+							0x00,  //分片索引
+							0x00,0x00, //消息ID
+							0x02,  //02,0xauto,0xreply,,0x01,0xnormal
+							0x4D,0x53,0x47,0x00,0x00,0x00,0x00,0x00,  //fix
+							0x52,(byte)0xB9,0x0E,(byte)0x94,  //发送时间
+							(byte)0xBE,(byte)0x97,0x4A,(byte)0x92,  //随机？
+							0x00,
+							0x00,0x00,0x00,  //字体颜色
+							0x0C,  //字体大小
+							0x00,  //其他属性
+							(byte)0x86,0x02,  //字符集
+							0x00,0x06,  //字体名称长度
+							(byte)0xE5,(byte)0xAE,(byte)0x8B,(byte)0xE4,(byte)0xBD,(byte)0x93,  //宋体
+							0x00,0x00,0x01, 
+							0x00,0x1C,  //消息快总长度
+							0x01,  //消息快编号
+							0x00,0x19,  //消息快大小
+							//0x61,0x73,0x64,0x66  //消息
+							(byte)0xE4,(byte)0xBD,(byte)0xA0,(byte)0xE5,(byte)0xA5,(byte)0xBD,(byte)0xEF,(byte)0xBC,(byte)0x8C,(byte)0xE6,(byte)0x88,(byte)0x91,(byte)0xE7,(byte)0x8E,(byte)0xB0,(byte)0xE5,(byte)0x9C,(byte)0xA8,(byte)0xE4,(byte)0xB8,(byte)0x8D,(byte)0xE5,(byte)0x9C,(byte)0xA8,0x21
+					});
+					
+					encrypt = crypter.encrypt(bsofplain.toByteArray(), sessionkey);
+										
+					baos = new ByteArrayOutputStream();
+					baos.write(new byte[]{
+							0x02, 0x34, 0x4B, 0x00, (byte)0xCD
+					});
+					baos.write(Converts.hexStringToByte(Integer.toHexString(seq).toUpperCase()));
+					baos.write(Converts.hexStringToByte(Integer.toHexString(Integer.valueOf(account)).toUpperCase()));
+					baos.write(new byte[]{
+							//0x03, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00, 0x66, (byte)0xA2, 0x00, 0x30, 0x00, 0x30
+							//0x02, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00, 0x66, (byte)0xA2, 0x00, 0x30, 0x00, 0x3A
+							//0x02, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00, 0x66, 0x68, 0x00, 0x30, 0x00, 0x3A//(byte)0xA2?
+							0x02, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00, 0x65, (byte)0xCA 
+					});
+					baos.write(encrypt);
+					baos.write(new byte[]{
+							0x03
+					});
+					
+					buf = baos.toByteArray();
+					
+					System.out.println("00CD["+Converts.bytesToHexString(sessionkey)+"]");
+					System.out.println(Converts.bytesToHexString(baos.toByteArray()));
+					
+					dpOut = new DatagramPacket(buf, buf.length, InetAddress.getByName(ip), 8000);
+					ds.send(dpOut);
+					
+					//IN:
+					buffer = new byte[1024];
+					dpIn = new DatagramPacket(buffer, buffer.length);
+									
+					ds.receive(dpIn);
+					
+					buffer = pack(buffer);
+					System.out.println(buffer.length);
+					System.out.println(Converts.bytesToHexString(buffer));
+				}
+				//消息处理
+				//心跳包
+				//隐身和离开的状态
+			}
 		}catch(Exception e){
 			e.printStackTrace();
 		}finally{
