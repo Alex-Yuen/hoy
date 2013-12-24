@@ -30,7 +30,7 @@ public class T4 {
 		System.out.println(Integer.toHexString(Integer.valueOf(164495090)).toUpperCase());
 		//byte[] xx = Converts.hexStringToByte("9cdfef2".toUpperCase());
 		System.out.println(Converts.bytesToHexString(Converts.hexStringToByte(Integer.toHexString(Integer.valueOf(164495090)).toUpperCase())));
-		
+		/**
 		CRC32 crc = new CRC32();
 		crc.reset();
 		crc.update(new byte[]{
@@ -48,6 +48,10 @@ public class T4 {
 				0x65, (byte)0x94, 0x0E, 0x7E, (byte)0xC9, (byte)0x83, 0x36, 0x69, 0x1E, (byte)0x87, 0x63, 0x77, 0x73, 0x41, 0x43, (byte)0xEB
 		});
 		System.out.println(Long.toHexString(crc.getValue()).toUpperCase());
+		**/
+		long time = System.currentTimeMillis();
+		System.out.println(Integer.toHexString((int)(time&0xFF00)));
+		
 	}
 
 }
