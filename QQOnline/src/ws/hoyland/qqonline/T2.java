@@ -704,6 +704,10 @@ public class T2 {
 							fileOutputStream.close();
 							**/
 						}else{
+							System.out.println("验证结果:"+buffer.length);
+							//其他情况，报告错误							
+							//95正常?
+							//TODO
 							content = slice(buffer, 14, buffer.length-15);
 							decrypt = crypter.decrypt(content, key00BA);
 							//获取vctoken
@@ -1071,7 +1075,9 @@ public class T2 {
 						DatagramPacket dpOut = new DatagramPacket(buf, buf.length, InetAddress.getByName(ipx), 8000);
 						dsx.send(dpOut);
 							
+						//not need
 						//IN:
+						/**
 						byte[] buffer = new byte[1024];
 						DatagramPacket dpIn = new DatagramPacket(buffer, buffer.length);
 											
@@ -1080,6 +1086,7 @@ public class T2 {
 						buffer = pack(buffer);
 						System.out.println(buffer.length);
 						System.out.println(Converts.bytesToHexString(buffer));
+						**/
 					}catch(Exception e){
 						e.printStackTrace();
 					}
@@ -1099,7 +1106,8 @@ public class T2 {
 				
 				byte[] header = slice(buffer, 3, 2);
 				byte[] rh = slice(buffer, 0, 11);
-//				System.out.println("VV:"+header[0]+"|"+header[1]);
+				System.out.println("RECV[+"+buffer.length+"]:"+header[0]+"|"+header[1]);
+				
 				if(header[0]==0x00&&header[1]==(byte)0xCE){
 					content = slice(buffer, 14, buffer.length-15);
 					decrypt = crypter.decrypt(content, sessionkey);
@@ -1117,8 +1125,8 @@ public class T2 {
 							//0x03, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00, 0x66, (byte)0xA2, 0x00, 0x30, 0x00, 0x30
 							//0x02, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00, 0x66, (byte)0xA2, 0x00, 0x30, 0x00, 0x3A
 							//0x02, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00, 0x66, 0x68, 0x00, 0x30, 0x00, 0x3A//(byte)0xA2?
-							0x02, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00, 0x65, (byte)0xCA							
-							//02 00 00 00 01 							01 01 00 00 66 79? 
+							0x02, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00, 0x66, (byte)0xA2							
+							//02 00 00 00 01 							01 01 00 00 66 79?  0x65, (byte)0xCA	
 					});
 					baos.write(encrypt);
 					baos.write(new byte[]{
@@ -1215,7 +1223,7 @@ public class T2 {
 								//0x03, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00, 0x66, (byte)0xA2, 0x00, 0x30, 0x00, 0x30
 								//0x02, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00, 0x66, (byte)0xA2, 0x00, 0x30, 0x00, 0x3A
 								//0x02, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00, 0x66, 0x68, 0x00, 0x30, 0x00, 0x3A//(byte)0xA2?
-								0x02, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00, 0x65, (byte)0xCA 
+								0x02, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00, 0x66, (byte)0xA2 //0x65, (byte)0xCA 
 						});
 						baos.write(encrypt);
 						baos.write(new byte[]{
@@ -1230,7 +1238,8 @@ public class T2 {
 						dpOut = new DatagramPacket(buf, buf.length, InetAddress.getByName(ip), 8000);
 						ds.send(dpOut);
 						
-						//IN:
+						//IN: not need
+						/**
 						buffer = new byte[1024];
 						dpIn = new DatagramPacket(buffer, buffer.length);
 										
@@ -1239,10 +1248,58 @@ public class T2 {
 						buffer = pack(buffer);
 						System.out.println(buffer.length);
 						System.out.println(Converts.bytesToHexString(buffer));
+						**/
+					}else { //命令离线 //decrypt判断
+						//离线的处理
+						seq++;
+						
+						bsofplain.write(new byte[]{			
+								0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
+						});
+						
+						encrypt = crypter.encrypt(bsofplain.toByteArray(), sessionkey);
+											
+						baos = new ByteArrayOutputStream();
+						baos.write(new byte[]{
+								0x02, 0x34, 0x4B, 0x00, 0x62
+						});
+						baos.write(Converts.hexStringToByte(Integer.toHexString(seq).toUpperCase()));
+						baos.write(Converts.hexStringToByte(Integer.toHexString(Integer.valueOf(account)).toUpperCase()));
+						baos.write(new byte[]{
+								//0x03, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00, 0x66, (byte)0xA2, 0x00, 0x30, 0x00, 0x30
+								//0x02, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00, 0x66, (byte)0xA2, 0x00, 0x30, 0x00, 0x3A
+								//0x02, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00, 0x66, 0x68, 0x00, 0x30, 0x00, 0x3A//(byte)0xA2?
+								0x02, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00, 0x66, (byte)0xA2 //0x65, (byte)0xCA								
+						});
+						baos.write(encrypt);
+						baos.write(new byte[]{
+								0x03
+						});
+						
+						buf = baos.toByteArray();
+						
+						System.out.println("0062["+Converts.bytesToHexString(sessionkey)+"]");
+						System.out.println(Converts.bytesToHexString(baos.toByteArray()));
+						
+						dpOut = new DatagramPacket(buf, buf.length, InetAddress.getByName(ip), 8000);
+						ds.send(dpOut);
+						
+						timer.cancel();
+						return;
+						//IN: not need
+						/**
+						buffer = new byte[1024];
+						dpIn = new DatagramPacket(buffer, buffer.length);
+										
+						ds.receive(dpIn);
+						
+						buffer = pack(buffer);
+						System.out.println(buffer.length);
+						System.out.println(Converts.bytesToHexString(buffer));
+						**/						
 					}
 				}
 				//消息处理 0319 已读
-				//离线的处理
 			}
 		}catch(Exception e){
 			e.printStackTrace();
