@@ -17,5 +17,6 @@
 	<classpathentry kind="lib" path="lib/bcprov-jdk15on-150.jar"/>
 	<classpathentry kind="lib" path="lib/jna.jar"/>
 	<classpathentry kind="lib" path="lib/JNative.jar"/>
+	<classpathentry kind="lib" path="lib/image.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
