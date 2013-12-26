@@ -249,7 +249,7 @@ public class Task implements Runnable, Observer {
 					0x02, 0x34, 0x4B, 0x00, 0x62
 			});
 			baos.write(Converts.hexStringToByte(Integer.toHexString(seq).toUpperCase()));
-			baos.write(Converts.hexStringToByte(Integer.toHexString(Integer.valueOf(account)).toUpperCase()));
+			baos.write(Converts.hexStringToByte(Long.toHexString(Long.valueOf(account)).toUpperCase()));
 			baos.write(new byte[]{
 					//0x03, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00, 0x66, (byte)0xA2, 0x00, 0x30, 0x00, 0x30
 					//0x02, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00, 0x66, (byte)0xA2, 0x00, 0x30, 0x00, 0x3A
@@ -353,7 +353,7 @@ public class Task implements Runnable, Observer {
 							0x02, 0x34, 0x4B, 0x08, 0x25
 					});
 					baos.write(Converts.hexStringToByte(Integer.toHexString(seq).toUpperCase()));
-					baos.write(Converts.hexStringToByte(Integer.toHexString(Integer.valueOf(account)).toUpperCase()));
+					baos.write(Converts.hexStringToByte(Long.toHexString(Long.valueOf(account)).toUpperCase()));
 					baos.write(new byte[]{
 							0x03, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00, 0x66, (byte)0xA2, 0x00, 0x00, 0x00, 0x00
 					});
@@ -366,7 +366,7 @@ public class Task implements Runnable, Observer {
 							0x00, 0x18, 0x00, 0x16, 0x00, 0x01,
 							0x00, 0x00, 0x04, 0x36, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x14, (byte)0x9B
 					});
-					bsofplain.write(Converts.hexStringToByte(Integer.toHexString(Integer.valueOf(account)).toUpperCase()));
+					bsofplain.write(Converts.hexStringToByte(Long.toHexString(Long.valueOf(account)).toUpperCase()));
 					bsofplain.write(new byte[]{
 							0x00, 0x00, 0x00, 0x00, 0x03, 0x09, 0x00, 0x08, 0x00, 0x01
 					});
@@ -459,7 +459,7 @@ public class Task implements Runnable, Observer {
 					bsofplain.write(new byte[]{
 							0x00, 0x01 
 					});
-					bsofplain.write(Converts.hexStringToByte(Integer.toHexString(Integer.valueOf(account)).toUpperCase()));
+					bsofplain.write(Converts.hexStringToByte(Long.toHexString(Long.valueOf(account)).toUpperCase()));
 					bsofplain.write(new byte[]{
 							//0x00, 0x00, 0x04, 0x36, 0x06, 0x00, 0x05, 0x11, 0x00, 0x00, 0x01, 0x00,
 							0x00, 0x00, 0x04, 0x36, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x14, (byte)0x9B,
@@ -488,7 +488,7 @@ public class Task implements Runnable, Observer {
 					bsofpwd.write(new byte[]{
 							0x00, 0x00, 0x00, 0x00
 					});
-					bsofpwd.write(Converts.hexStringToByte(Integer.toHexString(Integer.valueOf(account)).toUpperCase()));
+					bsofpwd.write(Converts.hexStringToByte(Long.toHexString(Long.valueOf(account)).toUpperCase()));
 					pwdkey = Converts.MD5Encode(bsofpwd.toByteArray());
 					//System.out.println(Converts.bytesToHexString(pwdkey));
 					
@@ -554,7 +554,7 @@ public class Task implements Runnable, Observer {
 					bsofplain.write(new byte[]{
 							0x00, 0x05, 0x00, 0x06, 0x00, 0x02
 					});
-					bsofplain.write(Converts.hexStringToByte(Integer.toHexString(Integer.valueOf(account)).toUpperCase()));
+					bsofplain.write(Converts.hexStringToByte(Long.toHexString(Long.valueOf(account)).toUpperCase()));
 					bsofplain.write(new byte[]{
 							0x00, 0x06
 					});
@@ -579,7 +579,7 @@ public class Task implements Runnable, Observer {
 							0x00, 0x00, 0x04, 0x36, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x14, (byte)0x9B //提示重新输入密码？
 							//00 00 04 36 00 00 00 01 00 00 14 9B?
 					});
-					bsofplain.write(Converts.hexStringToByte(Integer.toHexString(Integer.valueOf(account)).toUpperCase()));
+					bsofplain.write(Converts.hexStringToByte(Long.toHexString(Long.valueOf(account)).toUpperCase()));
 					bsofplain.write(new byte[]{
 							0x00, 0x00,  // 记住密码00 01
 							0x00, 0x00, 0x01, 0x03, 0x00, 0x14, 0x00, 0x01, // 固定
@@ -667,7 +667,7 @@ public class Task implements Runnable, Observer {
 							0x02, 0x34, 0x4B, 0x08, 0x36
 					});
 					baos.write(Converts.hexStringToByte(Integer.toHexString(seq).toUpperCase()));
-					baos.write(Converts.hexStringToByte(Integer.toHexString(Integer.valueOf(account)).toUpperCase()));
+					baos.write(Converts.hexStringToByte(Long.toHexString(Long.valueOf(account)).toUpperCase()));
 					baos.write(new byte[]{
 							0x03, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00, 0x66, (byte)0xA2, 0x00, 0x00, 0x00, 0x00
 					});
@@ -849,7 +849,7 @@ public class Task implements Runnable, Observer {
 									0x02, 0x34, 0x4B, 0x00, (byte)0xBA
 							});
 							baos.write(Converts.hexStringToByte(Integer.toHexString(seq).toUpperCase()));
-							baos.write(Converts.hexStringToByte(Integer.toHexString(Integer.valueOf(account)).toUpperCase()));
+							baos.write(Converts.hexStringToByte(Long.toHexString(Long.valueOf(account)).toUpperCase()));
 							baos.write(new byte[]{
 									0x03, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00, 0x66, (byte)0xA2, 0x00, 0x00, 0x00, 0x00
 							});
@@ -941,7 +941,7 @@ public class Task implements Runnable, Observer {
 									System.out.println(Converts.bytesToHexString(decrypt));
 									System.out.println(Converts.bytesToHexString(vctoken));
 									
-									idx++;
+									//idx++; //not need 要验证后才确定是否 idx++
 								}else{
 									info("验证码错误， 报告异常");
 									try {
@@ -975,18 +975,31 @@ public class Task implements Runnable, Observer {
 						System.out.println(Converts.bytesToHexString(ts));
 						System.out.println(new String(slice(ts, 15, ts.length-15), "utf-8"));
 						info(new String(slice(ts, 15, ts.length-15), "utf-8"));
-						idx = 1;
+						run = false;
+						return;
+						//idx = 1;?
 					}else if(buffer.length==95){					
 						byte[] ts = slice(buffer, 14, buffer.length-15);
 						ts = crypter.decrypt(ts, key0836x);
 						System.out.println(Converts.bytesToHexString(ts));
 						System.out.println(new String(slice(ts, 15, ts.length-15), "utf-8"));
 						info(new String(slice(ts, 15, ts.length-15), "utf-8"));
-						idx = 1;
+						run = false;
+						return;
+						//idx = 1;
 //						System.out.println("LENGTH: 95");
 //						content = slice(buffer, 14, buffer.length-15);
 //						decrypt = crypter.decrypt(content, key0836x);
 //						System.out.println(Converts.bytesToHexString(decrypt));
+					}else if(buffer.length==247){
+						byte[] ts = slice(buffer, 14, buffer.length-15);
+						ts = crypter.decrypt(ts, key0836x);
+						System.out.println(Converts.bytesToHexString(ts));
+						System.out.println(new String(slice(ts, 15, ts.length-15), "utf-8"));
+						info(new String(slice(ts, 15, ts.length-15), "utf-8"));
+						run = false;
+						return;
+						//idx = 1;
 					}else{
 						idx++;
 					}
@@ -1017,11 +1030,11 @@ public class Task implements Runnable, Observer {
 				String rbofrdec = Converts.bytesToHexString(rdecrypt);
 				int nickidx = -1;
 				do{
-					nickidx = rbofrdec.indexOf("3702")/2;
-					rbofrdec = rbofrdec.substring(nickidx + 4);//往前查找
-				}while(!((rdecrypt[nickidx+6]==0x01)&&(rdecrypt[nickidx+7]==0x00)));
+					//nickidx = rbofrdec.indexOf("0100")/2;
+					rbofrdec = rbofrdec.substring(rbofrdec.indexOf("0100") + 4);//往前查找
+				}while(!"0801".equals(rbofrdec.substring(4, 8)));
 				//退出循环，当为找到
-				nickidx = decrypt.length - nickidx;
+				nickidx = rbofrdec.length()/2 + 8;
 				int nicklen = decrypt[nickidx];
 				byte[] nick = new byte[nicklen];
 				for(int i=0;i<nicklen;i++){
@@ -1118,7 +1131,7 @@ public class Task implements Runnable, Observer {
 						0x00, 0x18, 0x00, 0x16, 0x00, 0x01, // 固定
 						0x00, 0x00, 0x04, 0x36, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x14, (byte)0x9B
 				});
-				bsofplain.write(Converts.hexStringToByte(Integer.toHexString(Integer.valueOf(account)).toUpperCase()));
+				bsofplain.write(Converts.hexStringToByte(Long.toHexString(Long.valueOf(account)).toUpperCase()));
 				bsofplain.write(new byte[]{
 						0x00, 0x00, 0x00, 0x00, 0x00, 0x1F, 0x00, 0x22, 0x00, 0x01
 				});
@@ -1176,7 +1189,7 @@ public class Task implements Runnable, Observer {
 						0x02, 0x34, 0x4B, 0x08, 0x28
 				});
 				baos.write(Converts.hexStringToByte(Integer.toHexString(seq).toUpperCase()));
-				baos.write(Converts.hexStringToByte(Integer.toHexString(Integer.valueOf(account)).toUpperCase()));
+				baos.write(Converts.hexStringToByte(Long.toHexString(Long.valueOf(account)).toUpperCase()));
 				baos.write(new byte[]{
 						//0x03, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00, 0x66, (byte)0xA2, 0x00, 0x30, 0x00, 0x30
 						//0x02, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00, 0x66, (byte)0xA2, 0x00, 0x30, 0x00, 0x3A
@@ -1285,7 +1298,7 @@ public class Task implements Runnable, Observer {
 						0x02, 0x34, 0x4B, 0x00, (byte)0xEC
 				});
 				baos.write(Converts.hexStringToByte(Integer.toHexString(seq).toUpperCase()));
-				baos.write(Converts.hexStringToByte(Integer.toHexString(Integer.valueOf(account)).toUpperCase()));
+				baos.write(Converts.hexStringToByte(Long.toHexString(Long.valueOf(account)).toUpperCase()));
 				baos.write(new byte[]{
 						//0x03, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00, 0x66, (byte)0xA2, 0x00, 0x30, 0x00, 0x30
 						//0x02, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00, 0x66, (byte)0xA2, 0x00, 0x30, 0x00, 0x3A
@@ -1359,7 +1372,7 @@ public class Task implements Runnable, Observer {
 									0x02, 0x34, 0x4B, 0x00, 0x58
 							});
 							baos.write(Converts.hexStringToByte(Integer.toHexString(seq).toUpperCase()));
-							baos.write(Converts.hexStringToByte(Integer.toHexString(Integer.valueOf(account)).toUpperCase()));
+							baos.write(Converts.hexStringToByte(Long.toHexString(Long.valueOf(account)).toUpperCase()));
 							baos.write(new byte[]{
 									//0x03, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00, 0x66, (byte)0xA2, 0x00, 0x30, 0x00, 0x30
 									//0x02, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00, 0x66, (byte)0xA2, 0x00, 0x30, 0x00, 0x3A
@@ -1554,7 +1567,7 @@ public class Task implements Runnable, Observer {
 									0x02, 0x34, 0x4B, 0x00, (byte)0xCD
 							});
 							baos.write(Converts.hexStringToByte(Integer.toHexString(seq).toUpperCase()));
-							baos.write(Converts.hexStringToByte(Integer.toHexString(Integer.valueOf(account)).toUpperCase()));
+							baos.write(Converts.hexStringToByte(Long.toHexString(Long.valueOf(account)).toUpperCase()));
 							baos.write(new byte[]{
 									//0x03, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00, 0x66, (byte)0xA2, 0x00, 0x30, 0x00, 0x30
 									//0x02, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00, 0x66, (byte)0xA2, 0x00, 0x30, 0x00, 0x3A
@@ -1601,7 +1614,7 @@ public class Task implements Runnable, Observer {
 									0x02, 0x34, 0x4B, 0x00, 0x62
 							});
 							baos.write(Converts.hexStringToByte(Integer.toHexString(seq).toUpperCase()));
-							baos.write(Converts.hexStringToByte(Integer.toHexString(Integer.valueOf(account)).toUpperCase()));
+							baos.write(Converts.hexStringToByte(Long.toHexString(Long.valueOf(account)).toUpperCase()));
 							baos.write(new byte[]{
 									//0x03, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00, 0x66, (byte)0xA2, 0x00, 0x30, 0x00, 0x30
 									//0x02, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00, 0x66, (byte)0xA2, 0x00, 0x30, 0x00, 0x3A
@@ -1785,6 +1798,7 @@ public class Task implements Runnable, Observer {
 					//离线的处理
 					seq++;
 					
+					bsofplain = new ByteArrayOutputStream();
 					bsofplain.write(new byte[]{			
 							0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
 					});
@@ -1796,7 +1810,7 @@ public class Task implements Runnable, Observer {
 							0x02, 0x34, 0x4B, 0x00, 0x62
 					});
 					baos.write(Converts.hexStringToByte(Integer.toHexString(seq).toUpperCase()));
-					baos.write(Converts.hexStringToByte(Integer.toHexString(Integer.valueOf(account)).toUpperCase()));
+					baos.write(Converts.hexStringToByte(Long.toHexString(Long.valueOf(account)).toUpperCase()));
 					baos.write(new byte[]{
 							//0x03, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00, 0x66, (byte)0xA2, 0x00, 0x30, 0x00, 0x30
 							//0x02, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00, 0x66, (byte)0xA2, 0x00, 0x30, 0x00, 0x3A
