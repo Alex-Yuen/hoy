@@ -61,7 +61,6 @@ public class QQOL implements Observer{
 	private Label label_9;
 	private Button button;
 	private Label label_6;
-	private Button button_4;
 	private Combo combo;
 	private int first = -1;
 	private int last = -1;
@@ -72,6 +71,9 @@ public class QQOL implements Observer{
 	private MenuItem mntmc_1;
 	private MenuItem mntml;
 	private MenuItem mntmNewItem;
+	private TableColumn tableColumn_3;
+	private TableColumn tableColumn_5;
+	private TableColumn tblclmnNewColumn;
 	/**
 	 * Launch the application.
 	 * @param args
@@ -187,7 +189,7 @@ public class QQOL implements Observer{
 		label.setBounds(0, 1, 60, 17);
 		
 		label_1 = new Label(shlSszs, SWT.BORDER | SWT.WRAP);
-		label_1.setBounds(66, 1, 225, 17);
+		label_1.setBounds(66, 1, 598, 17);
 		
 		Link link = new Link(shlSszs, 0);
 		link.addSelectionListener(new SelectionAdapter() {
@@ -206,7 +208,7 @@ public class QQOL implements Observer{
 			}
 		});
 		link.setText("<a>导入...</a>");
-		link.setBounds(314, 1, 36, 17);
+		link.setBounds(670, 1, 36, 17);
 		
 		table = new Table(shlSszs, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI);
 		table.addSelectionListener(new SelectionAdapter() {
@@ -229,7 +231,7 @@ public class QQOL implements Observer{
 		});
 		table.setLinesVisible(true);
 		table.setHeaderVisible(true);
-		table.setBounds(0, 24, 350, 238);
+		table.setBounds(0, 24, 706, 238);
 		
 		TableColumn tableColumn = new TableColumn(table, SWT.NONE);
 		tableColumn.setWidth(30);
@@ -243,8 +245,12 @@ public class QQOL implements Observer{
 		tableColumn_2.setWidth(100);
 		tableColumn_2.setText("密码");
 		
+		tblclmnNewColumn = new TableColumn(table, SWT.NONE);
+		tblclmnNewColumn.setWidth(100);
+		tblclmnNewColumn.setText("昵称");
+		
 		TableColumn tableColumn_4 = new TableColumn(table, SWT.NONE);
-		tableColumn_4.setWidth(98);
+		tableColumn_4.setWidth(165);
 		tableColumn_4.setText("状态");
 		
 		Menu menu_1 = new Menu(table);
@@ -322,6 +328,14 @@ public class QQOL implements Observer{
 		});
 		mntmc_1.setText("复制(&C)");
 		
+		tableColumn_3 = new TableColumn(table, SWT.NONE);
+		tableColumn_3.setWidth(135);
+		tableColumn_3.setText("最后活动");
+		
+		tableColumn_5 = new TableColumn(table, SWT.NONE);
+		tableColumn_5.setWidth(70);
+		tableColumn_5.setText("在线时长");
+		
 		Group group = new Group(shlSszs, SWT.NONE);
 		group.setText("工作区");
 		group.setBounds(217, 268, 489, 176);
@@ -376,7 +390,7 @@ public class QQOL implements Observer{
 		});
 		button_2.setText("开始");
 		button_2.setEnabled(false);
-		button_2.setBounds(340, 103, 149, 34);
+		button_2.setBounds(340, 103, 149, 73);
 		
 		Label lblAb = new Label(group, SWT.NONE);
 		lblAb.setText("XA:");
@@ -442,29 +456,6 @@ public class QQOL implements Observer{
 		label_19.setForeground(SWTResourceManager.getColor(0, 0, 0));
 		label_19.setBackground(SWTResourceManager.getColor(SWT.COLOR_WIDGET_BACKGROUND));
 		label_19.setBounds(174, 103, 149, 73);
-		
-		button_4 = new Button(group, SWT.NONE);
-		button_4.setEnabled(false);
-		button_4.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				if("暂停".equals(button_4.getText())){
-					button_4.setText("继续");
-				}else{
-					button_4.setText("暂停");
-				}
-				
-				EngineMessage message = new EngineMessage();
-				message.setType(EngineMessageType.IM_PAUSE);
-				Engine.getInstance().fire(message);
-			}
-		});
-		button_4.setText("暂停");
-		button_4.setBounds(340, 142, 149, 34);
-		
-		Label label_20 = new Label(shlSszs, SWT.NONE);
-		label_20.setText("系统日志:");
-		label_20.setBounds(356, 1, 60, 17);
 		
 		group_1 = new Group(shlSszs, SWT.NONE);
 		group_1.setText("识别方式");
@@ -592,9 +583,6 @@ public class QQOL implements Observer{
 		combo.setItems(new String[] {"云打码", "悠悠云", "手动输入"});
 		combo.setBounds(10, 15, 97, 23);
 		combo.select(0);
-		
-		Label lblNewLabel_1 = new Label(shlSszs, SWT.BORDER);
-		lblNewLabel_1.setBounds(355, 24, 351, 238);
 
 	}
 
@@ -753,14 +741,14 @@ public class QQOL implements Observer{
 						if((Boolean)msg.getData()){
 							status.setText("正在运行...");
 							button_2.setText("停止");
-							button_4.setEnabled(true);
+							//button_4.setEnabled(true);
 						}else{
 							first = -1;
 							last = -1;
 							mfirst = -1;
 							status.setText("运行停止");
 							button_2.setText("开始");
-							button_4.setEnabled(false);
+							//button_4.setEnabled(false);
 						}
 					}				
 				});
@@ -774,6 +762,43 @@ public class QQOL implements Observer{
 				});
 				break;
 			case EngineMessageType.OM_INFO:
+				Display.getDefault().asyncExec(new Runnable() {
+					@Override
+					public void run() {					
+						table.getItem(msg.getTid()-1).setText(4, (String)msg.getData());
+						table.setSelection(msg.getTid()-1);
+					}
+				});
+				break;
+			case EngineMessageType.OM_INFOACT:
+				Display.getDefault().asyncExec(new Runnable() {
+					@Override
+					public void run() {					
+						table.getItem(msg.getTid()-1).setText(5, (String)msg.getData());
+						table.setSelection(msg.getTid()-1);
+					}
+				});
+				break;
+			case EngineMessageType.OM_BEAT://心跳包
+				//System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+				Display.getDefault().asyncExec(new Runnable() {
+					@Override
+					public void run() {
+						Integer oltime = (Integer)msg.getData();
+						oltime = oltime/1000;
+						int hr = oltime / 3600;
+						int mt = (oltime - hr*3600) / 60;
+						int sec = oltime - hr*3600 - mt*60;
+						//table.getS
+						//table.getItem(1).
+						for(int i=0;i<table.getItemCount();i++){
+							table.getItem(i).setText(6, (hr<10?("0"+hr):hr)+":"+(mt<10?("0"+mt):mt)+":"+(sec<10?("0"+sec):sec));
+						}
+						//table.setSelection(msg.getTid()-1);
+					}
+				});
+				break;
+			case EngineMessageType.OM_NICK:
 				Display.getDefault().asyncExec(new Runnable() {
 					@Override
 					public void run() {					

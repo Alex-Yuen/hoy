@@ -1,18 +1,20 @@
 package ws.hoyland.qqol;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
+//import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileWriter;
+//import java.io.FileWriter;
 import java.io.InputStreamReader;
-import java.net.URL;
-import java.text.DateFormat;
+//import java.net.URL;
+//import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
+//import java.util.Date;
 import java.util.List;
 import java.util.Observable;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.RejectedExecutionHandler;
@@ -49,14 +51,15 @@ public class Engine extends Observable {
 	
 //	private int atrecc; //config data
 	
-	private BufferedWriter[] output = new BufferedWriter[5]; //成功，失败，未运行
+	//private BufferedWriter[] output = new BufferedWriter[5]; //成功，失败，未运行
 	//private String[] fns = new String[]{"成功", "失败", "未运行帐号", "已使用邮箱", "未使用邮箱"}; 
-	private String[] fns = new String[]{"成功", "失败", "密码错误", "帐号冻结", "未运行帐号"};
-	private URL url = Engine.class.getClassLoader().getResource("");
-	private String xpath = url.getPath();
-	private int lastTid = 0;
+	//private String[] fns = new String[]{"成功", "失败", "密码错误", "帐号冻结", "未运行帐号"};
+	//private URL url = Engine.class.getClassLoader().getResource("");
+	//private String xpath = url.getPath();
+	//private int lastTid = 0;
 	private boolean pause = false;
 	//private boolean freq = false;
+	private Timer timer = null;
 	
 	private int pc = 0;//pause count;
 	
@@ -140,6 +143,7 @@ public class Engine extends Observable {
 							accounts.add(line);
 							List<String> lns = new ArrayList<String>();
 							lns.addAll(Arrays.asList(line.split("----")));
+							lns.add("");
 							lns.add("初始化");
 //							if (lns.size() == 3) {
 //								lns.add("0");
@@ -274,8 +278,25 @@ public class Engine extends Observable {
 				this.notifyObservers(msg);
 				
 				if(running){
+					timer = new Timer();
+					timer.schedule(new TimerTask(){
+						private long starttime = System.currentTimeMillis();
+						
+						@Override
+						public void run() {
+							long endtime = System.currentTimeMillis();
+							
+							EngineMessage msg = new EngineMessage();
+							msg.setType(EngineMessageType.OM_BEAT);
+							msg.setData((int)(endtime-starttime));
+							Engine.this.setChanged();
+							Engine.this.notifyObservers(msg);
+						}
+						
+					}, 1000, 1000);
 					//创建日志文件
 					//long tm = System.currentTimeMillis();
+					/**
 					DateFormat format = new java.text.SimpleDateFormat("yyyy年MM月dd日 hh时mm分ss秒");
 					String tm = format.format(new Date());
 					for(int i=0;i<output.length;i++){
@@ -291,7 +312,7 @@ public class Engine extends Observable {
 							ex.printStackTrace();
 						}
 					}
-					
+					**/
 					int tc = Integer.parseInt(Configuration.getInstance().getProperty("THREAD_COUNT"));
 					int corePoolSize = tc;// minPoolSize
 					int maxPoolSize = tc;
@@ -381,6 +402,24 @@ public class Engine extends Observable {
 				this.setChanged();
 				this.notifyObservers(msg);
 				break;
+			case EngineMessageType.IM_INFOACT:
+				msg = new EngineMessage();
+				msg.setTid(message.getTid());
+				msg.setType(EngineMessageType.OM_INFOACT);
+				msg.setData(message.getData());
+				
+				this.setChanged();
+				this.notifyObservers(msg);
+				break;
+			case EngineMessageType.IM_NICK:
+				msg = new EngineMessage();
+				msg.setTid(message.getTid());
+				msg.setType(EngineMessageType.OM_NICK);
+				msg.setData(message.getData());
+				
+				this.setChanged();
+				this.notifyObservers(msg);
+				break;
 			case EngineMessageType.IM_NO_EMAILS:
 				shutdown();				
 				break;
@@ -405,9 +444,10 @@ public class Engine extends Observable {
 				break;
 			case EngineMessageType.IM_FINISH:
 					//写入日志
-					lastTid = message.getTid();
-					String[] dt = (String[])message.getData();
+					//lastTid = message.getTid();
+					//String[] dt = (String[])message.getData();
 					
+					/**
 					if("1".equals(dt[0])){//成功
 						try{
 //							output[0].write(dt[1]+"----"+dt[2]+"----"+dt[3]+"----"+dt[4]+"----"+dt[5]+"----"+cip + "\r\n");
@@ -438,7 +478,7 @@ public class Engine extends Observable {
 							e.printStackTrace();
 						};
 					}
-					
+					**/
 					System.err.println("--------------act count:"+pool.getActiveCount());
 					if(pool.getActiveCount()==1){ //当前是最后一个线程
 						//TODO						
@@ -679,6 +719,7 @@ public class Engine extends Observable {
 				
 				if(!pause){//继续运行
 					//新建成功文件
+					/**
 					DateFormat format = new java.text.SimpleDateFormat("yyyy年MM月dd日 hh时mm分ss秒");
 					String tm = format.format(new Date());
 					//for(int i=0;i<output.length;i++){
@@ -694,7 +735,7 @@ public class Engine extends Observable {
 							ex.printStackTrace();
 						}
 					//}
-					
+					**/
 					synchronized(PauseObject.getInstance()){
 						PauseObject.getInstance().notifyAll();
 					}
@@ -719,6 +760,7 @@ public class Engine extends Observable {
 				pc++;
 				if(pc==Integer.parseInt(Configuration.getInstance().getProperty("THREAD_COUNT"))){
 					//关闭output[0]
+					/**
 					try{
 						if(output[0]!=null){
 							output[0].close();
@@ -726,7 +768,7 @@ public class Engine extends Observable {
 						}
 					}catch(Exception e){
 						e.printStackTrace();
-					}
+					}**/
 				}
 				break;
 			default:
@@ -735,6 +777,18 @@ public class Engine extends Observable {
 	}
 
 	private void shutdown() {
+		EngineMessage msg = new EngineMessage();
+		msg.setTid(-1); //所有task
+		msg.setType(EngineMessageType.OM_STOP);
+		//msg.setData(message.getData());
+		
+		this.setChanged();
+		this.notifyObservers(msg);
+		
+		if(timer!=null){
+			timer.cancel();
+		}
+		
 		if(pool!=null){
 			//pool.shutdown();
 			pool.shutdownNow();
@@ -751,6 +805,7 @@ public class Engine extends Observable {
 		
 		//if(pool!=null){
 			//写入未运行帐号日志
+		/**
 			try{
 				//if(lastTid!=-1){
 				if(output[4]!=null){
@@ -763,7 +818,7 @@ public class Engine extends Observable {
 			}catch(Exception e){
 				e.printStackTrace();
 			};
-			
+		**/	
 			/**
 			//写入已使用邮箱日志
 			try{
@@ -796,6 +851,7 @@ public class Engine extends Observable {
 			**/
 		//}
 		
+		/**
 		for(int i=0;i<output.length;i++){
 			try{
 				if(output[i]!=null){
@@ -806,6 +862,7 @@ public class Engine extends Observable {
 				ex.printStackTrace();
 			}
 		}
+		**/
 	}
 
 	@SuppressWarnings("unchecked")

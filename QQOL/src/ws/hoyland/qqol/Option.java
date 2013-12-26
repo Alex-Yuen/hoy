@@ -34,6 +34,8 @@ public class Option extends Dialog implements Observer {
 	private Spinner spinner;
 	private Combo combo;
 	private Text text;
+	private Button btnCheckButton;
+	private Spinner spinner_2;
 	/**
 	 * Create the dialog.
 	 * @param parent
@@ -73,6 +75,7 @@ public class Option extends Dialog implements Observer {
 //				text_1.setText(this.configuration.getProperty("ADSL_PASSWORD"));
 				spinner.setSelection(Integer.parseInt(this.configuration.getProperty("PERIOD")));
 				spinner_1.setSelection(Integer.parseInt(this.configuration.getProperty("THREAD_COUNT")));
+				spinner_2.setSelection(Integer.parseInt(this.configuration.getProperty("EX_ITV")));
 				combo.select(Integer.parseInt(this.configuration.getProperty("LOGIN_TYPE")));
 				text.setText(this.configuration.getProperty("LEFT_MSG"));
 //				spinner_2.setSelection(Integer.parseInt(this.configuration.getProperty("AUTO_RECON")));
@@ -81,11 +84,13 @@ public class Option extends Dialog implements Observer {
 //				spinner_4.setSelection(Integer.parseInt(this.configuration.getProperty("READ_TC")));
 //				spinner_5.setSelection(Integer.parseInt(this.configuration.getProperty("MAIL_ITV")));
 //				
-//				if("true".equals(configuration.getProperty("AWCONN"))){
-//					btnCheckButton.setSelection(true);
-//				}else{
-//					btnCheckButton.setSelection(false);
-//				}
+				if("true".equals(configuration.getProperty("AUTO_REPLY"))){
+					btnCheckButton.setSelection(true);
+					text.setEnabled(true);
+				}else{
+					btnCheckButton.setSelection(false);
+					text.setEnabled(false);
+				}
 
 			}
 		}catch(Exception e){
@@ -99,7 +104,8 @@ public class Option extends Dialog implements Observer {
 //		this.configuration.put("ADSL_PASSWORD", text_1.getText());
 		this.configuration.put("PERIOD", spinner.getText());
 		this.configuration.put("THREAD_COUNT", spinner_1.getText());
-		this.configuration.put("LOGIN_TYPE", combo.getSelectionIndex());
+		this.configuration.put("EX_ITV", spinner_2.getText());
+		this.configuration.put("LOGIN_TYPE", String.valueOf(combo.getSelectionIndex()));
 		this.configuration.put("LEFT_MSG", text.getText());
 //		this.configuration.put("READ_TC", spinner_4.getText());
 //		this.configuration.put("MAIL_ITV", spinner_5.getText());
@@ -113,7 +119,7 @@ public class Option extends Dialog implements Observer {
 //		
 //		this.configuration.put("AUTO_RECON", spinner_2.getText());
 //		this.configuration.put("RECON_DELAY", spinner_3.getText());
-//		this.configuration.put("AWCONN", String.valueOf(btnCheckButton.getSelection()));		
+		this.configuration.put("AUTO_REPLY", String.valueOf(btnCheckButton.getSelection()));		
 		
 		this.configuration.save();
 	}
@@ -179,44 +185,61 @@ public class Option extends Dialog implements Observer {
 		
 		Label label_3 = new Label(composite, SWT.NONE);
 		label_3.setText("线程数量:");
-		label_3.setBounds(10, 10, 61, 17);
+		label_3.setBounds(10, 9, 61, 17);
 		
 		spinner_1 = new Spinner(composite, SWT.BORDER);
 		spinner_1.setMaximum(50000);
 		spinner_1.setMinimum(1);
 		spinner_1.setSelection(1000);
-		spinner_1.setBounds(77, 8, 61, 20);
+		spinner_1.setBounds(77, 7, 61, 20);
 		
 		Label label = new Label(composite, SWT.NONE);
-		label.setText("在线时间:");
-		label.setBounds(10, 35, 61, 17);
+		label.setText("在线时间(分钟):");
+		label.setBounds(183, 9, 91, 17);
 		
 		spinner = new Spinner(composite, SWT.BORDER);
 		spinner.setMaximum(2000);
 		spinner.setMinimum(1);
 		spinner.setSelection(600);
-		spinner.setBounds(77, 33, 54, 20);
-		
-		Label label_1 = new Label(composite, SWT.NONE);
-		label_1.setText("分钟");
-		label_1.setBounds(137, 34, 34, 17);
+		spinner.setBounds(283, 7, 54, 20);
 		
 		combo = new Combo(composite, SWT.NONE);
 		combo.setItems(new String[] {"在线", "离开", "忙碌", "隐身"});
-		combo.setBounds(253, 6, 51, 25);
+		combo.setBounds(77, 33, 54, 25);
 		combo.select(1);
 		
 		Label label_2 = new Label(composite, SWT.NONE);
 		label_2.setText("登录状态:");
-		label_2.setBounds(186, 10, 61, 17);
+		label_2.setBounds(10, 37, 61, 17);
 		
 		text = new Text(composite, SWT.BORDER);
+		text.setEnabled(false);
 		text.setText("您好，我现在有事不在，一会再和您联系。");
 		text.setBounds(10, 87, 294, 87);
 		
-		Label lblNewLabel = new Label(composite, SWT.NONE);
-		lblNewLabel.setBounds(10, 61, 61, 17);
-		lblNewLabel.setText("自动回复:");
+		btnCheckButton = new Button(composite, SWT.CHECK);
+		btnCheckButton.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				if(btnCheckButton.getSelection()){
+					text.setEnabled(true);
+				}else{
+					text.setEnabled(false);
+				}
+			}
+		});
+		btnCheckButton.setBounds(10, 64, 327, 17);
+		btnCheckButton.setText("忙碌、离开情况下，自动回复（不勾选将忽略好友消息）");
+		
+		Label label_4 = new Label(composite, SWT.NONE);
+		label_4.setText("异常恢复等待时间(分钟):");
+		label_4.setBounds(183, 37, 142, 17);
+		
+		spinner_2 = new Spinner(composite, SWT.BORDER);
+		spinner_2.setMaximum(60);
+		spinner_2.setMinimum(1);
+		spinner_2.setSelection(1);
+		spinner_2.setBounds(331, 35, 38, 20);
 		
 		Button btnNewButton = new Button(shell, SWT.NONE);
 		btnNewButton.addSelectionListener(new SelectionAdapter() {
