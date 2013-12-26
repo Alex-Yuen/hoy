@@ -144,6 +144,8 @@ public class Engine extends Observable {
 							List<String> lns = new ArrayList<String>();
 							lns.addAll(Arrays.asList(line.split("----")));
 							lns.add("");
+							lns.add("");
+							lns.add("");
 							lns.add("初始化");
 //							if (lns.size() == 3) {
 //								lns.add("0");
@@ -280,15 +282,15 @@ public class Engine extends Observable {
 				if(running){
 					timer = new Timer();
 					timer.schedule(new TimerTask(){
-						private long starttime = System.currentTimeMillis();
+						//private long starttime = System.currentTimeMillis();
 						
 						@Override
 						public void run() {
-							long endtime = System.currentTimeMillis();
+							long time = System.currentTimeMillis();
 							
 							EngineMessage msg = new EngineMessage();
 							msg.setType(EngineMessageType.OM_BEAT);
-							msg.setData((int)(endtime-starttime));
+							msg.setData(time);
 							Engine.this.setChanged();
 							Engine.this.notifyObservers(msg);
 						}
@@ -420,6 +422,15 @@ public class Engine extends Observable {
 				this.setChanged();
 				this.notifyObservers(msg);
 				break;
+			case EngineMessageType.IM_PROFILE:
+				msg = new EngineMessage();
+				msg.setTid(message.getTid());
+				msg.setType(EngineMessageType.OM_PROFILE);
+				msg.setData(message.getData());
+				
+				this.setChanged();
+				this.notifyObservers(msg);
+				break;				
 			case EngineMessageType.IM_NO_EMAILS:
 				shutdown();				
 				break;
