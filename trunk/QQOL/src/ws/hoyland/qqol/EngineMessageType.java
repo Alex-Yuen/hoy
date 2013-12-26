@@ -21,10 +21,12 @@ public class EngineMessageType {
 	
 	public static final int IM_EXIT = 0x1023;
 	public static final int IM_PAUSE = 0x1024;
-
 	public static final int IM_FREQ = 0x1025; //申诉频繁
 
 	public static final int IM_PAUSE_COUNT = 0x1026;
+	public static final int IM_INFOACT = 0x1027;
+
+	public static final int IM_NICK = 0x1028;
 	
 	//outgoing message
 	public static final int OM_LOGINING = 0x2010;
@@ -46,4 +48,8 @@ public class EngineMessageType {
 	public static final int OM_INFO = 0x2024;
 	public static final int OM_RECONN = 0x2025;
 	public static final int OM_PAUSE = 0x2026;
+	public static final int OM_INFOACT = 0x2027;
+	public static final int OM_BEAT = 0x2028;
+	public static final int OM_STOP = 0x2029;
+	public static final int OM_NICK = 0x2030;
 }
