@@ -39,7 +39,7 @@ public class T2 {
 		
 		byte status = 1; //0在线，//1离开（自动那个回复）//2忙碌 //3隐身 
 		String message = "您好，我现在有事不在，一会再和您联系。";
-		final String account = "68159276"; //1627389787 //744625551
+		final String account = "744625551"; //1627389787 //744625551
 		String password = "981019.*";
 		String ip = "183.60.19.100";//默认IP
 		byte[] ips = new byte[]{

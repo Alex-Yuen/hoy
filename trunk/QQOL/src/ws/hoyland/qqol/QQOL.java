@@ -792,7 +792,9 @@ public class QQOL implements Observer{
 						//table.getS
 						//table.getItem(1).
 						for(int i=0;i<table.getItemCount();i++){
-							table.getItem(i).setText(6, (hr<10?("0"+hr):hr)+":"+(mt<10?("0"+mt):mt)+":"+(sec<10?("0"+sec):sec));
+							if(!"".equals(table.getItem(i).getText(3))){
+								table.getItem(i).setText(6, (hr<10?("0"+hr):hr)+":"+(mt<10?("0"+mt):mt)+":"+(sec<10?("0"+sec):sec));
+							}
 						}
 						//table.setSelection(msg.getTid()-1);
 					}
