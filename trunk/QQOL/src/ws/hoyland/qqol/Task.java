@@ -991,7 +991,7 @@ public class Task implements Runnable, Observer {
 //						content = slice(buffer, 14, buffer.length-15);
 //						decrypt = crypter.decrypt(content, key0836x);
 //						System.out.println(Converts.bytesToHexString(decrypt));
-					}else if(buffer.length==247){
+					}else if(buffer.length==247||buffer.length==239){
 						byte[] ts = slice(buffer, 14, buffer.length-15);
 						ts = crypter.decrypt(ts, key0836x);
 						System.out.println(Converts.bytesToHexString(ts));
@@ -1334,6 +1334,70 @@ public class Task implements Runnable, Observer {
 			}
 			break;
 		case 4:
+			info("更新资料");
+			try{
+				//00EC 上线包
+				//-------------------------------------------------------------------
+				seq++;
+				bsofplain = new ByteArrayOutputStream();
+				bsofplain.write(new byte[]{
+						(byte)0x88
+				});
+				bsofplain.write(Converts.hexStringToByte(Long.toHexString(Long.valueOf(account)).toUpperCase()));
+				bsofplain.write(new byte[]{
+						0x00
+				});
+				
+				encrypt = crypter.encrypt(bsofplain.toByteArray(), sessionkey);
+				
+				baos = new ByteArrayOutputStream();
+				baos.write(new byte[]{
+						0x02, 0x34, 0x4B, 0x00, (byte)0x5C
+				});
+				baos.write(Converts.hexStringToByte(Integer.toHexString(seq).toUpperCase()));
+				baos.write(Converts.hexStringToByte(Long.toHexString(Long.valueOf(account)).toUpperCase()));
+				baos.write(new byte[]{
+						//0x03, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00, 0x66, (byte)0xA2, 0x00, 0x30, 0x00, 0x30
+						//0x02, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00, 0x66, (byte)0xA2, 0x00, 0x30, 0x00, 0x3A
+						//0x02, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00, 0x66, 0x68, 0x00, 0x30, 0x00, 0x3A//(byte)0xA2?
+						0x02, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00, 0x65, (byte)0xCA 
+				});
+				baos.write(encrypt);
+				baos.write(new byte[]{
+						0x03
+				});
+				
+				buf = baos.toByteArray();
+				
+				System.out.println("005C["+Converts.bytesToHexString(sessionkey)+"]");
+				System.out.println(Converts.bytesToHexString(baos.toByteArray()));
+				
+				dpOut = new DatagramPacket(buf, buf.length, InetAddress.getByName(ip), 8000);
+				ds.send(dpOut);
+				
+				//IN:
+				buffer = new byte[1024];
+				dpIn = new DatagramPacket(buffer, buffer.length);
+								
+				ds.receive(dpIn);
+				
+				buffer = pack(buffer);
+//				System.out.println(buffer.length);
+//				System.out.println(Converts.bytesToHexString(buffer));
+				
+				content = slice(buffer, 14, buffer.length-15);
+				decrypt = crypter.decrypt(content, sessionkey);
+				
+				int level = slice(decrypt, 10, 1)[0];
+				int days = slice(decrypt, 16, 1)[0];
+				setProfile(level, days);
+				idx++;
+			}catch(Exception e){
+				e.printStackTrace();
+				fb = true;
+			}
+			break;
+		case 5:
 			info("启动心跳包");
 			try{
 				//0058 开启线程，发送心跳包
@@ -1415,7 +1479,7 @@ public class Task implements Runnable, Observer {
 				e.printStackTrace();
 				fb = true;
 			}
-		case 5:
+		case 6:
 			//if((status==1||status==2)&&("true".equals(Configuration.getInstance().getProperty("AUTO_REPLY")))){ //需要自动回复
 			info("监听消息");
 			//}
@@ -1703,6 +1767,15 @@ public class Task implements Runnable, Observer {
 
 		
 		//System.err.println("["+this.account+"]ACT("+tm+")");
+		Engine.getInstance().fire(message);
+	}
+	
+	private void setProfile(int level, int days){
+		message = new EngineMessage();
+		message.setTid(this.id);
+		message.setType(EngineMessageType.IM_PROFILE);
+		message.setData(level+":"+days);
+		
 		Engine.getInstance().fire(message);
 	}
 	

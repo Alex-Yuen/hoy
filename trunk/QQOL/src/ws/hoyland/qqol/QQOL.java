@@ -74,6 +74,8 @@ public class QQOL implements Observer{
 	private TableColumn tableColumn_3;
 	private TableColumn tableColumn_5;
 	private TableColumn tblclmnNewColumn;
+	private TableColumn tblclmnNewColumn_1;
+	private TableColumn tblclmnNewColumn_2;
 	/**
 	 * Launch the application.
 	 * @param args
@@ -246,11 +248,19 @@ public class QQOL implements Observer{
 		tableColumn_2.setText("密码");
 		
 		tblclmnNewColumn = new TableColumn(table, SWT.NONE);
-		tblclmnNewColumn.setWidth(100);
+		tblclmnNewColumn.setWidth(90);
 		tblclmnNewColumn.setText("昵称");
 		
+		tblclmnNewColumn_1 = new TableColumn(table, SWT.NONE);
+		tblclmnNewColumn_1.setWidth(36);
+		tblclmnNewColumn_1.setText("等级");
+		
+		tblclmnNewColumn_2 = new TableColumn(table, SWT.NONE);
+		tblclmnNewColumn_2.setWidth(36);
+		tblclmnNewColumn_2.setText("天数");
+		
 		TableColumn tableColumn_4 = new TableColumn(table, SWT.NONE);
-		tableColumn_4.setWidth(165);
+		tableColumn_4.setWidth(164);
 		tableColumn_4.setText("状态");
 		
 		Menu menu_1 = new Menu(table);
@@ -329,7 +339,7 @@ public class QQOL implements Observer{
 		mntmc_1.setText("复制(&C)");
 		
 		tableColumn_3 = new TableColumn(table, SWT.NONE);
-		tableColumn_3.setWidth(135);
+		tableColumn_3.setWidth(132);
 		tableColumn_3.setText("最后活动");
 		
 		tableColumn_5 = new TableColumn(table, SWT.NONE);
@@ -765,8 +775,8 @@ public class QQOL implements Observer{
 				Display.getDefault().asyncExec(new Runnable() {
 					@Override
 					public void run() {					
-						table.getItem(msg.getTid()-1).setText(4, (String)msg.getData());
-						table.setSelection(msg.getTid()-1);
+						table.getItem(msg.getTid()-1).setText(6, (String)msg.getData());
+						//table.setSelection(msg.getTid()-1);
 					}
 				});
 				break;
@@ -774,26 +784,47 @@ public class QQOL implements Observer{
 				Display.getDefault().asyncExec(new Runnable() {
 					@Override
 					public void run() {					
-						table.getItem(msg.getTid()-1).setText(5, (String)msg.getData());
-						table.setSelection(msg.getTid()-1);
+						table.getItem(msg.getTid()-1).setText(7, (String)msg.getData());
+						//table.setSelection(msg.getTid()-1);
 					}
 				});
 				break;
-			case EngineMessageType.OM_BEAT://心跳包
-				//System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+			case EngineMessageType.OM_PROFILE:
 				Display.getDefault().asyncExec(new Runnable() {
 					@Override
 					public void run() {
-						Integer oltime = (Integer)msg.getData();
-						oltime = oltime/1000;
-						int hr = oltime / 3600;
-						int mt = (oltime - hr*3600) / 60;
-						int sec = oltime - hr*3600 - mt*60;
+						String[] ld = ((String)msg.getData()).split(":");
+						table.getItem(msg.getTid()-1).setText(4, ld[0]);
+						table.getItem(msg.getTid()-1).setText(5, ld[1]);
+						//table.setSelection(msg.getTid()-1);
+					}
+				});
+				break;				
+			case EngineMessageType.OM_BEAT://心跳包
+				//System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+				Display.getDefault().asyncExec(new Runnable() {
+					private Long time = null;
+					private Integer oltime = null;
+					private int hr = 0;
+					private int mt = 0;
+					private int sec = 0;
+					@Override
+					public void run() {
+						time = (Long)msg.getData();
+//						oltime = oltime/1000;
+//						int hr = oltime / 3600;
+//						int mt = (oltime - hr*3600) / 60;
+//						int sec = oltime - hr*3600 - mt*60;
 						//table.getS
 						//table.getItem(1).
 						for(int i=0;i<table.getItemCount();i++){
-							if(!"".equals(table.getItem(i).getText(3))){
-								table.getItem(i).setText(6, (hr<10?("0"+hr):hr)+":"+(mt<10?("0"+mt):mt)+":"+(sec<10?("0"+sec):sec));
+							if(!"".equals(table.getItem(i).getText(5))){
+								oltime = (int)(time - (Long)table.getItem(i).getData());
+								oltime = oltime/1000;
+								hr = oltime / 3600;
+								mt = (oltime - hr*3600) / 60;
+								sec = oltime - hr*3600 - mt*60;
+								table.getItem(i).setText(8, (hr<10?("0"+hr):hr)+":"+(mt<10?("0"+mt):mt)+":"+(sec<10?("0"+sec):sec));
 							}
 						}
 						//table.setSelection(msg.getTid()-1);
@@ -805,7 +836,8 @@ public class QQOL implements Observer{
 					@Override
 					public void run() {					
 						table.getItem(msg.getTid()-1).setText(3, (String)msg.getData());
-						table.setSelection(msg.getTid()-1);
+						table.getItem(msg.getTid()-1).setData(System.currentTimeMillis());
+						//table.setSelection(msg.getTid()-1);
 					}
 				});
 				break;
