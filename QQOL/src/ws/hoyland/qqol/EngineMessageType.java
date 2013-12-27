@@ -29,7 +29,8 @@ public class EngineMessageType {
 	public static final int IM_NICK = 0x1028;
 	public static final int IM_PROFILE = 0x1029;
 	public static final int IM_TF = 0x1030;
-	
+
+	public static final int IM_RELOGIN = 0x1031;
 	//outgoing message
 	public static final int OM_LOGINING = 0x2010;
 	public static final int OM_LOGINED = 0x2011;

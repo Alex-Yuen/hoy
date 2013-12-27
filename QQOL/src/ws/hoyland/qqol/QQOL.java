@@ -776,7 +776,7 @@ public class QQOL implements Observer{
 					@Override
 					public void run() {					
 						table.getItem(msg.getTid()-1).setText(6, (String)msg.getData());
-						table.setSelection(msg.getTid()-1);
+						//table.setSelection(msg.getTid()-1);
 					}
 				});
 				break;

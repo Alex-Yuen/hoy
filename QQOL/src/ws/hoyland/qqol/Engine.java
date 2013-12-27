@@ -281,7 +281,8 @@ public class Engine extends Observable {
 				
 				if(running){
 					timer = new Timer();
-					timer.schedule(new TimerTask(){
+					timer.schedule(new Heart(), 0, 1000*60); //用于发送心跳包
+					timer.schedule(new TimerTask(){ //用于刷新界面
 						//private long starttime = System.currentTimeMillis();
 						
 						@Override
@@ -363,6 +364,9 @@ public class Engine extends Observable {
 				this.setChanged();
 				this.notifyObservers(msg);
 				
+				break;
+			case EngineMessageType.IM_RELOGIN:
+				//TODO
 				break;
 //			case EngineMessageType.IM_REQUIRE_MAIL:
 //

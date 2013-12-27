@@ -4,7 +4,6 @@ import java.io.ByteArrayOutputStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.net.SocketException;
 import java.security.KeyFactory;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
@@ -17,9 +16,7 @@ import java.text.DateFormat;
 import java.util.Date;
 import java.util.Observable;
 import java.util.Observer;
-import java.util.Random;
 import java.util.Timer;
-import java.util.TimerTask;
 import java.util.zip.CRC32;
 
 import javax.crypto.KeyAgreement;
@@ -43,7 +40,7 @@ import ws.hoyland.util.YDM;
 
 public class Task implements Runnable, Observer {
 
-	private boolean timeout = false;
+//	private boolean timeout = false;
 	//private String line;
 	private boolean run = false;
 	private boolean fb = false; // break flag;
@@ -134,7 +131,7 @@ public class Task implements Runnable, Observer {
 	byte[] encrypt = null;
 	byte[] decrypt = null;
 
-	byte[][] crcs = new byte[][]{genKey(16), genKey(16), genKey(16)};
+	byte[][] crcs = new byte[][]{Util.genKey(16), Util.genKey(16), Util.genKey(16)};
 	CRC32 crc = new CRC32();
 	
 	boolean redirect = false;
@@ -144,7 +141,7 @@ public class Task implements Runnable, Observer {
 	byte[] logintime = new byte[4];
 	byte[] loginip = new byte[4];
 	private Timer timer = null;
-	private static Integer timercount = 0;
+	//private static Integer timercount = 0;
 	
 	private static DateFormat format = new java.text.SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 	
@@ -320,7 +317,7 @@ public class Task implements Runnable, Observer {
 				do{
 					redirect = false;
 					seq++;
-					key0825 = genKey(0x10);
+					key0825 = Util.genKey(0x10);
 									
 					//ecdhkey 随机生成的公钥，然后key0836x 即为共享秘密，由算法计算得出
 					{
@@ -417,17 +414,17 @@ public class Task implements Runnable, Observer {
 					//while(true){
 					ds.receive(dpIn);
 					//还需判断buffer 121等位置，看是否是转向，也可能是104字节，不需转向
-					buffer = pack(buffer);
+					buffer = Util.pack(buffer);
 					//System.out.println(buffer.length);
 					if(buffer.length==135){
 						redirect = true;
 						info("重定向中");
 						System.out.println("重定向:"+buffer[128]+","+buffer[129]+","+buffer[130]);
 						
-						content = slice(buffer, 14, 120);
+						content = Util.slice(buffer, 14, 120);
 						decrypt = crypter.decrypt(content, key0825);
 						
-						ips = slice(decrypt, 95, 4);
+						ips = Util.slice(decrypt, 95, 4);
 						ip = (ips[0]&0xFF)+"."+(ips[1]&0xFF)+"."+(ips[2]&0xFF)+"."+(ips[3]&0xFF);
 					}
 				}while(redirect);
@@ -443,7 +440,7 @@ public class Task implements Runnable, Observer {
 			try{
 				System.out.println("bfl:"+buffer.length);
 				//199 错误, 783错误
-				content = slice(buffer, 14, 104);
+				content = Util.slice(buffer, 14, 104);
 				
 //				String data = Converts.bytesToHexString(content);
 //				System.out.println(data);
@@ -451,9 +448,9 @@ public class Task implements Runnable, Observer {
 				//解密
 				decrypt = crypter.decrypt(content, key0825);
 				//System.out.println(Converts.bytesToHexString(decrypt));
-				token = slice(decrypt, 5, 0x38);
-				logintime = slice(decrypt, 67, 4);
-				loginip = slice(decrypt, 71, 4);
+				token = Util.slice(decrypt, 5, 0x38);
+				logintime = Util.slice(decrypt, 67, 4);
+				loginip = Util.slice(decrypt, 71, 4);
 				//System.out.println(Converts.bytesToHexString(loginip));
 				//------------------------------------------------------------------------------
 				//0836
@@ -463,7 +460,7 @@ public class Task implements Runnable, Observer {
 					
 					//第一段
 					bsofplain = new ByteArrayOutputStream();
-					bsofplain.write(genKey(4));
+					bsofplain.write(Util.genKey(4));
 					bsofplain.write(new byte[]{
 							0x00, 0x01 
 					});
@@ -486,7 +483,7 @@ public class Task implements Runnable, Observer {
 							//(byte)0xE3, 0x04, 0x2B, (byte)0xB2, (byte)0xF7, (byte)0xEA, 0x62, 0x40, (byte)0x99, 0x62, (byte)0x81, 0x11, 0x44, 0x52, 0x17, 0x22
 							// F0 F0 F0 F0 F0 F0 F0 F0 F0 F0 F0 F0 F0 F0 F0 F0 ?
 					});
-					key0836 = genKey(0x10);
+					key0836 = Util.genKey(0x10);
 					bsofplain.write(key0836);
 					
 					System.out.println("XX:"+bsofplain.toByteArray().length);
@@ -557,7 +554,7 @@ public class Task implements Runnable, Observer {
 		//			String kk = genHostName(0x0F);
 		//			byte[] xx = kk.getBytes();
 					//48 46 5A 4D 43 5A 35 44 4A 50 30 53 4A 46 35 
-					bsofplain.write(genHostName(0x0F).getBytes());// 计算机名
+					bsofplain.write(Util.genHostName(0x0F).getBytes());// 计算机名
 					
 					bsofplain.write(new byte[]{
 							0x00, 0x05, 0x00, 0x06, 0x00, 0x02
@@ -593,7 +590,7 @@ public class Task implements Runnable, Observer {
 							0x00, 0x00, 0x01, 0x03, 0x00, 0x14, 0x00, 0x01, // 固定
 							0x00, 0x10 //长度
 					});
-					//bsofplain.write(genKey(0x10));//机器固定验证key
+					//bsofplain.write(Util.genKey(0x10));//机器固定验证key
 					bsofplain.write(new byte[]{
 							0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 // 机器固定验证key
 					});
@@ -642,7 +639,7 @@ public class Task implements Runnable, Observer {
 					bsofplain.write(new byte[]{
 							0x00, 0x38  // 长度
 					});
-					bsofplain.write(genKey(0x38));
+					bsofplain.write(Util.genKey(0x38));
 					bsofplain.write(new byte[]{
 							0x00, 0x14  // 长度
 					});
@@ -690,7 +687,7 @@ public class Task implements Runnable, Observer {
 							0x00, 0x00,
 							0x00, 0x10	//长度? //TODO
 					});
-					baos.write(genKey(0x10));
+					baos.write(Util.genKey(0x10));
 		//			baos.write(new byte[]{
 		//					(byte)0x94, (byte)0xF5, 0x56, (byte)0xD7, (byte)0xDC, (byte)0xE1, (byte)0x84, (byte)0xB8, 0x2F, 0x44, (byte)0x8C, 0x4D, (byte)0xB1, 0x3D, 0x65, (byte)0xB8,
 		//					(byte)0x97, (byte)0xC1, 0x39
@@ -718,7 +715,7 @@ public class Task implements Runnable, Observer {
 					//while(true){
 					ds.receive(dpIn);
 					//还需判断buffer 121等位置，看是否是转向，也可能是104字节，不需转向
-					buffer = pack(buffer);
+					buffer = Util.pack(buffer);
 					System.out.println("TK:"+buffer.length);
 					//System.out.println("OUT:"+Converts.bytesToHexString(buffer));
 					nvc = false; //清空nvc状态
@@ -731,34 +728,34 @@ public class Task implements Runnable, Observer {
 						nvc = true; //需要再次请求0836
 						bsofpng = new ByteArrayOutputStream();
 						
-						content = slice(buffer, 14, buffer.length-15);
+						content = Util.slice(buffer, 14, buffer.length-15);
 						decrypt = crypter.decrypt(content, key0836x);
 						
 						//截取png数据，以及相关key, data
-						//token = slice(decrypt, 22, 0x38); //new token?
-						byte[] ilbs = slice(decrypt, 22+0x38, 2);
+						//token = Util.slice(decrypt, 22, 0x38); //new token?
+						byte[] ilbs = Util.slice(decrypt, 22+0x38, 2);
 						int imglen = ilbs[0]*0x100 + (ilbs[1] & 0xFF);
 						
-						//byte[] png = slice(decrypt, 24+0x38, imglen);
-						bsofpng.write(slice(decrypt, 24+0x38, imglen));
+						//byte[] png = Util.slice(decrypt, 24+0x38, imglen);
+						bsofpng.write(Util.slice(decrypt, 24+0x38, imglen));
 						//System.out.println(Converts.bytesToHexString(png));
-						dlvc = (slice(decrypt, 25+0x38+imglen, 1)[0]==1);
+						dlvc = (Util.slice(decrypt, 25+0x38+imglen, 1)[0]==1);
 						System.out.println("dlvc:"+dlvc);
 						System.out.println("imglen:"+imglen);
 						
 						//no use?
-//						byte[] key0836r = slice(decrypt, 25+0x38+imglen, 0x10);
+//						byte[] key0836r = Util.slice(decrypt, 25+0x38+imglen, 0x10);
 						
 						System.out.println(Converts.bytesToHexString(decrypt));
-						byte[] tokenfor00ba = slice(decrypt, 28+0x38+imglen, 0x28);
+						byte[] tokenfor00ba = Util.slice(decrypt, 28+0x38+imglen, 0x28);
 						//System.out.println(Converts.bytesToHexString(tokenfor00ba));
-						byte[] keyfor00ba = slice(decrypt, 32+0x38+0x28+imglen, 0x10);
+						byte[] keyfor00ba = Util.slice(decrypt, 32+0x38+0x28+imglen, 0x10);
 						//System.out.println("keyfor00ba:"+Converts.bytesToHexString(keyfor00ba));
 						
 
 //						//data00BA0 = token;
-//						data00BA1 = genKey(0x28);
-//						data00BA2 = genKey(0x10);
+//						data00BA1 = Util.genKey(0x28);
+//						data00BA2 = Util.genKey(0x10);
 //						
 //						byte pidx = 0x00;
 						//需要继续下载验证码数据
@@ -777,10 +774,10 @@ public class Task implements Runnable, Observer {
 							seq++;
 							dlvc = false;
 							
-							key00BA = genKey(0x10);
-//							data00BA = genKey(0x15);
-//							data00BA1 = genKey(0x28);
-//							data00BA2 = genKey(0x10);
+							key00BA = Util.genKey(0x10);
+//							data00BA = Util.genKey(0x15);
+//							data00BA1 = Util.genKey(0x28);
+//							data00BA2 = Util.genKey(0x10);
 							
 							bsofplain = new ByteArrayOutputStream();
 							bsofplain.write(new byte[]{
@@ -839,7 +836,7 @@ public class Task implements Runnable, Observer {
 								bsofplain.write(new byte[]{
 										0x00, 0x38
 								});
-								//bsofplain.write(genKey(0x38));
+								//bsofplain.write(Util.genKey(0x38));
 								bsofplain.write(tokenfor00ba);
 							}
 							
@@ -881,28 +878,28 @@ public class Task implements Runnable, Observer {
 											
 							ds.receive(dpIn);
 							
-							buffer = pack(buffer);
+							buffer = Util.pack(buffer);
 							System.out.println(buffer.length);
 							System.out.println(Converts.bytesToHexString(buffer));
 							
 							
 							if(!rv){
-								content = slice(buffer, 14, buffer.length-15);
+								content = Util.slice(buffer, 14, buffer.length-15);
 								decrypt = crypter.decrypt(content, key0836x);//??????!!!!!! 第二次才是key00ba
 								System.out.println(Converts.bytesToHexString(decrypt));
-								byte[] imglenbs = slice(decrypt, 10+0x38, 2);
+								byte[] imglenbs = Util.slice(decrypt, 10+0x38, 2);
 								//System.out.println(Converts.bytesToHexString(imglenbs));
 								imglen = imglenbs[0]*0x100 + (imglenbs[1] & 0xFF);
-								bsofpng.write(slice(decrypt, 12+0x38, imglen));
+								bsofpng.write(Util.slice(decrypt, 12+0x38, imglen));
 								//System.out.println(Converts.bytesToHexString(png));
-								dlvc = (slice(decrypt, 13+0x38+imglen, 1)[0]==1);
+								dlvc = (Util.slice(decrypt, 13+0x38+imglen, 1)[0]==1);
 								System.out.println("dlvc:"+dlvc);
 								System.out.println("imglen:"+imglen);
 								
 								//需要更新 tokenfor00ba keyfor00ba ?
-								//tokenfor00ba = slice(decrypt, 16+0x38+imglen, 0x28);
-								//keyfor00ba = slice(decrypt, 18+0x38+0x28+imglen, 0x10);
-								tokenfor00ba = slice(decrypt, 10, 0x38);
+								//tokenfor00ba = Util.slice(decrypt, 16+0x38+imglen, 0x28);
+								//keyfor00ba = Util.slice(decrypt, 18+0x38+0x28+imglen, 0x10);
+								tokenfor00ba = Util.slice(decrypt, 10, 0x38);
 								
 								byte[] by = bsofpng.toByteArray();
 								//resultByte = new byte[30]; // 为识别结果申请内存空间
@@ -941,10 +938,10 @@ public class Task implements Runnable, Observer {
 								//其他情况，报告错误							
 								//95正常?
 								if(buffer.length==95){
-									content = slice(buffer, 14, buffer.length-15);
+									content = Util.slice(buffer, 14, buffer.length-15);
 									decrypt = crypter.decrypt(content, key00BA);
 									//获取vctoken
-									vctoken = slice(decrypt, 10, 0x38); 
+									vctoken = Util.slice(decrypt, 10, 0x38); 
 									System.out.println("KK1:");
 									System.out.println(Converts.bytesToHexString(decrypt));
 									System.out.println(Converts.bytesToHexString(vctoken));
@@ -980,34 +977,34 @@ public class Task implements Runnable, Observer {
 					}/**
 					else if(buffer.length==175){
 						//System.out.println("用户名或密码错误, 退出任务");
-						byte[] ts = slice(buffer, 14, buffer.length-15);
+						byte[] ts = Util.slice(buffer, 14, buffer.length-15);
 						ts = crypter.decrypt(ts, key0836x);
 						System.out.println(Converts.bytesToHexString(ts));
-						System.out.println(new String(slice(ts, 15, ts.length-15), "utf-8"));
-						info(new String(slice(ts, 15, ts.length-15), "utf-8"));
+						System.out.println(new String(Util.slice(ts, 15, ts.length-15), "utf-8"));
+						info(new String(Util.slice(ts, 15, ts.length-15), "utf-8"));
 						run = false;
 						return;
 						//idx = 1;?
 					}else if(buffer.length==95){					
-						byte[] ts = slice(buffer, 14, buffer.length-15);
+						byte[] ts = Util.slice(buffer, 14, buffer.length-15);
 						ts = crypter.decrypt(ts, key0836x);
 						System.out.println(Converts.bytesToHexString(ts));
-						System.out.println(new String(slice(ts, 15, ts.length-15), "utf-8"));
-						info(new String(slice(ts, 15, ts.length-15), "utf-8"));
+						System.out.println(new String(Util.slice(ts, 15, ts.length-15), "utf-8"));
+						info(new String(Util.slice(ts, 15, ts.length-15), "utf-8"));
 						run = false;
 						return;
 						//idx = 1;
 //						System.out.println("LENGTH: 95");
-//						content = slice(buffer, 14, buffer.length-15);
+//						content = Util.slice(buffer, 14, buffer.length-15);
 //						decrypt = crypter.decrypt(content, key0836x);
 //						System.out.println(Converts.bytesToHexString(decrypt));
 					}**/
 					else if(buffer.length==175||buffer.length==95||buffer.length==247||buffer.length==239){
-						byte[] ts = slice(buffer, 14, buffer.length-15);
+						byte[] ts = Util.slice(buffer, 14, buffer.length-15);
 						ts = crypter.decrypt(ts, key0836x);
 						System.out.println(Converts.bytesToHexString(ts));
-						System.out.println(new String(slice(ts, 15, ts.length-15), "utf-8"));
-						info(new String(slice(ts, 15, ts.length-15), "utf-8"));
+						System.out.println(new String(Util.slice(ts, 15, ts.length-15), "utf-8"));
+						info(new String(Util.slice(ts, 15, ts.length-15), "utf-8"));
 						run = false;
 						return;
 						//idx = 1;
@@ -1031,17 +1028,17 @@ public class Task implements Runnable, Observer {
 			info("获取会话密钥");
 			try{
 				//正常情况下的 key0836解密
-				content = slice(buffer, 14, buffer.length-15);
+				content = Util.slice(buffer, 14, buffer.length-15);
 				decrypt = crypter.decrypt(content, key0836);
 				
 				System.out.println(Converts.bytesToHexString(decrypt));
 				//需解释出某些值供 0828使用
-				key0828 = slice(decrypt, 7, 0x10);
-				byte[] tokenfor0828 = slice(decrypt, 9+0x10, 0x38);
+				key0828 = Util.slice(decrypt, 7, 0x10);
+				byte[] tokenfor0828 = Util.slice(decrypt, 9+0x10, 0x38);
 				String rbof0836 = Converts.bytesToHexString(decrypt);
 				
 				//查找昵称
-				byte[] rdecrypt = reverse(decrypt);
+				byte[] rdecrypt = Util.reverse(decrypt);
 				String rbofrdec = Converts.bytesToHexString(rdecrypt);
 				int nickidx = -1;
 				do{
@@ -1058,7 +1055,7 @@ public class Task implements Runnable, Observer {
 				System.out.println("Nick:"+new String(nick, "utf-8"));
 				setNick(new String(nick, "utf-8"));
 				
-				key0828recv = slice(decrypt, rbof0836.indexOf("0000003C0002")/2+6, 0x10);
+				key0828recv = Util.slice(decrypt, rbof0836.indexOf("0000003C0002")/2+6, 0x10);
 				//00 00 00 3C 00 02
 				//Converts.bytesToHexString(decrypt).indexOf(")
 				//------------------------------------------------------------------------------
@@ -1070,20 +1067,20 @@ public class Task implements Runnable, Observer {
 				bsofplain.write(new byte[]{
 						0x00, 0x07, 0x00, (byte)0x88, 0x00, 0x04
 				});
-				System.err.println(Converts.bytesToHexString(slice(decrypt, rbof0836.indexOf("00880004")/2+4, 4)));
-				System.err.println(Converts.bytesToHexString(slice(decrypt, rbof0836.indexOf("00880004")/2+8, 4)));
+				System.err.println(Converts.bytesToHexString(Util.slice(decrypt, rbof0836.indexOf("00880004")/2+4, 4)));
+				System.err.println(Converts.bytesToHexString(Util.slice(decrypt, rbof0836.indexOf("00880004")/2+8, 4)));
 				System.err.println(Converts.bytesToHexString(ips));
-				bsofplain.write(slice(decrypt, rbof0836.indexOf("00880004")/2+4, 4));
-				bsofplain.write(slice(decrypt, rbof0836.indexOf("00880004")/2+8, 4));
-//				bsofplain.write(genKey(4));
-//				bsofplain.write(genKey(4));
+				bsofplain.write(Util.slice(decrypt, rbof0836.indexOf("00880004")/2+4, 4));
+				bsofplain.write(Util.slice(decrypt, rbof0836.indexOf("00880004")/2+8, 4));
+//				bsofplain.write(Util.genKey(4));
+//				bsofplain.write(Util.genKey(4));
 				bsofplain.write(new byte[]{
 						0x00, 0x00, 0x00, 0x00
 				});
 				bsofplain.write(new byte[]{
 						0x00, 0x78
 				});
-				bsofplain.write(slice(decrypt, rbof0836.indexOf("000000000078")/2+6, 0x78));
+				bsofplain.write(Util.slice(decrypt, rbof0836.indexOf("000000000078")/2+6, 0x78));
 				bsofplain.write(new byte[]{
 						0x00, 0x0C, 0x00, 0x16, 0x00, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 //TODO 06->00?
 				});
@@ -1150,7 +1147,7 @@ public class Task implements Runnable, Observer {
 				bsofplain.write(new byte[]{
 						0x00, 0x00, 0x00, 0x00, 0x00, 0x1F, 0x00, 0x22, 0x00, 0x01
 				});
-				bsofplain.write(genKey(0x20));// 32位机器码
+				bsofplain.write(Util.genKey(0x20));// 32位机器码
 				bsofplain.write(new byte[]{
 						0x01, 0x05, 0x00, 0x46, 0x00, 0x01, 0x01, 0x03
 						//0x01, 0x05, 0x00, 0x30, 0x00, 0x01, 0x01, 0x02
@@ -1159,19 +1156,19 @@ public class Task implements Runnable, Observer {
 						0x00, 0x14, 0x01, 0x01,
 						0x00, 0x10
 				});
-				bsofplain.write(genKey(0x10));
+				bsofplain.write(Util.genKey(0x10));
 				
 				bsofplain.write(new byte[]{
 						0x00, 0x14, 0x01, 0x01,
 						0x00, 0x10
 				});
-				bsofplain.write(genKey(0x10));
+				bsofplain.write(Util.genKey(0x10));
 				
 				bsofplain.write(new byte[]{
 						0x00, 0x14, 0x01, 0x02,
 						0x00, 0x10
 				});
-				bsofplain.write(genKey(0x10));
+				bsofplain.write(Util.genKey(0x10));
 				bsofplain.write(new byte[]{
 						//0x01, 0x0B, 0x00, 0x38, 0x00, 0x01
 						0x01, 0x0B, 0x00, 0x20, 0x00, 0x01 //去掉0x18的情况
@@ -1179,7 +1176,7 @@ public class Task implements Runnable, Observer {
 				bsofplain.write(new byte[]{
 						(byte)0xCF, (byte)0x99, (byte)0xD8, (byte)0xE3, 0x79, (byte)0x95, 0x2A, (byte)0xF1, (byte)0xCA, 0x6D, (byte)0xEC, 0x42, 0x0A, (byte)0xC7, (byte)0xC5, 0x10// QQ file MD5 //TODO
 				});			
-				//bsofplain.write(genKey(0x10)); 
+				//bsofplain.write(Util.genKey(0x10)); 
 				bsofplain.write(new byte[]{
 						(byte)0xF8, //flag
 						0x10, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02 // 固定
@@ -1187,7 +1184,7 @@ public class Task implements Runnable, Observer {
 				bsofplain.write(new byte[]{
 						0x00, 0x00 //去掉0x18的情况 ，原来是 0x00, 0x18
 				});
-//				bsofplain.write(new byte[]{//genKey(0x18);
+//				bsofplain.write(new byte[]{//Util.genKey(0x18);
 //						0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 //						0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
 //				}); // 0836 receive token3, 没有收到?
@@ -1233,29 +1230,29 @@ public class Task implements Runnable, Observer {
 								
 				ds.receive(dpIn);
 				
-				buffer = pack(buffer);
+				buffer = Util.pack(buffer);
 				System.out.println(buffer.length);
 				System.out.println(Converts.bytesToHexString(buffer));
 				if(buffer.length==127){
 					//System.out.println("您的网络环境可能发生了变化，为了您的帐号安全，请重新登录。");
 					//System.out.println("退出任务");
 					
-					byte[] ts = slice(buffer, 14, buffer.length-15);
+					byte[] ts = Util.slice(buffer, 14, buffer.length-15);
 					ts = crypter.decrypt(ts, key0828);
 					System.out.println(Converts.bytesToHexString(ts));
-					System.out.println(new String(slice(ts, 15, ts.length-15), "utf-8"));
-					info(new String(slice(ts, 15, ts.length-15), "utf-8"));
+					System.out.println(new String(Util.slice(ts, 15, ts.length-15), "utf-8"));
+					info(new String(Util.slice(ts, 15, ts.length-15), "utf-8"));
 					idx = 0;//重新来
 				}else{
 					System.out.println("OK");
 					info("获取成功");
-					content = slice(buffer, 14, buffer.length-15);
+					content = Util.slice(buffer, 14, buffer.length-15);
 					System.out.println(Converts.bytesToHexString(key0828recv));
 					decrypt = crypter.decrypt(content, key0828recv);
 					System.out.println(decrypt.length);
 					System.out.println(Converts.bytesToHexString(decrypt));
 					
-					sessionkey = slice(decrypt, 63, 0x10);		
+					sessionkey = Util.slice(decrypt, 63, 0x10);		
 					idx++;		
 				}
 			}catch(Exception e){
@@ -1339,7 +1336,7 @@ public class Task implements Runnable, Observer {
 								
 				ds.receive(dpIn);
 				
-				buffer = pack(buffer);
+				buffer = Util.pack(buffer);
 //				System.out.println(buffer.length);
 //				System.out.println(Converts.bytesToHexString(buffer));
 				idx++;
@@ -1398,11 +1395,11 @@ public class Task implements Runnable, Observer {
 									
 					ds.receive(dpIn);
 					
-					buffer = pack(buffer);
+					buffer = Util.pack(buffer);
 	//				System.out.println(buffer.length);
 					System.out.println(Converts.bytesToHexString(buffer));
 					
-					content = slice(buffer, 14, buffer.length-15);
+					content = Util.slice(buffer, 14, buffer.length-15);
 					decrypt = crypter.decrypt(content, sessionkey);
 					System.out.println("005C>>>"+Converts.bytesToHexString(decrypt));
 					if(decrypt[0]==(byte)0x88){
@@ -1411,8 +1408,8 @@ public class Task implements Runnable, Observer {
 						info("继续更新资料");
 					}
 				}while(goingon005c);
-				int level = slice(decrypt, 10, 1)[0];
-				int days = slice(decrypt, 16, 1)[0];
+				int level = Util.slice(decrypt, 10, 1)[0];
+				int days = Util.slice(decrypt, 16, 1)[0];
 				setProfile(level, days);
 				idx++;
 			}catch(Exception e){
@@ -1421,346 +1418,17 @@ public class Task implements Runnable, Observer {
 			}
 			break;
 		case 5:
-			info("启动心跳包");
+			info("登录完成");
 			try{
-				//0058 开启线程，发送心跳包
-				//--------------------------------------
-				final byte[] skx = sessionkey;
-				final String ipx = ip;
-				final DatagramSocket dsx = ds;
-				
-				timer = new Timer();
-				timer.schedule(new TimerTask(){
-					private Crypter crypter = new Crypter();
-					private Random rnd = new Random();
-					
-					@Override
-					public void run() {
-						/**
-						synchronized(timercount){
-							timercount++;
-						}
-						//period 为 0 则一直默认在线
-						if(Integer.parseInt(Configuration.getInstance().getProperty("PERIOD"))!=0&&timercount>Integer.parseInt(Configuration.getInstance().getProperty("PERIOD"))){
-							//info("在线时间完成");
-							timeout = true;
-							//ds.close();
-							//发送离线消息, 循环收到之后，会退出
-							logout();
-							return;
-						}**/
-												
-						info("心跳["+format.format(new Date())+"]");
-						
-						//int seq = 0x3123;
-						short seq = (short)rnd.nextInt(0xFFFF);						
-						try{
-							ByteArrayOutputStream bsofplain = new ByteArrayOutputStream();
-							bsofplain.write(account.getBytes());
-								
-							byte[] encrypt = crypter.encrypt(bsofplain.toByteArray(), skx);
-													
-							ByteArrayOutputStream baos = new ByteArrayOutputStream();
-							baos.write(new byte[]{
-									0x02, 0x34, 0x4B, 0x00, 0x58
-							});
-							baos.write(Converts.hexStringToByte(Integer.toHexString(seq).toUpperCase()));
-							baos.write(Converts.hexStringToByte(Long.toHexString(Long.valueOf(account)).toUpperCase()));
-							baos.write(new byte[]{
-									//0x03, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00, 0x66, (byte)0xA2, 0x00, 0x30, 0x00, 0x30
-									//0x02, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00, 0x66, (byte)0xA2, 0x00, 0x30, 0x00, 0x3A
-									//0x02, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00, 0x66, 0x68, 0x00, 0x30, 0x00, 0x3A//(byte)0xA2?
-									0x02, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00, 0x66, (byte)0xA2 
-							});
-							baos.write(encrypt);
-							baos.write(new byte[]{
-									0x03
-							});
-								
-							byte[] buf = baos.toByteArray();
-								
-							System.out.println("0058["+Converts.bytesToHexString(skx)+"]");
-							System.out.println(Converts.bytesToHexString(baos.toByteArray()));
-								
-							DatagramPacket dpOut = new DatagramPacket(buf, buf.length, InetAddress.getByName(ipx), 8000);
-							dsx.send(dpOut);
-								
-							//not need
-							//IN:
-							/**
-							byte[] buffer = new byte[1024];
-							DatagramPacket dpIn = new DatagramPacket(buffer, buffer.length);
-												
-							dsx.receive(dpIn);
-								
-							buffer = pack(buffer);
-							System.out.println(buffer.length);
-							System.out.println(Converts.bytesToHexString(buffer));
-							**/
-						}catch(Exception e){
-							e.printStackTrace();
-						}
-					}					
-				}, 1000, 1000*60);
+				SocketLand.getInstance().add(new SSClient(this.id, account, ds, ip, sessionkey));
 				idx++;
-				finish = 1; //TODO ???
 			}catch(Exception e){
 				e.printStackTrace();
 				fb = true;
 			}
-		case 6:
-			//if((status==1||status==2)&&("true".equals(Configuration.getInstance().getProperty("AUTO_REPLY")))){ //需要自动回复
-			info("监听消息");
-			//}
-			try{
-				while(run&&!sf){
-					//00CE接收消息
-					//--------------------------------------------------
-					buffer = new byte[1024];
-					dpIn = new DatagramPacket(buffer, buffer.length);
-					try{
-						ds.receive(dpIn);
-					}catch(SocketException e){
-						//e.printStackTrace();
-						if("socket closed".equals(e.getMessage())){
-							System.err.println(e.getMessage());
-							if(timer!=null){
-								timer.cancel();
-							}
-							run = false;
-							if(timeout){								
-								info("挂机完毕");
-							}else{
-								info("连接关闭");
-							}
-							tf();
-							continue;
-						}
-					}
-					buffer = pack(buffer);
-					System.out.println("P1:"+buffer.length);
-					System.out.println(Converts.bytesToHexString(buffer));
-					
-					//最后活动
-					infoact();
-					byte[] header = slice(buffer, 3, 2);
-					byte[] rh = slice(buffer, 0, 11);
-					System.out.println("RECV[+"+buffer.length+"]:"+header[0]+"|"+header[1]);
-					boolean nmsg = false;//是否是新消息
-					if(header[0]==0x00&&header[1]==(byte)0xCE){
-						content = slice(buffer, 14, buffer.length-15);
-						decrypt = crypter.decrypt(content, sessionkey);
-						System.out.println("00CE[RECV]:"+decrypt.length);
-						System.out.println(Converts.bytesToHexString(decrypt));
-						
-						//判断时间
-						String rbof00CE = Converts.bytesToHexString(decrypt);
-						byte[] cetime = slice(decrypt, rbof00CE.indexOf("4D53470000000000")/2+8, 0x04);
-						long lcetime = Long.parseLong(Converts.bytesToHexString(cetime), 16)*1000;
-						System.out.println("P5:"+(System.currentTimeMillis()-lcetime));
-						if(System.currentTimeMillis()-lcetime<=1000*60){//一分钟内							
-							nmsg = true;
-						}else{
-							nmsg = false;
-						}
-						//XYZ
-						System.out.println("P3:"+lcetime);
-						
-						//00CE的反馈
-						bsofplain = new ByteArrayOutputStream();
-						bsofplain.write(slice(decrypt, 0, 0x010));
-						encrypt = crypter.encrypt(bsofplain.toByteArray(), sessionkey);
-											
-						baos = new ByteArrayOutputStream();
-						baos.write(rh);
-						baos.write(new byte[]{
-								//0x03, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00, 0x66, (byte)0xA2, 0x00, 0x30, 0x00, 0x30
-								//0x02, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00, 0x66, (byte)0xA2, 0x00, 0x30, 0x00, 0x3A
-								//0x02, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00, 0x66, 0x68, 0x00, 0x30, 0x00, 0x3A//(byte)0xA2?
-								0x02, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00, 0x66, (byte)0xA2							
-								//02 00 00 00 01 							01 01 00 00 66 79?  0x65, (byte)0xCA	
-						});
-						baos.write(encrypt);
-						baos.write(new byte[]{
-								0x03
-						});
-						
-						buf = baos.toByteArray();
-						
-						System.out.println("00CE[SEND]["+Converts.bytesToHexString(sessionkey)+"]");
-						System.out.println(Converts.bytesToHexString(baos.toByteArray()));
-						
-						dpOut = new DatagramPacket(buf, buf.length, InetAddress.getByName(ip), 8000);
-						ds.send(dpOut);
-						
-						//0319 ? 01C0?
-						//表示已经读取本消息 //TODO
-						//----------------------------------------------
-						
-						//00CD回复消息
-						//----------------------------------------------
-						if((status==1||status==2)&&nmsg&&("true".equals(Configuration.getInstance().getProperty("AUTO_REPLY")))){ //需要自动回复
-							seq++;
-							
-							byte[] time = Converts.hexStringToByte(Long.toHexString(System.currentTimeMillis()/1000).toUpperCase());
-							byte[] msgs = Configuration.getInstance().getProperty("LEFT_MSG").getBytes("UTF-8");
-							
-							bsofplain = new ByteArrayOutputStream();
-							bsofplain.write(slice(decrypt, 4, 0x04));
-							bsofplain.write(slice(decrypt, 0, 0x04));
-							bsofplain.write(new byte[]{			
-									0x00, 0x00, 0x00, 0x0D, 0x00, 0x01, 0x00, 0x04, 0x00, 0x00, 0x00, 0x00, 0x00, 0x03, 0x00, 0x01, 0x01,
-									0x34, 0x4B
-							});
-							bsofplain.write(slice(decrypt, 4, 0x04));
-							bsofplain.write(slice(decrypt, 0, 0x04));
-		
-							byte[] tn = slice(decrypt, 0, 0x04);
-							byte[] msghd = new byte[20];
-							for(int i=0;i<4;i++){ 
-								msghd[i] = tn[i];
-							}
-							for(int i=0;i<sessionkey.length;i++){
-								msghd[i+4] = sessionkey[i];
-							}
-							bsofplain.write(Converts.MD5Encode(msghd));
-							bsofplain.write(new byte[]{
-									0x00, 0x0B
-							});
-							bsofplain.write(Converts.hexStringToByte(Integer.toHexString(seq+0x1111).toUpperCase()));
-												bsofplain.write(time);
-							bsofplain.write(new byte[]{
-									//0x52,(byte)0xB9,0x0E,(byte)0x94,  //时间
-									0x02,0x37,  //图标？
-									0x00,0x00,0x00,
-									0x00,  //是否有字体
-									0x01,  //分片数
-									0x00,  //分片索引
-									0x00,0x00, //消息ID
-									0x02,  //02,0xauto,0xreply,,0x01,0xnormal
-									0x4D,0x53,0x47,0x00,0x00,0x00,0x00,0x00,  //fix
-							});
-							bsofplain.write(time);
-									//0x52,(byte)0xB9,0x0E,(byte)0x94,  //发送时间
-									//(byte)0xBE,(byte)0x97,0x4A,(byte)0x92,  //随机？
-							bsofplain.write(genKey(4));
-							bsofplain.write(new byte[]{		
-									0x00,
-									0x00,0x00,0x00,  //字体颜色
-									0x0A,  //字体大小
-									0x00,  //其他属性
-									(byte)0x86,0x02,  //字符集
-									0x00,0x06,  //字体名称长度
-									(byte)0xE5,(byte)0xAE,(byte)0x8B,(byte)0xE4,(byte)0xBD,(byte)0x93,  //宋体
-									0x00,0x00,0x01, 
-									0x00,(byte)(msgs.length+3),  //消息快总长度
-									0x01,  //消息快编号
-							});
-							bsofplain.write(new byte[]{	
-									0x00,(byte)msgs.length,  //消息快大小
-									//0x61,0x73,0x64,0x66  //消息
-									//(byte)0xE4,(byte)0xBD,(byte)0xA0,(byte)0xE5,(byte)0xA5,(byte)0xBD,(byte)0xEF,(byte)0xBC,(byte)0x8C,(byte)0xE6,(byte)0x88,(byte)0x91,(byte)0xE7,(byte)0x8E,(byte)0xB0,(byte)0xE5,(byte)0x9C,(byte)0xA8,(byte)0xE4,(byte)0xB8,(byte)0x8D,(byte)0xE5,(byte)0x9C,(byte)0xA8,0x21
-							});
-							bsofplain.write(msgs);
-							
-							encrypt = crypter.encrypt(bsofplain.toByteArray(), sessionkey);
-												
-							baos = new ByteArrayOutputStream();
-							baos.write(new byte[]{
-									0x02, 0x34, 0x4B, 0x00, (byte)0xCD
-							});
-							baos.write(Converts.hexStringToByte(Integer.toHexString(seq).toUpperCase()));
-							baos.write(Converts.hexStringToByte(Long.toHexString(Long.valueOf(account)).toUpperCase()));
-							baos.write(new byte[]{
-									//0x03, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00, 0x66, (byte)0xA2, 0x00, 0x30, 0x00, 0x30
-									//0x02, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00, 0x66, (byte)0xA2, 0x00, 0x30, 0x00, 0x3A
-									//0x02, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00, 0x66, 0x68, 0x00, 0x30, 0x00, 0x3A//(byte)0xA2?
-									0x02, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00, 0x66, (byte)0xA2 //0x65, (byte)0xCA 
-							});
-							baos.write(encrypt);
-							baos.write(new byte[]{
-									0x03
-							});
-							
-							buf = baos.toByteArray();
-							
-							System.out.println("00CD["+Converts.bytesToHexString(sessionkey)+"]");
-							System.out.println(Converts.bytesToHexString(baos.toByteArray()));
-							
-							dpOut = new DatagramPacket(buf, buf.length, InetAddress.getByName(ip), 8000);
-							ds.send(dpOut);
-							
-							//IN: not need
-							/**
-							buffer = new byte[1024];
-							dpIn = new DatagramPacket(buffer, buffer.length);
-											
-							ds.receive(dpIn);
-							
-							buffer = pack(buffer);
-							System.out.println(buffer.length);
-							System.out.println(Converts.bytesToHexString(buffer));
-							**/
-						}else { //命令离线 //decrypt判断
-							/**
-							//离线的处理
-							seq++;
-							
-							bsofplain.write(new byte[]{			
-									0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
-							});
-							
-							encrypt = crypter.encrypt(bsofplain.toByteArray(), sessionkey);
-												
-							baos = new ByteArrayOutputStream();
-							baos.write(new byte[]{
-									0x02, 0x34, 0x4B, 0x00, 0x62
-							});
-							baos.write(Converts.hexStringToByte(Integer.toHexString(seq).toUpperCase()));
-							baos.write(Converts.hexStringToByte(Long.toHexString(Long.valueOf(account)).toUpperCase()));
-							baos.write(new byte[]{
-									//0x03, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00, 0x66, (byte)0xA2, 0x00, 0x30, 0x00, 0x30
-									//0x02, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00, 0x66, (byte)0xA2, 0x00, 0x30, 0x00, 0x3A
-									//0x02, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00, 0x66, 0x68, 0x00, 0x30, 0x00, 0x3A//(byte)0xA2?
-									0x02, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00, 0x66, (byte)0xA2 //0x65, (byte)0xCA								
-							});
-							baos.write(encrypt);
-							baos.write(new byte[]{
-									0x03
-							});
-							
-							buf = baos.toByteArray();
-							
-							System.out.println("0062["+Converts.bytesToHexString(sessionkey)+"]");
-							System.out.println(Converts.bytesToHexString(baos.toByteArray()));
-							
-							dpOut = new DatagramPacket(buf, buf.length, InetAddress.getByName(ip), 8000);
-							ds.send(dpOut);
-							
-							timer.cancel();
-							return;
-							**/
-							//IN: not need
-							/**
-							buffer = new byte[1024];
-							dpIn = new DatagramPacket(buffer, buffer.length);
-											
-							ds.receive(dpIn);
-							
-							buffer = pack(buffer);
-							System.out.println(buffer.length);
-							System.out.println(Converts.bytesToHexString(buffer));
-							**/						
-						}
-					}
-					//消息处理 0319 已读
-				}
-			}catch(Exception e){
-				e.printStackTrace();
-				fb = true;
-			}
+			break;
 			/**
-		case 6:
+		case 8:
 			finish = 1;
 			idx++;
 			break;
@@ -1770,15 +1438,15 @@ public class Task implements Runnable, Observer {
 		}
 	}
 
-	private void tf() { //task finish
-		message = new EngineMessage();
-		message.setTid(this.id);
-		message.setType(EngineMessageType.IM_TF);
-
-
-		Engine.getInstance().fire(message);
-		
-	}
+//	private void tf() { //task finish
+//		message = new EngineMessage();
+//		message.setTid(this.id);
+//		message.setType(EngineMessageType.IM_TF);
+//
+//
+//		Engine.getInstance().fire(message);
+//		
+//	}
 
 	private void info(String info){
 		message = new EngineMessage();
@@ -1793,19 +1461,19 @@ public class Task implements Runnable, Observer {
 		Engine.getInstance().fire(message);
 	}
 	
-	private void infoact(){
-		//DateFormat format = new java.text.SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-		String tm = format.format(new Date());
-		
-		message = new EngineMessage();
-		message.setTid(this.id);
-		message.setType(EngineMessageType.IM_INFOACT);
-		message.setData(tm);
-
-		
-		System.err.println("["+this.account+"]ACT("+tm+")");
-		Engine.getInstance().fire(message);
-	}
+//	private void infoact(){
+//		//DateFormat format = new java.text.SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+//		String tm = format.format(new Date());
+//		
+//		message = new EngineMessage();
+//		message.setTid(this.id);
+//		message.setType(EngineMessageType.IM_INFOACT);
+//		message.setData(tm);
+//
+//		
+//		System.err.println("["+this.account+"]ACT("+tm+")");
+//		Engine.getInstance().fire(message);
+//	}
 	
 	private void setNick(String nick){
 		
@@ -1827,55 +1495,7 @@ public class Task implements Runnable, Observer {
 		
 		Engine.getInstance().fire(message);
 	}
-	
-	private byte[] genKey(int length){
-		byte[] rs = new byte[length];
-		Random rnd = new Random();
-		rnd.nextBytes(rs);
-		return rs;
-	}
-	
-	private byte[] slice(byte[] src, int start, int length) {
-        byte[] bs = new byte[length];
-        for (int i=0; i<length; i++){
-            bs[i] = src[start+i];	
-        }
-        return bs;
-	}
-	
-	private byte[] pack(byte[] src){
-		int index = -1;
-		for(int i=src.length;i>0;i--){
-			if(src[i-1]!=0x00){
-				index = i-1;
-				break;
-			}
-		}
-		byte[] rs = new byte[index+1];
-		for(int i=0;i<rs.length;i++){
-			rs[i] = src[i];
-		}
-		return rs;
-	}
 		
-	private byte[] reverse(byte[] src){
-		byte[] rs = new byte[src.length];
-		for(int i=0;i<rs.length;i++){
-			rs[i] = src[src.length-1-i];
-		}
-		return rs;
-	}
-	
-	private String genHostName(int length){
-		String cs = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-		Random rnd = new Random();
-		StringBuffer sb = new StringBuffer();
-		for(int i=0;i<length;i++){
-			sb.append(cs.charAt(rnd.nextInt(cs.length())));
-		}
-		return sb.toString();
-	}
-	
 	private void logout(){
 		try{
 			//离线的处理
