@@ -776,7 +776,7 @@ public class QQOL implements Observer{
 					@Override
 					public void run() {					
 						table.getItem(msg.getTid()-1).setText(6, (String)msg.getData());
-						//table.setSelection(msg.getTid()-1);
+						table.setSelection(msg.getTid()-1);
 					}
 				});
 				break;
@@ -818,7 +818,8 @@ public class QQOL implements Observer{
 						//table.getS
 						//table.getItem(1).
 						for(int i=0;i<table.getItemCount();i++){
-							if(!"".equals(table.getItem(i).getText(5))){
+							//if(!"".equals(table.getItem(i).getText(5))){
+							if(table.getItem(i).getData()!=null){
 								oltime = (int)(time - (Long)table.getItem(i).getData());
 								oltime = oltime/1000;
 								hr = oltime / 3600;
@@ -837,6 +838,15 @@ public class QQOL implements Observer{
 					public void run() {					
 						table.getItem(msg.getTid()-1).setText(3, (String)msg.getData());
 						table.getItem(msg.getTid()-1).setData(System.currentTimeMillis());
+						//table.setSelection(msg.getTid()-1);
+					}
+				});
+				break;
+			case EngineMessageType.OM_TF:
+				Display.getDefault().asyncExec(new Runnable() {
+					@Override
+					public void run() {					
+						table.getItem(msg.getTid()-1).setData(null);
 						//table.setSelection(msg.getTid()-1);
 					}
 				});

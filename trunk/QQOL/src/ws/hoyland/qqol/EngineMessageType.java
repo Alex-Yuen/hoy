@@ -28,6 +28,7 @@ public class EngineMessageType {
 
 	public static final int IM_NICK = 0x1028;
 	public static final int IM_PROFILE = 0x1029;
+	public static final int IM_TF = 0x1030;
 	
 	//outgoing message
 	public static final int OM_LOGINING = 0x2010;
@@ -54,4 +55,5 @@ public class EngineMessageType {
 	public static final int OM_STOP = 0x2029;
 	public static final int OM_NICK = 0x2030;
 	public static final int OM_PROFILE = 0x2031;
+	public static final int OM_TF = 0x2032;
 }

@@ -188,16 +188,17 @@ public class Option extends Dialog implements Observer {
 		label_3.setBounds(10, 9, 61, 17);
 		
 		spinner_1 = new Spinner(composite, SWT.BORDER);
-		spinner_1.setMaximum(50000);
+		spinner_1.setMaximum(999);
 		spinner_1.setMinimum(1);
-		spinner_1.setSelection(1000);
-		spinner_1.setBounds(77, 7, 61, 20);
+		spinner_1.setSelection(5);
+		spinner_1.setBounds(77, 7, 54, 20);
 		
 		Label label = new Label(composite, SWT.NONE);
 		label.setText("在线时间(分钟):");
 		label.setBounds(183, 9, 91, 17);
 		
 		spinner = new Spinner(composite, SWT.BORDER);
+		spinner.setEnabled(false);
 		spinner.setMaximum(2000);
 		spinner.setMinimum(1);
 		spinner.setSelection(600);
