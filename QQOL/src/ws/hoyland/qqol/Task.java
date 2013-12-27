@@ -43,11 +43,12 @@ import ws.hoyland.util.YDM;
 
 public class Task implements Runnable, Observer {
 
+	private boolean timeout = false;
 	//private String line;
 	private boolean run = false;
 	private boolean fb = false; // break flag;
 //	private boolean fc = false; // continue flag;
-	private int idx = 0; // method index;
+	private int idx = -1; // method index;
 //	private Configuration configuration = Configuration.getInstance();
 	
 	// private boolean block = false;
@@ -202,12 +203,6 @@ public class Task implements Runnable, Observer {
 			message.setType(EngineMessageType.IM_START);
 			Engine.getInstance().fire(message);
 		}
-
-		try{
-			ds = new DatagramSocket(10023+this.id);
-		}catch(Exception e){
-			e.printStackTrace();
-		}
 		
 		// System.err.println(line);
 		while (run&&!sf) { //正常运行，以及未收到停止信号
@@ -304,12 +299,24 @@ public class Task implements Runnable, Observer {
 
 	private void process(int index) {
 		switch (index) {
+		case -1:
+			info("建立连接");
+			try{
+				if("2927238399".equals(account)){
+					System.out.println("KK");
+				}
+				ds = new DatagramSocket(10023+this.id);
+				idx++;
+			}catch(Exception e){
+				e.printStackTrace();
+			}
+			break;
 		case 0:
+			info("正在登录");
 			try{
 				//ds = new DatagramSocket(5023);			
 				//------------------------------------------------------------------------------			
 				//0825
-				info("正在登录");
 				do{
 					redirect = false;
 					seq++;
@@ -426,6 +433,7 @@ public class Task implements Runnable, Observer {
 				}while(redirect);
 				idx++;
 			}catch(Exception e){
+				System.out.println(this.account+":V");
 				e.printStackTrace();
 				fb = true;
 			}
@@ -957,6 +965,7 @@ public class Task implements Runnable, Observer {
 										e.printStackTrace();
 									}
 									//timer.cancel();
+									nvc = false;
 									idx = 1;//重新验证身份
 									//return;
 								}
@@ -968,7 +977,8 @@ public class Task implements Runnable, Observer {
 						}while(!rv);//提交验证码后，则退出
 
 						//return;
-					}else if(buffer.length==175){
+					}/**
+					else if(buffer.length==175){
 						//System.out.println("用户名或密码错误, 退出任务");
 						byte[] ts = slice(buffer, 14, buffer.length-15);
 						ts = crypter.decrypt(ts, key0836x);
@@ -991,7 +1001,8 @@ public class Task implements Runnable, Observer {
 //						content = slice(buffer, 14, buffer.length-15);
 //						decrypt = crypter.decrypt(content, key0836x);
 //						System.out.println(Converts.bytesToHexString(decrypt));
-					}else if(buffer.length==247||buffer.length==239){
+					}**/
+					else if(buffer.length==175||buffer.length==95||buffer.length==247||buffer.length==239){
 						byte[] ts = slice(buffer, 14, buffer.length-15);
 						ts = crypter.decrypt(ts, key0836x);
 						System.out.println(Converts.bytesToHexString(ts));
@@ -1000,6 +1011,10 @@ public class Task implements Runnable, Observer {
 						run = false;
 						return;
 						//idx = 1;
+					}else if(buffer.length==255){
+						info("需要验证密保");
+						run = false;
+						return;
 					}else{
 						idx++;
 					}
@@ -1338,56 +1353,64 @@ public class Task implements Runnable, Observer {
 			try{
 				//00EC 上线包
 				//-------------------------------------------------------------------
-				seq++;
-				bsofplain = new ByteArrayOutputStream();
-				bsofplain.write(new byte[]{
-						(byte)0x88
-				});
-				bsofplain.write(Converts.hexStringToByte(Long.toHexString(Long.valueOf(account)).toUpperCase()));
-				bsofplain.write(new byte[]{
-						0x00
-				});
-				
-				encrypt = crypter.encrypt(bsofplain.toByteArray(), sessionkey);
-				
-				baos = new ByteArrayOutputStream();
-				baos.write(new byte[]{
-						0x02, 0x34, 0x4B, 0x00, (byte)0x5C
-				});
-				baos.write(Converts.hexStringToByte(Integer.toHexString(seq).toUpperCase()));
-				baos.write(Converts.hexStringToByte(Long.toHexString(Long.valueOf(account)).toUpperCase()));
-				baos.write(new byte[]{
-						//0x03, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00, 0x66, (byte)0xA2, 0x00, 0x30, 0x00, 0x30
-						//0x02, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00, 0x66, (byte)0xA2, 0x00, 0x30, 0x00, 0x3A
-						//0x02, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00, 0x66, 0x68, 0x00, 0x30, 0x00, 0x3A//(byte)0xA2?
-						0x02, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00, 0x65, (byte)0xCA 
-				});
-				baos.write(encrypt);
-				baos.write(new byte[]{
-						0x03
-				});
-				
-				buf = baos.toByteArray();
-				
-				System.out.println("005C["+Converts.bytesToHexString(sessionkey)+"]");
-				System.out.println(Converts.bytesToHexString(baos.toByteArray()));
-				
-				dpOut = new DatagramPacket(buf, buf.length, InetAddress.getByName(ip), 8000);
-				ds.send(dpOut);
-				
-				//IN:
-				buffer = new byte[1024];
-				dpIn = new DatagramPacket(buffer, buffer.length);
-								
-				ds.receive(dpIn);
-				
-				buffer = pack(buffer);
-//				System.out.println(buffer.length);
-//				System.out.println(Converts.bytesToHexString(buffer));
-				
-				content = slice(buffer, 14, buffer.length-15);
-				decrypt = crypter.decrypt(content, sessionkey);
-				
+				boolean goingon005c = true;
+				do{
+					seq++;
+					bsofplain = new ByteArrayOutputStream();
+					bsofplain.write(new byte[]{
+							(byte)0x88
+					});
+					bsofplain.write(Converts.hexStringToByte(Long.toHexString(Long.valueOf(account)).toUpperCase()));
+					bsofplain.write(new byte[]{
+							0x00
+					});
+					
+					encrypt = crypter.encrypt(bsofplain.toByteArray(), sessionkey);
+					
+					baos = new ByteArrayOutputStream();
+					baos.write(new byte[]{
+							0x02, 0x34, 0x4B, 0x00, (byte)0x5C
+					});
+					baos.write(Converts.hexStringToByte(Integer.toHexString(seq).toUpperCase()));
+					baos.write(Converts.hexStringToByte(Long.toHexString(Long.valueOf(account)).toUpperCase()));
+					baos.write(new byte[]{
+							//0x03, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00, 0x66, (byte)0xA2, 0x00, 0x30, 0x00, 0x30
+							//0x02, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00, 0x66, (byte)0xA2, 0x00, 0x30, 0x00, 0x3A
+							//0x02, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00, 0x66, 0x68, 0x00, 0x30, 0x00, 0x3A//(byte)0xA2?
+							0x02, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00, 0x65, (byte)0xCA 
+					});
+					baos.write(encrypt);
+					baos.write(new byte[]{
+							0x03
+					});
+					
+					buf = baos.toByteArray();
+					
+					System.out.println("005C["+Converts.bytesToHexString(sessionkey)+"]");
+					System.out.println(Converts.bytesToHexString(baos.toByteArray()));
+					
+					dpOut = new DatagramPacket(buf, buf.length, InetAddress.getByName(ip), 8000);
+					ds.send(dpOut);
+					
+					//IN:
+					buffer = new byte[1024];
+					dpIn = new DatagramPacket(buffer, buffer.length);
+									
+					ds.receive(dpIn);
+					
+					buffer = pack(buffer);
+	//				System.out.println(buffer.length);
+					System.out.println(Converts.bytesToHexString(buffer));
+					
+					content = slice(buffer, 14, buffer.length-15);
+					decrypt = crypter.decrypt(content, sessionkey);
+					System.out.println("005C>>>"+Converts.bytesToHexString(decrypt));
+					if(decrypt[0]==(byte)0x88){
+						goingon005c = false;
+					}else{
+						info("继续更新资料");
+					}
+				}while(goingon005c);
 				int level = slice(decrypt, 10, 1)[0];
 				int days = slice(decrypt, 16, 1)[0];
 				setProfile(level, days);
@@ -1413,13 +1436,19 @@ public class Task implements Runnable, Observer {
 					
 					@Override
 					public void run() {
+						/**
 						synchronized(timercount){
 							timercount++;
 						}
-						if(timercount>=Integer.parseInt(Configuration.getInstance().getProperty("PERIOD"))){
-							timer.cancel();
+						//period 为 0 则一直默认在线
+						if(Integer.parseInt(Configuration.getInstance().getProperty("PERIOD"))!=0&&timercount>Integer.parseInt(Configuration.getInstance().getProperty("PERIOD"))){
+							//info("在线时间完成");
+							timeout = true;
+							//ds.close();
+							//发送离线消息, 循环收到之后，会退出
+							logout();
 							return;
-						}
+						}**/
 												
 						info("心跳["+format.format(new Date())+"]");
 						
@@ -1495,7 +1524,17 @@ public class Task implements Runnable, Observer {
 						//e.printStackTrace();
 						if("socket closed".equals(e.getMessage())){
 							System.err.println(e.getMessage());
-							return;
+							if(timer!=null){
+								timer.cancel();
+							}
+							run = false;
+							if(timeout){								
+								info("挂机完毕");
+							}else{
+								info("连接关闭");
+							}
+							tf();
+							continue;
 						}
 					}
 					buffer = pack(buffer);
@@ -1731,6 +1770,16 @@ public class Task implements Runnable, Observer {
 		}
 	}
 
+	private void tf() { //task finish
+		message = new EngineMessage();
+		message.setTid(this.id);
+		message.setType(EngineMessageType.IM_TF);
+
+
+		Engine.getInstance().fire(message);
+		
+	}
+
 	private void info(String info){
 		message = new EngineMessage();
 		message.setTid(this.id);
@@ -1827,6 +1876,53 @@ public class Task implements Runnable, Observer {
 		return sb.toString();
 	}
 	
+	private void logout(){
+		try{
+			//离线的处理
+			info("正在离线");
+			seq++;
+			
+			bsofplain = new ByteArrayOutputStream();
+			bsofplain.write(new byte[]{			
+					0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
+			});
+			
+			encrypt = crypter.encrypt(bsofplain.toByteArray(), sessionkey);
+								
+			baos = new ByteArrayOutputStream();
+			baos.write(new byte[]{
+					0x02, 0x34, 0x4B, 0x00, 0x62
+			});
+			baos.write(Converts.hexStringToByte(Integer.toHexString(seq).toUpperCase()));
+			baos.write(Converts.hexStringToByte(Long.toHexString(Long.valueOf(account)).toUpperCase()));
+			baos.write(new byte[]{
+					//0x03, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00, 0x66, (byte)0xA2, 0x00, 0x30, 0x00, 0x30
+					//0x02, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00, 0x66, (byte)0xA2, 0x00, 0x30, 0x00, 0x3A
+					//0x02, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00, 0x66, 0x68, 0x00, 0x30, 0x00, 0x3A//(byte)0xA2?
+					0x02, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00, 0x66, (byte)0xA2 //0x65, (byte)0xCA								
+			});
+			baos.write(encrypt);
+			baos.write(new byte[]{
+					0x03
+			});
+			
+			buf = baos.toByteArray();
+			
+			if(sessionkey!=null){
+				System.out.println("0062["+Converts.bytesToHexString(sessionkey)+"]");
+				System.out.println(Converts.bytesToHexString(baos.toByteArray()));
+				
+				dpOut = new DatagramPacket(buf, buf.length, InetAddress.getByName(ip), 8000);
+				ds.send(dpOut);
+			}
+			
+			if(ds!=null){
+				ds.close();
+			}
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+	}
 	@Override
 	public void update(Observable obj, Object arg) {
 		final EngineMessage msg = (EngineMessage) arg;
@@ -1867,50 +1963,7 @@ public class Task implements Runnable, Observer {
 				if(timer!=null){
 					timer.cancel();
 				}				
-				try{
-					//离线的处理
-					seq++;
-					
-					bsofplain = new ByteArrayOutputStream();
-					bsofplain.write(new byte[]{			
-							0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
-					});
-					
-					encrypt = crypter.encrypt(bsofplain.toByteArray(), sessionkey);
-										
-					baos = new ByteArrayOutputStream();
-					baos.write(new byte[]{
-							0x02, 0x34, 0x4B, 0x00, 0x62
-					});
-					baos.write(Converts.hexStringToByte(Integer.toHexString(seq).toUpperCase()));
-					baos.write(Converts.hexStringToByte(Long.toHexString(Long.valueOf(account)).toUpperCase()));
-					baos.write(new byte[]{
-							//0x03, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00, 0x66, (byte)0xA2, 0x00, 0x30, 0x00, 0x30
-							//0x02, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00, 0x66, (byte)0xA2, 0x00, 0x30, 0x00, 0x3A
-							//0x02, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00, 0x66, 0x68, 0x00, 0x30, 0x00, 0x3A//(byte)0xA2?
-							0x02, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00, 0x66, (byte)0xA2 //0x65, (byte)0xCA								
-					});
-					baos.write(encrypt);
-					baos.write(new byte[]{
-							0x03
-					});
-					
-					buf = baos.toByteArray();
-					
-					if(sessionkey!=null){
-						System.out.println("0062["+Converts.bytesToHexString(sessionkey)+"]");
-						System.out.println(Converts.bytesToHexString(baos.toByteArray()));
-						
-						dpOut = new DatagramPacket(buf, buf.length, InetAddress.getByName(ip), 8000);
-						ds.send(dpOut);
-					}
-					
-					if(ds!=null){
-						ds.close();
-					}
-				}catch(Exception e){
-					e.printStackTrace();
-				}
+				logout();
 				break;
 			default:
 				break;

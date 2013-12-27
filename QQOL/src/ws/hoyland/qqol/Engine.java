@@ -56,7 +56,7 @@ public class Engine extends Observable {
 	//private String[] fns = new String[]{"成功", "失败", "密码错误", "帐号冻结", "未运行帐号"};
 	//private URL url = Engine.class.getClassLoader().getResource("");
 	//private String xpath = url.getPath();
-	//private int lastTid = 0;
+//	private int lastTid = 0;
 	private boolean pause = false;
 	//private boolean freq = false;
 	private Timer timer = null;
@@ -430,7 +430,16 @@ public class Engine extends Observable {
 				
 				this.setChanged();
 				this.notifyObservers(msg);
-				break;				
+				break;		
+			case EngineMessageType.IM_TF:
+				msg = new EngineMessage();
+				msg.setTid(message.getTid());
+				msg.setType(EngineMessageType.OM_TF);
+				msg.setData(message.getData());
+				
+				this.setChanged();
+				this.notifyObservers(msg);
+				break;		
 			case EngineMessageType.IM_NO_EMAILS:
 				shutdown();				
 				break;
@@ -490,9 +499,11 @@ public class Engine extends Observable {
 						};
 					}
 					**/
-					System.err.println("--------------act count:"+pool.getActiveCount());
-					if(pool.getActiveCount()==1){ //当前是最后一个线程
-						//TODO						
+					System.err.println("--------------act count:"+pool.getActiveCount()+":"+pool.getQueue().size());
+					//if((pool.getActiveCount()==1&&!"1".equals(this.configuration.getProperty("THREAD_COUNT")))||(pool.getTaskCount()==1&&"1".equals(this.configuration.getProperty("THREAD_COUNT")))){ //当前是最后一个线程
+					if(pool.getActiveCount()==1&&pool.getQueue().size()==0){
+						//线程数不为1时，判断是否只有一个线程在运行； X
+						//线程数为1时，判断pool的线程总数 X						
 						running = !running;
 						
 						msg = new EngineMessage();
