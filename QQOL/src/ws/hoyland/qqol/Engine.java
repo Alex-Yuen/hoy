@@ -366,7 +366,9 @@ public class Engine extends Observable {
 				
 				break;
 			case EngineMessageType.IM_RELOGIN:
-				//TODO
+				Task task = new Task(accounts.get(message.getTid()));
+				Engine.getInstance().addObserver(task);
+				pool.execute(task);
 				break;
 //			case EngineMessageType.IM_REQUIRE_MAIL:
 //

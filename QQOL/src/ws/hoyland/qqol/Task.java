@@ -306,6 +306,7 @@ public class Task implements Runnable, Observer {
 				idx++;
 			}catch(Exception e){
 				e.printStackTrace();
+				fb = true;
 			}
 			break;
 		case 0:
@@ -428,18 +429,10 @@ public class Task implements Runnable, Observer {
 						ip = (ips[0]&0xFF)+"."+(ips[1]&0xFF)+"."+(ips[2]&0xFF)+"."+(ips[3]&0xFF);
 					}
 				}while(redirect);
-				idx++;
-			}catch(Exception e){
-				System.out.println(this.account+":V");
-				e.printStackTrace();
-				fb = true;
-			}
-			break;
-		case 1:
-			info("正在验证身份信息");
-			try{
+
 				System.out.println("bfl:"+buffer.length);
 				//199 错误, 783错误
+				//System.out.println(Converts.bytesToHexString(loginip));
 				content = Util.slice(buffer, 14, 104);
 				
 //				String data = Converts.bytesToHexString(content);
@@ -451,9 +444,19 @@ public class Task implements Runnable, Observer {
 				token = Util.slice(decrypt, 5, 0x38);
 				logintime = Util.slice(decrypt, 67, 4);
 				loginip = Util.slice(decrypt, 71, 4);
-				//System.out.println(Converts.bytesToHexString(loginip));
-				//------------------------------------------------------------------------------
+				
+				idx++;
+			}catch(Exception e){
+				System.out.println(this.account+":V");
+				e.printStackTrace();
+				fb = true;
+			}
+			break;
+		case 1:
+			info("正在验证身份信息");
+			try{
 				//0836
+				//------------------------------------------------------------------------------
 				do{
 					seq++;
 					//nvc = false;
@@ -1422,13 +1425,14 @@ public class Task implements Runnable, Observer {
 			try{
 				SocketLand.getInstance().add(new SSClient(this.id, account, ds, ip, sessionkey));
 				idx++;
+				run = false;
 			}catch(Exception e){
 				e.printStackTrace();
 				fb = true;
 			}
 			break;
 			/**
-		case 8:
+		case 6:
 			finish = 1;
 			idx++;
 			break;

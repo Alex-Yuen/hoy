@@ -83,12 +83,14 @@ class MonitorTask implements Runnable{
 	private Random rnd = null;
 	private short seq = 0x1123;
 	private int status = 1;
+	private boolean relogin = false;
 	
 	private DatagramPacket dpIn = null;
 	private DatagramPacket dpOut = null;
 	private ByteArrayOutputStream bsofplain = null;
 	private ByteArrayOutputStream baos = null;
 	
+	private boolean run = true;
 	private static DateFormat format = new java.text.SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 	
 	public MonitorTask(SSClient client){
@@ -102,7 +104,7 @@ class MonitorTask implements Runnable{
 	@Override
 	public void run() {
 		try{
-			while(true){
+			while(run){
 				//00CE接收消息
 				//--------------------------------------------------
 				buffer = new byte[1024];
@@ -117,20 +119,21 @@ class MonitorTask implements Runnable{
 					}
 				}
 				buffer = Util.pack(buffer);
-				System.out.println("P1:"+buffer.length);
-				System.out.println(Converts.bytesToHexString(buffer));
+//				System.out.println("P1:"+buffer.length);
+//				System.out.println(Converts.bytesToHexString(buffer));
 				
 				//最后活动
 				infoact();
 				byte[] header = Util.slice(buffer, 3, 2);
 				byte[] rh = Util.slice(buffer, 0, 11);
-				System.out.println("RECV[+"+buffer.length+"]:"+header[0]+"|"+header[1]);
+				System.out.println("RECV["+Converts.bytesToHexString(header)+"]:"+buffer.length);
+				System.out.println(Converts.bytesToHexString(buffer));
 				boolean nmsg = false;//是否是新消息
 				if(header[0]==0x00&&header[1]==(byte)0xCE){
 					content = Util.slice(buffer, 14, buffer.length-15);
 					decrypt = crypter.decrypt(content, client.getSessionKey());
-					System.out.println("00CE[RECV]:"+decrypt.length);
-					System.out.println(Converts.bytesToHexString(decrypt));
+					//System.out.println("00CE[RECV]:"+decrypt.length);
+					//System.out.println(Converts.bytesToHexString(decrypt));
 					
 					//判断时间
 					String rbof00CE = Converts.bytesToHexString(decrypt);
@@ -284,18 +287,64 @@ class MonitorTask implements Runnable{
 					}
 				}else if(header[0]==0x00&&header[1]==(byte)0x62){ //0017, 0062的处理
 					//已经离线					
-					break;
-				}else if(header[0]==0x00&&header[1]==(byte)0x17){
-					//被挤掉下线
-					info("被挤线，等待重新登录");
-					try{
-						Thread.sleep(1000*60*Integer.parseInt(Configuration.getInstance().getProperty("")));
-					}catch(Exception e){
-						e.printStackTrace();
-					}
-					//新建Task
-					//TODO
-					//IM_RELOGIN
+					quit();//相关处理
+				}else if(header[0]==0x00&&header[1]==(byte)0x17&&buffer.length==231&&!relogin){
+					relogin = true;//不再处理0017
+					content = Util.slice(buffer, 14, buffer.length-15);
+					decrypt = crypter.decrypt(content, client.getSessionKey());
+//					System.err.println("0017[RECV]:"+decrypt.length);
+//					System.err.println(Converts.bytesToHexString(decrypt));
+					
+					if(decrypt[0]==0x00&&decrypt[1]==0x00){ //00 00 27 10
+						//被挤掉下线
+						info("被挤线，等待重新登录");
+						//0017的反馈
+						//------------------
+						bsofplain = new ByteArrayOutputStream();
+						bsofplain.write(Util.slice(decrypt, 0, 0x010));
+						encrypt = crypter.encrypt(bsofplain.toByteArray(), client.getSessionKey());
+											
+						baos = new ByteArrayOutputStream();
+						baos.write(rh);
+						baos.write(new byte[]{
+								//0x03, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00, 0x66, (byte)0xA2, 0x00, 0x30, 0x00, 0x30
+								//0x02, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00, 0x66, (byte)0xA2, 0x00, 0x30, 0x00, 0x3A
+								//0x02, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00, 0x66, 0x68, 0x00, 0x30, 0x00, 0x3A//(byte)0xA2?
+								0x02, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00, 0x66, (byte)0xA2							
+								//02 00 00 00 01 							01 01 00 00 66 79?  0x65, (byte)0xCA	
+						});
+						baos.write(encrypt);
+						baos.write(new byte[]{
+								0x03
+						});
+						
+						buf = baos.toByteArray();
+						
+						System.out.println("0017[SEND]["+Converts.bytesToHexString(client.getSessionKey())+"]");
+						System.out.println(Converts.bytesToHexString(baos.toByteArray()));
+						
+						dpOut = new DatagramPacket(buf, buf.length, InetAddress.getByName(client.getIp()), 8000);
+						client.getDs().send(dpOut);
+						
+						//相关处理
+						quit();						
+						//IM_RELOGIN
+						new Thread(new Runnable(){
+							@Override
+							public void run() {
+								try{
+									Thread.sleep(1000*60*Integer.parseInt(Configuration.getInstance().getProperty("EX_ITV")));
+								}catch(Exception e){
+									e.printStackTrace();
+								}
+								EngineMessage message = new EngineMessage();
+								message.setTid(MonitorTask.this.client.getId());
+								message.setType(EngineMessageType.IM_RELOGIN);
+																
+								Engine.getInstance().fire(message);
+							}						
+						}).start();						
+					}//其他情况不做处理					
 				}else{
 					//			
 				}
@@ -305,6 +354,21 @@ class MonitorTask implements Runnable{
 		}	
 	}
 	
+	private void quit(){
+		//删除此client，在clients中
+		synchronized(SocketLand.getInstance().getClients()){
+			SocketLand.getInstance().getClients().remove(this.client);
+		}
+		//关闭socket
+		try{
+			client.getDs().close();
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+		//终止当前线程
+		run = false;
+	}
+	
 	private void info(String info){
 		EngineMessage message = new EngineMessage();
 		message.setTid(client.getId());
@@ -312,9 +376,9 @@ class MonitorTask implements Runnable{
 		message.setData(info);
 
 		//DateFormat format = new java.text.SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-//		String tm = format.format(new Date());
+		String tm = format.format(new Date());
 //		
-//		System.err.println("["+this.account+"]"+info+"("+tm+")");
+		System.err.println("["+client.getAccount()+"]"+info+"("+tm+")");
 		Engine.getInstance().fire(message);
 	}
 	
