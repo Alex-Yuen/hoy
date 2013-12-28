@@ -14,6 +14,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.ThreadPoolExecutor.AbortPolicy;
 
+import ws.hoyland.util.Configuration;
 import ws.hoyland.util.Converts;
 import ws.hoyland.util.Crypter;
 import ws.hoyland.util.EngineMessage;
@@ -81,9 +82,11 @@ class BeatTask implements Runnable {
 	
 	@Override
 	public void run() {
+		byte x = 0;
 		client.setHeart(false);
-		while(!client.isHeart()){
+		while(!client.isHeart()&&x<10){
 			info("心跳["+format.format(new Date())+"]");
+			x++;
 			short seq = (short)rnd.nextInt(0xFFFF);						
 			try{
 				bsofplain = new ByteArrayOutputStream();
@@ -132,12 +135,53 @@ class BeatTask implements Runnable {
 				e.printStackTrace();
 			}
 			try{
-				Thread.sleep(1000);
+				Thread.sleep(1000*x);
 			}catch(Exception e){
 				e.printStackTrace();
 			}
 		}//end while
+		
+		if(!client.isHeart()){//还没反应，考虑断开线程，重新登录
+			quit();
+			//IM_RELOGIN
+			new Thread(new Runnable(){
+				@Override
+				public void run() {
+					try{
+						Thread.sleep(1000*60*Integer.parseInt(Configuration.getInstance().getProperty("EX_ITV")));
+					}catch(Exception e){
+						e.printStackTrace();
+					}
+					EngineMessage message = new EngineMessage();
+					message.setTid(BeatTask.this.client.getId());
+					message.setType(EngineMessageType.IM_RELOGIN);
+													
+					Engine.getInstance().fire(message);
+				}						
+			}).start();		
+		}
 	}	
+	
+	private void quit(){
+		//删除此client，在clients中
+		synchronized(SocketLand.getInstance().getClients()){
+			SocketLand.getInstance().getClients().remove(this.client);
+		}
+		//关闭socket
+		try{
+			client.getDs().close();
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+		//终止当前线程
+		//run = false;
+		//通知引擎任务完成
+		EngineMessage message = new EngineMessage();
+		message.setTid(client.getId());
+		message.setType(EngineMessageType.IM_TF);
+		//message.setData(info);
+		Engine.getInstance().fire(message);
+	}
 	
 	private void info(String info){
 		EngineMessage message = new EngineMessage();
