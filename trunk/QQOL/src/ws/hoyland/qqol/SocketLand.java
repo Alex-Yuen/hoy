@@ -288,6 +288,10 @@ class MonitorTask implements Runnable{
 				}else if(header[0]==0x00&&header[1]==(byte)0x62){ //0017, 0062的处理
 					//已经离线					
 					quit();//相关处理
+				}else if(header[0]==0x00&&header[1]==(byte)0x58){ //收到心跳了
+					//已经离线					
+					//quit();//相关处理
+					client.setHeart(true);
 				}else if(header[0]==0x00&&header[1]==(byte)0x17&&buffer.length==231&&!relogin){
 					relogin = true;//不再处理0017
 					content = Util.slice(buffer, 14, buffer.length-15);
@@ -367,6 +371,12 @@ class MonitorTask implements Runnable{
 		}
 		//终止当前线程
 		run = false;
+		//通知引擎任务完成
+		EngineMessage message = new EngineMessage();
+		message.setTid(client.getId());
+		message.setType(EngineMessageType.IM_TF);
+		//message.setData(info);
+		Engine.getInstance().fire(message);
 	}
 	
 	private void info(String info){

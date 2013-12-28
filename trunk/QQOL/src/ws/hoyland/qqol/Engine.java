@@ -366,7 +366,7 @@ public class Engine extends Observable {
 				
 				break;
 			case EngineMessageType.IM_RELOGIN:
-				Task task = new Task(accounts.get(message.getTid()));
+				Task task = new Task(accounts.get(message.getTid()-1));
 				Engine.getInstance().addObserver(task);
 				pool.execute(task);
 				break;
@@ -519,6 +519,8 @@ public class Engine extends Observable {
 						this.notifyObservers(msg);
 						
 						//自动关闭
+						//不自动关闭
+						/**
 						Thread t = new Thread(new Runnable(){
 							@Override
 							public void run() {
@@ -526,6 +528,7 @@ public class Engine extends Observable {
 							}							
 						});
 						t.start();
+						**/
 						//shutdown();
 					}
 					/**
@@ -805,6 +808,7 @@ public class Engine extends Observable {
 	}
 
 	private void shutdown() {
+		/**
 		EngineMessage msg = new EngineMessage();
 		msg.setTid(-1); //所有task
 		msg.setType(EngineMessageType.OM_STOP);
@@ -812,7 +816,7 @@ public class Engine extends Observable {
 		
 		this.setChanged();
 		this.notifyObservers(msg);
-		
+		**/
 		if(timer!=null){
 			timer.cancel();
 		}
