@@ -75,6 +75,8 @@ class BeatTask implements Runnable {
 		
 	public BeatTask(SSClient client){
 		this.client = client;
+		this.crypter = new Crypter();
+		this.rnd = new Random();
 	}
 	
 	@Override
@@ -135,9 +137,9 @@ class BeatTask implements Runnable {
 		message.setType(EngineMessageType.IM_INFO);
 		message.setData(info);
 		
-		//String tm = format.format(new Date());
+		String tm = format.format(new Date());
 		
-		//System.err.println("["+this.account+"]"+info+"("+tm+")");
+		System.err.println("["+client.getAccount()+"]"+info+"("+tm+")");
 		Engine.getInstance().fire(message);
 	}
 }
