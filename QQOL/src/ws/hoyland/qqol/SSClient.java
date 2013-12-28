@@ -8,6 +8,7 @@ public class SSClient {
 	private byte[] sessionKey;
 	private String ip;
 	private DatagramSocket ds;
+	private boolean heart;
 
 	public SSClient(int id, String account, DatagramSocket ds, String ip,
 			byte[] sessionKey) {
@@ -16,6 +17,7 @@ public class SSClient {
 		this.ds = ds;
 		this.ip = ip;
 		this.sessionKey = sessionKey;
+		this.heart = false;
 	}
 
 	public int getId() {
@@ -58,4 +60,13 @@ public class SSClient {
 		this.ds = ds;
 	}
 
+	public boolean isHeart() {
+		return heart;
+	}
+
+	public void setHeart(boolean heart) {
+		this.heart = heart;
+	}
+
+	
 }

@@ -81,54 +81,62 @@ class BeatTask implements Runnable {
 	
 	@Override
 	public void run() {
-		info("心跳["+format.format(new Date())+"]");
-		short seq = (short)rnd.nextInt(0xFFFF);						
-		try{
-			bsofplain = new ByteArrayOutputStream();
-			bsofplain.write(client.getAccount().getBytes());
-				
-			encrypt = crypter.encrypt(bsofplain.toByteArray(), client.getSessionKey());
+		client.setHeart(false);
+		while(!client.isHeart()){
+			info("心跳["+format.format(new Date())+"]");
+			short seq = (short)rnd.nextInt(0xFFFF);						
+			try{
+				bsofplain = new ByteArrayOutputStream();
+				bsofplain.write(client.getAccount().getBytes());
+					
+				encrypt = crypter.encrypt(bsofplain.toByteArray(), client.getSessionKey());
+										
+				baos = new ByteArrayOutputStream();
+				baos.write(new byte[]{
+						0x02, 0x34, 0x4B, 0x00, 0x58
+				});
+				baos.write(Converts.hexStringToByte(Integer.toHexString(seq).toUpperCase()));
+				baos.write(Converts.hexStringToByte(Long.toHexString(Long.valueOf(client.getAccount())).toUpperCase()));
+				baos.write(new byte[]{
+						//0x03, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00, 0x66, (byte)0xA2, 0x00, 0x30, 0x00, 0x30
+						//0x02, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00, 0x66, (byte)0xA2, 0x00, 0x30, 0x00, 0x3A
+						//0x02, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00, 0x66, 0x68, 0x00, 0x30, 0x00, 0x3A//(byte)0xA2?
+						0x02, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00, 0x66, (byte)0xA2 
+				});
+				baos.write(encrypt);
+				baos.write(new byte[]{
+						0x03
+				});
+					
+				buf = baos.toByteArray();
+					
+				System.out.println("0058["+Converts.bytesToHexString(client.getSessionKey())+"]");
+				System.out.println(Converts.bytesToHexString(baos.toByteArray()));
+					
+				dpOut = new DatagramPacket(buf, buf.length, InetAddress.getByName(client.getIp()), 8000);
+				client.getDs().send(dpOut);
+					
+				//not need
+				//IN:
+				/**
+				byte[] buffer = new byte[1024];
+				DatagramPacket dpIn = new DatagramPacket(buffer, buffer.length);
 									
-			baos = new ByteArrayOutputStream();
-			baos.write(new byte[]{
-					0x02, 0x34, 0x4B, 0x00, 0x58
-			});
-			baos.write(Converts.hexStringToByte(Integer.toHexString(seq).toUpperCase()));
-			baos.write(Converts.hexStringToByte(Long.toHexString(Long.valueOf(client.getAccount())).toUpperCase()));
-			baos.write(new byte[]{
-					//0x03, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00, 0x66, (byte)0xA2, 0x00, 0x30, 0x00, 0x30
-					//0x02, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00, 0x66, (byte)0xA2, 0x00, 0x30, 0x00, 0x3A
-					//0x02, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00, 0x66, 0x68, 0x00, 0x30, 0x00, 0x3A//(byte)0xA2?
-					0x02, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00, 0x66, (byte)0xA2 
-			});
-			baos.write(encrypt);
-			baos.write(new byte[]{
-					0x03
-			});
-				
-			buf = baos.toByteArray();
-				
-			System.out.println("0058["+Converts.bytesToHexString(client.getSessionKey())+"]");
-			System.out.println(Converts.bytesToHexString(baos.toByteArray()));
-				
-			dpOut = new DatagramPacket(buf, buf.length, InetAddress.getByName(client.getIp()), 8000);
-			client.getDs().send(dpOut);
-				
-			//not need
-			//IN:
-			/**
-			byte[] buffer = new byte[1024];
-			DatagramPacket dpIn = new DatagramPacket(buffer, buffer.length);
-								
-			dsx.receive(dpIn);
-				
-			buffer = pack(buffer);
-			System.out.println(buffer.length);
-			System.out.println(Converts.bytesToHexString(buffer));
-			**/
-		}catch(Exception e){
-			e.printStackTrace();
-		}		
+				dsx.receive(dpIn);
+					
+				buffer = pack(buffer);
+				System.out.println(buffer.length);
+				System.out.println(Converts.bytesToHexString(buffer));
+				**/
+			}catch(Exception e){
+				e.printStackTrace();
+			}
+			try{
+				Thread.sleep(1000);
+			}catch(Exception e){
+				e.printStackTrace();
+			}
+		}//end while
 	}	
 	
 	private void info(String info){

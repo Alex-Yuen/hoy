@@ -966,7 +966,7 @@ public class Task implements Runnable, Observer {
 									}
 									//timer.cancel();
 									nvc = false;
-									idx = 1;//重新验证身份
+									idx = 0;//重新验证身份 //idx = 1?
 									//return;
 								}
 							}
