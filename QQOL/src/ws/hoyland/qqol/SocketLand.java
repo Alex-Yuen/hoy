@@ -76,11 +76,9 @@ class MonitorTask implements Runnable{
 	private byte[] content;
 	private byte[] decrypt;
 	private byte[] encrypt;
-	private Crypter crypter;
 	
 	private byte[] buf;
 	
-	private Random rnd = null;
 	private short seq = 0x1123;
 	private int status = 1;
 	private boolean relogin = false;
@@ -91,14 +89,63 @@ class MonitorTask implements Runnable{
 	private ByteArrayOutputStream baos = null;
 	
 	private boolean run = true;
+	
 	private static DateFormat format = new java.text.SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+	private static byte[] msgs = null;
+	private static Crypter crypter = new Crypter();;
+	private static Random rnd = new Random();
+	private static int max = 0xFFFF;
+	private static int port = 8000;
+	private static String tflag = "4D53470000000000";
+
+	static{
+		try{
+			msgs = Configuration.getInstance().getProperty("LEFT_MSG").getBytes("UTF-8");
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+	}
+	
+	private static byte[][] bs = new byte[][]{
+		new byte[]{0x02, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00, 0x66, (byte)0xA2},
+		new byte[]{0x03},
+		new byte[]{
+				0x00, 0x00, 0x00, 0x0D, 0x00, 0x01, 0x00, 0x04, 0x00, 0x00, 0x00, 0x00, 0x00, 0x03, 0x00, 0x01, 0x01,
+				0x34, 0x4B
+		},
+		new byte[]{
+				0x00, 0x0B
+		},
+		new byte[]{
+				//0x52,(byte)0xB9,0x0E,(byte)0x94,  //时间
+				0x02,0x37,  //图标？
+				0x00,0x00,0x00,
+				0x00,  //是否有字体
+				0x01,  //分片数
+				0x00,  //分片索引
+				0x00,0x00, //消息ID
+				0x02,  //02,0xauto,0xreply,,0x01,0xnormal
+				0x4D,0x53,0x47,0x00,0x00,0x00,0x00,0x00,  //fix
+		},
+		new byte[]{		
+				0x00,
+				0x00,0x00,0x00,  //字体颜色
+				0x0A,  //字体大小
+				0x00,  //其他属性
+				(byte)0x86,0x02,  //字符集
+				0x00,0x06,  //字体名称长度
+				(byte)0xE5,(byte)0xAE,(byte)0x8B,(byte)0xE4,(byte)0xBD,(byte)0x93,  //宋体
+				0x00,0x00,0x01, 
+				0x00,(byte)(msgs.length+3),  //消息快总长度
+				0x01,  //消息快编号
+				0x00,(byte)msgs.length,  //消息快大小
+		},		
+	};	
 	
 	public MonitorTask(SSClient client){
 		this.client = client;
-		this.crypter = new Crypter();
-		this.rnd = new Random();
 		this.status = Integer.parseInt(Configuration.getInstance().getProperty("LOGIN_TYPE"));
-		this.seq = (short)rnd.nextInt(0xFFFF);
+		this.seq = (short)rnd.nextInt(max);
 	}
 	
 	@Override
@@ -127,7 +174,7 @@ class MonitorTask implements Runnable{
 				byte[] header = Util.slice(buffer, 3, 2);
 				byte[] rh = Util.slice(buffer, 0, 11);
 				System.out.println("RECV["+Converts.bytesToHexString(header)+"]:"+buffer.length);
-				System.out.println(Converts.bytesToHexString(buffer));
+				//System.out.println(Converts.bytesToHexString(buffer));
 				boolean nmsg = false;//是否是新消息
 				if(header[0]==0x00&&header[1]==(byte)0xCE){
 					content = Util.slice(buffer, 14, buffer.length-15);
@@ -137,16 +184,16 @@ class MonitorTask implements Runnable{
 					
 					//判断时间
 					String rbof00CE = Converts.bytesToHexString(decrypt);
-					byte[] cetime = Util.slice(decrypt, rbof00CE.indexOf("4D53470000000000")/2+8, 0x04);
+					byte[] cetime = Util.slice(decrypt, rbof00CE.indexOf(tflag)/2+8, 0x04);
 					long lcetime = Long.parseLong(Converts.bytesToHexString(cetime), 16)*1000;
-					System.out.println("P5:"+(System.currentTimeMillis()-lcetime));
+					//System.out.println("P5:"+(System.currentTimeMillis()-lcetime));
 					if(System.currentTimeMillis()-lcetime<=1000*60){//一分钟内							
 						nmsg = true;
 					}else{
 						nmsg = false;
 					}
 					//XYZ
-					System.out.println("P3:"+lcetime);
+					//System.out.println("P3:"+lcetime);
 					
 					//00CE的反馈
 					bsofplain = new ByteArrayOutputStream();
@@ -155,24 +202,16 @@ class MonitorTask implements Runnable{
 										
 					baos = new ByteArrayOutputStream();
 					baos.write(rh);
-					baos.write(new byte[]{
-							//0x03, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00, 0x66, (byte)0xA2, 0x00, 0x30, 0x00, 0x30
-							//0x02, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00, 0x66, (byte)0xA2, 0x00, 0x30, 0x00, 0x3A
-							//0x02, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00, 0x66, 0x68, 0x00, 0x30, 0x00, 0x3A//(byte)0xA2?
-							0x02, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00, 0x66, (byte)0xA2							
-							//02 00 00 00 01 							01 01 00 00 66 79?  0x65, (byte)0xCA	
-					});
+					baos.write(bs[0]);
 					baos.write(encrypt);
-					baos.write(new byte[]{
-							0x03
-					});
+					baos.write(bs[1]);
 					
 					buf = baos.toByteArray();
 					
-					System.out.println("00CE[SEND]["+Converts.bytesToHexString(client.getSessionKey())+"]");
-					System.out.println(Converts.bytesToHexString(baos.toByteArray()));
+					//System.out.println("00CE[SEND]["+Converts.bytesToHexString(client.getSessionKey())+"]");
+					//System.out.println(Converts.bytesToHexString(baos.toByteArray()));
 					
-					dpOut = new DatagramPacket(buf, buf.length, InetAddress.getByName(client.getIp()), 8000);
+					dpOut = new DatagramPacket(buf, buf.length, InetAddress.getByName(client.getIp()), port);
 					client.getDs().send(dpOut);
 					
 					//0319 ? 01C0?
@@ -186,15 +225,11 @@ class MonitorTask implements Runnable{
 						seq++;
 						
 						byte[] time = Converts.hexStringToByte(Long.toHexString(System.currentTimeMillis()/1000).toUpperCase());
-						byte[] msgs = Configuration.getInstance().getProperty("LEFT_MSG").getBytes("UTF-8");
-						
+												
 						bsofplain = new ByteArrayOutputStream();
 						bsofplain.write(Util.slice(decrypt, 4, 0x04));
 						bsofplain.write(Util.slice(decrypt, 0, 0x04));
-						bsofplain.write(new byte[]{			
-								0x00, 0x00, 0x00, 0x0D, 0x00, 0x01, 0x00, 0x04, 0x00, 0x00, 0x00, 0x00, 0x00, 0x03, 0x00, 0x01, 0x01,
-								0x34, 0x4B
-						});
+						bsofplain.write(bs[2]);
 						bsofplain.write(Util.slice(decrypt, 4, 0x04));
 						bsofplain.write(Util.slice(decrypt, 0, 0x04));
 	
@@ -207,43 +242,20 @@ class MonitorTask implements Runnable{
 							msghd[i+4] = client.getSessionKey()[i];
 						}
 						bsofplain.write(Converts.MD5Encode(msghd));
-						bsofplain.write(new byte[]{
-								0x00, 0x0B
-						});
+						bsofplain.write(bs[3]);
 						bsofplain.write(Converts.hexStringToByte(Integer.toHexString(seq+0x1111).toUpperCase()));
 											bsofplain.write(time);
-						bsofplain.write(new byte[]{
-								//0x52,(byte)0xB9,0x0E,(byte)0x94,  //时间
-								0x02,0x37,  //图标？
-								0x00,0x00,0x00,
-								0x00,  //是否有字体
-								0x01,  //分片数
-								0x00,  //分片索引
-								0x00,0x00, //消息ID
-								0x02,  //02,0xauto,0xreply,,0x01,0xnormal
-								0x4D,0x53,0x47,0x00,0x00,0x00,0x00,0x00,  //fix
-						});
+						bsofplain.write(bs[4]);
 						bsofplain.write(time);
 								//0x52,(byte)0xB9,0x0E,(byte)0x94,  //发送时间
 								//(byte)0xBE,(byte)0x97,0x4A,(byte)0x92,  //随机？
 						bsofplain.write(Util.genKey(4));
-						bsofplain.write(new byte[]{		
-								0x00,
-								0x00,0x00,0x00,  //字体颜色
-								0x0A,  //字体大小
-								0x00,  //其他属性
-								(byte)0x86,0x02,  //字符集
-								0x00,0x06,  //字体名称长度
-								(byte)0xE5,(byte)0xAE,(byte)0x8B,(byte)0xE4,(byte)0xBD,(byte)0x93,  //宋体
-								0x00,0x00,0x01, 
-								0x00,(byte)(msgs.length+3),  //消息快总长度
-								0x01,  //消息快编号
-						});
-						bsofplain.write(new byte[]{	
-								0x00,(byte)msgs.length,  //消息快大小
-								//0x61,0x73,0x64,0x66  //消息
-								//(byte)0xE4,(byte)0xBD,(byte)0xA0,(byte)0xE5,(byte)0xA5,(byte)0xBD,(byte)0xEF,(byte)0xBC,(byte)0x8C,(byte)0xE6,(byte)0x88,(byte)0x91,(byte)0xE7,(byte)0x8E,(byte)0xB0,(byte)0xE5,(byte)0x9C,(byte)0xA8,(byte)0xE4,(byte)0xB8,(byte)0x8D,(byte)0xE5,(byte)0x9C,(byte)0xA8,0x21
-						});
+						bsofplain.write(bs[5]);
+//						bsofplain.write(new byte[]{	
+//								0x00,(byte)msgs.length,  //消息快大小
+//								//0x61,0x73,0x64,0x66  //消息
+//								//(byte)0xE4,(byte)0xBD,(byte)0xA0,(byte)0xE5,(byte)0xA5,(byte)0xBD,(byte)0xEF,(byte)0xBC,(byte)0x8C,(byte)0xE6,(byte)0x88,(byte)0x91,(byte)0xE7,(byte)0x8E,(byte)0xB0,(byte)0xE5,(byte)0x9C,(byte)0xA8,(byte)0xE4,(byte)0xB8,(byte)0x8D,(byte)0xE5,(byte)0x9C,(byte)0xA8,0x21
+//						});
 						bsofplain.write(msgs);
 						
 						encrypt = crypter.encrypt(bsofplain.toByteArray(), client.getSessionKey());
@@ -254,23 +266,16 @@ class MonitorTask implements Runnable{
 						});
 						baos.write(Converts.hexStringToByte(Integer.toHexString(seq).toUpperCase()));
 						baos.write(Converts.hexStringToByte(Long.toHexString(Long.valueOf(client.getAccount())).toUpperCase()));
-						baos.write(new byte[]{
-								//0x03, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00, 0x66, (byte)0xA2, 0x00, 0x30, 0x00, 0x30
-								//0x02, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00, 0x66, (byte)0xA2, 0x00, 0x30, 0x00, 0x3A
-								//0x02, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00, 0x66, 0x68, 0x00, 0x30, 0x00, 0x3A//(byte)0xA2?
-								0x02, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00, 0x66, (byte)0xA2 //0x65, (byte)0xCA 
-						});
+						baos.write(bs[0]);
 						baos.write(encrypt);
-						baos.write(new byte[]{
-								0x03
-						});
+						baos.write(bs[1]);
 						
 						buf = baos.toByteArray();
 						
-						System.out.println("00CD["+Converts.bytesToHexString(client.getSessionKey())+"]");
-						System.out.println(Converts.bytesToHexString(baos.toByteArray()));
+//						System.out.println("00CD["+Converts.bytesToHexString(client.getSessionKey())+"]");
+//						System.out.println(Converts.bytesToHexString(baos.toByteArray()));
 						
-						dpOut = new DatagramPacket(buf, buf.length, InetAddress.getByName(client.getIp()), 8000);
+						dpOut = new DatagramPacket(buf, buf.length, InetAddress.getByName(client.getIp()), port);
 						client.getDs().send(dpOut);
 						
 						//IN: not need
@@ -296,10 +301,16 @@ class MonitorTask implements Runnable{
 					relogin = true;//不再处理0017
 					content = Util.slice(buffer, 14, buffer.length-15);
 					decrypt = crypter.decrypt(content, client.getSessionKey());
+					if(decrypt==null){
+						System.err.println("0017 decrypt null");
+						System.err.println(Converts.bytesToHexString(buffer));
+						System.err.println(Converts.bytesToHexString(content));
+						System.err.println(Converts.bytesToHexString(client.getSessionKey()));
+					}
 //					System.err.println("0017[RECV]:"+decrypt.length);
 //					System.err.println(Converts.bytesToHexString(decrypt));
 					
-					if(decrypt[0]==0x00&&decrypt[1]==0x00){ //00 00 27 10
+					if(decrypt!=null&&decrypt[0]==0x00&&decrypt[1]==0x00){ //00 00 27 10
 						//被挤掉下线
 						info("被挤线，等待重新登录");
 						//0017的反馈
@@ -310,24 +321,16 @@ class MonitorTask implements Runnable{
 											
 						baos = new ByteArrayOutputStream();
 						baos.write(rh);
-						baos.write(new byte[]{
-								//0x03, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00, 0x66, (byte)0xA2, 0x00, 0x30, 0x00, 0x30
-								//0x02, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00, 0x66, (byte)0xA2, 0x00, 0x30, 0x00, 0x3A
-								//0x02, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00, 0x66, 0x68, 0x00, 0x30, 0x00, 0x3A//(byte)0xA2?
-								0x02, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00, 0x66, (byte)0xA2							
-								//02 00 00 00 01 							01 01 00 00 66 79?  0x65, (byte)0xCA	
-						});
+						baos.write(bs[0]);
 						baos.write(encrypt);
-						baos.write(new byte[]{
-								0x03
-						});
+						baos.write(bs[1]);
 						
 						buf = baos.toByteArray();
 						
-						System.out.println("0017[SEND]["+Converts.bytesToHexString(client.getSessionKey())+"]");
-						System.out.println(Converts.bytesToHexString(baos.toByteArray()));
+//						System.out.println("0017[SEND]["+Converts.bytesToHexString(client.getSessionKey())+"]");
+//						System.out.println(Converts.bytesToHexString(baos.toByteArray()));
 						
-						dpOut = new DatagramPacket(buf, buf.length, InetAddress.getByName(client.getIp()), 8000);
+						dpOut = new DatagramPacket(buf, buf.length, InetAddress.getByName(client.getIp()), port);
 						client.getDs().send(dpOut);
 						
 						//相关处理
