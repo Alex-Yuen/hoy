@@ -27,7 +27,7 @@ public class Heart extends TimerTask {
 	private ThreadPoolExecutor pool = null;
 	
 	public Heart(){
-		int tc = 20000; //支持20000个号码
+		int tc = 100; //100个分批刷新
 		int corePoolSize = tc;// minPoolSize
 		int maxPoolSize = tc;
 		int maxTaskSize = (1024 + 512) * 100 * 40;// 缓冲队列
@@ -66,18 +66,25 @@ class BeatTask implements Runnable {
 	private byte[] encrypt;
 	private byte[] buf;
 	
-	private Crypter crypter;
-	
-	private Random rnd = null;
+	private static Crypter crypter = new Crypter();;
+	private static Random rnd = new Random();
+	private static int max = 0xFFFF;
+	private static int port = 8000;
 	
 	private DatagramPacket dpOut = null;
 	private ByteArrayOutputStream bsofplain = null;
 	private ByteArrayOutputStream baos = null;
-		
+	
+	private static byte[][] bs = new byte[][]{
+		new byte[]{0x02, 0x34, 0x4B, 0x00, 0x58},
+		new byte[]{0x02, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00, 0x66, (byte)0xA2},
+		new byte[]{0x03}
+	};
+	
 	public BeatTask(SSClient client){
 		this.client = client;
-		this.crypter = new Crypter();
-		this.rnd = new Random();
+		//this.crypter = new Crypter();
+		//this.rnd = new Random();
 	}
 	
 	@Override
@@ -87,7 +94,7 @@ class BeatTask implements Runnable {
 		while(!client.isHeart()&&x<10){
 			info("心跳["+format.format(new Date())+"]");
 			x++;
-			short seq = (short)rnd.nextInt(0xFFFF);						
+			short seq = (short)rnd.nextInt(max);						
 			try{
 				bsofplain = new ByteArrayOutputStream();
 				bsofplain.write(client.getAccount().getBytes());
@@ -95,28 +102,19 @@ class BeatTask implements Runnable {
 				encrypt = crypter.encrypt(bsofplain.toByteArray(), client.getSessionKey());
 										
 				baos = new ByteArrayOutputStream();
-				baos.write(new byte[]{
-						0x02, 0x34, 0x4B, 0x00, 0x58
-				});
+				baos.write(bs[0]);
 				baos.write(Converts.hexStringToByte(Integer.toHexString(seq).toUpperCase()));
 				baos.write(Converts.hexStringToByte(Long.toHexString(Long.valueOf(client.getAccount())).toUpperCase()));
-				baos.write(new byte[]{
-						//0x03, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00, 0x66, (byte)0xA2, 0x00, 0x30, 0x00, 0x30
-						//0x02, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00, 0x66, (byte)0xA2, 0x00, 0x30, 0x00, 0x3A
-						//0x02, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00, 0x66, 0x68, 0x00, 0x30, 0x00, 0x3A//(byte)0xA2?
-						0x02, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00, 0x66, (byte)0xA2 
-				});
+				baos.write(bs[1]);
 				baos.write(encrypt);
-				baos.write(new byte[]{
-						0x03
-				});
+				baos.write(bs[2]);
 					
 				buf = baos.toByteArray();
 					
-				System.out.println("0058["+Converts.bytesToHexString(client.getSessionKey())+"]");
-				System.out.println(Converts.bytesToHexString(baos.toByteArray()));
+//				System.out.println("0058["+Converts.bytesToHexString(client.getSessionKey())+"]");
+//				System.out.println(Converts.bytesToHexString(baos.toByteArray()));
 					
-				dpOut = new DatagramPacket(buf, buf.length, InetAddress.getByName(client.getIp()), 8000);
+				dpOut = new DatagramPacket(buf, buf.length, InetAddress.getByName(client.getIp()), port);
 				client.getDs().send(dpOut);
 					
 				//not need
