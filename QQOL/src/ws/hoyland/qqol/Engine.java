@@ -916,9 +916,9 @@ public class Engine extends Observable {
 				int score = 0;
 				
 				if(cptType==0){
-					YDM.INSTANCE.YDM_SetAppInfo(81, "8b7a41a5fe43a731c3a067b6effeae72");
+					YDM.INSTANCE.YDM_SetAppInfo(105, "4c0e22fb79a8afff2331d34786364b68");
 				}else{
-					DM.INSTANCE.uu_setSoftInfoA(94533, "23893fa2751843f0a7baf7be4153a1ce");
+					DM.INSTANCE.uu_setSoftInfoA(94808, "5f7ee083434a421bbe50932f85f8cbdb");
 				}
 				//
 				
