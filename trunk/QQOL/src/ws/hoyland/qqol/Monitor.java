@@ -82,9 +82,9 @@ public class Monitor implements Runnable {
 									//重定向
 									content = Util.slice(buffer, 14, 120);
 									decrypt = crypter.decrypt(content, Engine.getInstance().getAcccounts().get(account).get("key0825"));
+									Engine.getInstance().getAcccounts().get(account).put("ips", Util.slice(decrypt, 95, 4));
 									task = new Task(Task.TYPE_0825, account);
-									task.setIP(Util.slice(decrypt, 95, 4));
-									Engine.getInstance().addTask(task);									
+									Engine.getInstance().addTask(task);
 								}else{
 									//发起0836
 									
