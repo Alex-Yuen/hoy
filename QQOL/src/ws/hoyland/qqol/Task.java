@@ -59,11 +59,11 @@ public class Task implements Runnable {
 		this.password = new String(details.get("password"));
 		this.status = Integer.parseInt(Configuration.getInstance().getProperty("LOGIN_TYPE"));
 		this.seq = Util.genKey(2);
-	}
-
-	public void setIP(byte[] ips){
-		this.ip = (ips[0]&0xFF)+"."+(ips[1]&0xFF)+"."+(ips[2]&0xFF)+"."+(ips[3]&0xFF);
-		this.ips = ips;		
+		
+		if(details.get("ips")!=null){//需要新的IP
+			this.ips = details.get("ips");
+			this.ip = (ips[0]&0xFF)+"."+(ips[1]&0xFF)+"."+(ips[2]&0xFF)+"."+(ips[3]&0xFF);
+		}
 	}
 	
 	@Override
