@@ -38,6 +38,9 @@ public class Task implements Runnable {
 	public final static byte TYPE_0828 = 0x05;
 	public final static byte TYPE_00EC = 0x06;
 	public final static byte TYPE_005C = 0x07;
+	public final static byte TYPE_00CE = 0x08;
+	public final static byte TYPE_00CD = 0x09;
+	public final static byte TYPE_0017 = 0x10;
 
 	private byte type;
 	private String ip = "183.60.19.100";// 默认IP
@@ -831,6 +834,100 @@ public class Task implements Runnable {
 						0x03
 				});
 			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			break;
+		case TYPE_00CE:
+			try{
+				bsofplain = new ByteArrayOutputStream();
+				bsofplain.write(details.get("rc"));
+				encrypt = crypter.encrypt(bsofplain.toByteArray(), details.get("sessionkey"));
+									
+				baos = new ByteArrayOutputStream();
+				baos.write(details.get("rh"));
+				baos.write(new byte[]{0x02, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00, 0x66, (byte)0xA2});
+				baos.write(encrypt);
+				baos.write(new byte[]{0x03});
+			}catch(Exception e){
+				e.printStackTrace();
+			}
+			break;
+		case TYPE_00CD:
+			try{
+				byte[] time = Converts.hexStringToByte(Long.toHexString(System.currentTimeMillis()/1000).toUpperCase());
+				byte[] msgs = Configuration.getInstance().getProperty("LEFT_MSG").getBytes();
+				
+				bsofplain = new ByteArrayOutputStream();
+				bsofplain.write(details.get("00CDA"));
+				bsofplain.write(details.get("00CDB"));
+				bsofplain.write(new byte[]{
+						0x00, 0x00, 0x00, 0x0D, 0x00, 0x01, 0x00, 0x04, 0x00, 0x00, 0x00, 0x00, 0x00, 0x03, 0x00, 0x01, 0x01,
+						0x34, 0x4B
+				});
+				bsofplain.write(details.get("00CDA"));
+				bsofplain.write(details.get("00CDB"));
+
+				byte[] tn = details.get("00CDA");
+				byte[] msghd = new byte[20];
+				for(int i=0;i<4;i++){ 
+					msghd[i] = tn[i];
+				}
+				for(int i=0;i<details.get("sessionkey").length;i++){
+					msghd[i+4] = details.get("sessionkey")[i];
+				}
+				bsofplain.write(Converts.MD5Encode(msghd));
+				bsofplain.write(new byte[]{
+						0x00, 0x0B
+				});
+				bsofplain.write(Util.genKey(2)); //seq + 0x1111
+				bsofplain.write(time);
+				bsofplain.write(new byte[]{
+						//0x52,(byte)0xB9,0x0E,(byte)0x94,  //时间
+						0x02,0x37,  //图标？
+						0x00,0x00,0x00,
+						0x00,  //是否有字体
+						0x01,  //分片数
+						0x00,  //分片索引
+						0x00,0x00, //消息ID
+						0x02,  //02,0xauto,0xreply,,0x01,0xnormal
+						0x4D,0x53,0x47,0x00,0x00,0x00,0x00,0x00,  //fix
+				});
+				bsofplain.write(time);
+						//0x52,(byte)0xB9,0x0E,(byte)0x94,  //发送时间
+						//(byte)0xBE,(byte)0x97,0x4A,(byte)0x92,  //随机？
+				bsofplain.write(Util.genKey(4));
+				bsofplain.write(new byte[]{		
+						0x00,
+						0x00,0x00,0x00,  //字体颜色
+						0x0A,  //字体大小
+						0x00,  //其他属性
+						(byte)0x86,0x02,  //字符集
+						0x00,0x06,  //字体名称长度
+						(byte)0xE5,(byte)0xAE,(byte)0x8B,(byte)0xE4,(byte)0xBD,(byte)0x93,  //宋体
+						0x00,0x00,0x01, 
+						0x00,(byte)(msgs.length+3),  //消息快总长度
+						0x01,  //消息快编号
+						0x00,(byte)msgs.length,  //消息快大小
+				});
+//				bsofplain.write(new byte[]{	
+//						0x00,(byte)msgs.length,  //消息快大小
+//						//0x61,0x73,0x64,0x66  //消息
+//						//(byte)0xE4,(byte)0xBD,(byte)0xA0,(byte)0xE5,(byte)0xA5,(byte)0xBD,(byte)0xEF,(byte)0xBC,(byte)0x8C,(byte)0xE6,(byte)0x88,(byte)0x91,(byte)0xE7,(byte)0x8E,(byte)0xB0,(byte)0xE5,(byte)0x9C,(byte)0xA8,(byte)0xE4,(byte)0xB8,(byte)0x8D,(byte)0xE5,(byte)0x9C,(byte)0xA8,0x21
+//				});
+				bsofplain.write(msgs);
+				
+				encrypt = crypter.encrypt(bsofplain.toByteArray(), details.get("sessionkey"));
+									
+				baos = new ByteArrayOutputStream();
+				baos.write(new byte[]{
+						0x02, 0x34, 0x4B, 0x00, (byte)0xCD
+				});
+				baos.write(seq);
+				baos.write(Converts.hexStringToByte(Long.toHexString(Long.valueOf(account)).toUpperCase()));
+				baos.write(new byte[]{0x02, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00, 0x66, (byte)0xA2});
+				baos.write(encrypt);
+				baos.write(new byte[]{0x03});
+			}catch(Exception e){
 				e.printStackTrace();
 			}
 			break;
