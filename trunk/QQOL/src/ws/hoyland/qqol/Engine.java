@@ -12,6 +12,7 @@ import java.nio.channels.DatagramChannel;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
+import java.util.LinkedHashMap;
 import java.util.HashMap;
 //import java.util.Date;
 import java.util.List;
@@ -139,7 +140,7 @@ public class Engine extends Observable {
 					this.setChanged();
 					this.notifyObservers(msg);
 					
-					accounts = new HashMap<String, Map<String, byte[]>>();
+					accounts = new LinkedHashMap<String, Map<String, byte[]>>();
 					File ipf = new File(path);
 					FileInputStream is = new FileInputStream(ipf);
 					InputStreamReader isr = new InputStreamReader(
@@ -362,6 +363,7 @@ public class Engine extends Observable {
 					channels = new HashMap<String, DatagramChannel>();
 					
 					//for (int i = 0; i < accounts.size(); i++) {
+					
 					Object[] accs = accounts.keySet().toArray();
 					for (int i = flidx[0]; i <= flidx[1]; i++) {
 						queue.add((String)accs[i]);
