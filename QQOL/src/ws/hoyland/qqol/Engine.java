@@ -6,13 +6,18 @@ import java.io.File;
 import java.io.FileInputStream;
 //import java.io.FileWriter;
 import java.io.InputStreamReader;
+import java.nio.channels.DatagramChannel;
 //import java.net.URL;
 //import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.HashMap;
 //import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Observable;
+import java.util.Queue;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -36,8 +41,10 @@ import ws.hoyland.util.YDM;
 public class Engine extends Observable {
 	
 	private static Engine instance;
-	private List<String> accounts;
-	private List<String> mails;
+	private Map<String, Map<String, byte[]>> accounts = null;
+	Map<String, byte[]> details = null;
+	private Map<String, DatagramChannel> channels = null;
+	private List<String> mails = null;
 	private boolean login = false;
 	private int cptType = 0;
 	private boolean running = false;
@@ -45,6 +52,9 @@ public class Engine extends Observable {
 	//private int mindex = 0;
 	//private int mcount = 0;
 	private Configuration configuration = Configuration.getInstance();
+	private Queue<String> queue = null;
+	
+	private static int CORE_COUNT = 100;
 //	private int recc = 0;//reconnect count
 //	private int frecc = 0;//finished
 //	private String cip = null; //current ip
@@ -129,7 +139,7 @@ public class Engine extends Observable {
 					this.setChanged();
 					this.notifyObservers(msg);
 					
-					accounts = new ArrayList<String>();
+					accounts = new HashMap<String, Map<String, byte[]>>();
 					File ipf = new File(path);
 					FileInputStream is = new FileInputStream(ipf);
 					InputStreamReader isr = new InputStreamReader(
@@ -137,10 +147,15 @@ public class Engine extends Observable {
 					BufferedReader reader = new BufferedReader(isr);
 					String line = null;
 					int i = 1;
+					
 					while ((line = reader.readLine()) != null) {
 						if (!line.equals("")) {
 							line = i + "----" + line;
-							accounts.add(line);
+							String[] nlns = line.split("----");
+							details = new HashMap<String, byte[]>();
+							details.put("id", nlns[0].getBytes());
+							details.put("password", nlns[2].getBytes());
+							accounts.put(nlns[1], details);
 							List<String> lns = new ArrayList<String>();
 							lns.addAll(Arrays.asList(line.split("----")));
 							lns.add("");
@@ -273,6 +288,7 @@ public class Engine extends Observable {
 
 				Integer[] flidx = (Integer[]) message.getData();
 				
+				
 				msg = new EngineMessage();
 				msg.setType(EngineMessageType.OM_RUNNING);
 				msg.setData(running);
@@ -297,6 +313,10 @@ public class Engine extends Observable {
 						}
 						
 					}, 1000, 1000);
+					
+					//monitor = new Monitor();
+					new Thread(Monitor.getInstance()).start();//开始监听
+										
 					//创建日志文件
 					//long tm = System.currentTimeMillis();
 					/**
@@ -317,8 +337,9 @@ public class Engine extends Observable {
 					}
 					**/
 					int tc = Integer.parseInt(Configuration.getInstance().getProperty("THREAD_COUNT"));
-					int corePoolSize = tc;// minPoolSize
-					int maxPoolSize = tc;
+				
+					int corePoolSize = CORE_COUNT;// 固定100个线程
+					int maxPoolSize = CORE_COUNT;
 					int maxTaskSize = (1024 + 512) * 100 * 40;// 缓冲队列
 					long keepAliveTime = 0L;
 					TimeUnit unit = TimeUnit.MILLISECONDS;
@@ -330,22 +351,26 @@ public class Engine extends Observable {
 					// 创建线程池
 					pool = new ThreadPoolExecutor(corePoolSize,
 							maxPoolSize, keepAliveTime, unit,
-							workQueue, handler);
-
-					
+							workQueue, handler);					
 					
 					/**
 					mindex = flidx[2]; //mfirst of SSZS
 					if(mindex==-1){
 						mindex = 0;
 					}**/
-					
+					queue = new LinkedList<String>();					
+					channels = new HashMap<String, DatagramChannel>();
 					
 					//for (int i = 0; i < accounts.size(); i++) {
+					Object[] accs = accounts.keySet().toArray();
 					for (int i = flidx[0]; i <= flidx[1]; i++) {
+						queue.add((String)accs[i]);
+					}
+					
+					for(int i=0;i<tc&&queue.size()>0;i++){	//开启TC个登录线程，发送请求						
 						try {
-							Task task = new Task(accounts.get(i));
-							Engine.getInstance().addObserver(task);
+							Task task = new Task(Task.TYPE_0825, queue.remove());
+							//Engine.getInstance().addObserver(task);
 							pool.execute(task);
 						} catch (ArrayIndexOutOfBoundsException e) {
 							e.printStackTrace();
@@ -366,8 +391,9 @@ public class Engine extends Observable {
 				
 				break;
 			case EngineMessageType.IM_RELOGIN:
-				Task task = new Task(accounts.get(message.getTid()-1));
-				Engine.getInstance().addObserver(task);
+				Object[] accs = accounts.keySet().toArray();
+				Task task = new Task(Task.TYPE_0825, (String)accs[message.getTid()-1]);
+				//Engine.getInstance().addObserver(task);
 				pool.execute(task);
 				break;
 //			case EngineMessageType.IM_REQUIRE_MAIL:
@@ -980,5 +1006,21 @@ public class Engine extends Observable {
 	
 	public int getCptType(){
 		return this.cptType;
+	}
+	
+	public Map<String, Map<String, byte[]>> getAcccounts(){
+		return this.accounts;
+	}
+	
+	public Map<String, DatagramChannel> getChannels(){
+		return this.channels;
+	}
+	
+	public void addTask(Task task){
+		try{
+			pool.execute(task);
+		}catch(Exception e){
+			e.printStackTrace();
+		}
 	}
 }
