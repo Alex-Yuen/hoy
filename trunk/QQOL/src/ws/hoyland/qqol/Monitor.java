@@ -6,6 +6,7 @@ import java.nio.channels.SelectionKey;
 import java.util.Iterator;
 import java.util.Set;
 
+import ws.hoyland.util.Configuration;
 import ws.hoyland.util.Converts;
 import ws.hoyland.util.Crypter;
 
@@ -86,10 +87,12 @@ class Receiver implements Runnable{
 	private Crypter crypter = null;
 	private String account = null;
 	private Task task = null;
+	private int status = 1;
 	
 	public Receiver(byte[] buffer){		
 		this.buffer = buffer;
 		this.crypter = new Crypter();
+		this.status = Integer.parseInt(Configuration.getInstance().getProperty("LOGIN_TYPE"));
 	}
 	
 	@Override
@@ -266,6 +269,49 @@ class Receiver implements Runnable{
 						Engine.getInstance().addTask(task);
 					}
 				}
+			}else if(header[0]==(byte)0x00&&header[1]==(byte)0xCE){ //反馈
+				//byte[] header = Util.slice(buffer, 3, 2);
+				content = Util.slice(buffer, 14, buffer.length-15);
+				decrypt = crypter.decrypt(content, Engine.getInstance().getAcccounts().get(account).get("sessionkey"));
+
+				Engine.getInstance().getAcccounts().get(account).put("rh", Util.slice(buffer, 0, 11));
+				Engine.getInstance().getAcccounts().get(account).put("rc", Util.slice(decrypt, 0, 0x010));
+				
+				task = new Task(Task.TYPE_00CE, account); 									
+				Engine.getInstance().addTask(task); 
+				
+				//判断时间
+				boolean nmsg = false;
+				String rbof00CE = Converts.bytesToHexString(decrypt);
+				byte[] cetime = Util.slice(decrypt, rbof00CE.indexOf("4D53470000000000")/2+8, 0x04);
+				long lcetime = Long.parseLong(Converts.bytesToHexString(cetime), 16)*1000;
+				//System.out.println("P5:"+(System.currentTimeMillis()-lcetime));
+				if(System.currentTimeMillis()-lcetime<=1000*60){//一分钟内							
+					nmsg = true;
+				}
+				
+				if((status==1||status==2)&&nmsg&&("true".equals(Configuration.getInstance().getProperty("AUTO_REPLY")))){//需要自动回复
+					Engine.getInstance().getAcccounts().get(account).put("00CDA", Util.slice(decrypt, 4, 0x04));
+					Engine.getInstance().getAcccounts().get(account).put("00CDB", Util.slice(decrypt, 0, 0x04));
+					
+					task = new Task(Task.TYPE_00CD, account); 									
+					Engine.getInstance().addTask(task); 
+				}
+			}else if(header[0]==(byte)0x00&&header[1]==(byte)0x17){
+				if(buffer.length==231&&Engine.getInstance().getAcccounts().get(account).get("0017")==null){//TODO 需要处理多条消息
+					Engine.getInstance().getAcccounts().get(account).put("0017", "T".getBytes());
+					content = Util.slice(buffer, 14, buffer.length-15);
+					decrypt = crypter.decrypt(content, client.getSessionKey());
+					
+					if(decrypt!=null&&decrypt[0]==0x00&&decrypt[1]==0x00){ //00 00 27 10
+						//被挤掉下线
+						//info("被挤线，等待重新登录");
+						task = new Task(Task.TYPE_0017, account); 									
+						Engine.getInstance().addTask(task);
+					}
+					
+				}
+				
 			}
 		}catch(Exception e){
 			e.printStackTrace();
