@@ -4,12 +4,8 @@ import java.io.ByteArrayOutputStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.net.InetSocketAddress;
 import java.net.SocketAddress;
-import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
-import java.nio.channels.SelectionKey;
-import java.nio.channels.Selector;
 import java.security.KeyFactory;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
@@ -20,10 +16,8 @@ import java.security.spec.ECParameterSpec;
 import java.security.spec.ECPublicKeySpec;
 import java.text.DateFormat;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.Observable;
 import java.util.Observer;
-import java.util.Set;
 import java.util.Timer;
 import java.util.zip.CRC32;
 
@@ -157,7 +151,7 @@ public class TaskX implements Runnable, Observer {
 	
 	private static DateFormat format = new java.text.SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 	
-	public Task(String line) {
+	public TaskX(String line) {
 		String[] ls = line.split("----");
 		this.id = Integer.parseInt(ls[0]);
 		this.account = ls[1];
@@ -421,58 +415,9 @@ public class TaskX implements Runnable, Observer {
 					System.out.println(Converts.bytesToHexString(baos.toByteArray()));
 
 					//OUT:	
-//					dpOut = new DatagramPacket(buf, buf.length, InetAddress.getByName(ip), 8000);
-//					ds.send(dpOut);
-					
-					sa = new InetSocketAddress(ip, 8000);
-					dc.connect(sa);
-					
-					Selector selector = Selector.open();
-					dc.register(selector, SelectionKey.OP_READ );
-					dc.write(ByteBuffer.wrap(buf));
-					
-					sa = new InetSocketAddress("183.60.19.101", 8000);
-					try{
-						dc = DatagramChannel.open();
-						dc.configureBlocking(false);
-					}catch(Exception e){
-						e.printStackTrace();
-					}
-					dc.connect(sa);
-					dc.register(selector, SelectionKey.OP_READ );
-					dc.write(ByteBuffer.wrap(buf));
-					dc.r
-					
-					ByteBuffer byteBuffer = ByteBuffer.allocate ( 1024 ) ;
-					boolean t = true;
-			         while ( t ) {
-			             try {
-			                 int eventsCount = selector.select () ;
-			                 if ( eventsCount > 0 ) {
-			                     Set selectedKeys = selector.selectedKeys () ;
-			                     Iterator iterator = selectedKeys.iterator () ;
-			                     while ( iterator.hasNext ()) {
-			                         SelectionKey sk = ( SelectionKey ) iterator.next () ;
-			                         iterator.remove () ;
-			                         if ( sk.isReadable ()) {
-			                             DatagramChannel datagramChannel = ( DatagramChannel ) sk
-			                                     .channel () ;
-			                             datagramChannel.read ( byteBuffer ) ;
-			                             byteBuffer.flip () ;
-			                            
-			                             //TODO 将报文转化为RUDP消息并调用RUDP协议处理器来处理
-			                            
-			                             System.out.println ( Converts.bytesToHexString(byteBuffer.array())) ;
-			                             byteBuffer.clear () ;
-			                             
-			                         }
-			                     }
-			                 }
-			             } catch ( Exception e ) {
-			                 e.printStackTrace () ;
-			             }
-			         } 
-			         
+					dpOut = new DatagramPacket(buf, buf.length, InetAddress.getByName(ip), 8000);
+					ds.send(dpOut);
+										
 					//IN:
 					buffer = new byte[1024];
 					dpIn = new DatagramPacket(buffer, buffer.length);

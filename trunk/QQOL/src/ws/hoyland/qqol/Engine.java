@@ -1018,7 +1018,19 @@ public class Engine extends Observable {
 		return this.channels;
 	}
 	
+	public Queue<String> getQueue(){
+		return this.queue;
+	}
+	
 	public void addTask(Task task){
+		try{
+			pool.execute(task);
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+	}
+	
+	public void addTask(Runnable task){
 		try{
 			pool.execute(task);
 		}catch(Exception e){
