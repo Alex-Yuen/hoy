@@ -36,7 +36,7 @@ public class Heart extends TimerTask {
 	@Override
 	public void run() {
 		// TODO Auto-generated method stub
-		System.out.println("Heart beat");
+		System.err.println("Heart beat");
 		//读取SocketLand中的Clients
 		//每个发送一个心跳包
 		for(String account : Engine.getInstance().getChannels().keySet()){

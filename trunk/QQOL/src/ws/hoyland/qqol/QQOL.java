@@ -783,7 +783,8 @@ public class QQOL implements Observer{
 			case EngineMessageType.OM_INFOACT:
 				Display.getDefault().asyncExec(new Runnable() {
 					@Override
-					public void run() {					
+					public void run() {				
+						//System.out.println(msg.getTid()-1);
 						table.getItem(msg.getTid()-1).setText(7, (String)msg.getData());
 						//table.setSelection(msg.getTid()-1);
 					}
