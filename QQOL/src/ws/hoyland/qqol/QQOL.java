@@ -280,7 +280,7 @@ public class QQOL implements Observer{
 				
 				Event ex = new Event();
 				ex.widget = button_2;
-				//ex.data = "1";
+				ex.data = "1";
 				//主动触发button点击事件				
 				button_2.notifyListeners(SWT.Selection, ex);
 //				for(int i=0;i<tis.length;i++){
@@ -307,7 +307,7 @@ public class QQOL implements Observer{
 				
 				Event ex = new Event();
 				ex.widget = button_2;
-				//ex.data = "2";
+				ex.data = "2";
 				//主动触发button点击事件				
 				button_2.notifyListeners(SWT.Selection, ex);
 			}
@@ -378,15 +378,15 @@ public class QQOL implements Observer{
 					public void run() {
 						//System.out.println("EEF");
 						
-						Integer[] flidx = new Integer[3];
+						Integer[] flidx = new Integer[4];
 						flidx[0] = first;
 						flidx[1] = last;
 						flidx[2] = mfirst;
-//						if(e.data==null){
-//							flidx[3] = 0;
-//						}else{
-//							flidx[3] = Integer.parseInt(e.data.toString());
-//						}
+						if(e.data==null){
+							flidx[3] = 0;
+						}else{
+							flidx[3] = Integer.parseInt(e.data.toString());
+						}
 						EngineMessage message = new EngineMessage();
 						message.setType(EngineMessageType.IM_PROCESS);
 						message.setData(flidx);
@@ -696,6 +696,16 @@ public class QQOL implements Observer{
 					}
 				});
 				break;
+			case EngineMessageType.OM_COMPLETE:
+				Display.getDefault().asyncExec(new Runnable() {
+					@Override
+					public void run() {
+//						Object[] objs = (Object[])msg.getData();
+//						btnDenglu.setEnabled(true);
+						status.setText("登录完成");
+					}				
+				});
+				break;
 //			case EngineMessageType.OM_CLEAR_MAIL_TBL:
 //				Display.getDefault().asyncExec(new Runnable() {
 //					@Override
@@ -749,14 +759,14 @@ public class QQOL implements Observer{
 					@Override
 					public void run() {
 						if((Boolean)msg.getData()){
-							status.setText("正在运行...");
+							status.setText("正在登录...");
 							button_2.setText("停止");
 							//button_4.setEnabled(true);
 						}else{
 							first = -1;
 							last = -1;
 							mfirst = -1;
-							status.setText("运行停止");
+							status.setText("运行结束");
 							button_2.setText("开始");
 							//button_4.setEnabled(false);
 						}

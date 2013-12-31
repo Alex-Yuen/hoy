@@ -281,21 +281,11 @@ public class Engine extends Observable {
 				ready();
 				break;
 			case EngineMessageType.IM_PROCESS:
-				running = !running;
-//				if(flidx[3]!=0){ //直接点击情况下，不要切换状态
-//					running = !running;
-//				}
-
 				Integer[] flidx = (Integer[]) message.getData();
-				
-				
-				msg = new EngineMessage();
-				msg.setType(EngineMessageType.OM_RUNNING);
-				msg.setData(running);
-				this.setChanged();
-				this.notifyObservers(msg);
-				
-				if(running){				
+				int tc = Integer.parseInt(Configuration.getInstance().getProperty("THREAD_COUNT"));
+							
+				//是否启动
+				if(!running){				
 										
 					//创建日志文件
 					//long tm = System.currentTimeMillis();
@@ -316,8 +306,6 @@ public class Engine extends Observable {
 						}
 					}
 					**/
-					int tc = Integer.parseInt(Configuration.getInstance().getProperty("THREAD_COUNT"));
-				
 					int corePoolSize = CORE_COUNT;// 固定100个线程
 					int maxPoolSize = CORE_COUNT;
 					int maxTaskSize = (1024 + 512) * 100 * 40;// 缓冲队列
@@ -364,25 +352,37 @@ public class Engine extends Observable {
 					//monitor = new Monitor();
 					new Thread(Monitor.getInstance()).start();//开始监听
 					
-					Object[] accs = accounts.keySet().toArray();
-					for (int i = flidx[0]; i <= flidx[1]; i++) {
-						queue.add((String)accs[i]);
-					}
-					
-					for(int i=0;i<tc&&queue.size()>0;i++){	//开启TC个登录线程，发送请求						
-						try {
-							Task task = new Task(Task.TYPE_0825, queue.remove());
-							//Engine.getInstance().addObserver(task);
-							pool.execute(task);
-						} catch (ArrayIndexOutOfBoundsException e) {
-							e.printStackTrace();
-							//System.out.println(i + ":" + accounts.get(i));
-						}
-					}
+					running = true;
 				}else{
 					//停止情况下的处理
-					shutdown();
+					if(flidx[3]==0){
+						shutdown();
+					}
+				}				
+
+				//添加任务
+
+				Object[] accs = accounts.keySet().toArray();
+				for (int i = flidx[0]; i <= flidx[1]; i++) {
+					queue.add((String)accs[i]);
 				}
+				
+				for(int i=0;i<tc&&queue.size()>0;i++){	//开启TC个登录线程，发送请求						
+					try {
+						Task task = new Task(Task.TYPE_0825, queue.remove());
+						//Engine.getInstance().addObserver(task);
+						pool.execute(task);
+					} catch (ArrayIndexOutOfBoundsException e) {
+						e.printStackTrace();
+						//System.out.println(i + ":" + accounts.get(i));
+					}
+				}
+								
+				msg = new EngineMessage();
+				msg.setType(EngineMessageType.OM_RUNNING);
+				msg.setData(running);
+				this.setChanged();
+				this.notifyObservers(msg);
 				break;
 			case EngineMessageType.IM_IMAGE_DATA:				
 				msg = new EngineMessage();
@@ -392,8 +392,15 @@ public class Engine extends Observable {
 				this.notifyObservers(msg);
 				
 				break;
+			case EngineMessageType.IM_COMPLETE:
+				msg = new EngineMessage();
+				msg.setType(EngineMessageType.OM_COMPLETE);
+				msg.setData(message.getData());
+				this.setChanged();
+				this.notifyObservers(msg);
+				break;
 			case EngineMessageType.IM_RELOGIN:
-				Object[] accs = accounts.keySet().toArray();
+				accs = accounts.keySet().toArray();
 				Task task = new Task(Task.TYPE_0825, (String)accs[message.getTid()-1]);
 				//Engine.getInstance().addObserver(task);
 				pool.execute(task);
@@ -804,6 +811,7 @@ public class Engine extends Observable {
 		this.setChanged();
 		this.notifyObservers(msg);
 		**/
+		running = false;
 		if(timer!=null){
 			timer.cancel();
 		}
