@@ -28,6 +28,7 @@ import ws.hoyland.util.Configuration;
 import ws.hoyland.util.Converts;
 import ws.hoyland.util.Crypter;
 import ws.hoyland.util.DM;
+import ws.hoyland.util.EngineMessage;
 import ws.hoyland.util.YDM;
 
 public class Task implements Runnable {
@@ -97,6 +98,7 @@ public class Task implements Runnable {
 		// 发送UDP数据
 		switch (type) {
 		case TYPE_0825:
+			info("正在登录");
 			try {
 				byte[] serverPBK = new byte[] { 0x04, (byte) 0x92, (byte) 0x8D,
 						(byte) 0x88, 0x50, 0x67, 0x30, (byte) 0x88,
@@ -452,6 +454,9 @@ public class Task implements Runnable {
 			break;
 		case TYPE_00BA:
 			try{
+				String rsb = "0000";
+				byte[] resultByte = rsb.getBytes();
+				
 				if(details.get("dlvc")==null){ //识别验证码
 					ByteArrayOutputStream bsofpng = new ByteArrayOutputStream();
 					bsofpng.write(details.get("pngfirst"));
@@ -460,8 +465,6 @@ public class Task implements Runnable {
 //					StringBuffer rsb = new StringBuffer(30);
 					
 					byte[] by = bsofpng.toByteArray();
-					String rsb = "0000";
-					byte[] resultByte = rsb.getBytes();
 
 //					info("识别验证码");
 					int codeID = 0;
@@ -532,7 +535,7 @@ public class Task implements Runnable {
 //					byte[] ccode = new byte[]{
 //						0x79, 0x6F, 0x6F, 0x62 
 //					};
-					bsofplain.write(details.get("resultByte"));							
+					bsofplain.write(resultByte);							
 
 					bsofplain.write(new byte[]{
 							0x00, 0x38
@@ -1019,11 +1022,28 @@ public class Task implements Runnable {
 						
 //			System.out.println("SEND:");
 //			System.out.println(Converts.bytesToHexString(baos.toByteArray()));
-
-			System.err.println("->["+account+"]"+Converts.bytesToHexString(Util.slice(baos.toByteArray(), 3, 2)));
+			
+			try{
+				System.err.println("->["+account+"]"+Converts.bytesToHexString(Util.slice(baos.toByteArray(), 3, 2)));
+			}catch(Exception e){
+				System.err.println(type);
+			}
 			dc.write(ByteBuffer.wrap(baos.toByteArray()));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+	
+	private void info(String info){
+		EngineMessage message = new EngineMessage();
+		message.setTid(Integer.parseInt(new String(details.get("id"))));
+		message.setType(EngineMessageType.IM_INFO);
+		message.setData(info);
+
+		//DateFormat format = new java.text.SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+//		String tm = format.format(new Date());
+		
+		//System.err.println("["+this.account+"]"+info+"("+tm+")");
+		Engine.getInstance().fire(message);
 	}
 }
