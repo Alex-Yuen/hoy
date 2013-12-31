@@ -69,6 +69,8 @@ public class Task implements Runnable {
 		
 		this.details = Engine.getInstance().getAcccounts().get(account);
 		
+//		System.out.println(details);
+//		System.out.println(details.get("password"));
 	//	this.id = Integer.parseInt(new String(details.get("id")));
 		this.password = new String(details.get("password"));
 		this.status = Integer.parseInt(Configuration.getInstance().getProperty("LOGIN_TYPE"));
@@ -397,10 +399,10 @@ public class Task implements Runnable {
 						0x00, 0x00, 0x00, 0x00
 				});
 	
-				System.out.println("ZZ:"+bsofplain.toByteArray().length);
+				//System.out.println("ZZ:"+bsofplain.toByteArray().length);
 				//用key0836x 进行加密
 				encrypt = crypter.encrypt(bsofplain.toByteArray(), details.get("key0836x"));
-				System.err.println(">>"+encrypt.length);
+				//System.err.println(">>"+encrypt.length);
 				//加密完成
 				
 //				System.out.println("XXXXXX");
@@ -469,8 +471,8 @@ public class Task implements Runnable {
 						codeID = DM.INSTANCE.uu_recognizeByCodeTypeAndBytesA(by,
 								by.length, 1, resultByte); // 调用识别函数,resultBtye为识别结果
 					}
-					String result = new String(resultByte, "UTF-8").trim();					
-					System.out.println("result:"+resultByte.length+":"+result);
+					//String result = new String(resultByte, "UTF-8").trim();					
+					//System.out.println("result:"+resultByte.length+":"+result);
 					
 					details.remove("pngfirst");
 					details.remove("pngsecond");
@@ -1015,8 +1017,10 @@ public class Task implements Runnable {
 				Engine.getInstance().getChannels().put(this.account, dc);
 			}
 						
-			System.out.println("SEND:");
-			System.out.println(Converts.bytesToHexString(baos.toByteArray()));
+//			System.out.println("SEND:");
+//			System.out.println(Converts.bytesToHexString(baos.toByteArray()));
+
+			System.err.println("->["+account+"]"+Converts.bytesToHexString(Util.slice(baos.toByteArray(), 3, 2)));
 			dc.write(ByteBuffer.wrap(baos.toByteArray()));
 		} catch (Exception e) {
 			e.printStackTrace();

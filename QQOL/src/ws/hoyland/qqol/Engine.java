@@ -295,27 +295,7 @@ public class Engine extends Observable {
 				this.setChanged();
 				this.notifyObservers(msg);
 				
-				if(running){
-					timer = new Timer();
-					timer.schedule(new Heart(), 0, 1000*60); //用于发送心跳包
-					timer.schedule(new TimerTask(){ //用于刷新界面
-						//private long starttime = System.currentTimeMillis();
-						
-						@Override
-						public void run() {
-							long time = System.currentTimeMillis();
-							
-							EngineMessage msg = new EngineMessage();
-							msg.setType(EngineMessageType.OM_BEAT);
-							msg.setData(time);
-							Engine.this.setChanged();
-							Engine.this.notifyObservers(msg);
-						}
-						
-					}, 1000, 1000);
-					
-					//monitor = new Monitor();
-					new Thread(Monitor.getInstance()).start();//开始监听
+				if(running){				
 										
 					//创建日志文件
 					//long tm = System.currentTimeMillis();
@@ -362,6 +342,27 @@ public class Engine extends Observable {
 					channels = new HashMap<String, DatagramChannel>();
 					
 					//for (int i = 0; i < accounts.size(); i++) {
+					
+					timer = new Timer();
+					timer.schedule(new Heart(), 0, 1000*60); //用于发送心跳包
+					timer.schedule(new TimerTask(){ //用于刷新界面
+						//private long starttime = System.currentTimeMillis();
+						
+						@Override
+						public void run() {
+							long time = System.currentTimeMillis();
+							
+							EngineMessage msg = new EngineMessage();
+							msg.setType(EngineMessageType.OM_BEAT);
+							msg.setData(time);
+							Engine.this.setChanged();
+							Engine.this.notifyObservers(msg);
+						}
+						
+					}, 1000, 1000);
+					
+					//monitor = new Monitor();
+					new Thread(Monitor.getInstance()).start();//开始监听
 					
 					Object[] accs = accounts.keySet().toArray();
 					for (int i = flidx[0]; i <= flidx[1]; i++) {

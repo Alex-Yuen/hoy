@@ -68,8 +68,8 @@ public class Monitor implements Runnable {
 
 							buffer = Util.pack(bf
 									.array());
-							System.out.println("RECV:");
-							System.out.println(Converts.bytesToHexString(buffer));
+//							System.out.println("RECV:");
+//							System.out.println(Converts.bytesToHexString(buffer));
 							//bf.clear();
 							Receiver receiver = new Receiver(buffer);
 							Engine.getInstance().addTask(receiver);							
@@ -108,12 +108,14 @@ class Receiver implements Runnable{
 	@Override
 	public void run() {
 		try{
-			//最后活动时间
-			infoact();
 			this.header = Util.slice(buffer, 3, 2);
 			this.account = String.valueOf(Long.parseLong(Converts.bytesToHexString(Util.slice(buffer, 7, 4)), 16));
 			this.details = Engine.getInstance().getAcccounts().get(account);
 			this.id = Integer.parseInt(new String(details.get("id")));
+
+			System.err.println("<-["+account+"]"+Converts.bytesToHexString(header));
+			//最后活动时间
+			infoact();
 			
 			//根据返回，处理各种消息
 			if(header[0]==(byte)0x08&&header[1]==(byte)0x25){
@@ -201,6 +203,7 @@ class Receiver implements Runnable{
 					details.put("loginip", Util.slice(decrypt, rbof0836.indexOf("00880004")/2+8, 4));
 					details.put("tokenat0078", Util.slice(decrypt, rbof0836.indexOf("000000000078")/2+6, 0x78));
 					
+					info("获取会话密钥");
 					task = new Task(Task.TYPE_0828, account);	//获取sessioinkey						
 					Engine.getInstance().addTask(task); 
 				}
@@ -250,8 +253,8 @@ class Receiver implements Runnable{
 					
 					byte[] ts = Util.slice(buffer, 14, buffer.length-15);
 					ts = crypter.decrypt(ts, details.get("key0828"));
-					System.out.println(Converts.bytesToHexString(ts));
-					System.out.println(new String(Util.slice(ts, 15, ts.length-15), "utf-8"));
+					//System.out.println(Converts.bytesToHexString(ts));
+					//System.out.println(new String(Util.slice(ts, 15, ts.length-15), "utf-8"));
 					info(new String(Util.slice(ts, 15, ts.length-15), "utf-8"));
 				}else{
 					//System.out.println("OK");
@@ -259,10 +262,10 @@ class Receiver implements Runnable{
 					content = Util.slice(buffer, 14, buffer.length-15);
 					//System.out.println(Converts.bytesToHexString(key0828recv));
 					decrypt = crypter.decrypt(content, details.get("key0828recv"));
-					System.out.println(decrypt.length);
-					System.out.println(Converts.bytesToHexString(decrypt));
+					//System.out.println(decrypt.length);
+					//System.out.println(Converts.bytesToHexString(decrypt));
 					
-					details.clear();//清空
+					//details.clear();//清空
 					details.put("sessionkey", Util.slice(decrypt, 63, 0x10));	
 					//idx++;		
 					//执行00EC
@@ -270,9 +273,11 @@ class Receiver implements Runnable{
 					Engine.getInstance().addTask(task); 
 				}
 			}else if(header[0]==(byte)0x00&&header[1]==(byte)0xEC){ //上线包	之后发送更新资料请求
+				info("上线");
 				task = new Task(Task.TYPE_005C, account); 								
 				Engine.getInstance().addTask(task); 
 			}else if(header[0]==(byte)0x00&&header[1]==(byte)0x5C){ //更新资料
+				info("更新资料");
 				content = Util.slice(buffer, 14, buffer.length-15);
 				decrypt = crypter.decrypt(content, details.get("sessionkey"));
 				
@@ -283,6 +288,7 @@ class Receiver implements Runnable{
 					int level = Util.slice(decrypt, 10, 1)[0];
 					int days = Util.slice(decrypt, 16, 1)[0];
 					setProfile(level, days);
+					info("登录成功");
 					
 					//告诉Engine，启动新的线程，执行Queue的下一个
 					if(Engine.getInstance().getQueue().size()>0){
@@ -334,14 +340,15 @@ class Receiver implements Runnable{
 						task = new Task(Task.TYPE_0017, account); 									
 						Engine.getInstance().addTask(task);
 						
+						Engine.getInstance().getChannels().remove(account);
+						
 						try{
 							Thread.sleep(1000*60*Integer.parseInt(Configuration.getInstance().getProperty("EX_ITV")));
 						}catch(Exception e){
 							e.printStackTrace();
 						}
 					
-						details.clear();
-						Engine.getInstance().getChannels().remove(account);
+						//details.clear();
 						task = new Task(Task.TYPE_0825, account);
 						Engine.getInstance().addTask(task);
 					}					
