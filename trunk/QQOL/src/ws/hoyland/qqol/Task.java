@@ -41,6 +41,8 @@ public class Task implements Runnable {
 	public final static byte TYPE_00CE = 0x08;
 	public final static byte TYPE_00CD = 0x09;
 	public final static byte TYPE_0017 = 0x10;
+	public final static byte TYPE_0062 = 0x11;
+	public final static byte TYPE_0058 = 0x12;
 
 	private byte type;
 	private String ip = "183.60.19.100";// 默认IP
@@ -53,7 +55,7 @@ public class Task implements Runnable {
 	private ByteArrayOutputStream bsofplain = null;
 	private Crypter crypter = new Crypter();
 	
-	private int id = 0;
+//	private int id = 0;
 	private String account = null;
 	private String password = null;
 	private int status = 1;
@@ -67,7 +69,7 @@ public class Task implements Runnable {
 		
 		this.details = Engine.getInstance().getAcccounts().get(account);
 		
-		this.id = Integer.parseInt(new String(details.get("id")));
+	//	this.id = Integer.parseInt(new String(details.get("id")));
 		this.password = new String(details.get("password"));
 		this.status = Integer.parseInt(Configuration.getInstance().getProperty("LOGIN_TYPE"));
 		
@@ -840,11 +842,11 @@ public class Task implements Runnable {
 		case TYPE_00CE:
 			try{
 				bsofplain = new ByteArrayOutputStream();
-				bsofplain.write(details.get("rc"));
+				bsofplain.write(details.get("rc00CE"));
 				encrypt = crypter.encrypt(bsofplain.toByteArray(), details.get("sessionkey"));
 									
 				baos = new ByteArrayOutputStream();
-				baos.write(details.get("rh"));
+				baos.write(details.get("rh00CE"));
 				baos.write(new byte[]{0x02, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00, 0x66, (byte)0xA2});
 				baos.write(encrypt);
 				baos.write(new byte[]{0x03});
@@ -922,6 +924,68 @@ public class Task implements Runnable {
 				baos.write(new byte[]{
 						0x02, 0x34, 0x4B, 0x00, (byte)0xCD
 				});
+				baos.write(seq);
+				baos.write(Converts.hexStringToByte(Long.toHexString(Long.valueOf(account)).toUpperCase()));
+				baos.write(new byte[]{0x02, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00, 0x66, (byte)0xA2});
+				baos.write(encrypt);
+				baos.write(new byte[]{0x03});
+			}catch(Exception e){
+				e.printStackTrace();
+			}
+			break;
+		case TYPE_0017:
+			try{
+				bsofplain = new ByteArrayOutputStream();
+				bsofplain.write(details.get("rc0017"));
+				encrypt = crypter.encrypt(bsofplain.toByteArray(), details.get("sessionkey"));
+									
+				baos = new ByteArrayOutputStream();
+				baos.write(details.get("rh0017"));
+				baos.write(new byte[]{0x02, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00, 0x66, (byte)0xA2});
+				baos.write(encrypt);
+				baos.write(new byte[]{0x03});
+			}catch(Exception e){
+				e.printStackTrace();
+			}
+			break;
+		case TYPE_0062:
+			try{
+				bsofplain = new ByteArrayOutputStream();
+				bsofplain.write(new byte[]{			
+						0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
+				});
+				
+				encrypt = crypter.encrypt(bsofplain.toByteArray(), details.get("sessionkey"));
+									
+				baos = new ByteArrayOutputStream();
+				baos.write(new byte[]{
+						0x02, 0x34, 0x4B, 0x00, 0x62
+				});
+				baos.write(seq);
+				baos.write(Converts.hexStringToByte(Long.toHexString(Long.valueOf(account)).toUpperCase()));
+				baos.write(new byte[]{
+						//0x03, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00, 0x66, (byte)0xA2, 0x00, 0x30, 0x00, 0x30
+						//0x02, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00, 0x66, (byte)0xA2, 0x00, 0x30, 0x00, 0x3A
+						//0x02, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00, 0x66, 0x68, 0x00, 0x30, 0x00, 0x3A//(byte)0xA2?
+						0x02, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00, 0x66, (byte)0xA2 //0x65, (byte)0xCA								
+				});
+				baos.write(encrypt);
+				baos.write(new byte[]{
+						0x03
+				});
+			}catch(Exception e){
+				e.printStackTrace();
+			}
+			break;
+		case TYPE_0058:
+			try{
+				bsofplain = new ByteArrayOutputStream();
+				bsofplain.write(account.getBytes());
+					
+				encrypt = crypter.encrypt(bsofplain.toByteArray(), details.get("sessionkey"));
+										
+				baos = new ByteArrayOutputStream();
+				baos.write(new byte[]{0x02, 0x34, 0x4B, 0x00, 0x58});
 				baos.write(seq);
 				baos.write(Converts.hexStringToByte(Long.toHexString(Long.valueOf(account)).toUpperCase()));
 				baos.write(new byte[]{0x02, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00, 0x66, (byte)0xA2});
