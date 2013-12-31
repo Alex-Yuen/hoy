@@ -28,7 +28,6 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.ThreadPoolExecutor.AbortPolicy;
 
-import ws.hoyland.qqol.sync.PauseObject;
 import ws.hoyland.util.Configuration;
 import ws.hoyland.util.DM;
 import ws.hoyland.util.EngineMessage;
@@ -68,7 +67,7 @@ public class Engine extends Observable {
 	//private URL url = Engine.class.getClassLoader().getResource("");
 	//private String xpath = url.getPath();
 //	private int lastTid = 0;
-	private boolean pause = false;
+//	private boolean pause = false;
 	//private boolean freq = false;
 	private Timer timer = null;
 	
@@ -760,47 +759,6 @@ public class Engine extends Observable {
 				//关闭日志文件
 				shutdown();
 				System.exit(0);
-				break;
-			case EngineMessageType.IM_PAUSE:
-				pause = !pause;
-				
-				if(pause){
-					pc = 0; //pause count;
-				}
-				
-				msg = new EngineMessage();
-				msg.setTid(-1); //所有task
-				msg.setType(EngineMessageType.OM_PAUSE);
-				//msg.setData(message.getData());
-				
-				this.setChanged();
-				this.notifyObservers(msg);	
-				
-				if(!pause){//继续运行
-					//新建成功文件
-					/**
-					DateFormat format = new java.text.SimpleDateFormat("yyyy年MM月dd日 hh时mm分ss秒");
-					String tm = format.format(new Date());
-					//for(int i=0;i<output.length;i++){
-						File fff = new File(xpath + fns[0] + "-" + tm + ".txt");
-						try {
-							if (!fff.exists()) {
-								fff.createNewFile();
-							}
-							
-							output[0] = new BufferedWriter(
-									new FileWriter(fff));
-						} catch (Exception ex) {
-							ex.printStackTrace();
-						}
-					//}
-					**/
-					synchronized(PauseObject.getInstance()){
-						PauseObject.getInstance().notifyAll();
-					}
-				}else{// 停止情况下，关闭output[0]
-					//see EngineMessageType.IM_PAUSE_COUNT
-				}
 				break;
 //			case EngineMessageType.IM_FREQ:
 ////				recc = 0;

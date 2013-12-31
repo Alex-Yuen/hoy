@@ -3,12 +3,16 @@ package ws.hoyland.qqol;
 import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
 import java.nio.channels.SelectionKey;
+import java.text.DateFormat;
+import java.util.Date;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 
 import ws.hoyland.util.Configuration;
 import ws.hoyland.util.Converts;
 import ws.hoyland.util.Crypter;
+import ws.hoyland.util.EngineMessage;
 
 public class Monitor implements Runnable {
 	private boolean run = false;
@@ -88,36 +92,46 @@ class Receiver implements Runnable{
 	private String account = null;
 	private Task task = null;
 	private int status = 1;
+	private int id = 0;
+	private Map<String, byte[]> details = null;
+	private EngineMessage message = null;
 	
-	public Receiver(byte[] buffer){		
+	private static DateFormat format = new java.text.SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+	
+	public Receiver(byte[] buffer){
 		this.buffer = buffer;
 		this.crypter = new Crypter();
 		this.status = Integer.parseInt(Configuration.getInstance().getProperty("LOGIN_TYPE"));
+		//Engine.getInstance().getAcccounts().get(account)
 	}
 	
 	@Override
 	public void run() {
 		try{
-			header = Util.slice(buffer, 3, 2);
-			account = String.valueOf(Long.parseLong(Converts.bytesToHexString(Util.slice(buffer, 7, 4)), 16));
+			//最后活动时间
+			infoact();
+			this.header = Util.slice(buffer, 3, 2);
+			this.account = String.valueOf(Long.parseLong(Converts.bytesToHexString(Util.slice(buffer, 7, 4)), 16));
+			this.details = Engine.getInstance().getAcccounts().get(account);
+			this.id = Integer.parseInt(new String(details.get("id")));
 			
 			//根据返回，处理各种消息
 			if(header[0]==(byte)0x08&&header[1]==(byte)0x25){
 				if(buffer.length==135){
 					//重定向
 					content = Util.slice(buffer, 14, 120);
-					//System.out.println(Converts.bytesToHexString(Engine.getInstance().getAcccounts().get(account).get("key0825")));
-					decrypt = crypter.decrypt(content, Engine.getInstance().getAcccounts().get(account).get("key0825"));
-					Engine.getInstance().getAcccounts().get(account).put("ips", Util.slice(decrypt, 95, 4));
+					//System.out.println(Converts.bytesToHexString(details.get("key0825")));
+					decrypt = crypter.decrypt(content, details.get("key0825"));
+					details.put("ips", Util.slice(decrypt, 95, 4));
 					Engine.getInstance().getChannels().remove(account);
 					task = new Task(Task.TYPE_0825, account);
 				}else{
 					//发起0836
 					content = Util.slice(buffer, 14, 104);
-					decrypt = crypter.decrypt(content, Engine.getInstance().getAcccounts().get(account).get("key0825"));
-					Engine.getInstance().getAcccounts().get(account).put("token", Util.slice(decrypt, 5, 0x38));
-					Engine.getInstance().getAcccounts().get(account).put("logintime", Util.slice(decrypt, 67, 4));
-					Engine.getInstance().getAcccounts().get(account).put("loginip", Util.slice(decrypt, 71, 4));
+					decrypt = crypter.decrypt(content, details.get("key0825"));
+					details.put("token", Util.slice(decrypt, 5, 0x38));
+					details.put("logintime", Util.slice(decrypt, 67, 4));
+					details.put("loginip", Util.slice(decrypt, 71, 4));
 					task = new Task(Task.TYPE_0836, account);
 				}
 	
@@ -125,26 +139,26 @@ class Receiver implements Runnable{
 			}else if(header[0]==(byte)0x08&&header[1]==(byte)0x36){
 				if(buffer.length==871){//需要验证码
 					content = Util.slice(buffer, 14, buffer.length-15);
-					decrypt = crypter.decrypt(content, Engine.getInstance().getAcccounts().get(account).get("key0836x"));
+					decrypt = crypter.decrypt(content, details.get("key0836x"));
 					
 					//截取png数据，以及相关key, data
 					byte[] ilbs = Util.slice(decrypt, 22+0x38, 2);
 					int imglen = ilbs[0]*0x100 + (ilbs[1] & 0xFF);
-					Engine.getInstance().getAcccounts().get(account).put("pngfirst", Util.slice(decrypt, 24+0x38, imglen));
+					details.put("pngfirst", Util.slice(decrypt, 24+0x38, imglen));
 					
 					boolean dlvc = (Util.slice(decrypt, 25+0x38+imglen, 1)[0]==1);
 					
 					if(dlvc){//发起00BA
-						Engine.getInstance().getAcccounts().get(account).put("dlvc", "T".getBytes());
-						Engine.getInstance().getAcccounts().get(account).put("tokenfor00ba", Util.slice(decrypt, 28+0x38+imglen, 0x28));
-						Engine.getInstance().getAcccounts().get(account).put("keyfor00ba", Util.slice(decrypt, 32+0x38+0x28+imglen, 0x10));
+						details.put("dlvc", "T".getBytes());
+						details.put("tokenfor00ba", Util.slice(decrypt, 28+0x38+imglen, 0x28));
+						details.put("keyfor00ba", Util.slice(decrypt, 32+0x38+0x28+imglen, 0x10));
 						
 						task = new Task(Task.TYPE_00BA, account);																			
 						Engine.getInstance().addTask(task);
 					}
 				}else if(buffer.length==175||buffer.length==95||buffer.length==247||buffer.length==239){
 					byte[] ts = Util.slice(buffer, 14, buffer.length-15);
-					ts = crypter.decrypt(ts, Engine.getInstance().getAcccounts().get(account).get("key0836x"));
+					ts = crypter.decrypt(ts, details.get("key0836x"));
 					//System.out.println(Converts.bytesToHexString(ts));
 					//System.out.println(new String(Util.slice(ts, 15, ts.length-15), "utf-8"));
 					//info(new String(Util.slice(ts, 15, ts.length-15), "utf-8"));
@@ -155,12 +169,12 @@ class Receiver implements Runnable{
 				}else {
 					//发起0828
 					content = Util.slice(buffer, 14, buffer.length-15);
-					decrypt = crypter.decrypt(content, Engine.getInstance().getAcccounts().get(account).get("key0836"));
+					decrypt = crypter.decrypt(content, details.get("key0836"));
 					
 					//System.out.println(Converts.bytesToHexString(decrypt));
 					//需解释出某些值供 0828使用
-					Engine.getInstance().getAcccounts().get(account).put("key0828", Util.slice(decrypt, 7, 0x10));
-					Engine.getInstance().getAcccounts().get(account).put("tokenfor0828", Util.slice(decrypt, 9+0x10, 0x38));
+					details.put("key0828", Util.slice(decrypt, 7, 0x10));
+					details.put("tokenfor0828", Util.slice(decrypt, 9+0x10, 0x38));
 					//byte[] tokenfor0828 = Util.slice(decrypt, 9+0x10, 0x38);
 					String rbof0836 = Converts.bytesToHexString(decrypt);
 					
@@ -179,37 +193,37 @@ class Receiver implements Runnable{
 					for(int i=0;i<nicklen;i++){
 						nick[i] = decrypt[nickidx+1+i];
 					}
-					System.out.println("Nick:"+new String(nick, "utf-8"));
-					//setNick(new String(nick, "utf-8"));
+					//System.out.println("Nick:"+new String(nick, "utf-8"));
+					setNick(new String(nick));
 					
-					Engine.getInstance().getAcccounts().get(account).put("key0828recv", Util.slice(decrypt, rbof0836.indexOf("0000003C0002")/2+6, 0x10));
-					Engine.getInstance().getAcccounts().get(account).put("logintime", Util.slice(decrypt, rbof0836.indexOf("00880004")/2+4, 4));
-					Engine.getInstance().getAcccounts().get(account).put("loginip", Util.slice(decrypt, rbof0836.indexOf("00880004")/2+8, 4));
-					Engine.getInstance().getAcccounts().get(account).put("tokenat0078", Util.slice(decrypt, rbof0836.indexOf("000000000078")/2+6, 0x78));
+					details.put("key0828recv", Util.slice(decrypt, rbof0836.indexOf("0000003C0002")/2+6, 0x10));
+					details.put("logintime", Util.slice(decrypt, rbof0836.indexOf("00880004")/2+4, 4));
+					details.put("loginip", Util.slice(decrypt, rbof0836.indexOf("00880004")/2+8, 4));
+					details.put("tokenat0078", Util.slice(decrypt, rbof0836.indexOf("000000000078")/2+6, 0x78));
 					
-					task = new Task(Task.TYPE_0828, account);																			
+					task = new Task(Task.TYPE_0828, account);	//获取sessioinkey						
 					Engine.getInstance().addTask(task); 
 				}
 			}else if(header[0]==(byte)0x00&&header[1]==(byte)0xBA){
-				if(Engine.getInstance().getAcccounts().get(account).get("dlvc")!=null){ //继续下载验证码
+				if(details.get("dlvc")!=null){ //继续下载验证码
 					content = Util.slice(buffer, 14, buffer.length-15);
-					decrypt = crypter.decrypt(content, Engine.getInstance().getAcccounts().get(account).get("key0836x"));//??????!!!!!! 第二次才是key00ba
+					decrypt = crypter.decrypt(content, details.get("key0836x"));//??????!!!!!! 第二次才是key00ba
 					//System.out.println(Converts.bytesToHexString(decrypt));
 					byte[] ilbs = Util.slice(decrypt, 10+0x38, 2);
 					//System.out.println(Converts.bytesToHexString(imglenbs));
 					int imglen = ilbs[0]*0x100 + (ilbs[1] & 0xFF);
-					Engine.getInstance().getAcccounts().get(account).put("pngsecond", Util.slice(decrypt, 12+0x38, imglen));
-					Engine.getInstance().getAcccounts().get(account).put("tokenfor00ba", Util.slice(decrypt, 10, 0x38));
+					details.put("pngsecond", Util.slice(decrypt, 12+0x38, imglen));
+					details.put("tokenfor00ba", Util.slice(decrypt, 10, 0x38));
 					
-					Engine.getInstance().getAcccounts().get(account).remove("dlvc");
+					details.remove("dlvc");
 					task = new Task(Task.TYPE_00BA, account);																			
 					Engine.getInstance().addTask(task); 
 				}else{ //识别结果
 					if(buffer.length==95){
 						content = Util.slice(buffer, 14, buffer.length-15);
-						decrypt = crypter.decrypt(content, Engine.getInstance().getAcccounts().get(account).get("key00BA"));
+						decrypt = crypter.decrypt(content, details.get("key00BA"));
 						//获取vctoken
-						Engine.getInstance().getAcccounts().get(account).put("vctoken", Util.slice(decrypt, 10, 0x38)); 
+						details.put("vctoken", Util.slice(decrypt, 10, 0x38)); 
 	//					System.out.println("KK1:");
 	//					System.out.println(Converts.bytesToHexString(decrypt));
 	//					System.out.println(Converts.bytesToHexString(vctoken));
@@ -219,41 +233,48 @@ class Receiver implements Runnable{
 						Engine.getInstance().addTask(task); 										
 					}else{
 	//					//报告验证码错误
+						info("报告验证码错误");
 						task = new Task(Task.TYPE_ERR_VC, account);																			
 						Engine.getInstance().addTask(task); 
+						
+						//重新执行任务
+						details.clear();
+						Engine.getInstance().getChannels().remove(account);
+						task = new Task(Task.TYPE_0825, account);
 					}
 				}
-			}else if(header[0]==(byte)0x08&&header[1]==(byte)0x28){
+			}else if(header[0]==(byte)0x08&&header[1]==(byte)0x28){ //获取sessioinkey结果
 				if(buffer.length==127){
 					//System.out.println("您的网络环境可能发生了变化，为了您的帐号安全，请重新登录。");
 					//System.out.println("退出任务");
 					
 					byte[] ts = Util.slice(buffer, 14, buffer.length-15);
-					ts = crypter.decrypt(ts, Engine.getInstance().getAcccounts().get(account).get("key0828"));
+					ts = crypter.decrypt(ts, details.get("key0828"));
 					System.out.println(Converts.bytesToHexString(ts));
 					System.out.println(new String(Util.slice(ts, 15, ts.length-15), "utf-8"));
-					//info(new String(Util.slice(ts, 15, ts.length-15), "utf-8"));
+					info(new String(Util.slice(ts, 15, ts.length-15), "utf-8"));
 				}else{
 					//System.out.println("OK");
-					//info("获取成功");
+					info("获取成功");
 					content = Util.slice(buffer, 14, buffer.length-15);
 					//System.out.println(Converts.bytesToHexString(key0828recv));
-					decrypt = crypter.decrypt(content, Engine.getInstance().getAcccounts().get(account).get("key0828recv"));
+					decrypt = crypter.decrypt(content, details.get("key0828recv"));
 					System.out.println(decrypt.length);
 					System.out.println(Converts.bytesToHexString(decrypt));
 					
-					Engine.getInstance().getAcccounts().get(account).put("sessionkey", Util.slice(decrypt, 63, 0x10));	
+					details.clear();//清空
+					details.put("sessionkey", Util.slice(decrypt, 63, 0x10));	
 					//idx++;		
 					//执行00EC
 					task = new Task(Task.TYPE_00EC, account); //上线包															
 					Engine.getInstance().addTask(task); 
 				}
-			}else if(header[0]==(byte)0x00&&header[1]==(byte)0xEC){
-				task = new Task(Task.TYPE_005C, account); //更新资料													
+			}else if(header[0]==(byte)0x00&&header[1]==(byte)0xEC){ //上线包	之后发送更新资料请求
+				task = new Task(Task.TYPE_005C, account); 								
 				Engine.getInstance().addTask(task); 
-			}else if(header[0]==(byte)0x00&&header[1]==(byte)0x5C){
+			}else if(header[0]==(byte)0x00&&header[1]==(byte)0x5C){ //更新资料
 				content = Util.slice(buffer, 14, buffer.length-15);
-				decrypt = crypter.decrypt(content, Engine.getInstance().getAcccounts().get(account).get("sessionkey"));
+				decrypt = crypter.decrypt(content, details.get("sessionkey"));
 				
 				if(decrypt[0]!=(byte)0x88){
 					task = new Task(Task.TYPE_005C, account); //继续更新资料													
@@ -261,7 +282,7 @@ class Receiver implements Runnable{
 				}else{
 					int level = Util.slice(decrypt, 10, 1)[0];
 					int days = Util.slice(decrypt, 16, 1)[0];
-					//setProfile(level, days);
+					setProfile(level, days);
 					
 					//告诉Engine，启动新的线程，执行Queue的下一个
 					if(Engine.getInstance().getQueue().size()>0){
@@ -269,13 +290,13 @@ class Receiver implements Runnable{
 						Engine.getInstance().addTask(task);
 					}
 				}
-			}else if(header[0]==(byte)0x00&&header[1]==(byte)0xCE){ //反馈
+			}else if(header[0]==(byte)0x00&&header[1]==(byte)0xCE){ //收到消息
 				//byte[] header = Util.slice(buffer, 3, 2);
 				content = Util.slice(buffer, 14, buffer.length-15);
-				decrypt = crypter.decrypt(content, Engine.getInstance().getAcccounts().get(account).get("sessionkey"));
+				decrypt = crypter.decrypt(content, details.get("sessionkey"));
 
-				Engine.getInstance().getAcccounts().get(account).put("rh", Util.slice(buffer, 0, 11));
-				Engine.getInstance().getAcccounts().get(account).put("rc", Util.slice(decrypt, 0, 0x010));
+				details.put("rh00CE", Util.slice(buffer, 0, 11));
+				details.put("rc00CE", Util.slice(decrypt, 0, 0x010));
 				
 				task = new Task(Task.TYPE_00CE, account); 									
 				Engine.getInstance().addTask(task); 
@@ -291,30 +312,91 @@ class Receiver implements Runnable{
 				}
 				
 				if((status==1||status==2)&&nmsg&&("true".equals(Configuration.getInstance().getProperty("AUTO_REPLY")))){//需要自动回复
-					Engine.getInstance().getAcccounts().get(account).put("00CDA", Util.slice(decrypt, 4, 0x04));
-					Engine.getInstance().getAcccounts().get(account).put("00CDB", Util.slice(decrypt, 0, 0x04));
+					details.put("00CDA", Util.slice(decrypt, 4, 0x04));
+					details.put("00CDB", Util.slice(decrypt, 0, 0x04));
 					
+					info("自动回复");
 					task = new Task(Task.TYPE_00CD, account); 									
 					Engine.getInstance().addTask(task); 
 				}
 			}else if(header[0]==(byte)0x00&&header[1]==(byte)0x17){
-				if(buffer.length==231&&Engine.getInstance().getAcccounts().get(account).get("0017")==null){//TODO 需要处理多条消息
-					Engine.getInstance().getAcccounts().get(account).put("0017", "T".getBytes());
+				if(buffer.length==231&&details.get("0017")==null){// 被挤线的处理
+					details.put("0017", "T".getBytes());
 					content = Util.slice(buffer, 14, buffer.length-15);
-					decrypt = crypter.decrypt(content, client.getSessionKey());
+					decrypt = crypter.decrypt(content, details.get("sessionkey"));
 					
 					if(decrypt!=null&&decrypt[0]==0x00&&decrypt[1]==0x00){ //00 00 27 10
 						//被挤掉下线
-						//info("被挤线，等待重新登录");
+						info("被挤线，等待重新登录");
+						details.put("rh0017", Util.slice(buffer, 0, 11));
+						details.put("rc0017", Util.slice(decrypt, 0, 0x010));
+						
 						task = new Task(Task.TYPE_0017, account); 									
 						Engine.getInstance().addTask(task);
-					}
+						
+						try{
+							Thread.sleep(1000*60*Integer.parseInt(Configuration.getInstance().getProperty("EX_ITV")));
+						}catch(Exception e){
+							e.printStackTrace();
+						}
 					
-				}
-				
+						details.clear();
+						Engine.getInstance().getChannels().remove(account);
+						task = new Task(Task.TYPE_0825, account);
+						Engine.getInstance().addTask(task);
+					}					
+				}				
 			}
 		}catch(Exception e){
 			e.printStackTrace();
 		}
 	}	
+	
+	private void info(String info){
+		message = new EngineMessage();
+		message.setTid(this.id);
+		message.setType(EngineMessageType.IM_INFO);
+		message.setData(info);
+
+		//DateFormat format = new java.text.SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+//		String tm = format.format(new Date());
+		
+		//System.err.println("["+this.account+"]"+info+"("+tm+")");
+		Engine.getInstance().fire(message);
+	}
+	
+	private void infoact(){
+		//DateFormat format = new java.text.SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+		String tm = format.format(new Date());
+		
+		message = new EngineMessage();
+		message.setTid(this.id);
+		message.setType(EngineMessageType.IM_INFOACT);
+		message.setData(tm);
+
+		
+		//System.err.println("["+this.account+"]ACT("+tm+")");
+		Engine.getInstance().fire(message);
+	}
+	
+	private void setNick(String nick){
+		
+		message = new EngineMessage();
+		message.setTid(this.id);
+		message.setType(EngineMessageType.IM_NICK);
+		message.setData(nick);
+
+		
+		//System.err.println("["+this.account+"]ACT("+tm+")");
+		Engine.getInstance().fire(message);
+	}
+	
+	private void setProfile(int level, int days){
+		message = new EngineMessage();
+		message.setTid(this.id);
+		message.setType(EngineMessageType.IM_PROFILE);
+		message.setData(level+":"+days);
+		
+		Engine.getInstance().fire(message);
+	}
 }

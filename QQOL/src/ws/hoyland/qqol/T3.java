@@ -2,8 +2,6 @@ package ws.hoyland.qqol;
 
 import java.util.Random;
 
-import ws.hoyland.util.Converts;
-
 public class T3 {
 
 	/**
