@@ -100,6 +100,7 @@ class Receiver implements Runnable{
 	private String account = null;
 	private Task task = null;
 	private int status = 1;
+	private static String[] STS = new String[]{"在线", "离开", "忙碌", "隐身"}; 
 	private int id = 0;
 	private Map<String, byte[]> details = null;
 	private EngineMessage message = null;
@@ -312,7 +313,7 @@ class Receiver implements Runnable{
 					int level = Util.slice(decrypt, 10, 1)[0];
 					int days = Util.slice(decrypt, 16, 1)[0];
 					setProfile(level, days);
-					info("登录成功");
+					info(STS[status]+((status==1||status==2)&&"true".equals(Configuration.getInstance().getProperty("AUTO_REPLY"))?"[自动回复]":""));
 					details.put("login", "T".getBytes());
 					
 					next();
@@ -342,7 +343,7 @@ class Receiver implements Runnable{
 					details.put("00CDA", Util.slice(decrypt, 4, 0x04));
 					details.put("00CDB", Util.slice(decrypt, 0, 0x04));
 					
-					info("自动回复");
+					//info("自动回复");
 					task = new Task(Task.TYPE_00CD, account); 									
 					Engine.getInstance().addTask(task); 
 				}
@@ -358,6 +359,7 @@ class Receiver implements Runnable{
 						details.put("rc0017", Util.slice(decrypt, 0, 0x010));
 
 						info("被挤线，等待重新登录");
+						tf();
 						task = new Task(Task.TYPE_0017, account); 									
 						Engine.getInstance().addTask(task);
 						
@@ -376,12 +378,22 @@ class Receiver implements Runnable{
 						Engine.getInstance().addTask(task);
 					}					
 				}				
+			}else if(header[0]==(byte)0x00&&header[1]==(byte)0x58){
+				Engine.getInstance().getAcccounts().get(account).put("heart", "T".getBytes());
 			}
 		}catch(Exception e){
 			e.printStackTrace();
 		}
 	}	
 	
+	private void tf() {//task finish
+		message = new EngineMessage();
+		message.setTid(this.id);
+		message.setType(EngineMessageType.IM_TF);
+		
+		Engine.getInstance().fire(message);		
+	}
+
 	private void next() {
 		//告诉Engine，启动新的线程，执行Queue的下一个
 		if(Engine.getInstance().getQueue().size()>0){
@@ -410,6 +422,7 @@ class Receiver implements Runnable{
 	
 	private void infoact(){
 		//DateFormat format = new java.text.SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+		details.put("lastatv", String.valueOf(System.currentTimeMillis()).getBytes());//设置最后活动时间
 		String tm = format.format(new Date());
 		
 		message = new EngineMessage();
