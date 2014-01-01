@@ -3,7 +3,6 @@ package ws.hoyland.qqol;
 import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
 import java.nio.channels.SelectionKey;
-import java.text.DateFormat;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.Map;
@@ -105,7 +104,7 @@ class Receiver implements Runnable{
 	private Map<String, byte[]> details = null;
 	private EngineMessage message = null;
 	
-	private static DateFormat format = new java.text.SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+//	private static DateFormat format = new java.text.SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 	
 	public Receiver(byte[] buffer){
 		this.buffer = buffer;
@@ -268,6 +267,7 @@ class Receiver implements Runnable{
 						Engine.getInstance().getChannels().remove(account);
 						info("重新登录");
 						task = new Task(Task.TYPE_0825, account);
+						Engine.getInstance().addTask(task); 
 					}
 				}
 			}else if(header[0]==(byte)0x08&&header[1]==(byte)0x28){ //获取sessioinkey结果
@@ -414,16 +414,16 @@ class Receiver implements Runnable{
 		message.setData(info);
 
 		//DateFormat format = new java.text.SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-//		String tm = format.format(new Date());
+		String tm = Util.format(new Date());
 		
-		//System.err.println("["+this.account+"]"+info+"("+tm+")");
+		System.err.println("["+this.account+"]"+info+"("+tm+")");
 		Engine.getInstance().fire(message);
 	}
 	
 	private void infoact(){
 		//DateFormat format = new java.text.SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 		details.put("lastatv", String.valueOf(System.currentTimeMillis()).getBytes());//设置最后活动时间
-		String tm = format.format(new Date());
+		String tm = Util.format(new Date());
 		
 		message = new EngineMessage();
 		message.setTid(this.id);

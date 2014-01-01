@@ -815,12 +815,12 @@ public class Engine extends Observable {
 		if(timer!=null){
 			timer.cancel();
 		}
-		
-		if(pool!=null){
-			//pool.shutdown();
-			pool.shutdownNow();
+		for(String account : channels.keySet()){
+			if(accounts.get(account).get("login")!=null){//已经登录的，发送离线消息
+				addTask((new Task(Task.TYPE_0062, account)));
+			}
 		}
-				
+						
 		//等待所有运行线程执行完毕，关闭日志文件
 		while(pool!=null&&pool.getActiveCount()!=0){
 			try{
@@ -828,6 +828,11 @@ public class Engine extends Observable {
 			}catch(Exception e){
 				//
 			}
+		}
+		
+		if(pool!=null){
+			//pool.shutdown();
+			pool.shutdownNow();
 		}
 		
 		//if(pool!=null){
@@ -1003,5 +1008,13 @@ public class Engine extends Observable {
 		}catch(Exception e){
 			e.printStackTrace();
 		}
+	}
+	
+	public int getActiveCount(){
+		return pool.getActiveCount();
+	}
+	
+	public int getQueueCount(){
+		return pool.getQueue().size();
 	}
 }
