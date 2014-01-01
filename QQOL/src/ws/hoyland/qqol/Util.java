@@ -1,5 +1,7 @@
 package ws.hoyland.qqol;
 
+import java.text.DateFormat;
+import java.util.Date;
 import java.util.Random;
 
 public class Util {
@@ -50,4 +52,10 @@ public class Util {
 		}
 		return sb.toString();
 	}
+	
+	public static String format(Date date){
+		return format.format(date);
+	}
+	
+	private static DateFormat format = new java.text.SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 }

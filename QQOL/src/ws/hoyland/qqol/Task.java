@@ -14,6 +14,7 @@ import java.security.Security;
 import java.security.interfaces.ECPublicKey;
 import java.security.spec.ECParameterSpec;
 import java.security.spec.ECPublicKeySpec;
+import java.util.Date;
 import java.util.Map;
 import java.util.zip.CRC32;
 
@@ -1017,6 +1018,7 @@ public class Task implements Runnable {
 				dc.register(QQSelector.selector, SelectionKey.OP_READ);
 				Monitor.getInstance().setWakeup(false);
 				
+				System.err.println("new dc:"+this.account);
 				Engine.getInstance().getChannels().put(this.account, dc);
 			}
 						
@@ -1025,10 +1027,10 @@ public class Task implements Runnable {
 			
 			try{
 				System.err.println("->["+account+"]"+Converts.bytesToHexString(Util.slice(baos.toByteArray(), 3, 2)));
+				dc.write(ByteBuffer.wrap(baos.toByteArray()));
 			}catch(Exception e){
 				System.err.println(type);
 			}
-			dc.write(ByteBuffer.wrap(baos.toByteArray()));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -1040,10 +1042,9 @@ public class Task implements Runnable {
 		message.setType(EngineMessageType.IM_INFO);
 		message.setData(info);
 
-		//DateFormat format = new java.text.SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-//		String tm = format.format(new Date());
+		String tm = Util.format(new Date());
 		
-		//System.err.println("["+this.account+"]"+info+"("+tm+")");
+		System.err.println("["+this.account+"]"+info+"("+tm+")");
 		Engine.getInstance().fire(message);
 	}
 }

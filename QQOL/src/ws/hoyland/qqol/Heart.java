@@ -32,7 +32,7 @@ public class Heart extends TimerTask {
 	@Override
 	public void run() {
 		// TODO Auto-generated method stub
-		System.err.println("Heart beat");
+		System.err.println("Heart beat:"+Engine.getInstance().getActiveCount()+"/"+Engine.getInstance().getQueueCount());
 		System.gc();
 		//读取SocketLand中的Clients
 		//每个发送一个心跳包
