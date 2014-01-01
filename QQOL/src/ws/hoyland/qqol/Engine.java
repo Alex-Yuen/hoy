@@ -54,7 +54,7 @@ public class Engine extends Observable {
 	private Configuration configuration = Configuration.getInstance();
 	private Queue<String> queue = null;
 	
-	private static int CORE_COUNT = 100;
+	private static int CORE_COUNT = 200;
 //	private int recc = 0;//reconnect count
 //	private int frecc = 0;//finished
 //	private String cip = null; //current ip
@@ -332,7 +332,7 @@ public class Engine extends Observable {
 					//for (int i = 0; i < accounts.size(); i++) {
 					
 					timer = new Timer();
-					timer.schedule(new Heart(), 0, 1000*60); //用于发送心跳包
+					timer.schedule(new Heart(), 1000*30, 1000*60); //用于发送心跳包
 					timer.schedule(new TimerTask(){ //用于刷新界面
 						//private long starttime = System.currentTimeMillis();
 						

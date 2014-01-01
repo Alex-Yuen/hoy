@@ -460,8 +460,14 @@ public class Task implements Runnable {
 				
 				if(details.get("dlvc")==null){ //识别验证码
 					ByteArrayOutputStream bsofpng = new ByteArrayOutputStream();
-					bsofpng.write(details.get("pngfirst"));
-					bsofpng.write(details.get("pngsecond"));
+					try{
+						bsofpng.write(details.get("pngfirst"));
+						bsofpng.write(details.get("pngsecond"));
+					}catch(Exception e){
+						System.err.println(account);
+						System.err.println(details);
+						e.printStackTrace();						
+					}
 					//resultByte = new byte[30]; // 为识别结果申请内存空间
 //					StringBuffer rsb = new StringBuffer(30);
 					
@@ -579,6 +585,10 @@ public class Task implements Runnable {
 			try {
 				//
 				int reportErrorResult = -1;
+				if(details.get("codeID")==null){
+					System.err.println(account+" code ID is null");
+					System.err.println(details);
+				}
 				int codeID = Integer.parseInt(new String(details.get("codeID")));
 				if(Engine.getInstance().getCptType()==0){
 					reportErrorResult = YDM.INSTANCE.YDM_Report(codeID, false);
@@ -1019,7 +1029,9 @@ public class Task implements Runnable {
 				Monitor.getInstance().setWakeup(false);
 				
 				//System.err.println("new dc:"+this.account);
-				Engine.getInstance().getChannels().put(this.account, dc);
+				synchronized(Engine.getInstance().getChannels()) {
+					Engine.getInstance().getChannels().put(this.account, dc);
+				}
 			}
 						
 //			System.out.println("SEND:");

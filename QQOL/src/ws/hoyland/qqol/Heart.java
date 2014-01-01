@@ -1,7 +1,9 @@
 package ws.hoyland.qqol;
 
+import java.util.Iterator;
 import java.util.TimerTask;
 
+import ws.hoyland.util.CopiedIterator;
 import ws.hoyland.util.EngineMessage;
 
 /*
@@ -37,10 +39,20 @@ public class Heart extends TimerTask {
 		//读取SocketLand中的Clients
 		//每个发送一个心跳包
 		long current = System.currentTimeMillis();
-		for(String account : Engine.getInstance().getChannels().keySet()){
+		Iterator<String> it = null;
+		synchronized(Engine.getInstance().getChannels()) {
+			it = new CopiedIterator(Engine.getInstance().getChannels().keySet().iterator());
+		}
+		  
+		//Iterator<String> it = Engine.getInstance().getChannels().keySet().iterator();
+		while(it.hasNext()){
+			String account = (String)it.next();
 			if(Engine.getInstance().getAcccounts().get(account).get("login")!=null){//已经登录的才发送心跳包
 				if(current-Long.parseLong(new String(Engine.getInstance().getAcccounts().get(account).get("lastatv")))>=1000*60*2){//重新登录
-					Engine.getInstance().getChannels().remove(account);
+					//it.remove();
+					synchronized(Engine.getInstance().getChannels()) {
+						Engine.getInstance().getChannels().remove(account);
+					}
 					Engine.getInstance().getAcccounts().get(account).remove("login");
 					Engine.getInstance().addTask((new Task(Task.TYPE_0825, account)));
 				}else{
@@ -78,8 +90,9 @@ class Beater implements Runnable{
 			Engine.getInstance().addTask((new Task(Task.TYPE_0062, account)));
 			
 			tf();
-			
-			Engine.getInstance().getChannels().remove(account);
+			synchronized(Engine.getInstance().getChannels()) {
+				Engine.getInstance().getChannels().remove(account);
+			}
 			Engine.getInstance().getAcccounts().get(account).remove("login");
 			Engine.getInstance().addTask((new Task(Task.TYPE_0825, account)));
 		}
