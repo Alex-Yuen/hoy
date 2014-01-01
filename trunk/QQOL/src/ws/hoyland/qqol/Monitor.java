@@ -20,7 +20,7 @@ public class Monitor implements Runnable {
 	private byte[] buffer = null;
 	private int size = -1;
 	private String hd = null;
-	private String FHD = "#0825#0836#0828#00BA#00EC#005C#00CE#0017#0062#0058#";
+	private String FHD = "#0825#0836#0828#00BA#00EC#005C#00CE#0062#0058#";
 	
 	private static Monitor instance; 
 	
@@ -76,7 +76,7 @@ public class Monitor implements Runnable {
 							bf.clear();
 							
 							hd = Converts.bytesToHexString(Util.slice(buffer, 3, 2));
-							if(buffer.length>0&&FHD.contains("#"+hd+"#")){
+							if(buffer.length>0&&(FHD.contains("#"+hd+"#")||("0017".equals(hd)&&buffer.length==231))){
 								Receiver receiver = new Receiver(buffer);
 								Engine.getInstance().addTask(receiver);
 							}
@@ -130,17 +130,25 @@ class Receiver implements Runnable{
 				//info("正在登录");
 				if(buffer.length==135){
 					//重定向
-					content = Util.slice(buffer, 14, 120);
+					content = Util.slice(buffer, 14, buffer.length-15);//120
 					//System.out.println(Converts.bytesToHexString(details.get("key0825")));
 					decrypt = crypter.decrypt(content, details.get("key0825"));
 					details.put("ips", Util.slice(decrypt, 95, 4));
-					Engine.getInstance().getChannels().remove(account);
+					synchronized(Engine.getInstance().getChannels()) {
+						Engine.getInstance().getChannels().remove(account);
+					}
 					info("重定向");
 					task = new Task(Task.TYPE_0825, account);
 				}else{
 					//发起0836
-					content = Util.slice(buffer, 14, 104);
+					content = Util.slice(buffer, 14, buffer.length-15);//104
 					decrypt = crypter.decrypt(content, details.get("key0825"));
+					if(decrypt==null){
+						System.err.println(account);
+						System.err.println("decrypt is null:"+buffer.length);
+						System.err.println(Converts.bytesToHexString(buffer));
+						System.err.println(Converts.bytesToHexString(details.get("key0825")));
+					}
 					details.put("token", Util.slice(decrypt, 5, 0x38));
 					details.put("logintime", Util.slice(decrypt, 67, 4));
 					details.put("loginip", Util.slice(decrypt, 71, 4));
@@ -177,12 +185,16 @@ class Receiver implements Runnable{
 					//System.out.println(new String(Util.slice(ts, 15, ts.length-15), "utf-8"));
 					info(new String(Util.slice(ts, 15, ts.length-15), "utf-8"));
 					Engine.getInstance().getChannels().get(account).close(); //关闭
-					Engine.getInstance().getChannels().remove(account);
+					synchronized(Engine.getInstance().getChannels()) {
+						Engine.getInstance().getChannels().remove(account);
+					}
 					next();
 				}else if(buffer.length==255){
 					info("需要验证密保");
 					Engine.getInstance().getChannels().get(account).close();
-					Engine.getInstance().getChannels().remove(account);
+					synchronized(Engine.getInstance().getChannels()) {
+						Engine.getInstance().getChannels().remove(account);
+					}
 					next();
 					//run = false;
 					//return;
@@ -191,7 +203,12 @@ class Receiver implements Runnable{
 					info("验证身份成功");
 					content = Util.slice(buffer, 14, buffer.length-15);
 					decrypt = crypter.decrypt(content, details.get("key0836"));
-					
+					if(decrypt==null){
+						System.err.println(account);
+						System.err.println("decrypt is null:"+buffer.length);
+						System.err.println(Converts.bytesToHexString(buffer));
+						System.err.println(Converts.bytesToHexString(details.get("key0836")));
+					}
 					//System.out.println(Converts.bytesToHexString(decrypt));
 					//需解释出某些值供 0828使用
 					details.put("key0828", Util.slice(decrypt, 7, 0x10));
@@ -246,6 +263,12 @@ class Receiver implements Runnable{
 						//info("提交验证码");
 						content = Util.slice(buffer, 14, buffer.length-15);
 						decrypt = crypter.decrypt(content, details.get("key00BA"));
+						if(decrypt==null){
+							System.err.println(account);
+							System.err.println("decrypt is null:"+buffer.length);
+							System.err.println(Converts.bytesToHexString(buffer));
+							System.err.println(Converts.bytesToHexString(details.get("key00BA")));
+						}
 						//获取vctoken
 						details.put("vctoken", Util.slice(decrypt, 10, 0x38)); 
 	//					System.out.println("KK1:");
@@ -264,7 +287,9 @@ class Receiver implements Runnable{
 						
 						//重新执行任务
 						//details.clear();
-						Engine.getInstance().getChannels().remove(account);
+						synchronized(Engine.getInstance().getChannels()) {
+							Engine.getInstance().getChannels().remove(account);
+						}
 						info("重新登录");
 						task = new Task(Task.TYPE_0825, account);
 						Engine.getInstance().addTask(task); 
@@ -362,8 +387,9 @@ class Receiver implements Runnable{
 						tf();
 						task = new Task(Task.TYPE_0017, account); 									
 						Engine.getInstance().addTask(task);
-						
-						Engine.getInstance().getChannels().remove(account);
+						synchronized(Engine.getInstance().getChannels()) {
+							Engine.getInstance().getChannels().remove(account);
+						}
 						
 						try{
 							Thread.sleep(1000*60*Integer.parseInt(Configuration.getInstance().getProperty("EX_ITV")));
@@ -373,6 +399,7 @@ class Receiver implements Runnable{
 					
 						//details.clear();
 						details.remove("login");
+						details.remove("0017");
 						info("重新登录");
 						task = new Task(Task.TYPE_0825, account);
 						Engine.getInstance().addTask(task);
