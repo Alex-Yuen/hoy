@@ -590,7 +590,7 @@ public class Task implements Runnable {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-			break;
+			return; 
 		case TYPE_0828:
 			try{
 				bsofplain = new ByteArrayOutputStream();
