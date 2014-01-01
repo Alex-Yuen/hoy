@@ -1041,7 +1041,8 @@ public class Task implements Runnable {
 				System.err.println("->["+account+"]"+Converts.bytesToHexString(Util.slice(baos.toByteArray(), 3, 2)));
 				dc.write(ByteBuffer.wrap(baos.toByteArray()));
 			}catch(Exception e){
-				System.err.println(type);
+				e.printStackTrace();
+				System.err.println("TYPE:"+type);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
