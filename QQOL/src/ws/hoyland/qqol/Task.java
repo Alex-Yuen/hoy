@@ -1018,7 +1018,7 @@ public class Task implements Runnable {
 				dc.register(QQSelector.selector, SelectionKey.OP_READ);
 				Monitor.getInstance().setWakeup(false);
 				
-				System.err.println("new dc:"+this.account);
+				//System.err.println("new dc:"+this.account);
 				Engine.getInstance().getChannels().put(this.account, dc);
 			}
 						

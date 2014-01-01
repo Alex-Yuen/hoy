@@ -335,7 +335,7 @@ class Receiver implements Runnable{
 				byte[] cetime = Util.slice(decrypt, rbof00CE.indexOf("4D53470000000000")/2+8, 0x04);
 				long lcetime = Long.parseLong(Converts.bytesToHexString(cetime), 16)*1000;
 				//System.out.println("P5:"+(System.currentTimeMillis()-lcetime));
-				if(System.currentTimeMillis()-lcetime<=1000*60){//一分钟内							
+				if(System.currentTimeMillis()-lcetime<=1000*5){//5秒内							
 					nmsg = true;
 				}
 				
