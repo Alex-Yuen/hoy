@@ -3,6 +3,7 @@ package ws.hoyland.qqol;
 import java.io.IOException;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.Timer;
 import java.util.TimerTask;
 
 import ws.hoyland.util.CopiedIterator;
@@ -14,6 +15,7 @@ import ws.hoyland.util.EngineMessage;
  */
 public class Heart extends TimerTask {
 //	private ThreadPoolExecutor pool = null;
+	private Timer timer = new Timer();
 	
 	public Heart(){
 //		int tc = 100; //100个分批刷新
@@ -47,9 +49,10 @@ public class Heart extends TimerTask {
 		}
 		  
 		//Iterator<String> it = Engine.getInstance().getChannels().keySet().iterator();
+		int delay = 0;
 		while(it.hasNext()){
 			String account = (String)it.next();
-			float itv = 1.0f;
+			float itv = 1.5f;
 //			if(Engine.getInstance().getAcccounts().get(account).get("login")==null){ //若是未登录，则缩短判断时间
 //				itv = 1.0f;
 //			}
@@ -71,7 +74,8 @@ public class Heart extends TimerTask {
 				Engine.getInstance().addTask((new Task(Task.TYPE_0825, account)));
 			}else{
 				if(Engine.getInstance().getAcccounts().get(account).get("login")!=null){//已经登录的才发送心跳包
-					Engine.getInstance().addTask((new Beater(account)));
+					//Engine.getInstance().addTask((new Beater(account)));
+					timer.schedule(new Beater(account), (delay++%20)*1000);
 				}
 			}
 //			if(Engine.getInstance().getAcccounts().get(account).get("login")!=null){//已经登录的才发送心跳包
@@ -119,7 +123,7 @@ public class Heart extends TimerTask {
 	
 }
 
-class Beater implements Runnable{
+class Beater extends TimerTask{
 	private String account;	
 //	private int id;
 	
