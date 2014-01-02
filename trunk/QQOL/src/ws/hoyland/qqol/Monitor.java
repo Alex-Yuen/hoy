@@ -1,5 +1,6 @@
 package ws.hoyland.qqol;
 
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
 import java.nio.channels.SelectionKey;
@@ -134,6 +135,11 @@ class Receiver implements Runnable{
 					//System.out.println(Converts.bytesToHexString(details.get("key0825")));
 					decrypt = crypter.decrypt(content, details.get("key0825"));
 					details.put("ips", Util.slice(decrypt, 95, 4));
+					try {
+						Engine.getInstance().getChannels().get(account).close();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
 					synchronized(Engine.getInstance().getChannels()) {
 						Engine.getInstance().getChannels().remove(account);
 					}
@@ -185,13 +191,22 @@ class Receiver implements Runnable{
 					//System.out.println(new String(Util.slice(ts, 15, ts.length-15), "utf-8"));
 					info(new String(Util.slice(ts, 15, ts.length-15), "utf-8"));
 					Engine.getInstance().getChannels().get(account).close(); //关闭
+					try {
+						Engine.getInstance().getChannels().get(account).close();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
 					synchronized(Engine.getInstance().getChannels()) {
 						Engine.getInstance().getChannels().remove(account);
 					}
 					next();
 				}else if(buffer.length==255){
 					info("需要验证密保");
-					Engine.getInstance().getChannels().get(account).close();
+					try {
+						Engine.getInstance().getChannels().get(account).close();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
 					synchronized(Engine.getInstance().getChannels()) {
 						Engine.getInstance().getChannels().remove(account);
 					}
@@ -289,6 +304,11 @@ class Receiver implements Runnable{
 						
 						//重新执行任务
 						//details.clear();
+						try {
+							Engine.getInstance().getChannels().get(account).close();
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
 						synchronized(Engine.getInstance().getChannels()) {
 							Engine.getInstance().getChannels().remove(account);
 						}
@@ -389,6 +409,11 @@ class Receiver implements Runnable{
 						tf();
 						task = new Task(Task.TYPE_0017, account); 									
 						Engine.getInstance().addTask(task);
+						try {
+							Engine.getInstance().getChannels().get(account).close();
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
 						synchronized(Engine.getInstance().getChannels()) {
 							Engine.getInstance().getChannels().remove(account);
 						}
