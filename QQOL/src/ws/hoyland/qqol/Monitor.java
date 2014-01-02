@@ -134,10 +134,17 @@ class Receiver implements Runnable{
 					content = Util.slice(buffer, 14, buffer.length-15);//120
 					//System.out.println(Converts.bytesToHexString(details.get("key0825")));
 					decrypt = crypter.decrypt(content, details.get("key0825"));
+					if(decrypt==null){
+						System.err.println(account);
+						System.err.println("decrypt is null:"+buffer.length);
+						System.err.println(Converts.bytesToHexString(buffer));
+						System.err.println(Converts.bytesToHexString(details.get("key0825")));
+					}
 					details.put("ips", Util.slice(decrypt, 95, 4));
 					try {
 						Engine.getInstance().getChannels().get(account).close();
 					} catch (IOException e) {
+						System.err.println("t1:"+Engine.getInstance().getChannels().get(account));
 						e.printStackTrace();
 					}
 					synchronized(Engine.getInstance().getChannels()) {
@@ -218,7 +225,7 @@ class Receiver implements Runnable{
 					info("验证身份成功");
 					content = Util.slice(buffer, 14, buffer.length-15);
 					decrypt = crypter.decrypt(content, details.get("key0836"));
-					if(decrypt==null){//839?
+					if(decrypt==null){//839?//703
 						System.err.println(account);
 						System.err.println("decrypt is null:"+buffer.length);
 						System.err.println(Converts.bytesToHexString(buffer));
@@ -307,6 +314,7 @@ class Receiver implements Runnable{
 						try {
 							Engine.getInstance().getChannels().get(account).close();
 						} catch (IOException e) {
+							System.err.println("t2:"+Engine.getInstance().getChannels().get(account));
 							e.printStackTrace();
 						}
 						synchronized(Engine.getInstance().getChannels()) {

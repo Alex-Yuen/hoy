@@ -54,7 +54,7 @@ public class Engine extends Observable {
 	private Configuration configuration = Configuration.getInstance();
 	private Queue<String> queue = null;
 	
-	private static int CORE_COUNT = 200;
+	private static int CORE_COUNT = 400;
 //	private int recc = 0;//reconnect count
 //	private int frecc = 0;//finished
 //	private String cip = null; //current ip
