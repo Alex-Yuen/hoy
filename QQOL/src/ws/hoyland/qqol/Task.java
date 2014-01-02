@@ -100,6 +100,7 @@ public class Task implements Runnable {
 		switch (type) {
 		case TYPE_0825:
 			info("正在登录");
+			infoact();
 			try {
 				byte[] serverPBK = new byte[] { 0x04, (byte) 0x92, (byte) 0x8D,
 						(byte) 0x88, 0x50, 0x67, 0x30, (byte) 0x88,
@@ -1058,6 +1059,20 @@ public class Task implements Runnable {
 		String tm = Util.format(new Date());
 		
 		System.err.println("["+this.account+"]"+info+"("+tm+")");
+		Engine.getInstance().fire(message);
+	}
+	
+	private void infoact(){
+		//DateFormat format = new java.text.SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+		details.put("lastatv", String.valueOf(System.currentTimeMillis()).getBytes());//设置最后活动时间
+		String tm = Util.format(new Date());
+		
+		EngineMessage message = new EngineMessage();
+		message.setTid(Integer.parseInt(new String(details.get("id"))));
+		message.setType(EngineMessageType.IM_INFOACT);
+		message.setData(tm);
+		
+		//System.err.println("["+this.account+"]ACT("+tm+")");
 		Engine.getInstance().fire(message);
 	}
 }

@@ -1,5 +1,6 @@
 package ws.hoyland.qqol;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.TimerTask;
@@ -48,12 +49,21 @@ public class Heart extends TimerTask {
 		//Iterator<String> it = Engine.getInstance().getChannels().keySet().iterator();
 		while(it.hasNext()){
 			String account = (String)it.next();
-			if(current-Long.parseLong(new String(Engine.getInstance().getAcccounts().get(account).get("lastatv")))>=1000*60*1.5){//重新登录
+			float itv = 1.5f;
+			if(Engine.getInstance().getAcccounts().get(account).get("login")==null){ //若是未登录，则缩短判断时间
+				itv = 0.2f;
+			}
+			if((current-Long.parseLong(new String(Engine.getInstance().getAcccounts().get(account).get("lastatv")))>=1000*60*itv)){//重新登录
 				//it.remove();
 				//1.5 分钟
 				tf(account);
 				info(account, "超时, 重新登录");
 				synchronized(Engine.getInstance().getChannels()) {
+					try {
+						Engine.getInstance().getChannels().get(account).close();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
 					Engine.getInstance().getChannels().remove(account);
 				}
 				Engine.getInstance().getAcccounts().get(account).remove("login");
@@ -66,6 +76,11 @@ public class Heart extends TimerTask {
 //			if(Engine.getInstance().getAcccounts().get(account).get("login")!=null){//已经登录的才发送心跳包
 //				if(current-Long.parseLong(new String(Engine.getInstance().getAcccounts().get(account).get("lastatv")))>=1000*60*2){//重新登录
 //					//it.remove();
+//						try {
+//							Engine.getInstance().getChannels().get(account).close();
+//						} catch (IOException e) {
+//							e.printStackTrace();
+//						}
 //					synchronized(Engine.getInstance().getChannels()) {
 //						Engine.getInstance().getChannels().remove(account);
 //					}
@@ -133,6 +148,11 @@ class Beater implements Runnable{
 			Engine.getInstance().addTask((new Task(Task.TYPE_0062, account)));
 			
 			tf();
+			try {
+						Engine.getInstance().getChannels().get(account).close();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
 			synchronized(Engine.getInstance().getChannels()) {
 				Engine.getInstance().getChannels().remove(account);
 			}
