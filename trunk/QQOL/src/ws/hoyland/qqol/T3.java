@@ -15,10 +15,12 @@ public class T3 {
 		
 		Random rnd = new Random();
 		
-		for(int i=0;i<20;i++){
-			System.out.println(Integer.toHexString( (short)(rnd.nextInt(0xFFFF)&0xFFFF)));
-			//rnd.nex
-		}
+//		for(int i=0;i<20;i++){
+//			System.out.println(Integer.toHexString( (short)(rnd.nextInt(0xFFFF)&0xFFFF)));
+//			//rnd.nex
+//		}
+		
+		System.out.println(Math.pow(2, 5));
 	}
 
 }

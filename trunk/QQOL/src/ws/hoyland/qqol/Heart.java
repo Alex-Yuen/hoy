@@ -49,10 +49,10 @@ public class Heart extends TimerTask {
 		//Iterator<String> it = Engine.getInstance().getChannels().keySet().iterator();
 		while(it.hasNext()){
 			String account = (String)it.next();
-			float itv = 1.5f;
-			if(Engine.getInstance().getAcccounts().get(account).get("login")==null){ //若是未登录，则缩短判断时间
-				itv = 0.2f;
-			}
+			float itv = 1.0f;
+//			if(Engine.getInstance().getAcccounts().get(account).get("login")==null){ //若是未登录，则缩短判断时间
+//				itv = 1.0f;
+//			}
 			if((current-Long.parseLong(new String(Engine.getInstance().getAcccounts().get(account).get("lastatv")))>=1000*60*itv)){//重新登录
 				//it.remove();
 				//1.5 分钟
@@ -61,6 +61,7 @@ public class Heart extends TimerTask {
 				synchronized(Engine.getInstance().getChannels()) {
 					try {
 						Engine.getInstance().getChannels().get(account).close();
+						info(account, "channel close");
 					} catch (IOException e) {
 						e.printStackTrace();
 					}
@@ -134,7 +135,7 @@ class Beater implements Runnable{
 		Engine.getInstance().getAcccounts().get(account).remove("heart");
 		while(Engine.getInstance().getAcccounts().get(account).get("heart")==null&&x<5){
 			x++;
-			itv += 2^x;
+			itv += Math.pow(2, x);
 			Engine.getInstance().addTask((new Task(Task.TYPE_0058, account)));
 			try{
 				Thread.sleep(1000*itv);
