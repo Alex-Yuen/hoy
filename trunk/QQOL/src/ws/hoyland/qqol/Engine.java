@@ -815,9 +815,11 @@ public class Engine extends Observable {
 		if(timer!=null){
 			timer.cancel();
 		}
-		for(String account : channels.keySet()){
-			if(accounts.get(account).get("login")!=null){//已经登录的，发送离线消息
-				addTask((new Task(Task.TYPE_0062, account)));
+		if(channels!=null){
+			for(String account : channels.keySet()){
+				if(accounts.get(account).get("login")!=null){//已经登录的，发送离线消息
+					addTask((new Task(Task.TYPE_0062, account)));
+				}
 			}
 		}
 						
