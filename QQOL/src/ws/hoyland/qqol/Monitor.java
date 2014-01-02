@@ -203,11 +203,12 @@ class Receiver implements Runnable{
 					info("验证身份成功");
 					content = Util.slice(buffer, 14, buffer.length-15);
 					decrypt = crypter.decrypt(content, details.get("key0836"));
-					if(decrypt==null){
+					if(decrypt==null){//839?
 						System.err.println(account);
 						System.err.println("decrypt is null:"+buffer.length);
 						System.err.println(Converts.bytesToHexString(buffer));
 						System.err.println(Converts.bytesToHexString(details.get("key0836")));
+						System.err.println(Converts.bytesToHexString(details.get("key0836x")));
 					}
 					//System.out.println(Converts.bytesToHexString(decrypt));
 					//需解释出某些值供 0828使用
@@ -231,8 +232,9 @@ class Receiver implements Runnable{
 					for(int i=0;i<nicklen;i++){
 						nick[i] = decrypt[nickidx+1+i];
 					}
-					//System.out.println("Nick:"+new String(nick, "utf-8"));
-					setNick(new String(nick));
+					//System.err.println(nickidx);
+					//System.err.println("Nick:"+new String(nick, "utf-8"));
+					setNick(new String(nick, "utf-8"));
 					
 					details.put("key0828recv", Util.slice(decrypt, rbof0836.indexOf("0000003C0002")/2+6, 0x10));
 					details.put("logintime", Util.slice(decrypt, rbof0836.indexOf("00880004")/2+4, 4));
@@ -406,7 +408,9 @@ class Receiver implements Runnable{
 					}					
 				}				
 			}else if(header[0]==(byte)0x00&&header[1]==(byte)0x58){
-				Engine.getInstance().getAcccounts().get(account).put("heart", "T".getBytes());
+				if(details.get("login")!=null){//已经登录情况下才设置
+					details.put("heart", "T".getBytes());
+				}
 			}
 		}catch(Exception e){
 			e.printStackTrace();

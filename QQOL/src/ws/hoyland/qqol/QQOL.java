@@ -331,9 +331,10 @@ public class QQOL implements Observer{
 					sb.append(tis[i].getText(0)+"----"+tis[i].getText(1)+"----"+tis[i].getText(2)+"----"+tis[i].getText(3)+"\r\n");					
 					//System.out.println("OK");
 				}
-
+				clipBoard.clearContents();
 				clipBoard.setContents(new String[]{sb.toString()}, new Transfer[]{textTransfer});
-				clipBoard.dispose();
+				//clipBoard.clearContents();
+				//clipBoard.dispose();
 			}
 		});
 		mntmc_1.setText("复制(&C)");
