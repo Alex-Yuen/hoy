@@ -48,8 +48,11 @@ public class Heart extends TimerTask {
 		//Iterator<String> it = Engine.getInstance().getChannels().keySet().iterator();
 		while(it.hasNext()){
 			String account = (String)it.next();
-			if(current-Long.parseLong(new String(Engine.getInstance().getAcccounts().get(account).get("lastatv")))>=1000*60*2){//重新登录
+			if(current-Long.parseLong(new String(Engine.getInstance().getAcccounts().get(account).get("lastatv")))>=1000*60*1.5){//重新登录
 				//it.remove();
+				//1.5 分钟
+				tf(account);
+				info(account, "超时, 重新登录");
 				synchronized(Engine.getInstance().getChannels()) {
 					Engine.getInstance().getChannels().remove(account);
 				}
@@ -74,15 +77,39 @@ public class Heart extends TimerTask {
 //			}
 		}
 	}
+	
+	private void tf(String account) {//task finish
+		int id = Integer.parseInt(new String(Engine.getInstance().getAcccounts().get(account).get("id")));
+		EngineMessage message = new EngineMessage();
+		message.setTid(id);
+		message.setType(EngineMessageType.IM_TF);
+		String tm = Util.format(new Date());		
+		System.err.println("["+account+"]"+"TF任务完成"+"("+tm+")");
+		Engine.getInstance().fire(message);		
+	}
+	
+	private void info(String account, String info){
+		int id = Integer.parseInt(new String(Engine.getInstance().getAcccounts().get(account).get("id")));
+		
+		EngineMessage message = new EngineMessage();
+		message.setTid(id);
+		message.setType(EngineMessageType.IM_INFO);
+		message.setData(info);
+		
+		String tm = Util.format(new Date());		
+		System.err.println("["+account+"]"+info+"("+tm+")");
+		Engine.getInstance().fire(message);
+	}
+	
 }
 
 class Beater implements Runnable{
 	private String account;	
-	private int id;
+//	private int id;
 	
 	public Beater(String account){
 		this.account = account;
-		this.id = Integer.parseInt(new String(Engine.getInstance().getAcccounts().get(account).get("id")));
+//		this.id = Integer.parseInt(new String(Engine.getInstance().getAcccounts().get(account).get("id")));
 	}
 
 	@Override
@@ -113,22 +140,4 @@ class Beater implements Runnable{
 			Engine.getInstance().addTask((new Task(Task.TYPE_0825, account)));
 		}**/
 	}
-	
-	private void tf() {//task finish
-		EngineMessage message = new EngineMessage();
-		message.setTid(this.id);
-		message.setType(EngineMessageType.IM_TF);
-		
-		Engine.getInstance().fire(message);		
-	}
-	
-	private void info(String info){
-		EngineMessage message = new EngineMessage();
-		message.setTid(this.id);
-		message.setType(EngineMessageType.IM_INFO);
-		message.setData(info);
-		
-		Engine.getInstance().fire(message);
-	}
-	
 }
