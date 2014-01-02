@@ -121,7 +121,7 @@ class Receiver implements Runnable{
 			this.details = Engine.getInstance().getAcccounts().get(account);
 			this.id = Integer.parseInt(new String(details.get("id")));
 
-			System.err.println("\t\t<-["+account+"]"+Converts.bytesToHexString(header));
+			System.err.println("\t\t<-["+account+"]("+Util.format(new Date())+")"+Converts.bytesToHexString(header));
 			//最后活动时间
 			infoact();
 			
