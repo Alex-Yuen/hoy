@@ -3,8 +3,13 @@ package ws.hoyland.qqol;
 import java.io.IOException;
 import java.util.Date;
 import java.util.Iterator;
-import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.RejectedExecutionHandler;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.ThreadPoolExecutor.AbortPolicy;
+import java.util.concurrent.TimeUnit;
 
 import ws.hoyland.util.CopiedIterator;
 import ws.hoyland.util.EngineMessage;
@@ -14,31 +19,34 @@ import ws.hoyland.util.EngineMessage;
  * 每分钟运行一次
  */
 public class Heart extends TimerTask {
-//	private ThreadPoolExecutor pool = null;
-	private Timer timer = new Timer();
+	private ThreadPoolExecutor pool = null;
+//	private Timer timer = new Timer();
 	
 	public Heart(){
-//		int tc = 100; //100个分批刷新
-//		int corePoolSize = tc;// minPoolSize
-//		int maxPoolSize = tc;
-//		int maxTaskSize = (1024 + 512) * 100 * 40;// 缓冲队列
-//		long keepAliveTime = 0L;
-//		TimeUnit unit = TimeUnit.MILLISECONDS;
-//
-//		BlockingQueue<Runnable> workQueue = new ArrayBlockingQueue<Runnable>(
-//				maxTaskSize);
-//		RejectedExecutionHandler handler = new AbortPolicy();// 饱和处理策略
-//		
-//		// 创建线程池
-//		pool = new ThreadPoolExecutor(corePoolSize,
-//				maxPoolSize, keepAliveTime, unit,
-//				workQueue, handler);
+		try{
+			int tc = 2; //100个分批刷新
+			int corePoolSize = tc;// minPoolSize
+			int maxPoolSize = tc;
+			int maxTaskSize = (1024 + 512) * 100 * 40;// 缓冲队列
+			long keepAliveTime = 0L;
+			TimeUnit unit = TimeUnit.MILLISECONDS;
+	
+			BlockingQueue<Runnable> workQueue = new ArrayBlockingQueue<Runnable>(
+					maxTaskSize);
+			RejectedExecutionHandler handler = new AbortPolicy();// 饱和处理策略
+			
+			// 创建线程池
+			pool = new ThreadPoolExecutor(corePoolSize,
+					maxPoolSize, keepAliveTime, unit,
+					workQueue, handler);
+		}catch(Exception e){
+			e.printStackTrace();
+		}
 	}
 	
 	@Override
 	public void run() {
-		// TODO Auto-generated method stub
-		System.err.println("Heart beat["+Util.format(new Date())+"]:"+Engine.getInstance().getActiveCount()+"/"+Engine.getInstance().getQueueCount());
+		System.err.println("Heart beat["+Util.format(new Date())+"]:"+Engine.getInstance().getActiveCount()+"/"+Engine.getInstance().getQueueCount()+"----"+pool.getActiveCount()+"/"+pool.getQueue().size());
 		System.gc();
 		//读取SocketLand中的Clients
 		//每个发送一个心跳包
@@ -49,7 +57,8 @@ public class Heart extends TimerTask {
 		}
 		  
 		//Iterator<String> it = Engine.getInstance().getChannels().keySet().iterator();
-		int delay = 0;
+//		int idx = 0;
+//		float delay = 60000f/Engine.getInstance().getChannels().size();
 		while(it.hasNext()){
 			String account = (String)it.next();
 			float itv = 1.5f;
@@ -70,18 +79,21 @@ public class Heart extends TimerTask {
 					}
 					Engine.getInstance().getChannels().remove(account);
 				}
-				if(Engine.getInstance().getAcccounts().get(account).get("login")!=null){
-					//已经登录的，登录完后不再next
-					Engine.getInstance().getAcccounts().get(account).put("ntd", "T".getBytes());
-				}
+//				if(Engine.getInstance().getAcccounts().get(account).get("login")!=null){
+//					//已经登录的，登录完后不再next
+//					Engine.getInstance().getAcccounts().get(account).put("landt", "T".getBytes());
+//				}
 				Engine.getInstance().getAcccounts().get(account).remove("login");
 				Engine.getInstance().addTask((new Task(Task.TYPE_0825, account)));
 			}else{
 				if(Engine.getInstance().getAcccounts().get(account).get("login")!=null){//已经登录的才发送心跳包
-					//Engine.getInstance().addTask((new Beater(account)));
-					timer.schedule(new Beater(account), (delay++%20)*1000);
+					//Engine.getInstance().addTask((new Beater(account, (int)delay*idx)));
+					pool.execute(new Beater(account));
+					//不加入pool，避免pool过于阻塞
+					//timer.schedule(new Beater(account), (delay++%20)*1000);
 				}
 			}
+//			idx++;
 //			if(Engine.getInstance().getAcccounts().get(account).get("login")!=null){//已经登录的才发送心跳包
 //				if(current-Long.parseLong(new String(Engine.getInstance().getAcccounts().get(account).get("lastatv")))>=1000*60*2){//重新登录
 //					//it.remove();
@@ -127,7 +139,7 @@ public class Heart extends TimerTask {
 	
 }
 
-class Beater extends TimerTask{
+class Beater implements Runnable{
 	private String account;	
 //	private int id;
 	
@@ -138,6 +150,11 @@ class Beater extends TimerTask{
 
 	@Override
 	public void run() {
+//		try{
+//			Thread.sleep(delay);
+//		}catch(Exception e){
+//			e.printStackTrace();
+//		}
 		byte x = 0;
 		byte itv = 0;
 		Engine.getInstance().getAcccounts().get(account).remove("heart");

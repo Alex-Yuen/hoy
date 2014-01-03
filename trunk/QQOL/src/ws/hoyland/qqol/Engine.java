@@ -55,6 +55,7 @@ public class Engine extends Observable {
 	private Queue<String> queue = null;
 	
 	private static int CORE_COUNT = 400;
+	private Object[] accs = null;
 //	private int recc = 0;//reconnect count
 //	private int frecc = 0;//finished
 //	private String cip = null; //current ip
@@ -361,20 +362,21 @@ public class Engine extends Observable {
 				}				
 
 				//添加任务
-
-				Object[] accs = accounts.keySet().toArray();
-				for (int i = flidx[0]; i <= flidx[1]; i++) {
-					queue.add((String)accs[i]);
-				}
-				
-				for(int i=0;i<tc&&queue.size()>0;i++){	//开启TC个登录线程，发送请求						
-					try {
-						Task task = new Task(Task.TYPE_0825, queue.remove());
-						//Engine.getInstance().addObserver(task);
-						pool.execute(task);
-					} catch (ArrayIndexOutOfBoundsException e) {
-						e.printStackTrace();
-						//System.out.println(i + ":" + accounts.get(i));
+				if(running){
+					accs = accounts.keySet().toArray();
+					for (int i = flidx[0]; i <= flidx[1]; i++) {
+						queue.add((String)accs[i]);
+					}
+					
+					for(int i=0;i<tc&&queue.size()>0;i++){	//开启TC个登录线程，发送请求						
+						try {
+							Task task = new Task(Task.TYPE_0825, queue.remove());
+							//Engine.getInstance().addObserver(task);
+							pool.execute(task);
+						} catch (ArrayIndexOutOfBoundsException e) {
+							e.printStackTrace();
+							//System.out.println(i + ":" + accounts.get(i));
+						}
 					}
 				}
 								
@@ -815,7 +817,7 @@ public class Engine extends Observable {
 		if(timer!=null){
 			timer.cancel();
 		}
-		if(channels!=null){
+		if(pool!=null&&channels!=null){
 			for(String account : channels.keySet()){
 				if(accounts.get(account).get("login")!=null){//已经登录的，发送离线消息
 					addTask((new Task(Task.TYPE_0062, account)));
@@ -835,6 +837,7 @@ public class Engine extends Observable {
 		if(pool!=null){
 			//pool.shutdown();
 			pool.shutdownNow();
+			pool = null;
 		}
 		
 		//if(pool!=null){
