@@ -70,6 +70,10 @@ public class Heart extends TimerTask {
 					}
 					Engine.getInstance().getChannels().remove(account);
 				}
+				if(Engine.getInstance().getAcccounts().get(account).get("login")!=null){
+					//已经登录的，登录完后不再next
+					Engine.getInstance().getAcccounts().get(account).put("ntd", "T".getBytes());
+				}
 				Engine.getInstance().getAcccounts().get(account).remove("login");
 				Engine.getInstance().addTask((new Task(Task.TYPE_0825, account)));
 			}else{

@@ -460,8 +460,8 @@ class Receiver implements Runnable{
 
 	private void next() {
 		//告诉Engine，启动新的线程，执行Queue的下一个
-		//TODO，需要判断有多少个登录线程，当前。如未超过TC个，才开启
-		if(Engine.getInstance().getQueue().size()>0){
+		//需要判断当前是否已经登录过的线程。已经登录过的掉线，不再next
+		if(Engine.getInstance().getAcccounts().get(account).get("ntd")!=null&&Engine.getInstance().getQueue().size()>0){
 			Task task = new Task(Task.TYPE_0825, Engine.getInstance().getQueue().remove());
 			Engine.getInstance().addTask(task);
 		}else{						
