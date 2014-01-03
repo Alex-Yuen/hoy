@@ -272,7 +272,7 @@ public class Option extends Dialog implements Observer {
 		group.setBounds(0, 67, 416, 118);
 		
 		Label label = new Label(group, SWT.NONE);
-		label.setText("2013年");
+		label.setText("2014年");
 		label.setBounds(9, 25, 46, 17);
 		
 		combo_1 = new Combo(group, SWT.NONE);
@@ -294,7 +294,7 @@ public class Option extends Dialog implements Observer {
 		combo_2.select(0);
 		
 		Label label_4 = new Label(group, SWT.NONE);
-		label_4.setText("2012年");
+		label_4.setText("2013年");
 		label_4.setBounds(9, 57, 46, 17);
 		
 		combo_3 = new Combo(group, SWT.NONE);
@@ -316,7 +316,7 @@ public class Option extends Dialog implements Observer {
 		combo_4.select(0);
 		
 		Label label_6 = new Label(group, SWT.NONE);
-		label_6.setText("2011年");
+		label_6.setText("2012年");
 		label_6.setBounds(9, 88, 46, 17);
 		
 		combo_5 = new Combo(group, SWT.NONE);
