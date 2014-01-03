@@ -696,22 +696,115 @@ public class Task implements Runnable, Observer {
 				post.setHeader("Referer",
 						"http://aq.qq.com/cn2/appeal/appeal_contact_confirm");
 										
+				/**
+				 	txtUin:	1079066920
+					txtRegProvince:	省份
+					txtRegPayAccount:	
+					txtRegMobile:	
+					txtRegCountry:	国家
+					txtRegCity:	城市
+					txtOldPW6:	
+					txtOldPW5:	
+					txtOldPW4:	
+					txtOldPW3:	
+					txtOldPW2:	
+					txtOldPW1:	
+					txtLoginLocProvince4:	省份
+					txtLoginLocProvince3:	省份
+					txtLoginLocProvince2:	省份
+					txtLoginLocProvince1:	省份
+					txtLoginLocCountry4:	国家
+					txtLoginLocCountry3:	国家
+					txtLoginLocCountry2:	国家
+					txtLoginLocCountry1:	国家
+					txtLoginLocCity4:	城市
+					txtLoginLocCity3:	城市
+					txtLoginLocCity2:	城市
+					txtLoginLocCity1:	城市
+					txtHRegType:	0
+					txtHRegTimeYear:	
+					txtHRegTimeMonth:	
+					txtHRegPayType:	0
+					txtHRegPayAccount:	
+					txtHRegMobile:	
+					txtHRegLocationProvince:	-1
+					txtHRegLocationCountry:	0
+					txtHRegLocationCity:	-1
+					txtHLoginLocYear4:	
+					txtHLoginLocYear3:	
+					txtHLoginLocYear2:	
+					txtHLoginLocYear1:	
+					txtHLoginLocProvince4:	-1
+					txtHLoginLocProvince3:	0
+					txtHLoginLocProvince2:	32
+					txtHLoginLocProvince1:	12
+					txtHLoginLocCountry4:	0
+					txtHLoginLocCountry3:	0
+					txtHLoginLocCountry2:	0
+					txtHLoginLocCountry1:	0
+					txtHLoginLocCity4:	-1
+					txtHLoginLocCity3:	0
+					txtHLoginLocCity2:	0
+					txtHLoginLocCity1:	9
+					txtEmailVerifyCode:	14567217
+					txtEmail:	hoyzhang@163.com
+					txtBackToInfo:	1
+					txtBackFromFd:	1
+					pwdOldPW6:	
+					pwdOldPW5:	
+					pwdOldPW4:	
+					pwdOldPW3:	
+					pwdOldPW2:	
+					pwdOldPW1:	
+					pwdHOldPW6:	
+					pwdHOldPW5:	
+					pwdHOldPW4:	
+					pwdHOldPW3:	
+					pwdHOldPW2:	
+					pwdHOldPW1:	
+					ddlRegYear:	
+					ddlRegType:	0
+					ddlRegProvince:	-1
+					ddlRegPayMode:	0
+					ddlRegMonth:	
+					ddlRegCountry:	0
+					ddlRegCity:	-1
+					ddlLoginLocProvince4:	-1
+					ddlLoginLocProvince3:	0
+					ddlLoginLocProvince2:	32
+					ddlLoginLocProvince1:	12
+					ddlLoginLocCountry4:	0
+					ddlLoginLocCountry3:	0
+					ddlLoginLocCountry2:	0
+					ddlLoginLocCountry1:	0
+					ddlLoginLocCity4:	-1
+					ddlLoginLocCity3:	0
+					ddlLoginLocCity2:	0
+					ddlLoginLocCity1:	9
+					ddlLocYear4:	
+				 * **/
 				nvps = new ArrayList<NameValuePair>();
 				nvps.add(new BasicNameValuePair("txtBackToInfo", "1"));
 				nvps.add(new BasicNameValuePair("txtEmail", this.mail));
 				nvps.add(new BasicNameValuePair("txtUin", this.account));
 				nvps.add(new BasicNameValuePair("txtBackFromFd", ""));
 				nvps.add(new BasicNameValuePair("txtEmailVerifyCode", this.rc));
+				nvps.add(new BasicNameValuePair("pwdHOldPW1", ""));
 				nvps.add(new BasicNameValuePair("txtOldPW1", ""));
 				nvps.add(new BasicNameValuePair("pwdOldPW1", this.password));
+				nvps.add(new BasicNameValuePair("pwdHOldPW2", ""));
 				nvps.add(new BasicNameValuePair("txtOldPW2", ""));
 				nvps.add(new BasicNameValuePair("pwdOldPW2", (this.pwds.length>1&&!standard)?this.pwds[1]:""));
+				nvps.add(new BasicNameValuePair("pwdHOldPW3", ""));
 				nvps.add(new BasicNameValuePair("txtOldPW3", ""));
 				nvps.add(new BasicNameValuePair("pwdOldPW3", (this.pwds.length>2&&!standard)?this.pwds[2]:""));
+				nvps.add(new BasicNameValuePair("pwdHOldPW4", ""));
 				nvps.add(new BasicNameValuePair("txtOldPW4", ""));
 				nvps.add(new BasicNameValuePair("pwdOldPW4", (this.pwds.length>3&&!standard)?this.pwds[3]:""));
+				nvps.add(new BasicNameValuePair("pwdHOldPW5", ""));
 				nvps.add(new BasicNameValuePair("txtOldPW5", ""));
 				nvps.add(new BasicNameValuePair("pwdOldPW5", (this.pwds.length>4&&!standard)?this.pwds[4]:""));
+				nvps.add(new BasicNameValuePair("pwdHOldPW6", ""));
 				nvps.add(new BasicNameValuePair("txtOldPW6", ""));
 				nvps.add(new BasicNameValuePair("pwdOldPW6", (this.pwds.length>5&&!standard)?this.pwds[5]:""));
 				
@@ -721,6 +814,9 @@ public class Task implements Runnable, Observer {
 				nvps.add(new BasicNameValuePair("txtLoginLocCountry1", "国家"));
 				nvps.add(new BasicNameValuePair("txtLoginLocProvince1", "省份"));
 				nvps.add(new BasicNameValuePair("txtLoginLocCity1", "城市"));
+				nvps.add(new BasicNameValuePair("txtHLoginLocCountry1", "0"));
+				nvps.add(new BasicNameValuePair("txtHLoginLocProvince1", String.valueOf(Integer.parseInt(configuration.getProperty("P1"))-1)));
+				nvps.add(new BasicNameValuePair("txtHLoginLocCity1", Integer.parseInt(configuration.getProperty("C1"))==0?"-1":configuration.getProperty("C1")));
 				
 				nvps.add(new BasicNameValuePair("ddlLoginLocCountry2", "0"));
 				nvps.add(new BasicNameValuePair("ddlLoginLocProvince2", String.valueOf(Integer.parseInt(configuration.getProperty("P2"))-1)));
@@ -728,15 +824,24 @@ public class Task implements Runnable, Observer {
 				nvps.add(new BasicNameValuePair("txtLoginLocCountry2", "国家"));
 				nvps.add(new BasicNameValuePair("txtLoginLocProvince2", "省份"));
 				nvps.add(new BasicNameValuePair("txtLoginLocCity2", "城市"));
-				
+				nvps.add(new BasicNameValuePair("txtHLoginLocCountry2", "0"));
+				nvps.add(new BasicNameValuePair("txtHLoginLocProvince2", String.valueOf(Integer.parseInt(configuration.getProperty("P2"))-1)));
+				nvps.add(new BasicNameValuePair("txtHLoginLocCity2", Integer.parseInt(configuration.getProperty("C2"))==0?"-1":configuration.getProperty("C2")));
+			
 				nvps.add(new BasicNameValuePair("ddlLoginLocCountry3", "0"));
 				nvps.add(new BasicNameValuePair("ddlLoginLocProvince3", String.valueOf(Integer.parseInt(configuration.getProperty("P3"))-1)));
 				nvps.add(new BasicNameValuePair("ddlLoginLocCity3", Integer.parseInt(configuration.getProperty("C3"))==0?"-1":configuration.getProperty("C3")));
 				nvps.add(new BasicNameValuePair("txtLoginLocCountry3", "国家"));
 				nvps.add(new BasicNameValuePair("txtLoginLocProvince3", "省份"));
 				nvps.add(new BasicNameValuePair("txtLoginLocCity3", "城市"));
+				nvps.add(new BasicNameValuePair("txtHLoginLocCountry2", "0"));
+				nvps.add(new BasicNameValuePair("txtHLoginLocProvince3", String.valueOf(Integer.parseInt(configuration.getProperty("P3"))-1)));
+				nvps.add(new BasicNameValuePair("txtHLoginLocCity3", Integer.parseInt(configuration.getProperty("C3"))==0?"-1":configuration.getProperty("C3")));
 				
 				nvps.add(new BasicNameValuePair("ddlLocYear4", ""));
+				nvps.add(new BasicNameValuePair("txtHLoginLocCountry4", "0"));
+				nvps.add(new BasicNameValuePair("txtHLoginLocProvince4", "-1"));
+				nvps.add(new BasicNameValuePair("txtHLoginLocCity4", "-1"));
 				nvps.add(new BasicNameValuePair("ddlLoginLocCountry4", "0"));
 				nvps.add(new BasicNameValuePair("ddlLoginLocProvince4", "-1"));
 				nvps.add(new BasicNameValuePair("ddlLoginLocCity4", "-1"));
@@ -756,6 +861,21 @@ public class Task implements Runnable, Observer {
 				nvps.add(new BasicNameValuePair("txtRegMobile", ""));
 				nvps.add(new BasicNameValuePair("ddlRegPayMode", "0"));
 				nvps.add(new BasicNameValuePair("txtRegPayAccount", ""));
+				
+				nvps.add(new BasicNameValuePair("txtHLoginLocYear1", ""));
+				nvps.add(new BasicNameValuePair("txtHLoginLocYear2", ""));				
+				nvps.add(new BasicNameValuePair("txtHLoginLocYear3", ""));
+				nvps.add(new BasicNameValuePair("txtHLoginLocYear4", ""));
+				
+				nvps.add(new BasicNameValuePair("txtHRegType", "0"));
+				nvps.add(new BasicNameValuePair("txtHRegTimeYear", ""));				
+				nvps.add(new BasicNameValuePair("txtHRegTimeMonth", ""));
+				nvps.add(new BasicNameValuePair("txtHRegPayType", "0"));
+				nvps.add(new BasicNameValuePair("txtHRegPayAccount", ""));
+				nvps.add(new BasicNameValuePair("txtHRegMobile", ""));				
+				nvps.add(new BasicNameValuePair("txtHRegLocationProvince", "-1"));
+				nvps.add(new BasicNameValuePair("txtHRegLocationCountry", "0"));
+				nvps.add(new BasicNameValuePair("txtHRegLocationCity", "-1"));
 				
 				post.setEntity(new UrlEncodedFormEntity(nvps));
 
