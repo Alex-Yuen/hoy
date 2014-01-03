@@ -456,8 +456,8 @@ public class Task implements Runnable {
 			break;
 		case TYPE_00BA:
 			try{
-				String rsb = "0000";
-				byte[] resultByte = rsb.getBytes();
+				byte[] resultByte = null;
+				String rsb = null;
 				
 				if(details.get("dlvc")==null){ //识别验证码
 					ByteArrayOutputStream bsofpng = new ByteArrayOutputStream();
@@ -477,13 +477,18 @@ public class Task implements Runnable {
 //					info("识别验证码");
 					int codeID = 0;
 					if(Engine.getInstance().getCptType()==0){
+						rsb = "0000000000";
+						resultByte = rsb.getBytes();
 						codeID = YDM.INSTANCE.YDM_DecodeByBytes(by, by.length, 1004, resultByte);//result byte
 					}else{
+						rsb = "0000";
+						resultByte = rsb.getBytes();
 						codeID = DM.INSTANCE.uu_recognizeByCodeTypeAndBytesA(by,
 								by.length, 1, resultByte); // 调用识别函数,resultBtye为识别结果
 					}
 					//String result = new String(resultByte, "UTF-8").trim();					
 					//System.out.println("result:"+resultByte.length+":"+result);
+					resultByte = Util.pack(resultByte);
 					
 					details.remove("pngfirst");
 					details.remove("pngsecond");
