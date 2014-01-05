@@ -94,6 +94,10 @@ public class Task implements Runnable {
 		}
 	}
 	
+	public String getAccount(){
+		return this.account;
+	}
+	
 	@Override
 	public void run() {
 		// 发送UDP数据
