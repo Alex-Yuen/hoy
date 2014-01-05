@@ -36,16 +36,21 @@ public class Task implements Runnable {
 	public final static byte TYPE_0825 = 0x01;
 	public final static byte TYPE_0836 = 0x02;
 	public final static byte TYPE_00BA = 0x03;
-	public final static byte TYPE_ERR_VC = 0x04;
+	public final static byte TYPE_ERRV = 0x04;
 	public final static byte TYPE_0828 = 0x05;
 	public final static byte TYPE_00EC = 0x06;
 	public final static byte TYPE_005C = 0x07;
 	public final static byte TYPE_00CE = 0x08;
 	public final static byte TYPE_00CD = 0x09;
-	public final static byte TYPE_0017 = 0x10;
-	public final static byte TYPE_0062 = 0x11;
-	public final static byte TYPE_0058 = 0x12;
-
+	public final static byte TYPE_0017 = 0x0A;
+	public final static byte TYPE_0062 = 0x0B;
+	public final static byte TYPE_0058 = 0x0C;
+	public final static byte TYPE_00BF = 0x0D;
+	
+	private static String[] STS = new String[]{
+		"0825", "0836", "00BA", "ERRV", "0828", "00EC", "005C", "00CE", "00CD", "0017", "0062", "0058", "00BF"
+	};
+	
 	private byte type;
 	private String ip = "183.60.19.100";// 默认IP
 	private byte[] ips = new byte[] { (byte) 183, (byte) 60, (byte) 19,
@@ -64,9 +69,11 @@ public class Task implements Runnable {
 	private byte[] seq = null;
 	private byte[] encrypt = null;
 	private Map<String, byte[]> details = null;
+	private String st;//type string
 	
 	public Task(byte type, String account) {
 		this.type = type;
+		this.st = STS[type-1];
 		this.account = account;
 		
 		this.details = Engine.getInstance().getAcccounts().get(account);
@@ -96,6 +103,10 @@ public class Task implements Runnable {
 	
 	public String getAccount(){
 		return this.account;
+	}
+	
+	public String getST(){
+		return this.st;
 	}
 	
 	@Override
@@ -458,7 +469,7 @@ public class Task implements Runnable {
 				e.printStackTrace();
 			}
 			break;
-		case TYPE_00BA:
+		case TYPE_00BF:
 			try{
 				byte[] resultByte = null;
 				String rsb = null;
@@ -481,7 +492,7 @@ public class Task implements Runnable {
 //					info("识别验证码");
 					int codeID = 0;
 					if(Engine.getInstance().getCptType()==0){
-						rsb = "0000000000";
+						rsb = "0000";
 						resultByte = rsb.getBytes();
 						codeID = YDM.INSTANCE.YDM_DecodeByBytes(by, by.length, 1004, resultByte);//result byte
 					}else{
@@ -490,15 +501,25 @@ public class Task implements Runnable {
 						codeID = DM.INSTANCE.uu_recognizeByCodeTypeAndBytesA(by,
 								by.length, 1, resultByte); // 调用识别函数,resultBtye为识别结果
 					}
-					//String result = new String(resultByte, "UTF-8").trim();					
-					//System.out.println("result:"+resultByte.length+":"+result);
+//					String result = new String(resultByte, "UTF-8").trim();					
+//					System.out.println("result:"+resultByte.length+":"+result);
 					resultByte = Util.pack(resultByte);
 					
 					details.remove("pngfirst");
 					details.remove("pngsecond");
 					details.put("codeID", String.valueOf(codeID).getBytes());
+					details.put("resultByte", resultByte);
+					
+					synchronized(account){
+						account.notifyAll();
+					}
 				}
-				
+			}catch(Exception e){
+				e.printStackTrace();
+			}
+			return;
+		case TYPE_00BA:
+			try{
 				byte[] key00BA = Util.genKey(0x10);
 				
 				bsofplain = new ByteArrayOutputStream();
@@ -552,7 +573,7 @@ public class Task implements Runnable {
 //					byte[] ccode = new byte[]{
 //						0x79, 0x6F, 0x6F, 0x62 
 //					};
-					bsofplain.write(resultByte);							
+					bsofplain.write(details.get("resultByte"));							
 
 					bsofplain.write(new byte[]{
 							0x00, 0x38
@@ -591,7 +612,7 @@ public class Task implements Runnable {
 				e.printStackTrace();
 			}
 			break;
-		case TYPE_ERR_VC:
+		case TYPE_ERRV:
 			try {
 				//
 				int reportErrorResult = -1;

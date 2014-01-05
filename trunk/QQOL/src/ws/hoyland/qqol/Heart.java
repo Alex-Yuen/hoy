@@ -84,11 +84,13 @@ public class Heart extends TimerTask {
 //					Engine.getInstance().getAcccounts().get(account).put("landt", "T".getBytes());
 //				}
 				Engine.getInstance().getAcccounts().get(account).remove("login");
-				Engine.getInstance().addTask((new Task(Task.TYPE_0825, account)));
+				
+				//Engine.getInstance().addTask((new Task(Task.TYPE_0825, account)));
 			}else{
 				if(Engine.getInstance().getAcccounts().get(account).get("login")!=null){//已经登录的才发送心跳包
 					//Engine.getInstance().addTask((new Beater(account, (int)delay*idx)));
-					pool.execute(new Beater(account));
+					Engine.getInstance().send(new TaskSender(new Task(Task.TYPE_0058, account)));
+					//pool.execute(new Beater(account));
 					//不加入pool，避免pool过于阻塞
 					//timer.schedule(new Beater(account), (delay++%20)*1000);
 				}
@@ -139,51 +141,51 @@ public class Heart extends TimerTask {
 	
 }
 
-class Beater implements Runnable{
-	private String account;	
-//	private int id;
-	
-	public Beater(String account){
-		this.account = account;
-//		this.id = Integer.parseInt(new String(Engine.getInstance().getAcccounts().get(account).get("id")));
-	}
-
-	@Override
-	public void run() {
-//		try{
-//			Thread.sleep(delay);
-//		}catch(Exception e){
-//			e.printStackTrace();
+//class Beater implements Runnable{
+//	private String account;	
+////	private int id;
+//	
+//	public Beater(String account){
+//		this.account = account;
+////		this.id = Integer.parseInt(new String(Engine.getInstance().getAcccounts().get(account).get("id")));
+//	}
+//
+//	@Override
+//	public void run() {
+////		try{
+////			Thread.sleep(delay);
+////		}catch(Exception e){
+////			e.printStackTrace();
+////		}
+//		byte x = 0;
+//		byte itv = 0;
+//		Engine.getInstance().getAcccounts().get(account).remove("heart");
+//		while(Engine.getInstance().getAcccounts().get(account).get("heart")==null&&x<5){
+//			x++;
+//			itv += Math.pow(2, x);
+//			Engine.getInstance().addTask((new Task(Task.TYPE_0058, account)));
+//			try{
+//				Thread.sleep(1000*itv);
+//			}catch(Exception e){
+//				e.printStackTrace();
+//			}
 //		}
-		byte x = 0;
-		byte itv = 0;
-		Engine.getInstance().getAcccounts().get(account).remove("heart");
-		while(Engine.getInstance().getAcccounts().get(account).get("heart")==null&&x<5){
-			x++;
-			itv += Math.pow(2, x);
-			Engine.getInstance().addTask((new Task(Task.TYPE_0058, account)));
-			try{
-				Thread.sleep(1000*itv);
-			}catch(Exception e){
-				e.printStackTrace();
-			}
-		}
-		/** 暂不做处理
-		if(Engine.getInstance().getAcccounts().get(account).get("heart")==null){//还没反应，考虑断开线程，重新登录
-			info("离线");
-			Engine.getInstance().addTask((new Task(Task.TYPE_0062, account)));
-			
-			tf();
-			try {
-						Engine.getInstance().getChannels().get(account).close();
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-			synchronized(Engine.getInstance().getChannels()) {
-				Engine.getInstance().getChannels().remove(account);
-			}
-			Engine.getInstance().getAcccounts().get(account).remove("login");
-			Engine.getInstance().addTask((new Task(Task.TYPE_0825, account)));
-		}**/
-	}
-}
+//		/** 暂不做处理
+//		if(Engine.getInstance().getAcccounts().get(account).get("heart")==null){//还没反应，考虑断开线程，重新登录
+//			info("离线");
+//			Engine.getInstance().addTask((new Task(Task.TYPE_0062, account)));
+//			
+//			tf();
+//			try {
+//						Engine.getInstance().getChannels().get(account).close();
+//					} catch (IOException e) {
+//						e.printStackTrace();
+//					}
+//			synchronized(Engine.getInstance().getChannels()) {
+//				Engine.getInstance().getChannels().remove(account);
+//			}
+//			Engine.getInstance().getAcccounts().get(account).remove("login");
+//			Engine.getInstance().addTask((new Task(Task.TYPE_0825, account)));
+//		}**/
+//	}
+//}

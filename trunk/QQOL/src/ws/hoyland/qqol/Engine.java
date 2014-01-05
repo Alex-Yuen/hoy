@@ -49,12 +49,15 @@ public class Engine extends Observable {
 	private int cptType = 0;
 	private boolean running = false;
 	private ThreadPoolExecutor pool;
+	private ThreadPoolExecutor poolx; //二级pool
 	//private int mindex = 0;
 	//private int mcount = 0;
 	private Configuration configuration = Configuration.getInstance();
 	private Queue<String> queue = null;
 	
-	private static int CORE_COUNT = 400;
+	private static int CORE_COUNT = 100;
+	private static int CORE_COUNT_X = 400;
+	
 	private Object[] accs = null;
 //	private int recc = 0;//reconnect count
 //	private int frecc = 0;//finished
@@ -309,7 +312,7 @@ public class Engine extends Observable {
 					**/
 					int corePoolSize = CORE_COUNT;// 固定100个线程
 					int maxPoolSize = CORE_COUNT;
-					int maxTaskSize = (1024 + 512) * 100 * 40;// 缓冲队列
+					int maxTaskSize = (1024 + 512) * 100 * 10;// 缓冲队列
 					long keepAliveTime = 0L;
 					TimeUnit unit = TimeUnit.MILLISECONDS;
 
@@ -322,6 +325,14 @@ public class Engine extends Observable {
 							maxPoolSize, keepAliveTime, unit,
 							workQueue, handler);					
 					
+					corePoolSize = CORE_COUNT_X;
+					maxPoolSize = CORE_COUNT_X;
+					maxTaskSize = (1024 + 512) * 100 * 40;
+					workQueue = new ArrayBlockingQueue<Runnable>(
+							maxTaskSize);
+					poolx = new ThreadPoolExecutor(corePoolSize,
+							maxPoolSize, keepAliveTime, unit,
+							workQueue, handler);
 					/**
 					mindex = flidx[2]; //mfirst of SSZS
 					if(mindex==-1){
@@ -372,7 +383,7 @@ public class Engine extends Observable {
 						try {
 							Task task = new Task(Task.TYPE_0825, queue.remove());
 							//Engine.getInstance().addObserver(task);
-							pool.execute(task);
+							send(new TaskSender(task));
 						} catch (ArrayIndexOutOfBoundsException e) {
 							e.printStackTrace();
 							//System.out.println(i + ":" + accounts.get(i));
@@ -820,11 +831,20 @@ public class Engine extends Observable {
 		if(pool!=null&&channels!=null){
 			for(String account : channels.keySet()){
 				if(accounts.get(account).get("login")!=null){//已经登录的，发送离线消息
-					addTask((new Task(Task.TYPE_0062, account)));
+					//send(new TaskSender(new Task(Task.TYPE_0062, account)));
+					addTask(new Task(Task.TYPE_0062, account));
 				}
 			}
 		}
-						
+		
+		while(poolx!=null&&poolx.getActiveCount()!=0){
+			try{
+				Thread.sleep(1000);
+			}catch(Exception e){
+				//
+			}
+		}
+		
 		//等待所有运行线程执行完毕，关闭日志文件
 		while(pool!=null&&pool.getActiveCount()!=0){
 			try{
@@ -834,12 +854,17 @@ public class Engine extends Observable {
 			}
 		}
 		
+		if(poolx!=null){
+			//pool.shutdown();
+			poolx.shutdownNow();
+			poolx = null;
+		}
+		
 		if(pool!=null){
 			//pool.shutdown();
 			pool.shutdownNow();
 			pool = null;
 		}
-		
 		//if(pool!=null){
 			//写入未运行帐号日志
 		/**
@@ -1002,6 +1027,14 @@ public class Engine extends Observable {
 	public void addTask(Task task){
 		try{
 			pool.execute(task);
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+	}
+	
+	public void send(TaskSender sender){
+		try{
+			poolx.execute(sender);
 		}catch(Exception e){
 			e.printStackTrace();
 		}

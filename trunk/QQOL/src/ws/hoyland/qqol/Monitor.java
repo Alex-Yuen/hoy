@@ -125,6 +125,8 @@ class Receiver implements Runnable{
 			System.err.println("\t\t<-["+account+"]("+Util.format(new Date())+")"+Converts.bytesToHexString(header));
 			//最后活动时间
 			infoact();
+			//System.err.println("....."+Converts.bytesToHexString(header));
+			details.put(Converts.bytesToHexString(header), "T".getBytes());
 			
 			//根据返回，处理各种消息
 			if(header[0]==(byte)0x08&&header[1]==(byte)0x25){
@@ -169,7 +171,7 @@ class Receiver implements Runnable{
 					task = new Task(Task.TYPE_0836, account);
 				}
 	
-				Engine.getInstance().addTask(task);
+				Engine.getInstance().send(new TaskSender(task));
 			}else if(header[0]==(byte)0x08&&header[1]==(byte)0x36){
 				if(buffer.length==871){//需要验证码
 					content = Util.slice(buffer, 14, buffer.length-15);
@@ -189,7 +191,7 @@ class Receiver implements Runnable{
 
 						info("下载验证码");
 						task = new Task(Task.TYPE_00BA, account);																			
-						Engine.getInstance().addTask(task);
+						Engine.getInstance().send(new TaskSender(task));
 					}
 				}else if(buffer.length==175||buffer.length==95||buffer.length==247||buffer.length==239){
 					byte[] ts = Util.slice(buffer, 14, buffer.length-15);
@@ -265,7 +267,7 @@ class Receiver implements Runnable{
 
 					info("获取会话密钥");
 					task = new Task(Task.TYPE_0828, account);	//获取sessioinkey						
-					Engine.getInstance().addTask(task); 
+					Engine.getInstance().send(new TaskSender(task));
 				}
 			}else if(header[0]==(byte)0x00&&header[1]==(byte)0xBA){
 				if(details.get("dlvc")!=null){ //继续下载验证码
@@ -279,9 +281,17 @@ class Receiver implements Runnable{
 					details.put("tokenfor00ba", Util.slice(decrypt, 10, 0x38));
 					
 					details.remove("dlvc");
-					info("识别并提交验证码");
-					task = new Task(Task.TYPE_00BA, account);																			
-					Engine.getInstance().addTask(task); 
+					info("识别验证码");
+					task = new Task(Task.TYPE_00BF, account);																			
+					Engine.getInstance().addTask(task);
+					
+					synchronized(account){
+						account.wait();
+					}
+					
+					info("提交验证码");
+					task = new Task(Task.TYPE_00BA, account);
+					Engine.getInstance().send(new TaskSender(task));
 				}else{ //识别结果
 					if(buffer.length==95){
 						//info("提交验证码");
@@ -302,11 +312,11 @@ class Receiver implements Runnable{
 						//再次执行 0836
 						info("验证身份");
 						task = new Task(Task.TYPE_0836, account);																			
-						Engine.getInstance().addTask(task); 										
+						Engine.getInstance().send(new TaskSender(task));										
 					}else{
 	//					//报告验证码错误
 						info("报告验证码错误");
-						task = new Task(Task.TYPE_ERR_VC, account);																			
+						task = new Task(Task.TYPE_ERRV, account);																			
 						Engine.getInstance().addTask(task); 
 						
 						//重新执行任务
@@ -322,7 +332,7 @@ class Receiver implements Runnable{
 						}
 						info("重新登录");
 						task = new Task(Task.TYPE_0825, account);
-						Engine.getInstance().addTask(task); 
+						Engine.getInstance().send(new TaskSender(task));
 					}
 				}
 			}else if(header[0]==(byte)0x08&&header[1]==(byte)0x28){ //获取sessioinkey结果
@@ -350,12 +360,12 @@ class Receiver implements Runnable{
 					//执行00EC
 					info("上线");
 					task = new Task(Task.TYPE_00EC, account); //上线包															
-					Engine.getInstance().addTask(task); 
+					Engine.getInstance().send(new TaskSender(task));
 				}
 			}else if(header[0]==(byte)0x00&&header[1]==(byte)0xEC){ //上线包	之后发送更新资料请求
 				info("更新资料");
 				task = new Task(Task.TYPE_005C, account); 								
-				Engine.getInstance().addTask(task); 
+				Engine.getInstance().send(new TaskSender(task));
 			}else if(header[0]==(byte)0x00&&header[1]==(byte)0x5C){ //更新资料
 				content = Util.slice(buffer, 14, buffer.length-15);
 				decrypt = crypter.decrypt(content, details.get("sessionkey"));
@@ -363,7 +373,7 @@ class Receiver implements Runnable{
 				if(decrypt[0]!=(byte)0x88){
 					info("继续更新资料");
 					task = new Task(Task.TYPE_005C, account); //继续更新资料													
-					Engine.getInstance().addTask(task); 
+					Engine.getInstance().send(new TaskSender(task));
 				}else{
 					int level = Util.slice(decrypt, 10, 1)[0];
 					int days = Util.slice(decrypt, 16, 1)[0];
@@ -400,11 +410,11 @@ class Receiver implements Runnable{
 					
 					//info("自动回复");
 					task = new Task(Task.TYPE_00CD, account); 									
-					Engine.getInstance().addTask(task); 
+					Engine.getInstance().send(new TaskSender(task));
 				}
 			}else if(header[0]==(byte)0x00&&header[1]==(byte)0x17){
-				if(buffer.length==231&&details.get("0017")==null){// 被挤线的处理
-					details.put("0017", "T".getBytes());
+				if(buffer.length==231&&details.get("0017L")==null){// 被挤线的处理
+					details.put("0017L", "T".getBytes());
 					content = Util.slice(buffer, 14, buffer.length-15);
 					decrypt = crypter.decrypt(content, details.get("sessionkey"));
 					
@@ -434,16 +444,16 @@ class Receiver implements Runnable{
 					
 						//details.clear();
 						details.remove("login");
-						details.remove("0017");
+						details.remove("0017L");
 						info("重新登录");
 						task = new Task(Task.TYPE_0825, account);
-						Engine.getInstance().addTask(task);
+						Engine.getInstance().send(new TaskSender(task));
 					}					
 				}				
 			}else if(header[0]==(byte)0x00&&header[1]==(byte)0x58){
-				if(details.get("login")!=null){//已经登录情况下才设置
-					details.put("heart", "T".getBytes());
-				}
+//				if(details.get("login")!=null){//已经登录情况下才设置
+//					details.put("heart", "T".getBytes());
+//				}
 			}
 		}catch(Exception e){
 			e.printStackTrace();
@@ -465,14 +475,13 @@ class Receiver implements Runnable{
 			if(Engine.getInstance().getAcccounts().get(account).get("landt")==null){
 				Engine.getInstance().getAcccounts().get(account).put("landt", "T".getBytes());
 				Task task = new Task(Task.TYPE_0825, Engine.getInstance().getQueue().remove());
-				Engine.getInstance().addTask(task);
+				Engine.getInstance().send(new TaskSender(task));
 			}
 		}else{						
 			EngineMessage msg = new EngineMessage();
 			msg.setType(EngineMessageType.IM_COMPLETE);
 			Engine.getInstance().fire(msg);
-		}
-		
+		}		
 	}
 
 	private void info(String info){
