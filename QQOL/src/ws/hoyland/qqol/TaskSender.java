@@ -23,6 +23,7 @@ public class TaskSender implements Runnable {
 		byte itv = 0;
 		Engine.getInstance().getAcccounts().get(task.getAccount()).remove(task.getST());
 		while(Engine.getInstance().getAcccounts().get(task.getAccount()).get(task.getST())==null&&x<3){
+			x++;
 			itv += Math.pow(2, x);
 			System.err.println("X:"+x+"/"+String.valueOf(task.getST()));
 			Engine.getInstance().addTask(task);
@@ -31,7 +32,6 @@ public class TaskSender implements Runnable {
 			}catch(Exception e){
 				e.printStackTrace();
 			}
-			x++;
 		}
 	}
 }
