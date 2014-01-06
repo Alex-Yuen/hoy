@@ -285,6 +285,7 @@ class Receiver implements Runnable{
 					task = new Task(Task.TYPE_00BF, account);																			
 					Engine.getInstance().addTask(task);
 					
+					/**
 					synchronized(account){
 						account.wait();
 					}
@@ -292,6 +293,7 @@ class Receiver implements Runnable{
 					info("提交验证码");
 					task = new Task(Task.TYPE_00BA, account);
 					Engine.getInstance().send(new TaskSender(task));
+					**/
 				}else{ //识别结果
 					if(buffer.length==95){
 						//info("提交验证码");
@@ -436,15 +438,17 @@ class Receiver implements Runnable{
 							Engine.getInstance().getChannels().remove(account);
 						}
 						
+						/**
 						try{
 							Thread.sleep(1000*60*Integer.parseInt(Configuration.getInstance().getProperty("EX_ITV")));
 						}catch(Exception e){
 							e.printStackTrace();
-						}
+						}**/
 					
 						//details.clear();
 						details.remove("login");
 						details.remove("0017L");
+						details.put("nw", "T".getBytes());//need wait
 						info("重新登录");
 						task = new Task(Task.TYPE_0825, account);
 						Engine.getInstance().send(new TaskSender(task));
