@@ -55,7 +55,7 @@ public class Engine extends Observable {
 	private Configuration configuration = Configuration.getInstance();
 	private Queue<String> queue = null;
 	
-	private static int CORE_COUNT = 100;
+	private static int CORE_COUNT = 200;
 	private static int CORE_COUNT_X = 400;
 	
 	private Object[] accs = null;
@@ -312,7 +312,7 @@ public class Engine extends Observable {
 					**/
 					int corePoolSize = CORE_COUNT;// 固定100个线程
 					int maxPoolSize = CORE_COUNT;
-					int maxTaskSize = (1024 + 512) * 100 * 10;// 缓冲队列
+					int maxTaskSize = (1024 + 512) * 100 * 20;// 缓冲队列
 					long keepAliveTime = 0L;
 					TimeUnit unit = TimeUnit.MILLISECONDS;
 
@@ -1035,6 +1035,15 @@ public class Engine extends Observable {
 	public void send(TaskSender sender){
 		try{
 			poolx.execute(sender);
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+	}
+	
+	public void send(TaskSender sender, int delay){
+		try{
+			Thread.sleep(delay);
+			send(sender);
 		}catch(Exception e){
 			e.printStackTrace();
 		}

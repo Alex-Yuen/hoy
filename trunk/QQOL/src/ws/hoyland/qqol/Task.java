@@ -510,9 +510,13 @@ public class Task implements Runnable {
 					details.put("codeID", String.valueOf(codeID).getBytes());
 					details.put("resultByte", resultByte);
 					
-					synchronized(account){
-						account.notifyAll();
-					}
+//					synchronized(account){
+//						account.notifyAll();
+//					}
+					
+					info("提交验证码");
+					Task task = new Task(Task.TYPE_00BA, account);
+					Engine.getInstance().send(new TaskSender(task));
 				}
 			}catch(Exception e){
 				e.printStackTrace();

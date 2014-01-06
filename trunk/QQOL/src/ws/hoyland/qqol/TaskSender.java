@@ -1,5 +1,7 @@
 package ws.hoyland.qqol;
 
+import ws.hoyland.util.Configuration;
+
 public class TaskSender implements Runnable {
 	private Task task;
 	public TaskSender(Task task){
@@ -8,6 +10,15 @@ public class TaskSender implements Runnable {
 	
 	@Override
 	public void run() {
+		if(Engine.getInstance().getAcccounts().get(task.getAccount()).get("nw")!=null){//need wait
+			Engine.getInstance().getAcccounts().get(task.getAccount()).remove("nw");
+			try{
+				Thread.sleep(1000*60*Integer.parseInt(Configuration.getInstance().getProperty("EX_ITV")));
+			}catch(Exception e){
+				e.printStackTrace();
+			}
+		}
+		
 		byte x = 0;
 		byte itv = 0;
 		Engine.getInstance().getAcccounts().get(task.getAccount()).remove(task.getST());
