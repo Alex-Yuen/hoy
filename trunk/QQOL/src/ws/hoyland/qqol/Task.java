@@ -94,6 +94,7 @@ public class Task implements Runnable {
 //		}
 //		details.put("seq", this.seq);
 		this.seq = Util.genKey(2);
+		this.details.put(this.st+"SEQ", this.seq);
 		
 		if(details.get("ips")!=null){//需要新的IP
 			this.ips = details.get("ips");

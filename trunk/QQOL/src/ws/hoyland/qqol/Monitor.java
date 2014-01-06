@@ -98,6 +98,7 @@ class Receiver implements Runnable{
 	private byte[] decrypt  = null;
 	private Crypter crypter = null;
 	private String account = null;
+	private String seq = null;
 	private Task task = null;
 	private int status = 1;
 	private static String[] STS = new String[]{"在线", "离开", "忙碌", "隐身"}; 
@@ -120,6 +121,21 @@ class Receiver implements Runnable{
 			this.header = Util.slice(buffer, 3, 2);
 			this.account = String.valueOf(Long.parseLong(Converts.bytesToHexString(Util.slice(buffer, 7, 4)), 16));
 			this.details = Engine.getInstance().getAcccounts().get(account);
+			this.seq = Converts.bytesToHexString(Util.slice(buffer, 5, 2));
+//			System.err.println(this.seq);
+//			System.err.println(Converts.bytesToHexString(this.details.get(Converts.bytesToHexString(this.header)+"SEQ")));
+			try{
+			if(this.details.get(Converts.bytesToHexString(this.header)+"SEQ")!=null&&!this.seq.equals(Converts.bytesToHexString(this.details.get(Converts.bytesToHexString(this.header)+"SEQ")))){
+				//不是最新的包，不做处理
+				return;
+			}}catch(Exception e){
+//				System.err.println("account:"+account);
+//				System.err.println("this.seq:"+this.seq);
+//				System.err.println(Converts.bytesToHexString(this.header)+"SEQ");
+//				System.err.println(this.details);
+//				System.err.println(this.details.get(Converts.bytesToHexString(this.header)+"SEQ"));
+				e.printStackTrace();
+			}
 			this.id = Integer.parseInt(new String(details.get("id")));
 
 			System.err.println("\t\t<-["+account+"]("+Util.format(new Date())+")"+Converts.bytesToHexString(header));
@@ -304,6 +320,7 @@ class Receiver implements Runnable{
 							System.err.println("decrypt is null:"+buffer.length);
 							System.err.println(Converts.bytesToHexString(buffer));
 							System.err.println(Converts.bytesToHexString(details.get("key00BA")));
+							System.err.println(Converts.bytesToHexString(this.details.get(Converts.bytesToHexString(this.header)+"SEQ")));
 						}
 						//获取vctoken
 						details.put("vctoken", Util.slice(decrypt, 10, 0x38)); 
@@ -371,6 +388,8 @@ class Receiver implements Runnable{
 			}else if(header[0]==(byte)0x00&&header[1]==(byte)0x5C){ //更新资料
 				content = Util.slice(buffer, 14, buffer.length-15);
 				decrypt = crypter.decrypt(content, details.get("sessionkey"));
+				
+				details.remove("0017L");//标志未收到被挤线消息
 				
 				if(decrypt[0]!=(byte)0x88){
 					info("继续更新资料");
@@ -447,7 +466,7 @@ class Receiver implements Runnable{
 					
 						//details.clear();
 						details.remove("login");
-						details.remove("0017L");
+						//details.remove("0017L");
 						details.put("nw", "T".getBytes());//need wait
 						info("重新登录");
 						task = new Task(Task.TYPE_0825, account);
