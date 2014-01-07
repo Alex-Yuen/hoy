@@ -60,6 +60,7 @@ public class Heart extends TimerTask {
 		int idx = 0;
 //		float delay = 60000f/Engine.getInstance().getChannels().size();
 		while(it.hasNext()){
+			idx++;
 			String account = (String)it.next();
 			float itv = 1.5f;
 //			if(Engine.getInstance().getAcccounts().get(account).get("login")==null){ //若是未登录，则缩短判断时间
@@ -89,13 +90,13 @@ public class Heart extends TimerTask {
 			}else{
 				if(Engine.getInstance().getAcccounts().get(account).get("login")!=null){//已经登录的才发送心跳包
 					//Engine.getInstance().addTask((new Beater(account, (int)delay*idx)));
-					Engine.getInstance().send(new TaskSender(new Task(Task.TYPE_0058, account)), 5*idx);
+					Engine.getInstance().send(new TaskSender(new Task(Task.TYPE_0058, account)), 5*idx);//5*idx-(System.currentTimeMillis()-current)
 					//pool.execute(new Beater(account));
 					//不加入pool，避免pool过于阻塞
 					//timer.schedule(new Beater(account), (delay++%20)*1000);
 				}
 			}
-			idx++;
+//			idx++;
 //			if(Engine.getInstance().getAcccounts().get(account).get("login")!=null){//已经登录的才发送心跳包
 //				if(current-Long.parseLong(new String(Engine.getInstance().getAcccounts().get(account).get("lastatv")))>=1000*60*2){//重新登录
 //					//it.remove();

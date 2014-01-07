@@ -1040,7 +1040,7 @@ public class Engine extends Observable {
 		}
 	}
 	
-	public void send(TaskSender sender, int delay){
+	public void send(TaskSender sender, long delay){
 		try{
 			Thread.sleep(delay);
 			send(sender);
