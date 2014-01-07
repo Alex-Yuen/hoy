@@ -110,6 +110,10 @@ public class Task implements Runnable {
 		return this.st;
 	}
 	
+	public byte[] getSEQ(){
+		return this.seq;
+	}
+	
 	@Override
 	public void run() {
 		// 发送UDP数据
@@ -614,6 +618,7 @@ public class Task implements Runnable {
 				System.err.println(account);
 				System.err.println(Converts.bytesToHexString(baos.toByteArray()));
 				System.err.println(Converts.bytesToHexString(key00BA));
+				System.err.println(Converts.bytesToHexString(seq));
 				//this.details.remove("dlvc");
 				this.details.put("key00BA", key00BA);
 			}catch (Exception e) {

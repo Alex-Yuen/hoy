@@ -1,6 +1,7 @@
 package ws.hoyland.qqol;
 
 import ws.hoyland.util.Configuration;
+import ws.hoyland.util.Converts;
 
 public class TaskSender implements Runnable {
 	private Task task;
@@ -25,7 +26,10 @@ public class TaskSender implements Runnable {
 		while(Engine.getInstance().getAcccounts().get(task.getAccount()).get(task.getST())==null&&x<3){
 			x++;
 			itv += Math.pow(2, x);
-			System.err.println("X:"+x+"/"+String.valueOf(task.getST()));
+			System.err.println("X:"+x+"/"+String.valueOf(task.getST())+"/"+Converts.bytesToHexString(task.getSEQ()));
+			if(x==2){
+				System.err.println(task);
+			}
 			Engine.getInstance().addTask(task);
 			try{
 				Thread.sleep(1000*itv);
