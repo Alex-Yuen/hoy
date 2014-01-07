@@ -610,7 +610,10 @@ public class Task implements Runnable {
 				baos.write(new byte[]{
 						0x03
 				});
-				
+				System.err.println(">>>00BA");
+				System.err.println(account);
+				System.err.println(Converts.bytesToHexString(baos.toByteArray()));
+				System.err.println(Converts.bytesToHexString(key00BA));
 				//this.details.remove("dlvc");
 				this.details.put("key00BA", key00BA);
 			}catch (Exception e) {
