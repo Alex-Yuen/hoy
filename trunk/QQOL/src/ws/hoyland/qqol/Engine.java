@@ -161,7 +161,10 @@ public class Engine extends Observable {
 							details.put("password", nlns[2].getBytes());
 							accounts.put(nlns[1], details);
 							List<String> lns = new ArrayList<String>();
-							lns.addAll(Arrays.asList(line.split("----")));
+							lns.add(nlns[0]);
+							lns.add(nlns[1]);
+							lns.add(nlns[2]);
+							//lns.addAll(Arrays.asList(line.split("----")));
 							lns.add("");
 							lns.add("");
 							lns.add("");
@@ -1040,14 +1043,14 @@ public class Engine extends Observable {
 		}
 	}
 	
-	public void send(TaskSender sender, long delay){
-		try{
-			Thread.sleep(delay);
-			send(sender);
-		}catch(Exception e){
-			e.printStackTrace();
-		}
-	}
+//	public void send(TaskSender sender, long delay){
+//		try{
+//			Thread.sleep(delay);
+//			send(sender);
+//		}catch(Exception e){
+//			e.printStackTrace();
+//		}
+//	}
 	
 	public void addTask(Runnable task){
 		try{

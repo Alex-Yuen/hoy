@@ -260,11 +260,17 @@ class Receiver implements Runnable{
 					//查找昵称
 					byte[] rdecrypt = Util.reverse(decrypt);
 					String rbofrdec = Converts.bytesToHexString(rdecrypt);
+					System.err.println("TK:"+rbofrdec);
 					int nickidx = -1;
+					try{
 					do{
 						//nickidx = rbofrdec.indexOf("0100")/2;
 						rbofrdec = rbofrdec.substring(rbofrdec.indexOf("0100") + 4);//往前查找
 					}while(!"0801".equals(rbofrdec.substring(4, 8)));
+					}catch(Exception e){
+						System.err.println(rbofrdec);
+						e.printStackTrace();
+					}
 					//退出循环，当为找到
 					nickidx = rbofrdec.length()/2 + 8;
 					int nicklen = decrypt[nickidx];
