@@ -86,7 +86,7 @@ public class Heart extends TimerTask {
 //				}
 				Engine.getInstance().getAcccounts().get(account).remove("login");
 				
-				//Engine.getInstance().addTask((new Task(Task.TYPE_0825, account)));
+				Engine.getInstance().send(new TaskSender(new Task(Task.TYPE_0825, account)));
 			}else{
 				if(Engine.getInstance().getAcccounts().get(account).get("login")!=null){//已经登录的才发送心跳包
 					//Engine.getInstance().addTask((new Beater(account, (int)delay*idx)));
@@ -123,8 +123,8 @@ public class Heart extends TimerTask {
 		message.setTid(id);
 		message.setType(EngineMessageType.IM_TF);
 		String tm = Util.format(new Date());		
-		System.err.println("["+account+"]"+"TF任务完成"+"("+tm+")");
-		Engine.getInstance().fire(message);		
+		System.err.println("["+account+"]"+"任务终止"+"("+tm+")");
+		Engine.getInstance().fire(message);
 	}
 	
 	private void info(String account, String info){

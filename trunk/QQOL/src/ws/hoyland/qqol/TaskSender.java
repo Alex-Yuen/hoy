@@ -27,7 +27,7 @@ public class TaskSender implements Runnable {
 			taskx = new Task(task.getType(), task.getAccount());
 			x++;
 			itv += Math.pow(2, x);
-			System.err.println("X:"+x+"/"+String.valueOf(taskx.getST())+"/"+Converts.bytesToHexString(taskx.getSEQ()));
+			System.err.println("X:"+x+"/"+String.valueOf(taskx.getST())+"/"+Converts.bytesToHexString(taskx.getSEQ())+"/"+task.getAccount());
 			//if(x==2){
 				//System.err.println(task);
 			//}
