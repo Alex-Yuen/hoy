@@ -93,6 +93,7 @@ public class Task implements Runnable {
 //			this.seq = new byte[]{0x11, 0x23};
 //		}
 //		details.put("seq", this.seq);
+
 		this.seq = Util.genKey(2);
 		this.details.put(this.st+"SEQ", this.seq);
 		
@@ -106,6 +107,10 @@ public class Task implements Runnable {
 		return this.account;
 	}
 	
+	public byte getType(){
+		return this.type;
+	}
+	
 	public String getST(){
 		return this.st;
 	}
@@ -116,6 +121,7 @@ public class Task implements Runnable {
 	
 	@Override
 	public void run() {
+		
 		// 发送UDP数据
 		switch (type) {
 		case TYPE_0825:
@@ -614,11 +620,11 @@ public class Task implements Runnable {
 				baos.write(new byte[]{
 						0x03
 				});
-				System.err.println(">>>00BA");
-				System.err.println(account);
-				System.err.println(Converts.bytesToHexString(baos.toByteArray()));
-				System.err.println(Converts.bytesToHexString(key00BA));
-				System.err.println(Converts.bytesToHexString(seq));
+//				System.err.println(">>>00BA");
+//				System.err.println(account);
+//				System.err.println(Converts.bytesToHexString(baos.toByteArray()));
+//				System.err.println(Converts.bytesToHexString(key00BA));
+//				System.err.println(Converts.bytesToHexString(seq));
 				//this.details.remove("dlvc");
 				this.details.put("key00BA", key00BA);
 			}catch (Exception e) {
