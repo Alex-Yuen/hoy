@@ -4,12 +4,12 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.TimerTask;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.RejectedExecutionHandler;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.ThreadPoolExecutor.AbortPolicy;
-import java.util.concurrent.TimeUnit;
+//import java.util.concurrent.ArrayBlockingQueue;
+//import java.util.concurrent.BlockingQueue;
+//import java.util.concurrent.RejectedExecutionHandler;
+//import java.util.concurrent.ThreadPoolExecutor;
+//import java.util.concurrent.ThreadPoolExecutor.AbortPolicy;
+//import java.util.concurrent.TimeUnit;
 
 import ws.hoyland.util.CopiedIterator;
 import ws.hoyland.util.EngineMessage;
@@ -19,34 +19,34 @@ import ws.hoyland.util.EngineMessage;
  * 每分钟运行一次
  */
 public class Heart extends TimerTask {
-	private ThreadPoolExecutor pool = null;
+//	private ThreadPoolExecutor pool = null;
 //	private Timer timer = new Timer();
 	
 	public Heart(){
-		try{
-			int tc = 2; //100个分批刷新
-			int corePoolSize = tc;// minPoolSize
-			int maxPoolSize = tc;
-			int maxTaskSize = (1024 + 512) * 100 * 40;// 缓冲队列
-			long keepAliveTime = 0L;
-			TimeUnit unit = TimeUnit.MILLISECONDS;
-	
-			BlockingQueue<Runnable> workQueue = new ArrayBlockingQueue<Runnable>(
-					maxTaskSize);
-			RejectedExecutionHandler handler = new AbortPolicy();// 饱和处理策略
-			
-			// 创建线程池
-			pool = new ThreadPoolExecutor(corePoolSize,
-					maxPoolSize, keepAliveTime, unit,
-					workQueue, handler);
-		}catch(Exception e){
-			e.printStackTrace();
-		}
+//		try{
+//			int tc = 2; //100个分批刷新
+//			int corePoolSize = tc;// minPoolSize
+//			int maxPoolSize = tc;
+//			int maxTaskSize = (1024 + 512) * 100 * 40;// 缓冲队列
+//			long keepAliveTime = 0L;
+//			TimeUnit unit = TimeUnit.MILLISECONDS;
+//	
+//			BlockingQueue<Runnable> workQueue = new ArrayBlockingQueue<Runnable>(
+//					maxTaskSize);
+//			RejectedExecutionHandler handler = new AbortPolicy();// 饱和处理策略
+//			
+//			// 创建线程池
+//			pool = new ThreadPoolExecutor(corePoolSize,
+//					maxPoolSize, keepAliveTime, unit,
+//					workQueue, handler);
+//		}catch(Exception e){
+//			e.printStackTrace();
+//		}
 	}
 	
 	@Override
 	public void run() {
-		System.err.println("Heart beat["+Util.format(new Date())+"]:"+Engine.getInstance().getActiveCount()+"/"+Engine.getInstance().getQueueCount()+"----"+pool.getActiveCount()+"/"+pool.getQueue().size());
+		System.err.println("Heart beat["+Util.format(new Date())+"]:"+Engine.getInstance().getActiveCount()+"/"+Engine.getInstance().getQueueCount());
 		System.gc();
 		//读取SocketLand中的Clients
 		//每个发送一个心跳包
@@ -90,7 +90,7 @@ public class Heart extends TimerTask {
 			}else{
 				if(Engine.getInstance().getAcccounts().get(account).get("login")!=null){//已经登录的才发送心跳包
 					//Engine.getInstance().addTask((new Beater(account, (int)delay*idx)));
-					Engine.getInstance().send(new TaskSender(new Task(Task.TYPE_0058, account)), 5*idx);//5*idx-(System.currentTimeMillis()-current)
+					Engine.getInstance().send(new TaskSender(new Task(Task.TYPE_0058, account), current, 5*idx));//5*idx-(System.currentTimeMillis()-current)
 					//pool.execute(new Beater(account));
 					//不加入pool，避免pool过于阻塞
 					//timer.schedule(new Beater(account), (delay++%20)*1000);
