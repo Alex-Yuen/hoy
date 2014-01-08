@@ -19,18 +19,19 @@ public class TaskSender implements Runnable {
 				e.printStackTrace();
 			}
 		}
-		
+		Task taskx = null;
 		byte x = 0;
-		byte itv = 0;
+		byte itv = 1;
 		Engine.getInstance().getAcccounts().get(task.getAccount()).remove(task.getST());
 		while(Engine.getInstance().getAcccounts().get(task.getAccount()).get(task.getST())==null&&x<3){
+			taskx = new Task(task.getType(), task.getAccount());
 			x++;
 			itv += Math.pow(2, x);
-			System.err.println("X:"+x+"/"+String.valueOf(task.getST())+"/"+Converts.bytesToHexString(task.getSEQ()));
-			if(x==2){
-				System.err.println(task);
-			}
-			Engine.getInstance().addTask(task);
+			System.err.println("X:"+x+"/"+String.valueOf(taskx.getST())+"/"+Converts.bytesToHexString(taskx.getSEQ()));
+			//if(x==2){
+				//System.err.println(task);
+			//}
+			Engine.getInstance().addTask(taskx);
 			try{
 				Thread.sleep(1000*itv);
 			}catch(Exception e){
