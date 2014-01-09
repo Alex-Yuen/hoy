@@ -248,7 +248,7 @@ class Receiver implements Runnable{
 					//return;
 				}else {
 					//发起0828
-					info("验证身份成功");
+					info("验证身份成功"+buffer.length);
 					content = Util.slice(buffer, 14, buffer.length-15);
 					decrypt = crypter.decrypt(content, details.get("key0836"));
 					if(decrypt==null){//839?//703
@@ -416,6 +416,11 @@ class Receiver implements Runnable{
 					info(STS[status]+((status==1||status==2)&&"true".equals(Configuration.getInstance().getProperty("AUTO_REPLY"))?"[自动回复]":""));
 					details.put("login", "T".getBytes());
 					
+//					if(Engine.getInstance().getQueue().size()==0){
+//						EngineMessage msg = new EngineMessage();
+//						msg.setType(EngineMessageType.IM_COMPLETE);
+//						Engine.getInstance().fire(msg);
+//					}
 					next();
 				}
 			}else if(header[0]==(byte)0x00&&header[1]==(byte)0xCE){ //收到消息
@@ -481,7 +486,17 @@ class Receiver implements Runnable{
 						//details.clear();
 						details.remove("login");
 						//details.remove("0017L");
-						details.put("nw", "T".getBytes());//need wait
+						//details.put("nw", "T".getBytes());//need wait
+
+						//if(Engine.getInstance().getAcccounts().get(this.account).get("nw")!=null){//need wait
+						//	Engine.getInstance().getAcccounts().get(this.account).remove("nw");
+							try{
+								Thread.sleep(1000*60*Integer.parseInt(Configuration.getInstance().getProperty("EX_ITV")));
+							}catch(Exception e){
+								e.printStackTrace();
+							}
+						//}
+						
 						//info("重新登录");
 						task = new Task(Task.TYPE_0825, account);
 						Engine.getInstance().addTask(task);
@@ -514,7 +529,8 @@ class Receiver implements Runnable{
 				Task task = new Task(Task.TYPE_0825, Engine.getInstance().getQueue().remove());
 				Engine.getInstance().addTask(task);
 			}
-		}else{						
+		}else{//TODO
+			//需要判断是否最后一个线程
 			EngineMessage msg = new EngineMessage();
 			msg.setType(EngineMessageType.IM_COMPLETE);
 			Engine.getInstance().fire(msg);

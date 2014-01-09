@@ -1,6 +1,6 @@
 package ws.hoyland.qqol;
 
-import java.io.IOException;
+//import java.io.IOException;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.TimerTask;
@@ -12,7 +12,7 @@ import java.util.TimerTask;
 //import java.util.concurrent.TimeUnit;
 
 import ws.hoyland.util.CopiedIterator;
-import ws.hoyland.util.EngineMessage;
+//import ws.hoyland.util.EngineMessage;
 
 /*
  * 处理心跳的机制，对于socketland每个的对象，自动发送心跳
@@ -50,7 +50,7 @@ public class Heart extends TimerTask {
 		System.gc();
 		//读取SocketLand中的Clients
 		//每个发送一个心跳包
-		long current = System.currentTimeMillis();
+//		long current = System.currentTimeMillis();
 		Iterator<String> it = null;
 		synchronized(Engine.getInstance().getChannels()) {
 			it = new CopiedIterator(Engine.getInstance().getChannels().keySet().iterator());
@@ -62,35 +62,35 @@ public class Heart extends TimerTask {
 		while(it.hasNext()){
 //			idx++;
 			String account = (String)it.next();
-			float itv = 1.5f;
+//			float itv = 1.5f;
 //			if(Engine.getInstance().getAcccounts().get(account).get("login")==null){ //若是未登录，则缩短判断时间
 //				itv = 1.0f;
 //			}
-			if((current-Long.parseLong(new String(Engine.getInstance().getAcccounts().get(account).get("lastatv")))>=1000*60*itv)){//重新登录
-				//it.remove();
-				//1.5 分钟
-				tf(account);
-				info(account, "超时, 重新登录");
-				synchronized(Engine.getInstance().getChannels()) {
-					try {
-						Engine.getInstance().getChannels().get(account).close();
-						info(account, "channel close");
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-					Engine.getInstance().getChannels().remove(account);
-				}
-//				if(Engine.getInstance().getAcccounts().get(account).get("login")!=null){
-//					//已经登录的，登录完后不再next
-//					Engine.getInstance().getAcccounts().get(account).put("landt", "T".getBytes());
+//			if((current-Long.parseLong(new String(Engine.getInstance().getAcccounts().get(account).get("lastatv")))>=1000*60*itv)){//重新登录
+//				//it.remove();
+//				//1.5 分钟
+//				tf(account);
+//				info(account, "超时, 重新登录");
+//				synchronized(Engine.getInstance().getChannels()) {
+//					try {
+//						Engine.getInstance().getChannels().get(account).close();
+//						info(account, "channel close");
+//					} catch (IOException e) {
+//						e.printStackTrace();
+//					}
+//					Engine.getInstance().getChannels().remove(account);
 //				}
-				
-				if(Engine.getInstance().getAcccounts().get(account).get("login")!=null){
-					Engine.getInstance().getAcccounts().get(account).put("timeout", "T".getBytes());//已经登录的，设置免码登录
-				}
-				Engine.getInstance().getAcccounts().get(account).remove("login");
-				Engine.getInstance().addTask(new Task(Task.TYPE_0825, account));
-			}else{
+////				if(Engine.getInstance().getAcccounts().get(account).get("login")!=null){
+////					//已经登录的，登录完后不再next
+////					Engine.getInstance().getAcccounts().get(account).put("landt", "T".getBytes());
+////				}
+//				
+//				if(Engine.getInstance().getAcccounts().get(account).get("login")!=null){
+//					Engine.getInstance().getAcccounts().get(account).put("timeout", "T".getBytes());//已经登录的，设置免码登录
+//				}
+//				Engine.getInstance().getAcccounts().get(account).remove("login");
+//				Engine.getInstance().addTask(new Task(Task.TYPE_0825, account));
+//			}else{
 				if(Engine.getInstance().getAcccounts().get(account).get("login")!=null){//已经登录的才发送心跳包
 					//Engine.getInstance().addTask((new Beater(account, (int)delay*idx)));
 					//Engine.getInstance().send(new TaskSender(new Task(Task.TYPE_0058, account), current, 5*idx));//5*idx-(System.currentTimeMillis()-current)
@@ -99,7 +99,7 @@ public class Heart extends TimerTask {
 					//不加入pool，避免pool过于阻塞
 					//timer.schedule(new Beater(account), (delay++%20)*1000);
 				}
-			}
+//			}
 //			idx++;
 //			if(Engine.getInstance().getAcccounts().get(account).get("login")!=null){//已经登录的才发送心跳包
 //				if(current-Long.parseLong(new String(Engine.getInstance().getAcccounts().get(account).get("lastatv")))>=1000*60*2){//重新登录
@@ -121,6 +121,7 @@ public class Heart extends TimerTask {
 		}
 	}
 	
+	/**
 	private void tf(String account) {//task finish
 		int id = Integer.parseInt(new String(Engine.getInstance().getAcccounts().get(account).get("id")));
 		EngineMessage message = new EngineMessage();
@@ -142,7 +143,7 @@ public class Heart extends TimerTask {
 		String tm = Util.format(new Date());		
 		System.err.println("["+account+"]"+info+"("+tm+")");
 		Engine.getInstance().fire(message);
-	}
+	}**/
 	
 }
 
