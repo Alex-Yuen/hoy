@@ -48,8 +48,8 @@ public class Engine extends Observable {
 	private boolean login = false;
 	private int cptType = 0;
 	private boolean running = false;
-	private ThreadPoolExecutor pool;
-	private ThreadPoolExecutor poolx; //二级pool
+	private ThreadPoolExecutor pool; //Task, Receiver专用
+	private ThreadPoolExecutor poolx; //二级pool, TaskSender专用
 	//private int mindex = 0;
 	//private int mcount = 0;
 	private Configuration configuration = Configuration.getInstance();
