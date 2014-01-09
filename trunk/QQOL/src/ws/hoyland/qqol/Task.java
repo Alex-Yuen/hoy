@@ -31,6 +31,7 @@ import ws.hoyland.util.Crypter;
 import ws.hoyland.util.DM;
 import ws.hoyland.util.EngineMessage;
 import ws.hoyland.util.YDM;
+import ws.hoyland.util.sync.Basket;
 
 public class Task implements Runnable {
 	public final static byte TYPE_0825 = 0x01;
@@ -70,6 +71,7 @@ public class Task implements Runnable {
 	private byte[] encrypt = null;
 	private Map<String, byte[]> details = null;
 	private String st;//type string
+	private byte retry = 0;
 	
 	public Task(byte type, String account) {
 		this.type = type;
@@ -117,8 +119,16 @@ public class Task implements Runnable {
 	
 	public byte[] getSEQ(){
 		return this.seq;
-	}
+	}	
 	
+	public byte getRetry() {
+		return retry;
+	}
+
+	public void setRetry(byte retry) {
+		this.retry = retry;
+	}
+
 	@Override
 	public void run() {
 		
@@ -527,7 +537,7 @@ public class Task implements Runnable {
 					
 					info("提交验证码");
 					Task task = new Task(Task.TYPE_00BA, account);
-					Engine.getInstance().send(new TaskSender(task));
+					Engine.getInstance().addTask(task);
 				}
 			}catch(Exception e){
 				e.printStackTrace();
@@ -1088,11 +1098,20 @@ public class Task implements Runnable {
 //			System.out.println(Converts.bytesToHexString(baos.toByteArray()));
 			
 			try{
+				Basket.getInstance().pop();
 				System.err.println("->["+account+"]("+Util.format(new Date())+")"+Converts.bytesToHexString(Util.slice(baos.toByteArray(), 3, 2)));
 				dc.write(ByteBuffer.wrap(baos.toByteArray()));
 			}catch(Exception e){
 				e.printStackTrace();
 				System.err.println("TYPE:"+type);
+			}finally{
+				Basket.getInstance().push();
+			}
+			
+			//启动检测线程
+			if(retry<2){
+				Checker checker = new Checker(this);
+				Engine.getInstance().addChecker(checker);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

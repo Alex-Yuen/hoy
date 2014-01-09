@@ -188,14 +188,14 @@ class Receiver implements Runnable{
 						details.remove("timeout");
 						info("获取会话密钥");
 						task = new Task(Task.TYPE_0828, account);		
-						Engine.getInstance().send(new TaskSender(task));
+						Engine.getInstance().addTask(task);
 					}else{
 						info("验证身份");
 						task = new Task(Task.TYPE_0836, account);
 					}
 				}
 	
-				Engine.getInstance().send(new TaskSender(task));
+				Engine.getInstance().addTask(task);
 			}else if(header[0]==(byte)0x08&&header[1]==(byte)0x36){
 				if(buffer.length==871){//需要验证码
 					content = Util.slice(buffer, 14, buffer.length-15);
@@ -215,7 +215,7 @@ class Receiver implements Runnable{
 
 						info("下载验证码");
 						task = new Task(Task.TYPE_00BA, account);																			
-						Engine.getInstance().send(new TaskSender(task));
+						Engine.getInstance().addTask(task);
 					}
 				}else if(buffer.length==175||buffer.length==95||buffer.length==247||buffer.length==239){
 					byte[] ts = Util.slice(buffer, 14, buffer.length-15);
@@ -297,7 +297,7 @@ class Receiver implements Runnable{
 
 					info("获取会话密钥");
 					task = new Task(Task.TYPE_0828, account);	//获取sessioinkey						
-					Engine.getInstance().send(new TaskSender(task));
+					Engine.getInstance().addTask(task);
 				}
 			}else if(header[0]==(byte)0x00&&header[1]==(byte)0xBA){
 				if(details.get("dlvc")!=null){ //继续下载验证码
@@ -345,7 +345,7 @@ class Receiver implements Runnable{
 						//再次执行 0836
 						info("验证身份");
 						task = new Task(Task.TYPE_0836, account);																			
-						Engine.getInstance().send(new TaskSender(task));										
+						Engine.getInstance().addTask(task);										
 					}else{
 	//					//报告验证码错误
 						info("报告验证码错误，重新登录");
@@ -365,7 +365,7 @@ class Receiver implements Runnable{
 						}
 						//info("重新登录");
 						task = new Task(Task.TYPE_0825, account);
-						Engine.getInstance().send(new TaskSender(task));
+						Engine.getInstance().addTask(task);
 					}
 				}
 			}else if(header[0]==(byte)0x08&&header[1]==(byte)0x28){ //获取sessioinkey结果
@@ -393,12 +393,12 @@ class Receiver implements Runnable{
 					//执行00EC
 					info("上线");
 					task = new Task(Task.TYPE_00EC, account); //上线包															
-					Engine.getInstance().send(new TaskSender(task));
+					Engine.getInstance().addTask(task);
 				}
 			}else if(header[0]==(byte)0x00&&header[1]==(byte)0xEC){ //上线包	之后发送更新资料请求
 				info("更新资料");
 				task = new Task(Task.TYPE_005C, account); 								
-				Engine.getInstance().send(new TaskSender(task));
+				Engine.getInstance().addTask(task);
 			}else if(header[0]==(byte)0x00&&header[1]==(byte)0x5C){ //更新资料
 				content = Util.slice(buffer, 14, buffer.length-15);
 				decrypt = crypter.decrypt(content, details.get("sessionkey"));
@@ -408,7 +408,7 @@ class Receiver implements Runnable{
 				if(decrypt[0]!=(byte)0x88){
 					info("继续更新资料");
 					task = new Task(Task.TYPE_005C, account); //继续更新资料													
-					Engine.getInstance().send(new TaskSender(task));
+					Engine.getInstance().addTask(task);
 				}else{
 					int level = Util.slice(decrypt, 10, 1)[0];
 					int days = Util.slice(decrypt, 16, 1)[0];
@@ -445,7 +445,7 @@ class Receiver implements Runnable{
 					
 					//info("自动回复");
 					task = new Task(Task.TYPE_00CD, account); 									
-					Engine.getInstance().send(new TaskSender(task));
+					Engine.getInstance().addTask(task);
 				}
 			}else if(header[0]==(byte)0x00&&header[1]==(byte)0x17){
 				if(buffer.length==231&&details.get("0017L")==null){// 被挤线的处理
@@ -484,7 +484,7 @@ class Receiver implements Runnable{
 						details.put("nw", "T".getBytes());//need wait
 						//info("重新登录");
 						task = new Task(Task.TYPE_0825, account);
-						Engine.getInstance().send(new TaskSender(task));
+						Engine.getInstance().addTask(task);
 					}					
 				}				
 			}else if(header[0]==(byte)0x00&&header[1]==(byte)0x58){
@@ -512,7 +512,7 @@ class Receiver implements Runnable{
 			if(Engine.getInstance().getAcccounts().get(account).get("landt")==null){
 				Engine.getInstance().getAcccounts().get(account).put("landt", "T".getBytes());
 				Task task = new Task(Task.TYPE_0825, Engine.getInstance().getQueue().remove());
-				Engine.getInstance().send(new TaskSender(task));
+				Engine.getInstance().addTask(task);
 			}
 		}else{						
 			EngineMessage msg = new EngineMessage();

@@ -7,8 +7,20 @@ package ws.hoyland.util.sync;
  * 
  */
 public class Basket {
-	private byte count = 0;
+	private byte count = 1;
+	private static Basket instance;
 
+	private Basket(){
+		
+	}
+	
+	public static Basket getInstance(){
+		if(instance==null){
+			instance = new Basket();
+		}
+		return instance;
+	}
+	
 	public synchronized void push() {
 		try {
 			while (count == 1) {
