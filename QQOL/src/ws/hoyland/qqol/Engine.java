@@ -49,7 +49,7 @@ public class Engine extends Observable {
 	private int cptType = 0;
 	private boolean running = false;
 	private ThreadPoolExecutor pool; //Task, Receiver专用
-	private ThreadPoolExecutor poolx; //二级pool, TaskSender专用
+	private ThreadPoolExecutor poolx; //checker专用
 	//private int mindex = 0;
 	//private int mcount = 0;
 	private Configuration configuration = Configuration.getInstance();
@@ -386,7 +386,7 @@ public class Engine extends Observable {
 						try {
 							Task task = new Task(Task.TYPE_0825, queue.remove());
 							//Engine.getInstance().addObserver(task);
-							send(new TaskSender(task));
+							addTask(task);
 						} catch (ArrayIndexOutOfBoundsException e) {
 							e.printStackTrace();
 							//System.out.println(i + ":" + accounts.get(i));
@@ -1035,9 +1035,9 @@ public class Engine extends Observable {
 		}
 	}
 	
-	public void send(TaskSender sender){
+	public void addChecker(Runnable checker){
 		try{
-			poolx.execute(sender);
+			poolx.execute(checker);
 		}catch(Exception e){
 			e.printStackTrace();
 		}
