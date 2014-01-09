@@ -52,6 +52,7 @@ public class Task implements Runnable {
 		"0825", "0836", "00BA", "ERRV", "0828", "00EC", "005C", "00CE", "00CD", "0017", "0062", "0058", "00BF"
 	};
 	
+	private static String FHD = "#0825#0836#00BA#0828#005C#00CE#00CD#0017#0058#";
 	private byte type;
 	private String ip = "183.60.19.100";// 默认IP
 	private byte[] ips = new byte[] { (byte) 183, (byte) 60, (byte) 19,
@@ -131,7 +132,6 @@ public class Task implements Runnable {
 
 	@Override
 	public void run() {
-		
 		// 发送UDP数据
 		switch (type) {
 		case TYPE_0825:
@@ -655,7 +655,7 @@ public class Task implements Runnable {
 				}else{
 					reportErrorResult = DM.INSTANCE.uu_reportError(codeID);
 				}
-				System.err.println(reportErrorResult);
+				System.err.println("err result:"+reportErrorResult);
 				
 				details.remove("codeID");
 			} catch (Exception e) {
@@ -1093,23 +1093,24 @@ public class Task implements Runnable {
 					Engine.getInstance().getChannels().put(this.account, dc);
 				}
 			}
-						
+			
 //			System.out.println("SEND:");
 //			System.out.println(Converts.bytesToHexString(baos.toByteArray()));
 			
 			try{
 				Basket.getInstance().pop();
-				System.err.println("->["+account+"]("+Util.format(new Date())+")"+Converts.bytesToHexString(Util.slice(baos.toByteArray(), 3, 2)));
+				System.err.println("->["+account+"]("+Util.format(new Date())+")"+Converts.bytesToHexString(Util.slice(baos.toByteArray(), 3, 2))+"["+retry+"]");
 				dc.write(ByteBuffer.wrap(baos.toByteArray()));
+				Thread.sleep(50);
 			}catch(Exception e){
 				e.printStackTrace();
 				System.err.println("TYPE:"+type);
-			}finally{
+			}finally{				
 				Basket.getInstance().push();
 			}
 			
 			//启动检测线程
-			if(retry<2){
+			if(FHD.contains("#"+st+"#")&&retry<3){
 				Checker checker = new Checker(this);
 				Engine.getInstance().addChecker(checker);
 			}
