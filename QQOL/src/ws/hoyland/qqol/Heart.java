@@ -55,12 +55,12 @@ public class Heart extends TimerTask {
 		synchronized(Engine.getInstance().getChannels()) {
 			it = new CopiedIterator(Engine.getInstance().getChannels().keySet().iterator());
 		}
-		  
+
 		//Iterator<String> it = Engine.getInstance().getChannels().keySet().iterator();
-		int idx = 0;
+//		int idx = 0;
 //		float delay = 60000f/Engine.getInstance().getChannels().size();
 		while(it.hasNext()){
-			idx++;
+//			idx++;
 			String account = (String)it.next();
 			float itv = 1.5f;
 //			if(Engine.getInstance().getAcccounts().get(account).get("login")==null){ //若是未登录，则缩短判断时间
@@ -84,13 +84,17 @@ public class Heart extends TimerTask {
 //					//已经登录的，登录完后不再next
 //					Engine.getInstance().getAcccounts().get(account).put("landt", "T".getBytes());
 //				}
-				Engine.getInstance().getAcccounts().get(account).remove("login");
 				
+				if(Engine.getInstance().getAcccounts().get(account).get("login")!=null){
+					Engine.getInstance().getAcccounts().get(account).put("timeout", "T".getBytes());//已经登录的，设置免码登录
+				}
+				Engine.getInstance().getAcccounts().get(account).remove("login");
 				Engine.getInstance().send(new TaskSender(new Task(Task.TYPE_0825, account)));
 			}else{
 				if(Engine.getInstance().getAcccounts().get(account).get("login")!=null){//已经登录的才发送心跳包
 					//Engine.getInstance().addTask((new Beater(account, (int)delay*idx)));
-					Engine.getInstance().send(new TaskSender(new Task(Task.TYPE_0058, account), current, 5*idx));//5*idx-(System.currentTimeMillis()-current)
+					//Engine.getInstance().send(new TaskSender(new Task(Task.TYPE_0058, account), current, 5*idx));//5*idx-(System.currentTimeMillis()-current)
+					Engine.getInstance().send(new TaskSender(new Task(Task.TYPE_0058, account)));
 					//pool.execute(new Beater(account));
 					//不加入pool，避免pool过于阻塞
 					//timer.schedule(new Beater(account), (delay++%20)*1000);

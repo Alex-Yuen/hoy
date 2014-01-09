@@ -4,25 +4,25 @@ import ws.hoyland.util.Configuration;
 import ws.hoyland.util.Converts;
 
 public class TaskSender implements Runnable {
-	private long start;
+//	private long start;
 	private Task task;
-	private long delay;
+//	private long delay;
 	
 	public TaskSender(Task task){
-		this.start = System.currentTimeMillis();
+//		this.start = System.currentTimeMillis();
 		this.task = task;
-		this.delay = 0;
+//		this.delay = 0;
 	}
 	
-	public TaskSender(Task task, long start, long delay){
-		this.start = start;
-		this.task = task;
-		this.delay = delay;
-	}
+//	public TaskSender(Task task, long start, long delay){
+//		this.start = start;
+//		this.task = task;
+//		this.delay = delay;
+//	}
 	
 	@Override
 	public void run() {
-		long current = System.currentTimeMillis();
+//		long current = System.currentTimeMillis();
 		if(Engine.getInstance().getAcccounts().get(task.getAccount()).get("nw")!=null){//need wait
 			Engine.getInstance().getAcccounts().get(task.getAccount()).remove("nw");
 			try{
@@ -31,13 +31,13 @@ public class TaskSender implements Runnable {
 				e.printStackTrace();
 			}
 		}
-		if(delay!=0&&(current-start<delay)){
-			try{
-				Thread.sleep(delay-(current-start));
-			}catch(Exception e){
-				e.printStackTrace();
-			}
-		}
+//		if(delay!=0&&(current-start<delay)){
+//			try{
+//				Thread.sleep(delay-(current-start));
+//			}catch(Exception e){
+//				e.printStackTrace();
+//			}
+//		}
 		
 		Task taskx = null;
 		byte x = 0;

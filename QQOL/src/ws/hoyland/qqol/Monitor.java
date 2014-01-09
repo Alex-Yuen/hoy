@@ -171,7 +171,7 @@ class Receiver implements Runnable{
 					info("重定向");
 					task = new Task(Task.TYPE_0825, account);
 				}else{
-					//发起0836
+					//发起0836或免码直接0828
 					content = Util.slice(buffer, 14, buffer.length-15);//104
 					decrypt = crypter.decrypt(content, details.get("key0825"));
 					if(decrypt==null){
@@ -183,8 +183,16 @@ class Receiver implements Runnable{
 					details.put("token", Util.slice(decrypt, 5, 0x38));
 					details.put("logintime", Util.slice(decrypt, 67, 4));
 					details.put("loginip", Util.slice(decrypt, 71, 4));
-					info("验证身份");
-					task = new Task(Task.TYPE_0836, account);
+
+					if(details.get("timeout")!=null){
+						details.remove("timeout");
+						info("获取会话密钥");
+						task = new Task(Task.TYPE_0828, account);		
+						Engine.getInstance().send(new TaskSender(task));
+					}else{
+						info("验证身份");
+						task = new Task(Task.TYPE_0836, account);
+					}
 				}
 	
 				Engine.getInstance().send(new TaskSender(task));
@@ -340,7 +348,7 @@ class Receiver implements Runnable{
 						Engine.getInstance().send(new TaskSender(task));										
 					}else{
 	//					//报告验证码错误
-						info("报告验证码错误");
+						info("报告验证码错误，重新登录");
 						task = new Task(Task.TYPE_ERRV, account);																			
 						Engine.getInstance().addTask(task); 
 						
@@ -355,7 +363,7 @@ class Receiver implements Runnable{
 						synchronized(Engine.getInstance().getChannels()) {
 							Engine.getInstance().getChannels().remove(account);
 						}
-						info("重新登录");
+						//info("重新登录");
 						task = new Task(Task.TYPE_0825, account);
 						Engine.getInstance().send(new TaskSender(task));
 					}
@@ -474,7 +482,7 @@ class Receiver implements Runnable{
 						details.remove("login");
 						//details.remove("0017L");
 						details.put("nw", "T".getBytes());//need wait
-						info("重新登录");
+						//info("重新登录");
 						task = new Task(Task.TYPE_0825, account);
 						Engine.getInstance().send(new TaskSender(task));
 					}					
