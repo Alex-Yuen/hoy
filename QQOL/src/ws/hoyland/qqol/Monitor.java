@@ -142,7 +142,7 @@ class Receiver implements Runnable{
 			//最后活动时间
 			infoact();
 			//System.err.println("....."+Converts.bytesToHexString(header));
-			details.put(Converts.bytesToHexString(header), "T".getBytes());
+			details.put(Converts.bytesToHexString(header)+"_"+this.seq, "T".getBytes());
 			
 			//根据返回，处理各种消息
 			if(header[0]==(byte)0x08&&header[1]==(byte)0x25){
@@ -159,13 +159,13 @@ class Receiver implements Runnable{
 						System.err.println(Converts.bytesToHexString(details.get("key0825")));
 					}
 					details.put("ips", Util.slice(decrypt, 95, 4));
-					try {
-						Engine.getInstance().getChannels().get(account).close();
-					} catch (IOException e) {
-						System.err.println("t1:"+Engine.getInstance().getChannels().get(account));
-						e.printStackTrace();
-					}
 					synchronized(Engine.getInstance().getChannels()) {
+						try {
+							Engine.getInstance().getChannels().get(account).close();
+						} catch (IOException e) {
+							System.err.println("t1:"+Engine.getInstance().getChannels().get(account));
+							e.printStackTrace();
+						}
 						Engine.getInstance().getChannels().remove(account);
 					}
 					info("重定向");
@@ -188,7 +188,7 @@ class Receiver implements Runnable{
 						details.remove("timeout");
 						info("获取会话密钥");
 						task = new Task(Task.TYPE_0828, account);		
-						Engine.getInstance().addTask(task);
+						//Engine.getInstance().addTask(task);
 					}else{
 						info("验证身份");
 						task = new Task(Task.TYPE_0836, account);
@@ -223,24 +223,24 @@ class Receiver implements Runnable{
 					//System.out.println(Converts.bytesToHexString(ts));
 					//System.out.println(new String(Util.slice(ts, 15, ts.length-15), "utf-8"));
 					info(new String(Util.slice(ts, 15, ts.length-15), "utf-8"));
-					Engine.getInstance().getChannels().get(account).close(); //关闭
-					try {
-						Engine.getInstance().getChannels().get(account).close();
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
+					//Engine.getInstance().getChannels().get(account).close(); //关闭
 					synchronized(Engine.getInstance().getChannels()) {
+						try {
+							Engine.getInstance().getChannels().get(account).close();
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
 						Engine.getInstance().getChannels().remove(account);
 					}
 					next();
 				}else if(buffer.length==255){
 					info("需要验证密保");
-					try {
-						Engine.getInstance().getChannels().get(account).close();
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
 					synchronized(Engine.getInstance().getChannels()) {
+						try {
+							Engine.getInstance().getChannels().get(account).close();
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
 						Engine.getInstance().getChannels().remove(account);
 					}
 					next();
@@ -354,13 +354,13 @@ class Receiver implements Runnable{
 						
 						//重新执行任务
 						//details.clear();
-						try {
-							Engine.getInstance().getChannels().get(account).close();
-						} catch (IOException e) {
-							System.err.println("t2:"+Engine.getInstance().getChannels().get(account));
-							e.printStackTrace();
-						}
 						synchronized(Engine.getInstance().getChannels()) {
+							try {
+								Engine.getInstance().getChannels().get(account).close();
+							} catch (IOException e) {
+								System.err.println("t2:"+Engine.getInstance().getChannels().get(account));
+								e.printStackTrace();
+							}
 							Engine.getInstance().getChannels().remove(account);
 						}
 						//info("重新登录");
@@ -378,6 +378,15 @@ class Receiver implements Runnable{
 					//System.out.println(Converts.bytesToHexString(ts));
 					//System.out.println(new String(Util.slice(ts, 15, ts.length-15), "utf-8"));
 					info(new String(Util.slice(ts, 15, ts.length-15), "utf-8"));
+					//可能是被挤线，然后这边重新登录，对方又按了重新登录，此时，0825然后0828无效，需要重新执行任务。
+					try{
+						Thread.sleep(1000*60*Integer.parseInt(Configuration.getInstance().getProperty("EX_ITV")));
+					}catch(Exception e){
+						e.printStackTrace();
+					}
+					
+					task = new Task(Task.TYPE_0825, account);
+					Engine.getInstance().addTask(task);
 				}else{
 					//System.out.println("OK");
 					info("获取成功");
@@ -467,12 +476,12 @@ class Receiver implements Runnable{
 						tf();
 						task = new Task(Task.TYPE_0017, account); 									
 						Engine.getInstance().addTask(task);
-						try {
-							Engine.getInstance().getChannels().get(account).close();
-						} catch (IOException e) {
-							e.printStackTrace();
-						}
 						synchronized(Engine.getInstance().getChannels()) {
+							try {
+								Engine.getInstance().getChannels().get(account).close();
+							} catch (IOException e) {
+								e.printStackTrace();
+							}
 							Engine.getInstance().getChannels().remove(account);
 						}
 						

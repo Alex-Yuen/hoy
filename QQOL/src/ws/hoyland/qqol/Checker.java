@@ -2,6 +2,7 @@ package ws.hoyland.qqol;
 
 import java.util.Date;
 
+import ws.hoyland.util.Converts;
 import ws.hoyland.util.EngineMessage;
 
 public class Checker implements Runnable {
@@ -19,8 +20,10 @@ public class Checker implements Runnable {
 		}catch(Exception e){
 			e.printStackTrace();
 		}
-		if(Engine.getInstance().getAcccounts().get(task.getAccount()).get(task.getST())==null){
+		System.err.println("checker:"+task.getAccount()+"/"+task.getRetry());
+		if(Engine.getInstance().getAcccounts().get(task.getAccount()).get(task.getST()+"_"+Converts.bytesToHexString(task.getSEQ()))==null){
 			Task taskx = null;
+			System.err.println("checker is null:"+task.getAccount()+"/"+task.getRetry());
 			if(task.getRetry()==2){//超时
 				tf();
 				info("超时, 重新登录");
@@ -44,6 +47,8 @@ public class Checker implements Runnable {
 				taskx.setRetry((byte)(task.getRetry()+1));
 			}
 			Engine.getInstance().addTask(taskx);
+		}else{
+			Engine.getInstance().getAcccounts().get(task.getAccount()).remove(task.getST()+"_"+Converts.bytesToHexString(task.getSEQ()));
 		}
 	}
 	
