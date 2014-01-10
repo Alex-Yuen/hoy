@@ -508,6 +508,13 @@ public class QQOL implements Observer{
 		text_1.setBounds(59, 44, 139, 20);
 		
 		text_3 = new Text(group_1, SWT.BORDER | SWT.PASSWORD);
+//		text_3.addFocusListener(new FocusAdapter() {
+//			@Override
+//			public void focusGained(FocusEvent e) {
+//				System.out.println("EXF");
+//				text_3.selectAll();				
+//			}
+//		});
 		text_3.setBounds(59, 68, 139, 20);		
 		
 		btnDenglu = new Button(group_1, SWT.NONE);
