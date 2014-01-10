@@ -66,7 +66,12 @@ public class Monitor implements Runnable {
 							DatagramChannel datagramChannel = (DatagramChannel) sk
 									.channel();
 							//bf = ByteBuffer.allocate(1024);
-							size = datagramChannel.read(bf);
+							try{//ClosedChannelException by 0017
+								size = datagramChannel.read(bf);
+							}catch(Exception e){								
+								e.printStackTrace();
+								continue;
+							}
 							bf.flip();
 
 							buffer = Util.slice(bf
