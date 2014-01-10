@@ -440,7 +440,7 @@ public class Engine extends Observable {
 					
 					System.err.println("--------------act count:"+pool.getActiveCount()+"/"+pool.getQueue().size());
 					//if(pool.getActiveCount()==1){ //当前是最后一个线程
-					if(pool.getQueue().size()==0){
+					if(pool.getActiveCount()==1&&pool.getQueue().size()==0){
 						//自动关闭
 						//TODO						
 						running = !running;
