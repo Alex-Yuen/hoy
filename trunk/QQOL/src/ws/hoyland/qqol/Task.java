@@ -1100,16 +1100,26 @@ public class Task implements Runnable {
 //			System.out.println("SEND:");
 //			System.out.println(Converts.bytesToHexString(baos.toByteArray()));
 			
-			try{
-				Basket.getInstance().pop();
-				System.err.println("->["+account+"]("+Util.format(new Date())+")"+Converts.bytesToHexString(Util.slice(baos.toByteArray(), 3, 2))+"["+retry+"]");
-				dc.write(ByteBuffer.wrap(baos.toByteArray()));
-				Thread.sleep(50);
-			}catch(Exception e){
-				e.printStackTrace();
-				System.err.println("TYPE:"+type);
-			}finally{				
-				Basket.getInstance().push();
+			if(!"0062".equals(this.st)){
+				try{
+					Basket.getInstance().pop();
+					System.err.println("->["+account+"]("+Util.format(new Date())+")"+Converts.bytesToHexString(Util.slice(baos.toByteArray(), 3, 2))+"["+retry+"]");
+					dc.write(ByteBuffer.wrap(baos.toByteArray()));
+					Thread.sleep(50);
+				}catch(Exception e){
+					e.printStackTrace();
+					System.err.println("TYPE:"+type);
+				}finally{				
+					Basket.getInstance().push();
+				}
+			}else{
+				try{
+					System.err.println("->["+account+"]("+Util.format(new Date())+")"+Converts.bytesToHexString(Util.slice(baos.toByteArray(), 3, 2))+"["+retry+"]");
+					dc.write(ByteBuffer.wrap(baos.toByteArray()));
+				}catch(Exception e){
+					e.printStackTrace();
+					System.err.println("TYPE:"+type);
+				}
 			}
 			
 			//启动检测线程
