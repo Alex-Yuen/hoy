@@ -1,6 +1,7 @@
 package ws.hoyland.qqol;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.nio.ByteBuffer;
@@ -52,7 +53,7 @@ public class Task implements Runnable {
 		"0825", "0836", "00BA", "ERRV", "0828", "00EC", "005C", "00CE", "00CD", "0017", "0062", "0058", "00BF"
 	};
 	
-	private static String FHD = "#0825#0836#00BA#0828#005C#00CE#00CD#0017#0058#";
+	private static String FHD = "#0825#0836#00BA#0828#00EC#005C#00CD#0058#";//00CE, 0017不要
 	private byte type;
 	private String ip = "183.60.19.100";// 默认IP
 	private byte[] ips = new byte[] { (byte) 183, (byte) 60, (byte) 19,
@@ -522,6 +523,7 @@ public class Task implements Runnable {
 						codeID = DM.INSTANCE.uu_recognizeByCodeTypeAndBytesA(by,
 								by.length, 1, resultByte); // 调用识别函数,resultBtye为识别结果
 					}
+					System.err.println("codeID:"+codeID+"/"+account);
 //					String result = new String(resultByte, "UTF-8").trim();					
 //					System.out.println("result:"+resultByte.length+":"+result);
 					resultByte = Util.pack(resultByte);
@@ -655,6 +657,7 @@ public class Task implements Runnable {
 				}else{
 					reportErrorResult = DM.INSTANCE.uu_reportError(codeID);
 				}
+				System.err.println("codeID2:"+codeID+"/"+account);
 				System.err.println("err result:"+reportErrorResult);
 				
 				details.remove("codeID");
@@ -1113,6 +1116,18 @@ public class Task implements Runnable {
 			if(FHD.contains("#"+st+"#")&&retry<3){
 				Checker checker = new Checker(this);
 				Engine.getInstance().addChecker(checker);
+			}
+			
+			//0017处理
+			if("0017".equals(st)){
+				synchronized(Engine.getInstance().getChannels()) {
+					try {
+						Engine.getInstance().getChannels().get(account).close();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+					Engine.getInstance().getChannels().remove(account);
+				}
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
