@@ -20,10 +20,10 @@ public class Checker implements Runnable {
 		}catch(Exception e){
 			e.printStackTrace();
 		}
-		System.err.println("checker:"+task.getAccount()+"/"+task.getRetry());
+		System.err.println("checker:"+task.getAccount()+"/"+task.getRetry()+"/"+task.getST());
 		if(Engine.getInstance().getAcccounts().get(task.getAccount()).get(task.getST()+"_"+Converts.bytesToHexString(task.getSEQ()))==null){
 			Task taskx = null;
-			System.err.println("checker is null:"+task.getAccount()+"/"+task.getRetry());
+			System.err.println("checker is null:"+task.getAccount()+"/"+task.getRetry()+"/"+task.getST());
 			if(task.getRetry()==2){//超时
 				tf();
 				info("超时, 重新登录");

@@ -1102,7 +1102,9 @@ public class Task implements Runnable {
 			
 			if(!"0062".equals(this.st)){
 				try{
+					System.err.println(account+"-pop1");
 					Basket.getInstance().pop();
+					System.err.println(account+"-pop2");
 					System.err.println("->["+account+"]("+Util.format(new Date())+")"+Converts.bytesToHexString(Util.slice(baos.toByteArray(), 3, 2))+"["+retry+"]");
 					dc.write(ByteBuffer.wrap(baos.toByteArray()));
 					Thread.sleep(50);
@@ -1110,7 +1112,9 @@ public class Task implements Runnable {
 					e.printStackTrace();
 					System.err.println("TYPE:"+type);
 				}finally{				
+					System.err.println(account+"-push1");
 					Basket.getInstance().push();
+					System.err.println(account+"-push2");
 				}
 			}else{
 				try{
@@ -1118,7 +1122,7 @@ public class Task implements Runnable {
 					dc.write(ByteBuffer.wrap(baos.toByteArray()));
 				}catch(Exception e){
 					e.printStackTrace();
-					System.err.println("TYPE:"+type);
+					System.err.println("TYPE:"+type+"/"+account);
 				}
 			}
 			
