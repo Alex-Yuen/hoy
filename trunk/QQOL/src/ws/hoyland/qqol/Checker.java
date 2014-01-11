@@ -43,6 +43,7 @@ public class Checker implements Runnable {
 				}
 				Engine.getInstance().getAcccounts().get(task.getAccount()).remove("login");
 				Engine.getInstance().getAcccounts().get(task.getAccount()).remove("0058DOING");
+				System.err.println(task.getAccount()+" removing2 0058DOING:"+Engine.getInstance().getAcccounts().get(task.getAccount()).get("0058DOING"));
 				taskx = new Task(Task.TYPE_0825, task.getAccount());//不行就重新登录
 			}else{
 				taskx = new Task(task.getType(), task.getAccount());
