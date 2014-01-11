@@ -1,6 +1,11 @@
 package ws.hoyland.qqol;
 
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Random;
+
+import ws.hoyland.util.CopiedIterator;
 
 public class T3 {
 
@@ -21,6 +26,20 @@ public class T3 {
 		}
 		
 		System.out.println(Math.pow(2, 5));
+		
+		Map<String, String> map = new LinkedHashMap<String, String>();
+		for(int i=0;i<20;i++){
+			map.put(String.valueOf(i), "xx");
+		}
+		Iterator<String> it = null;
+		for(int i=0;i<10;i++){
+			it = new CopiedIterator(map.keySet().iterator());
+			StringBuffer sb = new StringBuffer();
+			while(it.hasNext()){
+				sb.append(it.next()+"/");
+			}
+			System.out.println(sb.toString());
+		}
 	}
 
 }

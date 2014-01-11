@@ -1069,7 +1069,7 @@ public class Task implements Runnable {
 				baos.write(new byte[]{0x02, 0x34, 0x4B, 0x00, 0x58});
 				baos.write(seq);
 				baos.write(Converts.hexStringToByte(Long.toHexString(Long.valueOf(account)).toUpperCase()));
-				baos.write(new byte[]{0x02, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00, 0x66, (byte)0xA2});
+				baos.write(new byte[]{0x02, 0x00, retry, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00, 0x66, (byte)0xA2});//retry 是第几次发0058的包
 				baos.write(encrypt);
 				baos.write(new byte[]{0x03});
 			}catch(Exception e){
@@ -1104,19 +1104,19 @@ public class Task implements Runnable {
 			
 			if(!"0062".equals(this.st)){
 				try{
-					System.err.println(account+"-pop1");
+					//System.err.println(account+"-pop1");
 					Basket.getInstance().pop();
-					System.err.println(account+"-pop2");
+					//System.err.println(account+"-pop2");
 					System.err.println("->["+account+"]("+Util.format(new Date())+")"+Converts.bytesToHexString(Util.slice(baos.toByteArray(), 3, 2))+"["+retry+"]");
 					dc.write(ByteBuffer.wrap(baos.toByteArray()));
-					Thread.sleep(6);
+					//Thread.sleep(6);
 				}catch(Exception e){
 					e.printStackTrace();
 					System.err.println("TYPE:"+type+"/"+account);
 				}finally{
-					System.err.println(account+"-push1");
+					//System.err.println(account+"-push1");
 					Basket.getInstance().push();
-					System.err.println(account+"-push2");
+					//System.err.println(account+"-push2");
 				}
 			}else{
 				try{
@@ -1129,7 +1129,7 @@ public class Task implements Runnable {
 			}
 			
 			//启动检测线程
-			if(FHD.contains("#"+st+"#")&&retry<3){
+			if(FHD.contains("#"+st+"#")&&retry<Checker.RT){
 				Checker checker = new Checker(this);
 				Engine.getInstance().addChecker(checker);
 			}

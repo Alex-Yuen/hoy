@@ -856,6 +856,16 @@ public class QQOL implements Observer{
 					@Override
 					public void run() {					
 						table.getItem(msg.getTid()-1).setText(3, (String)msg.getData());
+						//table.getItem(msg.getTid()-1).setData(System.currentTimeMillis());
+						//table.setSelection(msg.getTid()-1);
+					}
+				});
+				break;
+			case EngineMessageType.OM_OLTIME://在线时间计时
+				Display.getDefault().asyncExec(new Runnable() {
+					@Override
+					public void run() {					
+						//table.getItem(msg.getTid()-1).setText(3, (String)msg.getData());
 						table.getItem(msg.getTid()-1).setData(System.currentTimeMillis());
 						//table.setSelection(msg.getTid()-1);
 					}
