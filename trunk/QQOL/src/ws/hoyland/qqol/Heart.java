@@ -46,7 +46,7 @@ public class Heart extends TimerTask {
 	
 	@Override
 	public void run() {
-		System.err.println("Heart beat["+Util.format(new Date())+"]:"+Engine.getInstance().getActiveCount()+"/"+Engine.getInstance().getQueueCount());
+		System.err.println("Heart beat["+Util.format(new Date())+"]:"+Engine.getInstance().getActiveCount()+"/"+Engine.getInstance().getQueueCount()+"-"+Engine.getInstance().getActiveCountX()+"/"+Engine.getInstance().getQueueCountX());
 		System.gc();
 		//读取SocketLand中的Clients
 		//每个发送一个心跳包
@@ -90,8 +90,8 @@ public class Heart extends TimerTask {
 //				}
 //				Engine.getInstance().getAcccounts().get(account).remove("login");
 //				Engine.getInstance().addTask(new Task(Task.TYPE_0825, account));
-//			}else{
-				if(Engine.getInstance().getAcccounts().get(account).get("login")!=null){//已经登录的才发送心跳包
+//			}else{0058DOING
+				if(Engine.getInstance().getAcccounts().get(account).get("login")!=null&&Engine.getInstance().getAcccounts().get(account).get("0058DOING")==null){//已经登录的，0058处理完毕的才发送心跳包
 					//Engine.getInstance().addTask((new Beater(account, (int)delay*idx)));
 					//Engine.getInstance().send(new TaskSender(new Task(Task.TYPE_0058, account), current, 5*idx));//5*idx-(System.currentTimeMillis()-current)
 					Engine.getInstance().addTask(new Task(Task.TYPE_0058, account));

@@ -49,14 +49,14 @@ public class Engine extends Observable {
 	private int cptType = 0;
 	private boolean running = false;
 	private ThreadPoolExecutor pool; //Task, Receiver专用
-	private ThreadPoolExecutor poolx; //checker专用
+	private ThreadPoolExecutor poolx; //Checker, Sleeper专用
 	//private int mindex = 0;
 	//private int mcount = 0;
 	private Configuration configuration = Configuration.getInstance();
 	private Queue<String> queue = null;
 	
 	private static int CORE_COUNT = 200;
-	private static int CORE_COUNT_X = 400;
+	private static int CORE_COUNT_X = 300;
 	
 	private Object[] accs = null;
 //	private int recc = 0;//reconnect count
@@ -342,7 +342,7 @@ public class Engine extends Observable {
 						mindex = 0;
 					}**/
 					queue = new LinkedList<String>();					
-					channels = new HashMap<String, DatagramChannel>();
+					channels = new LinkedHashMap<String, DatagramChannel>();//HashMap
 					
 					//for (int i = 0; i < accounts.size(); i++) {
 					
@@ -1035,9 +1035,25 @@ public class Engine extends Observable {
 		}
 	}
 	
+	public void addReceiver(Receiver receiver){
+		try{
+			pool.execute(receiver);
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+	}
+	
 	public void addChecker(Runnable checker){
 		try{
 			poolx.execute(checker);
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+	}
+	
+	public void addSleeper(Sleeper sleeper){
+		try{
+			poolx.execute(sleeper);
 		}catch(Exception e){
 			e.printStackTrace();
 		}
@@ -1052,13 +1068,7 @@ public class Engine extends Observable {
 //		}
 //	}
 	
-	public void addTask(Runnable task){
-		try{
-			pool.execute(task);
-		}catch(Exception e){
-			e.printStackTrace();
-		}
-	}
+
 	
 	public int getActiveCount(){
 		return pool.getActiveCount();
@@ -1066,5 +1076,13 @@ public class Engine extends Observable {
 	
 	public int getQueueCount(){
 		return pool.getQueue().size();
+	}
+	
+	public int getActiveCountX(){
+		return poolx.getActiveCount();
+	}
+	
+	public int getQueueCountX(){
+		return poolx.getQueue().size();
 	}
 }
