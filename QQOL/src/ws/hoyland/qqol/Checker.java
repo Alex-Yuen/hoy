@@ -21,7 +21,7 @@ public class Checker implements Runnable {
 			e.printStackTrace();
 		}
 		System.err.println("checker:"+task.getAccount()+"/"+task.getRetry()+"/"+task.getST());
-		if(Engine.getInstance().getAcccounts().get(task.getAccount()).get(task.getST()+"_"+Converts.bytesToHexString(task.getSEQ()))==null){
+		if(Engine.getInstance().getAcccounts().get(task.getAccount()).get(task.getST()+"_"+Converts.bytesToHexString(task.getSEQ()))==null&&Engine.getInstance().getAcccounts().get(task.getAccount()).get("0017L")==null){
 			Task taskx = null;
 			System.err.println("checker is null:"+task.getAccount()+"/"+task.getRetry()+"/"+task.getST());
 			if(task.getRetry()==2){//超时
@@ -41,6 +41,7 @@ public class Checker implements Runnable {
 					Engine.getInstance().getAcccounts().get(task.getAccount()).put("timeout", "T".getBytes());//已经登录的，设置免码登录
 				}
 				Engine.getInstance().getAcccounts().get(task.getAccount()).remove("login");
+				Engine.getInstance().getAcccounts().get(task.getAccount()).remove("0058DOING");
 				taskx = new Task(Task.TYPE_0825, task.getAccount());//不行就重新登录
 			}else{
 				taskx = new Task(task.getType(), task.getAccount());
@@ -49,6 +50,9 @@ public class Checker implements Runnable {
 			Engine.getInstance().addTask(taskx);
 		}else{
 			Engine.getInstance().getAcccounts().get(task.getAccount()).remove(task.getST()+"_"+Converts.bytesToHexString(task.getSEQ()));
+//			if("0058".equals(task.getST())){
+//				Engine.getInstance().getAcccounts().get(task.getAccount()).remove("0058DOING");
+//			}
 		}
 	}
 	

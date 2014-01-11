@@ -138,6 +138,7 @@ public class Task implements Runnable {
 		case TYPE_0825:
 			info("正在登录");
 			infoact();
+			details.remove("0017L");//标志未收到被挤线消息
 			try {
 				byte[] serverPBK = new byte[] { 0x04, (byte) 0x92, (byte) 0x8D,
 						(byte) 0x88, 0x50, 0x67, 0x30, (byte) 0x88,
@@ -1057,6 +1058,7 @@ public class Task implements Runnable {
 			}
 			break;
 		case TYPE_0058:
+			details.put("0058DOING", "T".getBytes());
 			try{
 				bsofplain = new ByteArrayOutputStream();
 				bsofplain.write(account.getBytes());
@@ -1107,11 +1109,11 @@ public class Task implements Runnable {
 					System.err.println(account+"-pop2");
 					System.err.println("->["+account+"]("+Util.format(new Date())+")"+Converts.bytesToHexString(Util.slice(baos.toByteArray(), 3, 2))+"["+retry+"]");
 					dc.write(ByteBuffer.wrap(baos.toByteArray()));
-					Thread.sleep(50);
+					Thread.sleep(6);
 				}catch(Exception e){
 					e.printStackTrace();
-					System.err.println("TYPE:"+type);
-				}finally{				
+					System.err.println("TYPE:"+type+"/"+account);
+				}finally{
 					System.err.println(account+"-push1");
 					Basket.getInstance().push();
 					System.err.println(account+"-push2");
