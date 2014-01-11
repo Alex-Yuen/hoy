@@ -437,6 +437,7 @@ public class Receiver implements Runnable{
 //					details.put("heart", "T".getBytes());
 //				}
 				details.remove("0058DOING");
+				System.err.println(account+" removing1 0058DOING:"+details.get("0058DOING"));
 			}
 		}catch(Exception e){
 			e.printStackTrace();

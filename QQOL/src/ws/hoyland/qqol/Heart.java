@@ -62,6 +62,7 @@ public class Heart extends TimerTask {
 		while(it.hasNext()){
 //			idx++;
 			String account = (String)it.next();
+			System.err.println(account+" reading 0058DOING:"+Engine.getInstance().getAcccounts().get(account).get("0058DOING"));
 //			float itv = 1.5f;
 //			if(Engine.getInstance().getAcccounts().get(account).get("login")==null){ //若是未登录，则缩短判断时间
 //				itv = 1.0f;
