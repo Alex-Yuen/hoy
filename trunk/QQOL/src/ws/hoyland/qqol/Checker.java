@@ -7,6 +7,7 @@ import ws.hoyland.util.EngineMessage;
 
 public class Checker implements Runnable {
 	private Task task;
+	public static int RT = 4;//总共尝试次数
 	
 	public Checker(Task task){
 		this.task = task;
@@ -20,11 +21,11 @@ public class Checker implements Runnable {
 		}catch(Exception e){
 			e.printStackTrace();
 		}
-		System.err.println("checker:"+task.getAccount()+"/"+task.getRetry()+"/"+task.getST());
+		//System.err.println("checker:"+task.getAccount()+"/"+task.getRetry()+"/"+task.getST());
 		if(Engine.getInstance().getAcccounts().get(task.getAccount()).get(task.getST()+"_"+Converts.bytesToHexString(task.getSEQ()))==null&&Engine.getInstance().getAcccounts().get(task.getAccount()).get("0017L")==null){
 			Task taskx = null;
 			System.err.println("checker is null:"+task.getAccount()+"/"+task.getRetry()+"/"+task.getST());
-			if(task.getRetry()==2){//超时
+			if(task.getRetry()==RT-1){//超时
 				tf();
 				info("超时, 重新登录");
 				synchronized(Engine.getInstance().getChannels()) {

@@ -479,6 +479,15 @@ public class Engine extends Observable {
 				this.setChanged();
 				this.notifyObservers(msg);
 				break;
+			case EngineMessageType.IM_OLTIME:
+				msg = new EngineMessage();
+				msg.setTid(message.getTid());
+				msg.setType(EngineMessageType.OM_OLTIME);
+				msg.setData(message.getData());
+				
+				this.setChanged();
+				this.notifyObservers(msg);
+				break;
 			case EngineMessageType.IM_PROFILE:
 				msg = new EngineMessage();
 				msg.setTid(message.getTid());
@@ -840,13 +849,14 @@ public class Engine extends Observable {
 			}
 		}
 		
+		/**
 		while(poolx!=null&&poolx.getActiveCount()!=0){
 			try{
 				Thread.sleep(1000);
 			}catch(Exception e){
 				//
 			}
-		}
+		}**/
 		
 		//等待所有运行线程执行完毕，关闭日志文件
 		while(pool!=null&&pool.getActiveCount()!=0){

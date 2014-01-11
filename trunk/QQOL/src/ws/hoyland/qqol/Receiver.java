@@ -316,7 +316,7 @@ public class Receiver implements Runnable{
 						System.err.println(Converts.bytesToHexString(details.get("key0828recv")));
 					}
 					//details.clear();//清空
-					details.put("sessionkey", Util.slice(decrypt, 63, 0x10));	
+					details.put("sessionkey", Util.slice(decrypt, 63, 0x10));
 					//idx++;		
 					//执行00EC
 					info("上线");
@@ -343,7 +343,7 @@ public class Receiver implements Runnable{
 					setProfile(level, days);
 					info(STS[status]+((status==1||status==2)&&"true".equals(Configuration.getInstance().getProperty("AUTO_REPLY"))?"[自动回复]":""));
 					details.put("login", "T".getBytes());
-					
+					oltime();//开始在线时间计时
 //					if(Engine.getInstance().getQueue().size()==0){
 //						EngineMessage msg = new EngineMessage();
 //						msg.setType(EngineMessageType.IM_COMPLETE);
@@ -502,6 +502,18 @@ public class Receiver implements Runnable{
 		message.setTid(this.id);
 		message.setType(EngineMessageType.IM_NICK);
 		message.setData(nick);
+
+		
+		//System.err.println("["+this.account+"]ACT("+tm+")");
+		Engine.getInstance().fire(message);
+	}
+	
+	private void oltime(){
+		
+		message = new EngineMessage();
+		message.setTid(this.id);
+		message.setType(EngineMessageType.IM_OLTIME);
+		//message.setData(nick);
 
 		
 		//System.err.println("["+this.account+"]ACT("+tm+")");
