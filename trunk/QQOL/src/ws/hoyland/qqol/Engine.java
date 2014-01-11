@@ -861,6 +861,7 @@ public class Engine extends Observable {
 		//等待所有运行线程执行完毕，关闭日志文件
 		while(pool!=null&&pool.getActiveCount()!=0){
 			try{
+				System.err.println("pool:"+pool.getActiveCount());
 				Thread.sleep(1000);
 			}catch(Exception e){
 				//

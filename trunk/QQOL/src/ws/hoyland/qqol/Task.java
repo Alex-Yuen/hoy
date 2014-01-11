@@ -1059,7 +1059,9 @@ public class Task implements Runnable {
 			break;
 		case TYPE_0058:
 			details.put("0058DOING", "T".getBytes());
+			System.err.println(account+" writng 0058DOING:"+details.get("0058DOING"));
 			try{
+				System.err.println(account+":0058-1");
 				bsofplain = new ByteArrayOutputStream();
 				bsofplain.write(account.getBytes());
 					
@@ -1072,9 +1074,11 @@ public class Task implements Runnable {
 				baos.write(new byte[]{0x02, 0x00, retry, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00, 0x66, (byte)0xA2});//retry 是第几次发0058的包
 				baos.write(encrypt);
 				baos.write(new byte[]{0x03});
+				System.err.println(account+":0058-2");
 			}catch(Exception e){
 				e.printStackTrace();
 			}
+			System.err.println(account+":0058-3");
 			break;
 		default:
 			break;
@@ -1101,23 +1105,46 @@ public class Task implements Runnable {
 			
 //			System.out.println("SEND:");
 //			System.out.println(Converts.bytesToHexString(baos.toByteArray()));
-			
+			if("0058".equals(this.st)){
+				System.err.println(account+":0058-4");
+			}
 			if(!"0062".equals(this.st)){
 				try{
+					if("0058".equals(this.st)){
+						System.err.println(account+":0058-5");
+					}
 					//System.err.println(account+"-pop1");
 					Basket.getInstance().pop();
+					if("0058".equals(this.st)){
+						System.err.println(account+":0058-6");
+					}
 					//System.err.println(account+"-pop2");
 					System.err.println("->["+account+"]("+Util.format(new Date())+")"+Converts.bytesToHexString(Util.slice(baos.toByteArray(), 3, 2))+"["+retry+"]");
+					if("0058".equals(this.st)){
+						System.err.println(account+":0058-7");
+					}
 					dc.write(ByteBuffer.wrap(baos.toByteArray()));
-					//Thread.sleep(6);
+					if("0058".equals(this.st)){
+						System.err.println(account+":0058-8");
+					}
+					Thread.sleep(5);
+					if("0058".equals(this.st)){
+						System.err.println(account+":0058-9");
+					}
 				}catch(Exception e){
 					e.printStackTrace();
 					System.err.println("TYPE:"+type+"/"+account);
 				}finally{
 					//System.err.println(account+"-push1");
+					if("0058".equals(this.st)){
+						System.err.println(account+":0058-10");
+					}
 					Basket.getInstance().push();
+					if("0058".equals(this.st)){
+						System.err.println(account+":0058-11");
+					}
 					//System.err.println(account+"-push2");
-				}
+				}				
 			}else{
 				try{
 					System.err.println("->["+account+"]("+Util.format(new Date())+")"+Converts.bytesToHexString(Util.slice(baos.toByteArray(), 3, 2))+"["+retry+"]");
@@ -1127,7 +1154,9 @@ public class Task implements Runnable {
 					System.err.println("TYPE:"+type+"/"+account);
 				}
 			}
-			
+			if("0058".equals(this.st)){
+				System.err.println(account+":0058-12");
+			}
 			//启动检测线程
 			if(FHD.contains("#"+st+"#")&&retry<Checker.RT){
 				Checker checker = new Checker(this);
