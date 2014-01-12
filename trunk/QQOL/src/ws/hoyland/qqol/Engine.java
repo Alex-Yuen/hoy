@@ -83,7 +83,7 @@ public class Engine extends Observable {
 		
 	}
 	
-	public static Engine getInstance(){
+	public static synchronized Engine getInstance(){
 		if(instance==null){
 			instance = new Engine();
 		}

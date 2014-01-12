@@ -17,8 +17,9 @@ public class BasketX {
 		
 	}
 	
-	public static BasketX getInstance(){
+	public static synchronized BasketX getInstance(){
 		if(instance==null){
+			System.err.println("new basketx");
 			instance = new BasketX();
 		}
 		return instance;
@@ -27,6 +28,7 @@ public class BasketX {
 	public void push() {
 //		System.err.println("PUSH");
 		try {
+			System.err.println("remove"+queue.size());
 			queue.remove();
 			if (queue.size() > 0) {
 				Object object = queue.peek();
@@ -43,11 +45,17 @@ public class BasketX {
 		try {
 			Object object = new Object();
 			queue.add(object);
+			System.err.println(this+"add"+queue.size());
+			//queue.
 			if(object!=queue.peek()){
+				System.err.println(this+"/2:"+queue.size());
 				synchronized(object){
 					object.wait();
 				}
+			}else{
+				System.err.println(this+"/1:"+queue.size());
 			}
+			//System.err.println("after"+queue.size());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
