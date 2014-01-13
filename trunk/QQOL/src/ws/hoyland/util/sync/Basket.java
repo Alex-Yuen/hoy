@@ -14,7 +14,7 @@ public class Basket {
 		
 	}
 	
-	public static Basket getInstance(){
+	public static synchronized Basket getInstance(){
 		if(instance==null){
 			instance = new Basket();
 		}

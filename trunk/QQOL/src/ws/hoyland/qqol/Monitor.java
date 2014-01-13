@@ -32,7 +32,7 @@ public class Monitor implements Runnable {
 		this.wakeup = wakeup;
 	}
 
-	public static Monitor getInstance( ){
+	public static synchronized Monitor getInstance( ){
 		if(instance==null){
 			instance = new Monitor();
 		}

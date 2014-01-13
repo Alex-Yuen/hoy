@@ -28,7 +28,7 @@ public class Configuration extends Properties {
 		}
 	}
 
-	public static Configuration getInstance(){
+	public static synchronized Configuration getInstance(){
 		if(instance==null){
 			instance = new Configuration();
 		}
