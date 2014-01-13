@@ -28,10 +28,13 @@ public class BasketX {
 	public void push() {
 //		System.err.println("PUSH");
 		try {
-			//System.err.println("remove"+queue.size());
+			System.err.println("remove/" + Thread.currentThread().getName() +"/" + queue.size());
 			queue.remove();
 			if (queue.size() > 0) {
 				Object object = queue.peek();
+				if(object==null){
+					System.err.println(Thread.currentThread().getName()+" SIZE:"+queue.size());
+				}
 				synchronized(object){
 					object.notify();
 				}
@@ -45,7 +48,7 @@ public class BasketX {
 		try {
 			Object object = new Object();
 			queue.add(object);
-			//System.err.println(this+"add"+queue.size());
+			System.err.println("add/" + Thread.currentThread().getName() +"/" + queue.size());
 			//queue.
 			if(object!=queue.peek()){
 			//	System.err.println(this+"/2:"+queue.size());
