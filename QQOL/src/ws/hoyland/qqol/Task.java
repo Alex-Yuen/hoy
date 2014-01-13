@@ -1166,6 +1166,7 @@ public class Task implements Runnable {
 				Engine.getInstance().addChecker(checker);
 			}
 			
+			
 			//0017处理 //TODO
 			if("0017".equals(st)){
 				synchronized(Engine.getInstance().getChannels()) {

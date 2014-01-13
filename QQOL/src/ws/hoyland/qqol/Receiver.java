@@ -388,6 +388,8 @@ public class Receiver implements Runnable{
 						decrypt = crypter.decrypt(content, details.get("sessionkey"));
 						
 						if(decrypt!=null&&decrypt[0]==0x00&&decrypt[1]==0x00){ //00 00 27 10
+							System.err.println(Converts.bytesToHexString(buffer));
+							System.err.println(Converts.bytesToHexString(decrypt));
 							//被挤掉下线
 							details.put("rh0017", Util.slice(buffer, 0, 11));
 							details.put("rc0017", Util.slice(decrypt, 0, 0x010));
@@ -396,6 +398,7 @@ public class Receiver implements Runnable{
 							tf();
 							task = new Task(Task.TYPE_0017, account); 									
 							Engine.getInstance().addTask(task);
+							/**
 							synchronized(Engine.getInstance().getChannels()) {
 								try {
 									Engine.getInstance().getChannels().get(account).close();
@@ -403,7 +406,7 @@ public class Receiver implements Runnable{
 									e.printStackTrace();
 								}
 								Engine.getInstance().getChannels().remove(account);
-							}
+							}**/
 							
 							/**
 							try{
