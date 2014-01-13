@@ -361,7 +361,7 @@ public class Names {
 		Name[78] = "zuo|作左佐笮凿";
 	}
 
-	public static Names getInstance() {
+	public static synchronized Names getInstance() {
 		if (instance == null) {
 			instance = new Names();
 		}
