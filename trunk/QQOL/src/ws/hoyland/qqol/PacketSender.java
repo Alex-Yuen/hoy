@@ -34,6 +34,7 @@ public class PacketSender implements Runnable {
 			try{
 				packet = queue.take();
 				packet.getDc().write(packet.getBuffer());
+				Thread.sleep(5);
 			}catch(Exception e){
 				e.printStackTrace();
 			}
