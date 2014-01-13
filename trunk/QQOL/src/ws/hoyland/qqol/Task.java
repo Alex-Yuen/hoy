@@ -1059,7 +1059,7 @@ public class Task implements Runnable {
 			break;
 		case TYPE_0058:
 			details.put("0058DOING", "T".getBytes());
-			System.err.println(account+" writing 0058DOING:"+details.get("0058DOING"));
+//			System.err.println(account+" writing 0058DOING:"+details.get("0058DOING"));
 			try{
 				//System.err.println(account+":0058-1");
 				bsofplain = new ByteArrayOutputStream();
