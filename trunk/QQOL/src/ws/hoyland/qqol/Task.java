@@ -32,7 +32,6 @@ import ws.hoyland.util.Crypter;
 import ws.hoyland.util.DM;
 import ws.hoyland.util.EngineMessage;
 import ws.hoyland.util.YDM;
-import ws.hoyland.util.sync.BasketX;
 
 public class Task implements Runnable {
 	public final static byte TYPE_0825 = 0x01;
@@ -1108,6 +1107,9 @@ public class Task implements Runnable {
 //			if("0058".equals(this.st)){
 //				System.err.println(account+":0058-4");
 //			}
+			System.err.println("->["+account+"]("+Util.format(new Date())+")"+Converts.bytesToHexString(Util.slice(baos.toByteArray(), 3, 2))+"["+retry+"]");
+			PacketSender.getInstance().put(new Packet(dc, ByteBuffer.wrap(baos.toByteArray())));
+			/**
 			if(!"0062".equals(this.st)){
 				try{
 //					if("0058".equals(this.st)){
@@ -1154,16 +1156,17 @@ public class Task implements Runnable {
 					System.err.println("TYPE:"+type+"/"+account);
 				}
 			}
+			**/
 //			if("0058".equals(this.st)){
 //				System.err.println(account+":0058-12");
 //			}
-			//启动检测线程
+			//启动检测线程 //TODO
 			if(FHD.contains("#"+st+"#")&&retry<Checker.RT){
 				Checker checker = new Checker(this);
 				Engine.getInstance().addChecker(checker);
 			}
 			
-			//0017处理
+			//0017处理 //TODO
 			if("0017".equals(st)){
 				synchronized(Engine.getInstance().getChannels()) {
 					try {

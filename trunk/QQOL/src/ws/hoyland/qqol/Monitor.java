@@ -23,7 +23,7 @@ public class Monitor implements Runnable {
 		//this.bf = ByteBuffer.allocate(1024);
 		this.run = true;
 	}
-
+	
 	public void stop() {
 		this.run = false;
 	}
@@ -32,10 +32,14 @@ public class Monitor implements Runnable {
 		this.wakeup = wakeup;
 	}
 
+	public static synchronized void reset(){
+		instance = new Monitor();
+	}
+	
 	public static synchronized Monitor getInstance( ){
-		if(instance==null){
-			instance = new Monitor();
-		}
+//		if(instance==null){
+//			instance = new Monitor();
+//		}
 		return instance;
 	}
 	

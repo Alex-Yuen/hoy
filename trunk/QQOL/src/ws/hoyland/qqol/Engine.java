@@ -330,7 +330,7 @@ public class Engine extends Observable {
 					
 					corePoolSize = CORE_COUNT_X;
 					maxPoolSize = CORE_COUNT_X;
-					maxTaskSize = (1024 + 512) * 100 * 40;
+					maxTaskSize = (1024 + 512) * 100 * 30;
 					workQueue = new ArrayBlockingQueue<Runnable>(
 							maxTaskSize);
 					poolx = new ThreadPoolExecutor(corePoolSize,
@@ -365,6 +365,10 @@ public class Engine extends Observable {
 					}, 1000, 1000);
 					
 					//monitor = new Monitor();
+					PacketSender.reset();
+					new Thread(PacketSender.getInstance()).start();//开始发送
+					
+					Monitor.reset();
 					new Thread(Monitor.getInstance()).start();//开始监听
 					
 					running = true;
@@ -840,6 +844,9 @@ public class Engine extends Observable {
 		if(timer!=null){
 			timer.cancel();
 		}
+		
+		Monitor.getInstance().stop();
+		
 		if(pool!=null&&channels!=null){
 			for(String account : channels.keySet()){
 				if(accounts.get(account).get("login")!=null){//已经登录的，发送离线消息
@@ -867,6 +874,8 @@ public class Engine extends Observable {
 				//
 			}
 		}
+		
+		PacketSender.getInstance().stop();
 		
 		if(poolx!=null){
 			//pool.shutdown();
