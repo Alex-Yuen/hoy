@@ -381,7 +381,8 @@ public class Receiver implements Runnable{
 					Engine.getInstance().addTask(task);
 				}
 			}else if(header[0]==(byte)0x00&&header[1]==(byte)0x17){
-				synchronized(account){//保证只有一个线程响应
+				synchronized(Engine.getInstance()){//保证只有一个线程响应
+					System.err.println(account+"/1/"+this+details.get("0017L"));
 					if(buffer.length==231&&details.get("0017L")==null){// 被挤线的处理
 						details.put("0017L", "T".getBytes());
 						content = Util.slice(buffer, 14, buffer.length-15);
@@ -393,11 +394,14 @@ public class Receiver implements Runnable{
 							//被挤掉下线
 							details.put("rh0017", Util.slice(buffer, 0, 11));
 							details.put("rc0017", Util.slice(decrypt, 0, 0x010));
-	
+							System.err.println(account+"/2/"+this+details.get("0017L"));
 							info("被挤线，等待重新登录");
+							System.err.println(account+"/3/"+this+details.get("0017L"));
 							tf();
+							System.err.println(account+"/4/"+this+details.get("0017L"));
 							task = new Task(Task.TYPE_0017, account); 									
 							Engine.getInstance().addTask(task);
+							System.err.println(account+"/5/"+this+details.get("0017L"));
 							/**
 							synchronized(Engine.getInstance().getChannels()) {
 								try {
