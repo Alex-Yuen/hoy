@@ -33,7 +33,8 @@ public class EngineMessageType {
 	public static final int IM_RELOGIN = 0x1031;
 	public static final int IM_COMPLETE = 0x1032;
 	public static final int IM_OLTIME = 0x1033;
-	
+
+	public static final int IM_EXPORT = 0x1034;
 	//outgoing message
 	public static final int OM_LOGINING = 0x2010;
 	public static final int OM_LOGINED = 0x2011;

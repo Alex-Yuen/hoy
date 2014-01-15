@@ -1,7 +1,6 @@
 package ws.hoyland.qqol;
 
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.nio.ByteBuffer;
@@ -137,6 +136,7 @@ public class Task implements Runnable {
 		case TYPE_0825:
 			info("正在登录");
 			infoact();
+			//details.put("loginresult", "9".getBytes());
 			details.remove("0017L");//标志未收到被挤线消息
 			try {
 				byte[] serverPBK = new byte[] { 0x04, (byte) 0x92, (byte) 0x8D,
@@ -799,7 +799,7 @@ public class Task implements Runnable {
 				});
 				//System.out.println("V:"+Converts.bytesToHexString(bsofplain.toByteArray()));	
 				encrypt = crypter.encrypt(bsofplain.toByteArray(), details.get("key0828"));
-				//System.out.println(Converts.bytesToHexString(encrypt));		
+				//System.out.println(Converts.bytesToHexString(encrypt));
 				
 				baos = new ByteArrayOutputStream();
 				baos.write(new byte[]{
@@ -1108,7 +1108,21 @@ public class Task implements Runnable {
 //				System.err.println(account+":0058-4");
 //			}
 			System.err.println("->["+account+"]("+Util.format(new Date())+")"+Converts.bytesToHexString(Util.slice(baos.toByteArray(), 3, 2))+"["+retry+"]");
-			PacketSender.getInstance().put(new Packet(dc, ByteBuffer.wrap(baos.toByteArray())));
+			//0017处理
+			if("0017".equals(st)){
+				dc.write(ByteBuffer.wrap(baos.toByteArray()));
+				Thread.sleep(5);
+				synchronized(Engine.getInstance().getChannels()) {
+					try {
+						Engine.getInstance().getChannels().get(account).close();
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+					Engine.getInstance().getChannels().remove(account);
+				}
+			}else{			
+				PacketSender.getInstance().put(new Packet(dc, ByteBuffer.wrap(baos.toByteArray())));
+			}
 			/**
 			if(!"0062".equals(this.st)){
 				try{
@@ -1164,20 +1178,7 @@ public class Task implements Runnable {
 			if(FHD.contains("#"+st+"#")&&retry<Checker.RT){
 				Checker checker = new Checker(this);
 				Engine.getInstance().addChecker(checker);
-			}
-			
-			
-			//0017处理 //TODO
-			if("0017".equals(st)){
-				synchronized(Engine.getInstance().getChannels()) {
-					try {
-						Engine.getInstance().getChannels().get(account).close();
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-					Engine.getInstance().getChannels().remove(account);
-				}
-			}
+			}			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
