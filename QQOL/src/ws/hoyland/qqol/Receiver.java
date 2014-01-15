@@ -2,6 +2,7 @@ package ws.hoyland.qqol;
 
 import java.io.IOException;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.Map;
 
 import ws.hoyland.util.Configuration;
@@ -42,10 +43,12 @@ public class Receiver implements Runnable{
 			this.details = Engine.getInstance().getAcccounts().get(account);
 			this.seq = Converts.bytesToHexString(Util.slice(buffer, 5, 2));
 //			System.err.println(this.seq);
+//			System.err.println(Converts.bytesToHexString(header)+"-A");
 //			System.err.println(Converts.bytesToHexString(this.details.get(Converts.bytesToHexString(this.header)+"SEQ")));
 			try{
 			if(this.details.get(Converts.bytesToHexString(this.header)+"SEQ")!=null&&!this.seq.equals(Converts.bytesToHexString(this.details.get(Converts.bytesToHexString(this.header)+"SEQ")))){
 				//不是最新的包，不做处理
+//				System.err.println(Converts.bytesToHexString(header)+"-B");
 				return;
 			}}catch(Exception e){
 //				System.err.println("account:"+account);
@@ -105,6 +108,7 @@ public class Receiver implements Runnable{
 //						//Engine.getInstance().addTask(task);
 //					}else{
 					if(direct){
+						//读取cookie，并处理，然后更新
 						Map<String, byte[]> map = Cookie.getInstance().get(account);
 						map.put("ips", details.get("ips"));
 						map.put("ip", details.get("ip"));
@@ -114,10 +118,22 @@ public class Receiver implements Runnable{
 								map.put(key, details.get(key));
 							}
 						}
-						Engine.getInstance().getAcccounts().put(account, map);						
+						Iterator<String> it = map.keySet().iterator();
+						while(it.hasNext()){
+							if(it.next().endsWith("SEQ")){
+								it.remove();
+							}
+						}
+						
+						map.remove("login");
+						map.remove("0058DOING");
+						map.remove("0017L");
 						Cookie.getInstance().put(account, map);
 						
-						setNick(new String(map.get("nick"), "utf-8"));
+						//设置cookie
+						details = map;
+						Engine.getInstance().getAcccounts().put(account, details);
+						
 						info("获取会话密钥");
 						
 						//System.err.println(details);
@@ -243,7 +259,7 @@ public class Receiver implements Runnable{
 					//System.err.println(nickidx);
 					//System.err.println("Nick:"+new String(nick, "utf-8"));
 					details.put("nick", nick);
-					setNick(new String(nick, "utf-8"));
+					//setNick(new String(nick, "utf-8"));
 					
 					details.put("key0828recv", Util.slice(decrypt, rbof0836.indexOf("0000003C0002")/2+6, 0x10));
 					details.put("logintime", Util.slice(decrypt, rbof0836.indexOf("00880004")/2+4, 4));
@@ -342,6 +358,7 @@ public class Receiver implements Runnable{
 				}else{
 					//System.out.println("OK");
 					info("获取成功");
+					setNick(new String(details.get("nick"), "utf-8"));
 					details.put("savetime", String.valueOf(System.currentTimeMillis()).getBytes());
 					Cookie.getInstance().put(account, details);//保存cookie
 					content = Util.slice(buffer, 14, buffer.length-15);
@@ -424,6 +441,12 @@ public class Receiver implements Runnable{
 			}else if(header[0]==(byte)0x00&&header[1]==(byte)0x17){
 				synchronized(Engine.getInstance()){//保证只有一个线程响应
 					//System.err.println(account+"/1/"+this+details.get("0017L"));
+//					System.err.println(Converts.bytesToHexString(buffer));
+//					content = Util.slice(buffer, 14, buffer.length-15);
+//					decrypt = crypter.decrypt(content, details.get("sessionkey"));
+//					System.err.println(Converts.bytesToHexString(decrypt));
+					System.err.println("0017 length:"+buffer.length);
+					
 					if(buffer.length==231&&details.get("0017L")==null){// 被挤线的处理
 						details.put("0017L", "T".getBytes());
 						content = Util.slice(buffer, 14, buffer.length-15);
