@@ -36,6 +36,8 @@ import org.eclipse.swt.widgets.MenuItem;
 
 import ws.hoyland.util.Configuration;
 import ws.hoyland.util.EngineMessage;
+import org.eclipse.swt.events.MouseAdapter;
+import org.eclipse.swt.events.MouseEvent;
 
 public class QQOL implements Observer{
 
@@ -76,6 +78,7 @@ public class QQOL implements Observer{
 	private TableColumn tblclmnNewColumn;
 	private TableColumn tblclmnNewColumn_1;
 	private TableColumn tblclmnNewColumn_2;
+	private Menu menu;
 	/**
 	 * Launch the application.
 	 * @param args
@@ -191,7 +194,7 @@ public class QQOL implements Observer{
 		label.setBounds(0, 1, 60, 17);
 		
 		label_1 = new Label(shlSszs, SWT.BORDER | SWT.WRAP);
-		label_1.setBounds(66, 1, 598, 17);
+		label_1.setBounds(66, 1, 555, 17);
 		
 		Link link = new Link(shlSszs, 0);
 		link.addSelectionListener(new SelectionAdapter() {
@@ -210,7 +213,7 @@ public class QQOL implements Observer{
 			}
 		});
 		link.setText("<a>导入...</a>");
-		link.setBounds(670, 1, 36, 17);
+		link.setBounds(627, 1, 36, 17);
 		
 		table = new Table(shlSszs, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI);
 		table.addSelectionListener(new SelectionAdapter() {
@@ -601,6 +604,105 @@ public class QQOL implements Observer{
 		combo.setItems(new String[] {"云打码", "悠悠云", "手动输入"});
 		combo.setBounds(10, 15, 97, 23);
 		combo.select(0);
+		
+		Link link_2 = new Link(shlSszs, SWT.NONE);
+		link_2.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseUp(MouseEvent e) {
+				if(e.button==1){
+					//menu.
+					menu.setVisible(true);
+					return;
+				}else {
+					menu.setVisible(false);
+					return;
+				}
+				
+				
+				//System.out.println("OK:"+e.button);
+			}
+		});
+		link_2.setBounds(669, 1, 37, 17);
+		link_2.setText("<a>导出...</a>");
+		
+		menu = new Menu(link_2);
+		link_2.setMenu(menu);
+		
+		MenuItem mntmNewItem_1 = new MenuItem(menu, SWT.NONE);
+		mntmNewItem_1.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				final FileDialog fileDlg = new FileDialog(shlSszs, SWT.SAVE);
+				//fileDlg.setFilterPath(null);
+				fileDlg.setFilterExtensions(new String[] { "*.txt", "*.*" });
+				fileDlg.setText("保存帐号[密码正确]");
+				String filePath = fileDlg.open();
+				if(filePath!=null){
+					EngineMessage message = new EngineMessage();
+					message.setType(EngineMessageType.IM_EXPORT);
+					message.setData("0|"+filePath);
+					Engine.getInstance().fire(message);
+				}
+			}
+		});
+		mntmNewItem_1.setText("密码正确帐号...");
+		
+		MenuItem mntmNewItem_2 = new MenuItem(menu, SWT.NONE);
+		mntmNewItem_2.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				final FileDialog fileDlg = new FileDialog(shlSszs, SWT.SAVE);
+				//fileDlg.setFilterPath(null);
+				fileDlg.setFilterExtensions(new String[] { "*.txt", "*.*" });
+				fileDlg.setText("保存帐号[密码错误]");
+				String filePath = fileDlg.open();
+				if(filePath!=null){
+					EngineMessage message = new EngineMessage();
+					message.setType(EngineMessageType.IM_EXPORT);
+					message.setData("1|"+filePath);
+					Engine.getInstance().fire(message);
+				}
+			}
+		});
+		mntmNewItem_2.setText("密码错误帐号...");
+		
+		MenuItem menuItem = new MenuItem(menu, SWT.NONE);
+		menuItem.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				final FileDialog fileDlg = new FileDialog(shlSszs, SWT.SAVE);
+				//fileDlg.setFilterPath(null);
+				fileDlg.setFilterExtensions(new String[] { "*.txt", "*.*" });
+				fileDlg.setText("保存帐号[需要密保]");
+				String filePath = fileDlg.open();
+				if(filePath!=null){
+					EngineMessage message = new EngineMessage();
+					message.setType(EngineMessageType.IM_EXPORT);
+					message.setData("2|"+filePath);
+					Engine.getInstance().fire(message);
+				}
+			}
+		});
+		menuItem.setText("需密保帐号...");
+		
+		MenuItem menuItem_2 = new MenuItem(menu, SWT.NONE);
+		menuItem_2.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				final FileDialog fileDlg = new FileDialog(shlSszs, SWT.SAVE);
+				//fileDlg.setFilterPath(null);
+				fileDlg.setFilterExtensions(new String[] { "*.txt", "*.*" });
+				fileDlg.setText("保存帐号[冻结帐号]");
+				String filePath = fileDlg.open();
+				if(filePath!=null){
+					EngineMessage message = new EngineMessage();
+					message.setType(EngineMessageType.IM_EXPORT);
+					message.setData("3|"+filePath);
+					Engine.getInstance().fire(message);
+				}
+			}
+		});
+		menuItem_2.setText("冻结帐号...");
 
 	}
 
@@ -768,7 +870,7 @@ public class QQOL implements Observer{
 					public void run() {
 						if((Boolean)msg.getData()){
 							status.setText("正在登录...");
-							button_2.setText("停止");
+							button_2.setText("结束");
 							//button_4.setEnabled(true);
 						}else{
 							first = -1;

@@ -1,19 +1,25 @@
 package ws.hoyland.qqol;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 //import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileWriter;
 //import java.io.FileWriter;
 import java.io.InputStreamReader;
+//import java.net.URL;
 import java.nio.channels.DatagramChannel;
+//import java.text.DateFormat;
 //import java.net.URL;
 //import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.LinkedHashMap;
 import java.util.HashMap;
+//import java.util.Date;
 //import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -29,6 +35,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.ThreadPoolExecutor.AbortPolicy;
 
 import ws.hoyland.util.Configuration;
+import ws.hoyland.util.CopiedIterator;
 import ws.hoyland.util.DM;
 import ws.hoyland.util.EngineMessage;
 import ws.hoyland.util.YDM;
@@ -67,9 +74,9 @@ public class Engine extends Observable {
 	
 	//private BufferedWriter[] output = new BufferedWriter[5]; //成功，失败，未运行
 	//private String[] fns = new String[]{"成功", "失败", "未运行帐号", "已使用邮箱", "未使用邮箱"}; 
-	//private String[] fns = new String[]{"成功", "失败", "密码错误", "帐号冻结", "未运行帐号"};
-	//private URL url = Engine.class.getClassLoader().getResource("");
-	//private String xpath = url.getPath();
+//	private String[] fns = new String[]{"密码正确", "密码错误", "需要密保", "帐号冻结"};
+//	private URL url = Engine.class.getClassLoader().getResource("");
+//	private String xpath = url.getPath();
 //	private int lastTid = 0;
 //	private boolean pause = false;
 	//private boolean freq = false;
@@ -159,6 +166,7 @@ public class Engine extends Observable {
 							details = new HashMap<String, byte[]>();
 							details.put("id", nlns[0].getBytes());
 							details.put("password", nlns[2].getBytes());
+							details.put("loginresult", "9".getBytes());
 							accounts.put(nlns[1], details);
 							List<String> lns = new ArrayList<String>();
 							lns.add(nlns[0]);
@@ -797,6 +805,11 @@ public class Engine extends Observable {
 				shutdown();
 				System.exit(0);
 				break;
+			case EngineMessageType.IM_EXPORT:
+				String[] paths = ((String)message.getData()).split("\\|");
+				export(paths[0], paths[1]);
+				
+				break;
 //			case EngineMessageType.IM_FREQ:
 ////				recc = 0;
 ////				frecc = 0;
@@ -830,6 +843,47 @@ public class Engine extends Observable {
 		}
 	}
 
+	private void export(String type, String path) {
+		//DateFormat format = new java.text.SimpleDateFormat("yyyy年MM月dd日 hh时mm分ss秒");
+		//String tm = format.format(new Date());
+		//File fff = new File(xpath + fns[Integer.parseInt(type)] + "-" + tm + ".txt");
+		File fff = new File(path);
+		BufferedWriter output = null;
+		try {
+			if (!fff.exists()) {
+				fff.createNewFile();
+			}
+				
+			output = new BufferedWriter(
+					new FileWriter(fff));
+			
+			Iterator<String> it = null;
+			synchronized(Engine.getInstance().getAcccounts()) {
+				it = new CopiedIterator(Engine.getInstance().getAcccounts().keySet().iterator());
+			}
+			int lr = 9;
+			while(it.hasNext()){
+				String account = (String)it.next();
+				lr = Integer.parseInt(new String(Engine.getInstance().getAcccounts().get(account).get("loginresult"), "utf-8"));
+				if(lr==Integer.parseInt(type)){
+					output.write(account+"----"+new String(Engine.getInstance().getAcccounts().get(account).get("password"), "utf-8")+ "\r\n");
+				}
+			}
+			output.flush();
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally{
+			if(output!=null){
+				try{
+					output.close();
+				}catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+
 	private void shutdown() {
 		/**
 		EngineMessage msg = new EngineMessage();
@@ -845,7 +899,9 @@ public class Engine extends Observable {
 			timer.cancel();
 		}
 		
-		Monitor.getInstance().stop();
+		if(Monitor.getInstance()!=null){
+			Monitor.getInstance().stop();
+		}
 		
 		if(pool!=null&&channels!=null){
 			for(String account : channels.keySet()){
@@ -875,7 +931,9 @@ public class Engine extends Observable {
 			}
 		}
 		
-		PacketSender.getInstance().stop();
+		if(PacketSender.getInstance()!=null){
+			PacketSender.getInstance().stop();
+		}
 		
 		if(poolx!=null){
 			//pool.shutdown();

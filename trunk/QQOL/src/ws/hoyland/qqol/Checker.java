@@ -37,10 +37,12 @@ public class Checker implements Runnable {
 					}
 					Engine.getInstance().getChannels().remove(task.getAccount());
 				}
-				
+
+				/**
 				if(Engine.getInstance().getAcccounts().get(task.getAccount()).get("login")!=null){
 					Engine.getInstance().getAcccounts().get(task.getAccount()).put("timeout", "T".getBytes());//已经登录的，设置免码登录
 				}
+				**/
 				Engine.getInstance().getAcccounts().get(task.getAccount()).remove("login");
 				Engine.getInstance().getAcccounts().get(task.getAccount()).remove("0058DOING");
 				System.err.println(task.getAccount()+" removing2 0058DOING:"+Engine.getInstance().getAcccounts().get(task.getAccount()).get("0058DOING"));

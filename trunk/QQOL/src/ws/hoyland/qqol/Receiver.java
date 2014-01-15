@@ -6,6 +6,7 @@ import java.util.Map;
 
 import ws.hoyland.util.Configuration;
 import ws.hoyland.util.Converts;
+import ws.hoyland.util.Cookie;
 import ws.hoyland.util.Crypter;
 import ws.hoyland.util.EngineMessage;
 
@@ -90,11 +91,34 @@ public class Receiver implements Runnable{
 					task = new Task(Task.TYPE_0825, account);
 				}else{
 					//发起0836或免码直接0828
-					if(details.get("timeout")!=null){
-						details.remove("timeout");
+					boolean direct = false;
+					if(Cookie.getInstance().get(account)!=null){
+						long savetime = Long.parseLong(new String(Cookie.getInstance().get(account).get("savetime"), "utf-8"));
+						if(System.currentTimeMillis()-savetime<1000*60*60*24){//未超时
+							direct = true;
+						}
+					}
+//					if(details.get("timeout")!=null){
+//						details.remove("timeout");
+//						info("获取会话密钥");
+//						task = new Task(Task.TYPE_0828, account);
+//						//Engine.getInstance().addTask(task);
+//					}else{
+					if(direct){
 						info("获取会话密钥");
+						
+						Map<String, byte[]> map = Cookie.getInstance().get(account);
+						map.put("ips", details.get("ips"));
+						map.put("ip", details.get("ip"));
+						for(String key:details.keySet()){
+							if(key.startsWith("0825")){//避免0825继续登录
+								map.put(key, details.get(key));
+							}
+						}
+						Engine.getInstance().getAcccounts().put(account, map);						
+						Cookie.getInstance().put(account, map);
+						//System.err.println(details);
 						task = new Task(Task.TYPE_0828, account);
-						//Engine.getInstance().addTask(task);
 					}else{
 						content = Util.slice(buffer, 14, buffer.length-15);//104
 						decrypt = crypter.decrypt(content, details.get("key0825"));
@@ -140,7 +164,15 @@ public class Receiver implements Runnable{
 					ts = crypter.decrypt(ts, details.get("key0836x"));
 					//System.out.println(Converts.bytesToHexString(ts));
 					//System.out.println(new String(Util.slice(ts, 15, ts.length-15), "utf-8"));
-					info(new String(Util.slice(ts, 15, ts.length-15), "utf-8"));
+					String lr = new String(Util.slice(ts, 15, ts.length-15), "utf-8");							
+					info(lr);
+					if(lr.contains("暂时")){//冻结
+						//System.err.println("X1");
+						details.put("loginresult", "3".getBytes());	
+					}else{//密码错误
+						//System.err.println("X2");
+						details.put("loginresult", "1".getBytes());
+					}
 					//Engine.getInstance().getChannels().get(account).close(); //关闭
 					synchronized(Engine.getInstance().getChannels()) {
 						try {
@@ -153,6 +185,7 @@ public class Receiver implements Runnable{
 					next();
 				}else if(buffer.length==255){
 					info("需要验证密保");
+					details.put("loginresult", "2".getBytes());
 					synchronized(Engine.getInstance().getChannels()) {
 						try {
 							Engine.getInstance().getChannels().get(account).close();
@@ -297,13 +330,16 @@ public class Receiver implements Runnable{
 					//System.out.println(new String(Util.slice(ts, 15, ts.length-15), "utf-8"));
 					info(new String(Util.slice(ts, 15, ts.length-15), "utf-8"));
 					//可能是被挤线，然后这边重新登录，对方又按了重新登录，此时，0825然后0828无效，需要重新执行任务。
-										
+					info("获取失败");
+					Cookie.getInstance().remove(account);//删除缓存
 					task = new Task(Task.TYPE_0825, account);
 					Engine.getInstance().addSleeper(new Sleeper(task));
 					//Engine.getInstance().addTask(task);
 				}else{
 					//System.out.println("OK");
 					info("获取成功");
+					details.put("savetime", String.valueOf(System.currentTimeMillis()).getBytes());
+					Cookie.getInstance().put(account, details);//保存cookie
 					content = Util.slice(buffer, 14, buffer.length-15);
 					//System.out.println(Converts.bytesToHexString(key0828recv));
 					decrypt = crypter.decrypt(content, details.get("key0828recv"));
@@ -316,10 +352,11 @@ public class Receiver implements Runnable{
 						System.err.println(Converts.bytesToHexString(details.get("key0828recv")));
 					}
 					//details.clear();//清空
+					details.put("loginresult", "0".getBytes());//密码正确
 					details.put("sessionkey", Util.slice(decrypt, 63, 0x10));
 					//idx++;		
 					//执行00EC
-					info("上线");
+					info("正在上线");
 					task = new Task(Task.TYPE_00EC, account); //上线包															
 					Engine.getInstance().addTask(task);
 				}
@@ -382,7 +419,7 @@ public class Receiver implements Runnable{
 				}
 			}else if(header[0]==(byte)0x00&&header[1]==(byte)0x17){
 				synchronized(Engine.getInstance()){//保证只有一个线程响应
-					System.err.println(account+"/1/"+this+details.get("0017L"));
+					//System.err.println(account+"/1/"+this+details.get("0017L"));
 					if(buffer.length==231&&details.get("0017L")==null){// 被挤线的处理
 						details.put("0017L", "T".getBytes());
 						content = Util.slice(buffer, 14, buffer.length-15);
@@ -394,14 +431,14 @@ public class Receiver implements Runnable{
 							//被挤掉下线
 							details.put("rh0017", Util.slice(buffer, 0, 11));
 							details.put("rc0017", Util.slice(decrypt, 0, 0x010));
-							System.err.println(account+"/2/"+this+details.get("0017L"));
+							//System.err.println(account+"/2/"+this+details.get("0017L"));
 							info("被挤线，等待重新登录");
-							System.err.println(account+"/3/"+this+details.get("0017L"));
+							//System.err.println(account+"/3/"+this+details.get("0017L"));
 							tf();
-							System.err.println(account+"/4/"+this+details.get("0017L"));
+							//System.err.println(account+"/4/"+this+details.get("0017L"));
 							task = new Task(Task.TYPE_0017, account); 									
 							Engine.getInstance().addTask(task);
-							System.err.println(account+"/5/"+this+details.get("0017L"));
+							//System.err.println(account+"/5/"+this+details.get("0017L"));
 							/**
 							synchronized(Engine.getInstance().getChannels()) {
 								try {
