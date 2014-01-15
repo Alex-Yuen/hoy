@@ -38,6 +38,8 @@ import ws.hoyland.util.Configuration;
 import ws.hoyland.util.EngineMessage;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.FocusAdapter;
+import org.eclipse.swt.events.FocusEvent;
 
 public class QQOL implements Observer{
 
@@ -67,6 +69,7 @@ public class QQOL implements Observer{
 	private int first = -1;
 	private int last = -1;
 	private int mfirst = -1;
+	private boolean nsa = false;//need select all
 	
 	private Clipboard clipBoard = new Clipboard(Display.getDefault());
 	private Transfer textTransfer = TextTransfer.getInstance();
@@ -511,6 +514,23 @@ public class QQOL implements Observer{
 		text_1.setBounds(59, 44, 139, 20);
 		
 		text_3 = new Text(group_1, SWT.BORDER | SWT.PASSWORD);
+		text_3.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseUp(MouseEvent e) {
+				if(nsa){
+					text_3.selectAll();
+					nsa = false;
+				}
+			}
+		});
+		text_3.addFocusListener(new FocusAdapter() {
+			@Override
+			public void focusGained(FocusEvent e) {
+				//System.out.println("EXF");
+				nsa = true;
+				text_3.selectAll();
+			}
+		});
 //		text_3.addFocusListener(new FocusAdapter() {
 //			@Override
 //			public void focusGained(FocusEvent e) {

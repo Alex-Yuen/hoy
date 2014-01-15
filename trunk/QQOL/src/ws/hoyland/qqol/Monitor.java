@@ -82,7 +82,9 @@ public class Monitor implements Runnable {
 								bf.clear();
 								
 								hd = Converts.bytesToHexString(Util.slice(buffer, 3, 2));
-								if(buffer.length>0&&(FHD.contains("#"+hd+"#")||("0017".equals(hd)&&buffer.length==231))){
+								//System.err.println("hd is:"+hd);
+								if(buffer.length>0&&(FHD.contains("#"+hd+"#")||("0017".equals(hd)))){//&&buffer.length==231
+									//System.err.println(hd+" go");
 									Receiver receiver = new Receiver(buffer);
 									Engine.getInstance().addReceiver(receiver);
 								}
