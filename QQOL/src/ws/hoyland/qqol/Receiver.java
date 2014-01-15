@@ -128,6 +128,7 @@ public class Receiver implements Runnable{
 						map.remove("login");
 						map.remove("0058DOING");
 						map.remove("0017L");
+						map.remove("landt");
 						Cookie.getInstance().put(account, map);
 						
 						//设置cookie
@@ -445,7 +446,7 @@ public class Receiver implements Runnable{
 //					content = Util.slice(buffer, 14, buffer.length-15);
 //					decrypt = crypter.decrypt(content, details.get("sessionkey"));
 //					System.err.println(Converts.bytesToHexString(decrypt));
-					System.err.println("0017 length:"+buffer.length);
+					//System.err.println("0017 length:"+buffer.length);
 					
 					if(buffer.length==231&&details.get("0017L")==null){// 被挤线的处理
 						details.put("0017L", "T".getBytes());
@@ -544,7 +545,7 @@ public class Receiver implements Runnable{
 		message = new EngineMessage();
 		message.setTid(this.id);
 		message.setType(EngineMessageType.IM_INFO);
-		message.setData(info);
+		message.setData((details.get("login")!=null)+"|"+info);
 
 		//DateFormat format = new java.text.SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 		String tm = Util.format(new Date());
