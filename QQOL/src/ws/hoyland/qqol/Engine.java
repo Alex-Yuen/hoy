@@ -1109,7 +1109,7 @@ public class Engine extends Observable {
 		try{
 			pool.execute(task);
 		}catch(Exception e){
-			e.printStackTrace();
+			//e.printStackTrace();
 		}
 	}
 	
@@ -1117,7 +1117,7 @@ public class Engine extends Observable {
 		try{
 			pool.execute(receiver);
 		}catch(Exception e){
-			e.printStackTrace();
+			//e.printStackTrace();
 		}
 	}
 	
@@ -1125,7 +1125,7 @@ public class Engine extends Observable {
 		try{
 			poolx.execute(checker);
 		}catch(Exception e){
-			e.printStackTrace();
+			//e.printStackTrace();
 		}
 	}
 	
@@ -1133,7 +1133,7 @@ public class Engine extends Observable {
 		try{
 			poolx.execute(sleeper);
 		}catch(Exception e){
-			e.printStackTrace();
+			//e.printStackTrace();
 		}
 	}
 	

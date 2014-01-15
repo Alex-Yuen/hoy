@@ -19,7 +19,7 @@ public class Checker implements Runnable {
 		try{
 			Thread.sleep((long)(1000*itv));
 		}catch(Exception e){
-			e.printStackTrace();
+			//e.printStackTrace();
 		}
 		//System.err.println("checker:"+task.getAccount()+"/"+task.getRetry()+"/"+task.getST());
 		if(Engine.getInstance().getAcccounts().get(task.getAccount()).get(task.getST()+"_"+Converts.bytesToHexString(task.getSEQ()))==null&&Engine.getInstance().getAcccounts().get(task.getAccount()).get("0017L")==null){
