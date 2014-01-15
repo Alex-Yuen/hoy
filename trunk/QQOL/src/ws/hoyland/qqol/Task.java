@@ -1116,7 +1116,7 @@ public class Task implements Runnable {
 					try {
 						Engine.getInstance().getChannels().get(account).close();
 					} catch (Exception e) {
-						e.printStackTrace();
+						//e.printStackTrace();
 					}
 					Engine.getInstance().getChannels().remove(account);
 				}
@@ -1188,7 +1188,7 @@ public class Task implements Runnable {
 		EngineMessage message = new EngineMessage();
 		message.setTid(Integer.parseInt(new String(details.get("id"))));
 		message.setType(EngineMessageType.IM_INFO);
-		message.setData(info);
+		message.setData((details.get("login")!=null)+"|"+info);
 
 		String tm = Util.format(new Date());
 		

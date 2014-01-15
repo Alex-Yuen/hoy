@@ -914,9 +914,12 @@ public class QQOL implements Observer{
 			case EngineMessageType.OM_INFO:
 				Display.getDefault().asyncExec(new Runnable() {
 					@Override
-					public void run() {					
-						table.getItem(msg.getTid()-1).setText(6, (String)msg.getData());
-						table.setSelection(msg.getTid()-1);
+					public void run() {
+						String[] msgs = ((String)msg.getData()).split("\\|");
+						table.getItem(msg.getTid()-1).setText(6, msgs[1]);
+						if("false".equals(msgs[0])){
+							table.setSelection(msg.getTid()-1);
+						}
 					}
 				});
 				break;
