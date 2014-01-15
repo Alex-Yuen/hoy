@@ -105,11 +105,10 @@ public class Receiver implements Runnable{
 //						//Engine.getInstance().addTask(task);
 //					}else{
 					if(direct){
-						info("获取会话密钥");
-						
 						Map<String, byte[]> map = Cookie.getInstance().get(account);
 						map.put("ips", details.get("ips"));
 						map.put("ip", details.get("ip"));
+						//map.put("nick", details.get("nick"));
 						for(String key:details.keySet()){
 							if(key.startsWith("0825")){//避免0825继续登录
 								map.put(key, details.get(key));
@@ -117,6 +116,10 @@ public class Receiver implements Runnable{
 						}
 						Engine.getInstance().getAcccounts().put(account, map);						
 						Cookie.getInstance().put(account, map);
+						
+						setNick(new String(map.get("nick"), "utf-8"));
+						info("获取会话密钥");
+						
 						//System.err.println(details);
 						task = new Task(Task.TYPE_0828, account);
 					}else{
@@ -239,6 +242,7 @@ public class Receiver implements Runnable{
 					}
 					//System.err.println(nickidx);
 					//System.err.println("Nick:"+new String(nick, "utf-8"));
+					details.put("nick", nick);
 					setNick(new String(nick, "utf-8"));
 					
 					details.put("key0828recv", Util.slice(decrypt, rbof0836.indexOf("0000003C0002")/2+6, 0x10));
