@@ -18,5 +18,6 @@
 	<classpathentry kind="lib" path="lib/jna.jar"/>
 	<classpathentry kind="lib" path="lib/JNative.jar"/>
 	<classpathentry kind="lib" path="lib/image.jar"/>
+	<classpathentry kind="lib" path="lib/mapdb.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
