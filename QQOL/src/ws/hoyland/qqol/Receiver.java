@@ -129,6 +129,9 @@ public class Receiver implements Runnable{
 						map.remove("0058DOING");
 						map.remove("0017L");
 						map.remove("landt");
+						if(details.containsKey("landt")){
+							map.put("landt", "T".getBytes());
+						}
 						Cookie.getInstance().put(account, map);
 						
 						//设置cookie
