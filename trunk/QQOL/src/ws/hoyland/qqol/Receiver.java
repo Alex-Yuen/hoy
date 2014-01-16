@@ -545,7 +545,7 @@ public class Receiver implements Runnable{
 		message = new EngineMessage();
 		message.setTid(this.id);
 		message.setType(EngineMessageType.IM_INFO);
-		message.setData((details.get("login")!=null)+"|"+info);
+		message.setData((details.get("landt")!=null)+"|"+info);
 
 		//DateFormat format = new java.text.SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 		String tm = Util.format(new Date());

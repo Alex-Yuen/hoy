@@ -27,7 +27,7 @@ public class Checker implements Runnable {
 			System.err.println("checker is null:"+task.getAccount()+"/"+task.getRetry()+"/"+task.getST());
 			if(task.getRetry()==RT-1){//超时
 				tf();
-				info("超时, 重新登录");
+				info("超时");
 				synchronized(Engine.getInstance().getChannels()) {
 					try {
 						Engine.getInstance().getChannels().get(task.getAccount()).close();
@@ -76,7 +76,7 @@ public class Checker implements Runnable {
 		EngineMessage message = new EngineMessage();
 		message.setTid(id);
 		message.setType(EngineMessageType.IM_INFO);
-		message.setData(info);
+		message.setData((Engine.getInstance().getAcccounts().get(task.getAccount()).get("login")!=null)+"|"+info);
 		
 		String tm = Util.format(new Date());		
 		System.err.println("["+task.getAccount()+"]"+info+"("+tm+")");
