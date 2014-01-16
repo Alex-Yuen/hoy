@@ -1090,7 +1090,7 @@ public class Task implements Runnable {
 				dc = DatagramChannel.open();
 				dc.configureBlocking(false);
 				dc.connect(sa);
-				
+//				dc.socket().setReceiveBufferSize(arg0)
 				Monitor.getInstance().setWakeup(true);
 				QQSelector.selector.wakeup();
 				dc.register(QQSelector.selector, SelectionKey.OP_READ);
