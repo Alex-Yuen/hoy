@@ -917,6 +917,7 @@ public class QQOL implements Observer{
 					public void run() {
 						String[] msgs = ((String)msg.getData()).split("\\|");
 						table.getItem(msg.getTid()-1).setText(6, msgs[1]);
+						//System.err.println(msgs[0]);
 						if("false".equals(msgs[0])){
 							table.setSelection(msg.getTid()-1);
 						}
