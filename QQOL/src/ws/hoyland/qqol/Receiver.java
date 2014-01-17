@@ -2,7 +2,6 @@ package ws.hoyland.qqol;
 
 import java.io.IOException;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.Map;
 
 import ws.hoyland.util.Configuration;
@@ -95,7 +94,7 @@ public class Receiver implements Runnable{
 				}else{
 					//发起0836或免码直接0828
 					boolean direct = false;
-					if(Cookie.getInstance().get(account)!=null){
+					if(details.get("savetime")!=null){//存在cookie
 						long savetime = Long.parseLong(new String(Cookie.getInstance().get(account).get("savetime"), "utf-8"));
 						if(System.currentTimeMillis()-savetime<1000*60*60*24){//未超时
 							direct = true;
@@ -108,6 +107,7 @@ public class Receiver implements Runnable{
 //						//Engine.getInstance().addTask(task);
 //					}else{
 					if(direct){
+						/**
 						//读取cookie，并处理，然后更新
 						Map<String, byte[]> map = Cookie.getInstance().get(account);
 						map.put("ips", details.get("ips"));
@@ -137,7 +137,7 @@ public class Receiver implements Runnable{
 						//设置cookie
 						details = map;
 						Engine.getInstance().getAcccounts().put(account, details);
-						
+						**/
 						info("获取会话密钥");
 						
 						//System.err.println(details);

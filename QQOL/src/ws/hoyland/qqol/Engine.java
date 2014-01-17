@@ -35,6 +35,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.ThreadPoolExecutor.AbortPolicy;
 
 import ws.hoyland.util.Configuration;
+import ws.hoyland.util.Cookie;
 import ws.hoyland.util.CopiedIterator;
 import ws.hoyland.util.DM;
 import ws.hoyland.util.EngineMessage;
@@ -163,10 +164,51 @@ public class Engine extends Observable {
 						if (!line.equals("")) {
 							line = i + "----" + line;
 							String[] nlns = line.split("----");
-							details = new HashMap<String, byte[]>();
-							details.put("id", nlns[0].getBytes());
-							details.put("password", nlns[2].getBytes());
-							details.put("loginresult", "9".getBytes());
+							
+							boolean loadcookie = false;
+							Map<String, byte[]> map = Cookie.getInstance().get(nlns[1]);
+							if(map!=null){
+								long savetime = Long.parseLong(new String(map.get("savetime"), "utf-8"));
+								if(System.currentTimeMillis()-savetime<1000*60*60*24){//未超时
+									loadcookie = true;
+								}
+							}
+//								map.put("ips", details.get("ips"));
+//								map.put("ip", details.get("ip"));
+								//map.put("nick", details.get("nick"));
+	//							for(String key:details.keySet()){
+	//								if(key.startsWith("0825")){//避免0825继续登录
+	//									map.put(key, details.get(key));
+	//								}
+	//							}
+							if(loadcookie){
+								Iterator<String> it = map.keySet().iterator();
+								while(it.hasNext()){
+									if(it.next().endsWith("SEQ")){
+										it.remove();
+									}
+								}
+								
+								map.remove("login");
+								map.remove("0058DOING");
+								map.remove("0017L");
+								map.remove("landt");
+	//							if(details.containsKey("landt")){
+	//								map.put("landt", "T".getBytes());
+	//							}
+								map.put("loginresult", "9".getBytes());
+								
+								//更新cookie
+								Cookie.getInstance().put(nlns[1], map);
+								//设置cookie
+								details = map;
+							}else{
+							//Engine.getInstance().getAcccounts().put(account, details);							
+								details = new HashMap<String, byte[]>();
+								details.put("id", nlns[0].getBytes());
+								details.put("password", nlns[2].getBytes());
+								details.put("loginresult", "9".getBytes());
+							}
 							accounts.put(nlns[1], details);
 							List<String> lns = new ArrayList<String>();
 							lns.add(nlns[0]);
