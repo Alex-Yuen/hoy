@@ -30,7 +30,7 @@ public class Checker implements Runnable {
 		//System.err.println("checker:"+task.getAccount()+"/"+task.getRetry()+"/"+task.getST());
 		if(Engine.getInstance().getAcccounts().get(account).get(type+"_"+seq)==null&&Engine.getInstance().getAcccounts().get(account).get("0017L")==null){
 			Task taskx = null;
-			System.err.println("checker is null:"+account+"/"+retry+"/"+type);
+			System.err.println("Checker has found Null:"+account+"/"+retry+"/"+type);
 			if(retry==RT-1){//超时
 				tf();
 				info("超时");

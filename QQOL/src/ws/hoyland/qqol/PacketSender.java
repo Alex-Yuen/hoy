@@ -24,9 +24,9 @@ public class PacketSender implements Runnable {
 	}
 	
 	public static synchronized PacketSender getInstance(){
-//		if(instance==null){
-//			instance = new PacketSender();
-//		}
+		if(instance==null){
+			reset();
+		}
 		return instance;
 	}
 	
@@ -70,7 +70,7 @@ public class PacketSender implements Runnable {
 						Engine.getInstance().addChecker(checker);
 					}
 				}
-				Thread.sleep(5);
+				Thread.sleep(1);
 			}catch(Exception e){
 				e.printStackTrace();
 			}
@@ -83,6 +83,10 @@ public class PacketSender implements Runnable {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public int size(){
+		return this.queue.size();
 	}
 	
 }

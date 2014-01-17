@@ -15,6 +15,7 @@ import java.security.interfaces.ECPublicKey;
 import java.security.spec.ECParameterSpec;
 import java.security.spec.ECPublicKeySpec;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.zip.CRC32;
 
@@ -27,6 +28,7 @@ import org.bouncycastle.math.ec.ECPoint;
 import sun.security.ec.NamedCurve;
 import ws.hoyland.util.Configuration;
 import ws.hoyland.util.Converts;
+import ws.hoyland.util.Cookie;
 import ws.hoyland.util.Crypter;
 import ws.hoyland.util.DM;
 import ws.hoyland.util.EngineMessage;
@@ -133,9 +135,58 @@ public class Task implements Runnable {
 		// 发送UDP数据
 		switch (type) {
 		case TYPE_0825:
+			if(details.get("looded")==null){
+				try{
+					boolean loadcookie = false;
+					Map<String, byte[]> map = Cookie.getInstance().get(account);
+					
+					if(map!=null){
+						long savetime = Long.parseLong(new String(map.get("savetime"), "utf-8"));
+						if(System.currentTimeMillis()-savetime<1000*60*60*24){//未超时
+							loadcookie = true;
+						}
+					}
+					
+					if(loadcookie){
+						info("加载Cookie");
+						//System.err.println("X1:"+System.currentTimeMillis());								
+						Iterator<String> it = map.keySet().iterator();
+						while(it.hasNext()){
+							if(it.next().endsWith("SEQ")){
+								it.remove();
+							}
+						}
+						
+						//map.remove("id");
+						map.remove("login");
+						map.remove("0058DOING");
+						map.remove("0017L");
+						map.remove("landt");
+						//map.remove("loaded");
+			//							if(details.containsKey("landt")){
+			//								map.put("landt", "T".getBytes());
+			//							}
+						//map.put("loginresult", "9".getBytes());
+
+						map.put("id", details.get("id"));
+						map.put("password", details.get("password"));
+						
+						//更新cookie
+						Cookie.getInstance().put(account, map);
+						
+						//设置cookie
+						details = map;
+						details.put("loaded", "T".getBytes());
+						Engine.getInstance().getAcccounts().put(account, details);
+						//System.err.println("X2:"+System.currentTimeMillis());
+					}
+				}catch(Exception e){
+					e.printStackTrace();
+				}				
+			}
 			info("正在登录");
 			infoact();
-			//details.put("loginresult", "9".getBytes());
+			details.put("loginresult", "9".getBytes());
 			details.remove("0017L");//标志未收到被挤线消息
 			try {
 				byte[] serverPBK = new byte[] { 0x04, (byte) 0x92, (byte) 0x8D,
@@ -1107,7 +1158,7 @@ public class Task implements Runnable {
 //			if("0058".equals(this.st)){
 //				System.err.println(account+":0058-4");
 //			}
-			System.err.println("->["+account+"]("+Util.format(new Date())+")"+Converts.bytesToHexString(Util.slice(baos.toByteArray(), 3, 2))+"["+retry+"]");
+			System.err.println("->["+account+"]("+Util.format(new Date())+")"+Converts.bytesToHexString(Util.slice(baos.toByteArray(), 3, 2))+"["+retry+"]");//+PacketSender.getInstance().size()
 			/**
 			//0017处理
 			if("0017".equals(st)){

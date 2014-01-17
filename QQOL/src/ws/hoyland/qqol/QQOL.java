@@ -71,6 +71,8 @@ public class QQOL implements Observer{
 	private int mfirst = -1;
 	private boolean nsa = false;//need select all
 	
+	private int lasttid = -1;
+	
 	private Clipboard clipBoard = new Clipboard(Display.getDefault());
 	private Transfer textTransfer = TextTransfer.getInstance();
 	private MenuItem mntmc_1;
@@ -82,6 +84,7 @@ public class QQOL implements Observer{
 	private TableColumn tblclmnNewColumn_1;
 	private TableColumn tblclmnNewColumn_2;
 	private Menu menu;
+	
 	/**
 	 * Launch the application.
 	 * @param args
@@ -168,8 +171,6 @@ public class QQOL implements Observer{
 
 					@Override
 					public void run() {
-						// TODO Auto-generated method stub
-
 						EngineMessage message = new EngineMessage();
 						message.setType(EngineMessageType.IM_EXIT);
 						Engine.getInstance().fire(message);
@@ -457,7 +458,7 @@ public class QQOL implements Observer{
 		label_16.setText("0");
 		label_16.setBackground(SWTResourceManager.getColor(SWT.COLOR_GRAY));
 		label_16.setAlignment(SWT.RIGHT);
-		label_16.setBounds(393, 37, 96, 17);
+		label_16.setBounds(386, 37, 96, 17);
 		
 		Label lblYc = new Label(group, SWT.NONE);
 		lblYc.setText("ZB:");
@@ -467,7 +468,7 @@ public class QQOL implements Observer{
 		label_18.setText("0");
 		label_18.setBackground(SWTResourceManager.getColor(SWT.COLOR_GRAY));
 		label_18.setAlignment(SWT.RIGHT);
-		label_18.setBounds(393, 60, 96, 17);
+		label_18.setBounds(386, 60, 96, 17);
 		
 		Label label_19 = new Label(group, SWT.BORDER | SWT.SHADOW_NONE | SWT.CENTER);
 		label_19.setForeground(SWTResourceManager.getColor(0, 0, 0));
@@ -723,7 +724,6 @@ public class QQOL implements Observer{
 			}
 		});
 		menuItem_2.setText("冻结帐号...");
-
 	}
 
 	private void login() {
@@ -806,9 +806,11 @@ public class QQOL implements Observer{
 				Display.getDefault().asyncExec(new Runnable() {
 					@Override
 					public void run() {
+						String[] ts = (String[])msg.getData();
+											
 						TableItem tableItem = new TableItem(
 								table, SWT.NONE);
-						tableItem.setText((String[])msg.getData());
+						tableItem.setText(ts);
 						table.setSelection(tableItem);
 					}
 				});
@@ -896,6 +898,7 @@ public class QQOL implements Observer{
 							first = -1;
 							last = -1;
 							mfirst = -1;
+							lasttid = -1;
 							status.setText("运行结束");
 							button_2.setText("开始");
 							//button_4.setEnabled(false);
@@ -918,9 +921,14 @@ public class QQOL implements Observer{
 						String[] msgs = ((String)msg.getData()).split("\\|");
 						table.getItem(msg.getTid()-1).setText(6, msgs[1]);
 						//System.err.println(msgs[0]);
+						/**
 						if("false".equals(msgs[0])){
 							table.setSelection(msg.getTid()-1);
-						}
+						}**/
+						if(msg.getTid()>lasttid){//最新的才会跳至
+							table.setSelection(msg.getTid()-1);
+							lasttid = msg.getTid();
+						}						
 					}
 				});
 				break;
