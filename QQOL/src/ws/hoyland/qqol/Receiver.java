@@ -537,12 +537,14 @@ public class Receiver implements Runnable{
 				Engine.getInstance().addTask(task);
 			}else{
 				//Engine.getInstance().getQueue().
-				Engine.getInstance().setTcount(Engine.getInstance().getTcount()-1);
-				if(Engine.getInstance().getTcount()==0){
-					System.err.println(">>>>>>>>>>>>>LOGIN COMPLETED");
-					EngineMessage msg = new EngineMessage();
-					msg.setType(EngineMessageType.IM_COMPLETE);
-					Engine.getInstance().fire(msg);
+				synchronized(Engine.getInstance()){
+					Engine.getInstance().setTcount(Engine.getInstance().getTcount()-1);
+					if(Engine.getInstance().getTcount()==0){
+						System.err.println(">>>>>>>>>>>>>LOGIN COMPLETED");
+						EngineMessage msg = new EngineMessage();
+						msg.setType(EngineMessageType.IM_COMPLETE);
+						Engine.getInstance().fire(msg);
+					}
 				}
 			}
 		}
