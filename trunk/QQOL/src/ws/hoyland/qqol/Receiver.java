@@ -530,6 +530,24 @@ public class Receiver implements Runnable{
 	private void next() {
 		//告诉Engine，启动新的线程，执行Queue的下一个
 		//需要判断当前是否已经登录过的线程。已经登录过的掉线，不再next
+		if(Engine.getInstance().getAcccounts().get(account).get("landt")==null){
+			Engine.getInstance().getAcccounts().get(account).put("landt", "T".getBytes());
+			if(Engine.getInstance().getQueue().size()>0){
+				Task task = new Task(Task.TYPE_0825, Engine.getInstance().getQueue().remove());
+				Engine.getInstance().addTask(task);
+			}else{
+				//Engine.getInstance().getQueue().
+				Engine.getInstance().setTcount(Engine.getInstance().getTcount()-1);
+				if(Engine.getInstance().getTcount()==0){
+					System.err.println(">>>>>>>>>>>>>LOGIN COMPLETED");
+					EngineMessage msg = new EngineMessage();
+					msg.setType(EngineMessageType.IM_COMPLETE);
+					Engine.getInstance().fire(msg);
+				}
+			}
+		}
+		
+		/**
 		if(Engine.getInstance().getQueue().size()>0){
 			if(Engine.getInstance().getAcccounts().get(account).get("landt")==null){
 				Engine.getInstance().getAcccounts().get(account).put("landt", "T".getBytes());
@@ -541,7 +559,7 @@ public class Receiver implements Runnable{
 			EngineMessage msg = new EngineMessage();
 			msg.setType(EngineMessageType.IM_COMPLETE);
 			Engine.getInstance().fire(msg);
-		}		
+		}**/
 	}
 
 	private void info(String info){

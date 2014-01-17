@@ -15,7 +15,7 @@ public class Sleeper implements Runnable {
 		try{
 			Thread.sleep(1000*60*Integer.parseInt(Configuration.getInstance().getProperty("EX_ITV")));
 		}catch(Exception e){
-			e.printStackTrace();
+			//e.printStackTrace();
 		}
 		Engine.getInstance().addTask(task);
 	}

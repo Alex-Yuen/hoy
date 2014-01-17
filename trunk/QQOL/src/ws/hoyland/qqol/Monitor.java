@@ -11,7 +11,7 @@ import ws.hoyland.util.Converts;
 
 public class Monitor implements Runnable {
 	private boolean run = false;
-	private ByteBuffer bf = ByteBuffer.allocate(1024);
+	private ByteBuffer bf = ByteBuffer.allocate(1024+512);
 	private boolean wakeup = false;
 	private byte[] buffer = null;
 	private int size = -1;
@@ -38,9 +38,9 @@ public class Monitor implements Runnable {
 	}
 	
 	public static synchronized Monitor getInstance( ){
-//		if(instance==null){
-//			instance = new Monitor();
-//		}
+		if(instance==null){
+			reset();
+		}
 		return instance;
 	}
 	

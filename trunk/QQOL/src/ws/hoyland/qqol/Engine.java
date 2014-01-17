@@ -35,7 +35,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.ThreadPoolExecutor.AbortPolicy;
 
 import ws.hoyland.util.Configuration;
-import ws.hoyland.util.Cookie;
 import ws.hoyland.util.CopiedIterator;
 import ws.hoyland.util.DM;
 import ws.hoyland.util.EngineMessage;
@@ -84,6 +83,8 @@ public class Engine extends Observable {
 	private Timer timer = null;
 	
 	private int pc = 0;//pause count;
+	
+	private int tcount = 0;//thread count
 	
 	//private Map<String, Long> ips = new HashMap<String ,Long>();
 	
@@ -160,11 +161,15 @@ public class Engine extends Observable {
 					String line = null;
 					int i = 1;
 					
+					//System.err.println("XA:"+System.currentTimeMillis());
+					//Cookie.getInstance();
 					while ((line = reader.readLine()) != null) {
 						if (!line.equals("")) {
+							//System.err.println("X0:"+System.currentTimeMillis());
 							line = i + "----" + line;
 							String[] nlns = line.split("----");
 							
+							/**
 							boolean loadcookie = false;
 							Map<String, byte[]> map = Cookie.getInstance().get(nlns[1]);
 							if(map!=null){
@@ -182,6 +187,7 @@ public class Engine extends Observable {
 	//								}
 	//							}
 							if(loadcookie){
+								//System.err.println("X1:"+System.currentTimeMillis());								
 								Iterator<String> it = map.keySet().iterator();
 								while(it.hasNext()){
 									if(it.next().endsWith("SEQ")){
@@ -196,20 +202,28 @@ public class Engine extends Observable {
 	//							if(details.containsKey("landt")){
 	//								map.put("landt", "T".getBytes());
 	//							}
-								map.put("loginresult", "9".getBytes());
+								//map.put("loginresult", "9".getBytes());
 								
 								//更新cookie
 								Cookie.getInstance().put(nlns[1], map);
 								//设置cookie
 								details = map;
+								//System.err.println("X2:"+System.currentTimeMillis());
 							}else{
 							//Engine.getInstance().getAcccounts().put(account, details);							
 								details = new HashMap<String, byte[]>();
 								details.put("id", nlns[0].getBytes());
 								details.put("password", nlns[2].getBytes());
-								details.put("loginresult", "9".getBytes());
+								//details.put("loginresult", "9".getBytes());
 							}
 							accounts.put(nlns[1], details);
+							**/
+//							new Thread(new CookieLoader(nlns[0], nlns[1], nlns[2])).start();
+							details = new HashMap<String, byte[]>();
+							details.put("id", nlns[0].getBytes());
+							details.put("password", nlns[2].getBytes());
+							accounts.put(nlns[1], details);
+							
 							List<String> lns = new ArrayList<String>();
 							lns.add(nlns[0]);
 							lns.add(nlns[1]);
@@ -340,7 +354,7 @@ public class Engine extends Observable {
 			case EngineMessageType.IM_PROCESS:
 				Integer[] flidx = (Integer[]) message.getData();
 				int tc = Integer.parseInt(Configuration.getInstance().getProperty("THREAD_COUNT"));
-							
+				tcount = tc;
 				//是否启动
 				if(!running){				
 										
@@ -973,6 +987,14 @@ public class Engine extends Observable {
 			}
 		}
 		
+		while(PacketSender.getInstance().size()>0){
+			try{
+				Thread.sleep(100);
+			}catch(Exception e){
+				//
+			}
+		}
+		
 		if(PacketSender.getInstance()!=null){
 			PacketSender.getInstance().stop();
 		}
@@ -1130,7 +1152,15 @@ public class Engine extends Observable {
 			this.notifyObservers(msg);
 		}
 	}
-	
+		
+	public int getTcount() {
+		return tcount;
+	}
+
+	public void setTcount(int tcount) {
+		this.tcount = tcount;
+	}
+
 	public int getCptType(){
 		return this.cptType;
 	}
