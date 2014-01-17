@@ -135,7 +135,7 @@ public class Task implements Runnable {
 		// 发送UDP数据
 		switch (type) {
 		case TYPE_0825:
-			if(details.get("looded")==null){
+			if(details.get("landt")==null&&details.get("looded")==null){
 				try{
 					boolean loadcookie = false;
 					Map<String, byte[]> map = Cookie.getInstance().get(account);
@@ -172,7 +172,11 @@ public class Task implements Runnable {
 						map.put("password", details.get("password"));
 						
 						//更新cookie
-						Cookie.getInstance().put(account, map);
+						try{
+							Cookie.getInstance().put(account, map);
+						}catch(Exception e){
+							e.printStackTrace();
+						}
 						
 						//设置cookie
 						details = map;
