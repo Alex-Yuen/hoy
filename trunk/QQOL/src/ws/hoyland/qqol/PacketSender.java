@@ -81,7 +81,7 @@ public class PacketSender implements Runnable {
 		try {
 			queue.put(packet);
 		} catch (Exception e) {
-			e.printStackTrace();
+			//e.printStackTrace();
 		}
 	}
 	

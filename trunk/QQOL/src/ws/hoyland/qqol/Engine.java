@@ -950,15 +950,16 @@ public class Engine extends Observable {
 		this.setChanged();
 		this.notifyObservers(msg);
 		**/
+		System.err.println("CLOSE:1");
 		running = false;
 		if(timer!=null){
 			timer.cancel();
 		}
-		
+		System.err.println("CLOSE:2");
 		if(Monitor.getInstance()!=null){
 			Monitor.getInstance().stop();
 		}
-		
+		System.err.println("CLOSE:3");
 		if(pool!=null&&channels!=null){
 			for(String account : channels.keySet()){
 				if(accounts.get(account).get("login")!=null){//已经登录的，发送离线消息
@@ -976,7 +977,7 @@ public class Engine extends Observable {
 				//
 			}
 		}**/
-		
+		System.err.println("CLOSE:4");
 		//等待所有运行线程执行完毕，关闭日志文件
 		while(pool!=null&&pool.getActiveCount()!=0){
 			try{
@@ -986,7 +987,7 @@ public class Engine extends Observable {
 				//
 			}
 		}
-		
+		System.err.println("CLOSE:5"+"/"+PacketSender.getInstance().size());
 		while(PacketSender.getInstance().size()>0){
 			try{
 				Thread.sleep(100);
@@ -994,17 +995,17 @@ public class Engine extends Observable {
 				//
 			}
 		}
-		
+		System.err.println("CLOSE:6");
 		if(PacketSender.getInstance()!=null){
 			PacketSender.getInstance().stop();
 		}
-		
+		System.err.println("CLOSE:7");
 		if(poolx!=null){
 			//pool.shutdown();
 			poolx.shutdownNow();
 			poolx = null;
 		}
-		
+		System.err.println("CLOSE:8");
 		if(pool!=null){
 			//pool.shutdown();
 			pool.shutdownNow();
