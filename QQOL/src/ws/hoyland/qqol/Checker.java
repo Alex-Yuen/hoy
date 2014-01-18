@@ -33,7 +33,8 @@ public class Checker implements Runnable {
 			System.err.println("Checker has found Null:"+account+"/"+retry+"/"+type);
 			if(retry==RT-1){//超时
 				tf();
-				info("超时");
+				info("超时:"+Engine.getInstance().getChannels().get(account).isConnected()+"/"+Engine.getInstance().getChannels().get(account).socket().isConnected()+"/"+Engine.getInstance().getChannels().get(account).isOpen()+"/"+Engine.getInstance().getChannels().get(account).isRegistered());
+				
 				synchronized(Engine.getInstance().getChannels()) {
 					try {
 						Engine.getInstance().getChannels().get(account).close();
