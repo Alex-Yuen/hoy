@@ -108,6 +108,7 @@
             this.导入帐号LToolStripMenuItem.Name = "导入帐号LToolStripMenuItem";
             this.导入帐号LToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.导入帐号LToolStripMenuItem.Text = "导入帐号(&L)...";
+            this.导入帐号LToolStripMenuItem.Click += new System.EventHandler(this.导入帐号LToolStripMenuItem_Click);
             // 
             // 工具TToolStripMenuItem
             // 
