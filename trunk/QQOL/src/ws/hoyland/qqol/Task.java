@@ -53,6 +53,9 @@ public class Task implements Runnable {
 		"0825", "0836", "00BA", "ERRV", "0828", "00EC", "005C", "00CE", "00CD", "0017", "0062", "0058", "00BF"
 	};
 	
+
+//	private static String FHD = "#0825#0836#00BA#0828#00EC#005C#00CD#0058#";//00CE, 0017不要
+
 	private byte type;
 	private String ip = "183.60.19.100";// 默认IP
 	private byte[] ips = new byte[] { (byte) 183, (byte) 60, (byte) 19,
@@ -1231,6 +1234,11 @@ public class Task implements Runnable {
 //			if("0058".equals(this.st)){
 //				System.err.println(account+":0058-12");
 //			}
+			//启动检测线程 //TODO
+//			if(FHD.contains("#"+st+"#")&&retry<Checker.RT){
+//				Checker checker = new Checker(this);
+//				Engine.getInstance().addChecker(checker);
+//			}	
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
