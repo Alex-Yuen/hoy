@@ -71,5 +71,10 @@ namespace QQGM
                 }
             }
         }
+
+        private void 导入帐号LToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }
