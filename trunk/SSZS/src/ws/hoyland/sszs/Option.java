@@ -378,7 +378,7 @@ public class Option extends Dialog implements Observer {
 		
 		spinner_7 = new Spinner(composite, SWT.BORDER);
 		spinner_7.setEnabled(false);
-		spinner_7.setMaximum(60);
+		spinner_7.setMaximum(2000);
 		spinner_7.setMinimum(1);
 		spinner_7.setSelection(1);
 		spinner_7.setBounds(330, 35, 47, 23);
