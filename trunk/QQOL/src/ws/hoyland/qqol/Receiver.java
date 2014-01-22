@@ -45,11 +45,18 @@ public class Receiver implements Runnable{
 //			System.err.println(Converts.bytesToHexString(header)+"-A");
 //			System.err.println(Converts.bytesToHexString(this.details.get(Converts.bytesToHexString(this.header)+"SEQ")));
 			try{
-			if(this.details.get(Converts.bytesToHexString(this.header)+"SEQ")!=null&&!this.seq.equals(Converts.bytesToHexString(this.details.get(Converts.bytesToHexString(this.header)+"SEQ")))){
-				//不是最新的包，不做处理
-//				System.err.println(Converts.bytesToHexString(header)+"-B");
-				return;
-			}}catch(Exception e){
+				if("0017".equals(Converts.bytesToHexString(header))||"00CE".equals(Converts.bytesToHexString(header))){
+					//
+				}else{
+					if(this.details.get(Converts.bytesToHexString(this.header)+"SEQ")!=null&&!this.seq.equals(Converts.bytesToHexString(this.details.get(Converts.bytesToHexString(this.header)+"SEQ")))){
+						//不是最新的包，不做处理
+		//				System.err.println(Converts.bytesToHexString(header)+"-B");
+						return;
+					}else{
+					//	this.details.remove(Converts.bytesToHexString(this.header)+"SEQ");
+					}
+				}
+			}catch(Exception e){
 //				System.err.println("account:"+account);
 //				System.err.println("this.seq:"+this.seq);
 //				System.err.println(Converts.bytesToHexString(this.header)+"SEQ");
@@ -443,7 +450,14 @@ public class Receiver implements Runnable{
 					Engine.getInstance().addTask(task);
 				}
 			}else if(header[0]==(byte)0x00&&header[1]==(byte)0x17){
-				synchronized(Engine.getInstance()){//保证只有一个线程响应
+				content = Util.slice(buffer, 14, buffer.length-15);
+				decrypt = crypter.decrypt(content, details.get("sessionkey"));
+				details.put("rh0017", Util.slice(buffer, 0, 11));
+				details.put("rc0017", Util.slice(decrypt, 0, 0x010));
+				task = new Task(Task.TYPE_0017, account); 									
+				Engine.getInstance().addTask(task);
+				
+				synchronized(details){//保证只有一个线程响应
 					//System.err.println(account+"/1/"+this+details.get("0017L"));
 //					System.err.println(Converts.bytesToHexString(buffer));
 //					content = Util.slice(buffer, 14, buffer.length-15);
@@ -453,22 +467,24 @@ public class Receiver implements Runnable{
 					
 					if(buffer.length==231&&details.get("0017L")==null){// 被挤线的处理
 						details.put("0017L", "T".getBytes());
-						content = Util.slice(buffer, 14, buffer.length-15);
-						decrypt = crypter.decrypt(content, details.get("sessionkey"));
+//						content = Util.slice(buffer, 14, buffer.length-15);
+//						decrypt = crypter.decrypt(content, details.get("sessionkey"));
 						
 						if(decrypt!=null&&decrypt[0]==0x00&&decrypt[1]==0x00){ //00 00 27 10
-							System.err.println(Converts.bytesToHexString(buffer));
-							System.err.println(Converts.bytesToHexString(decrypt));
+//							System.err.println(Converts.bytesToHexString(buffer));
+//							System.err.println(Converts.bytesToHexString(decrypt));
 							//被挤掉下线
-							details.put("rh0017", Util.slice(buffer, 0, 11));
-							details.put("rc0017", Util.slice(decrypt, 0, 0x010));
+//							details.put("rh0017", Util.slice(buffer, 0, 11));
+//							details.put("rc0017", Util.slice(decrypt, 0, 0x010));
 							//System.err.println(account+"/2/"+this+details.get("0017L"));
 							info("被挤线，等待重新登录");
 							//System.err.println(account+"/3/"+this+details.get("0017L"));
 							tf();
 							//System.err.println(account+"/4/"+this+details.get("0017L"));
+							/**
 							task = new Task(Task.TYPE_0017, account); 									
 							Engine.getInstance().addTask(task);
+							**/
 							//System.err.println(account+"/5/"+this+details.get("0017L"));
 							/**
 							synchronized(Engine.getInstance().getChannels()) {
