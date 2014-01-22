@@ -46,7 +46,6 @@ public class Heart extends TimerTask {
 	
 	@Override
 	public void run() {
-		System.err.println("Heart beat["+Util.format(new Date())+"]:"+Engine.getInstance().getActiveCount()+"/"+Engine.getInstance().getQueueCount()+"-"+Engine.getInstance().getActiveCountX()+"/"+Engine.getInstance().getQueueCountX());
 		System.gc();
 		//读取SocketLand中的Clients
 		//每个发送一个心跳包
@@ -55,6 +54,7 @@ public class Heart extends TimerTask {
 		synchronized(Engine.getInstance().getChannels()) {
 			it = new CopiedIterator(Engine.getInstance().getChannels().keySet().iterator());
 		}
+		System.err.println("Heart beat["+Util.format(new Date())+"]:"+Engine.getInstance().getActiveCount()+"/"+Engine.getInstance().getQueueCount()+"-"+Engine.getInstance().getActiveCountX()+"/"+Engine.getInstance().getQueueCountX()+"-"+Engine.getInstance().getChannels().keySet().size());
 
 		//Iterator<String> it = Engine.getInstance().getChannels().keySet().iterator();
 //		int idx = 0;

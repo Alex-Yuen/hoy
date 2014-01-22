@@ -16,7 +16,7 @@ public class Monitor implements Runnable {
 	private byte[] buffer = null;
 	private int size = -1;
 	private String hd = null;
-	private String FHD = "#0825#0836#0828#00BA#00EC#005C#00CE#0062#0058#";
+	private String FHD = "#0825#0836#0828#00BA#00EC#005C#00CE#0062#0058#0017#";
 	
 	private static Monitor instance; 
 	
@@ -82,8 +82,8 @@ public class Monitor implements Runnable {
 								bf.clear();
 								
 								hd = Converts.bytesToHexString(Util.slice(buffer, 3, 2));
-								//System.err.println("hd is:"+hd);
-								if(buffer.length>0&&(FHD.contains("#"+hd+"#")||("0017".equals(hd)&&buffer.length==231))){//&&buffer.length==231
+								System.err.println("*:"+hd);
+								if(buffer.length>0&&(FHD.contains("#"+hd+"#"))){//"0017".equals(hd)&&buffer.length==231
 									//System.err.println(hd+" go");
 									Receiver receiver = new Receiver(buffer);
 									Engine.getInstance().addReceiver(receiver);

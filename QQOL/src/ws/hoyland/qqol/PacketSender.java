@@ -54,7 +54,7 @@ public class PacketSender implements Runnable {
 //				this.account = String.valueOf(Long.parseLong(Converts.bytesToHexString(Util.slice(buffer, 7, 4)), 16));
 //				this.details = Engine.getInstance().getAcccounts().get(account);
 //				this.seq = Converts.bytesToHexString(Util.slice(buffer, 5, 2));
-				if("0017".equals(type)){ //0017发送后关闭连接
+				if("0017".equals(type)&&Engine.getInstance().getAcccounts().get(account).get("login")==null){ //0017发送后关闭连接
 					synchronized(Engine.getInstance().getChannels()) {
 						try {
 							Engine.getInstance().getChannels().get(account).close();
