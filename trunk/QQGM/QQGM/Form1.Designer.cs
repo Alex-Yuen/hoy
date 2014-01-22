@@ -32,11 +32,14 @@
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.文件FToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.导入帐号LToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
+            this.退出XToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.工具TToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.选项OToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.帮助HToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.关于AToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
+            this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.panel2 = new System.Windows.Forms.Panel();
             this.panel3 = new System.Windows.Forms.Panel();
             this.label11 = new System.Windows.Forms.Label();
@@ -60,18 +63,6 @@
             this.label1 = new System.Windows.Forms.Label();
             this.comboBox1 = new System.Windows.Forms.ComboBox();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
-            this.ID = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.account = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.password = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Q1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.A1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Q2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.A2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Q3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.A3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
-            this.退出XToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.menuStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.panel2.SuspendLayout();
@@ -106,9 +97,22 @@
             // 导入帐号LToolStripMenuItem
             // 
             this.导入帐号LToolStripMenuItem.Name = "导入帐号LToolStripMenuItem";
-            this.导入帐号LToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.导入帐号LToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F2;
+            this.导入帐号LToolStripMenuItem.Size = new System.Drawing.Size(168, 22);
             this.导入帐号LToolStripMenuItem.Text = "导入帐号(&L)...";
             this.导入帐号LToolStripMenuItem.Click += new System.EventHandler(this.导入帐号LToolStripMenuItem_Click);
+            // 
+            // toolStripMenuItem1
+            // 
+            this.toolStripMenuItem1.Name = "toolStripMenuItem1";
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(165, 6);
+            // 
+            // 退出XToolStripMenuItem
+            // 
+            this.退出XToolStripMenuItem.Name = "退出XToolStripMenuItem";
+            this.退出XToolStripMenuItem.Size = new System.Drawing.Size(168, 22);
+            this.退出XToolStripMenuItem.Text = "退出(&X)";
+            this.退出XToolStripMenuItem.Click += new System.EventHandler(this.退出XToolStripMenuItem_Click);
             // 
             // 工具TToolStripMenuItem
             // 
@@ -121,7 +125,7 @@
             // 选项OToolStripMenuItem
             // 
             this.选项OToolStripMenuItem.Name = "选项OToolStripMenuItem";
-            this.选项OToolStripMenuItem.Size = new System.Drawing.Size(127, 22);
+            this.选项OToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.选项OToolStripMenuItem.Text = "选项(&O)...";
             // 
             // 帮助HToolStripMenuItem
@@ -148,6 +152,12 @@
             this.statusStrip1.Size = new System.Drawing.Size(734, 22);
             this.statusStrip1.TabIndex = 1;
             this.statusStrip1.Text = "statusStrip1";
+            // 
+            // toolStripStatusLabel1
+            // 
+            this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
+            this.toolStripStatusLabel1.Size = new System.Drawing.Size(44, 17);
+            this.toolStripStatusLabel1.Text = "未登录";
             // 
             // panel2
             // 
@@ -266,9 +276,10 @@
             this.button2.Location = new System.Drawing.Point(22, 56);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(158, 55);
-            this.button2.TabIndex = 8;
+            this.button2.TabIndex = 4;
             this.button2.Text = "开始";
             this.button2.UseVisualStyleBackColor = true;
+            this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
             // label12
             // 
@@ -289,7 +300,7 @@
             this.comboBox2.Location = new System.Drawing.Point(59, 20);
             this.comboBox2.Name = "comboBox2";
             this.comboBox2.Size = new System.Drawing.Size(121, 20);
-            this.comboBox2.TabIndex = 1;
+            this.comboBox2.TabIndex = 3;
             // 
             // panel1
             // 
@@ -312,7 +323,7 @@
             this.button1.Location = new System.Drawing.Point(59, 103);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(88, 33);
-            this.button1.TabIndex = 6;
+            this.button1.TabIndex = 2;
             this.button1.Text = "登录";
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.button1_Click);
@@ -367,90 +378,17 @@
             this.comboBox1.Location = new System.Drawing.Point(59, 19);
             this.comboBox1.Name = "comboBox1";
             this.comboBox1.Size = new System.Drawing.Size(121, 20);
-            this.comboBox1.TabIndex = 2;
+            this.comboBox1.TabIndex = 5;
             // 
             // dataGridView1
             // 
             this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridView1.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.ID,
-            this.account,
-            this.password,
-            this.Q1,
-            this.A1,
-            this.Q2,
-            this.A2,
-            this.Q3,
-            this.A3});
             this.dataGridView1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dataGridView1.Location = new System.Drawing.Point(0, 25);
             this.dataGridView1.Name = "dataGridView1";
             this.dataGridView1.RowTemplate.Height = 23;
             this.dataGridView1.Size = new System.Drawing.Size(533, 415);
             this.dataGridView1.TabIndex = 4;
-            // 
-            // ID
-            // 
-            this.ID.HeaderText = "ID";
-            this.ID.Name = "ID";
-            // 
-            // account
-            // 
-            this.account.HeaderText = "帐号";
-            this.account.Name = "account";
-            // 
-            // password
-            // 
-            this.password.HeaderText = "密码";
-            this.password.Name = "password";
-            // 
-            // Q1
-            // 
-            this.Q1.HeaderText = "问题1";
-            this.Q1.Name = "Q1";
-            // 
-            // A1
-            // 
-            this.A1.HeaderText = "答案1";
-            this.A1.Name = "A1";
-            // 
-            // Q2
-            // 
-            this.Q2.HeaderText = "问题2";
-            this.Q2.Name = "Q2";
-            // 
-            // A2
-            // 
-            this.A2.HeaderText = "答案2";
-            this.A2.Name = "A2";
-            // 
-            // Q3
-            // 
-            this.Q3.HeaderText = "问题3";
-            this.Q3.Name = "Q3";
-            // 
-            // A3
-            // 
-            this.A3.HeaderText = "答案3";
-            this.A3.Name = "A3";
-            // 
-            // toolStripMenuItem1
-            // 
-            this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-            this.toolStripMenuItem1.Size = new System.Drawing.Size(149, 6);
-            // 
-            // 退出XToolStripMenuItem
-            // 
-            this.退出XToolStripMenuItem.Name = "退出XToolStripMenuItem";
-            this.退出XToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.退出XToolStripMenuItem.Text = "退出(&X)";
-            this.退出XToolStripMenuItem.Click += new System.EventHandler(this.退出XToolStripMenuItem_Click);
-            // 
-            // toolStripStatusLabel1
-            // 
-            this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
-            this.toolStripStatusLabel1.Size = new System.Drawing.Size(44, 17);
-            this.toolStripStatusLabel1.Text = "未登录";
             // 
             // Form1
             // 
@@ -494,15 +432,6 @@
         private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.DataGridView dataGridView1;
         private System.Windows.Forms.Panel panel1;
-        private System.Windows.Forms.DataGridViewTextBoxColumn ID;
-        private System.Windows.Forms.DataGridViewTextBoxColumn account;
-        private System.Windows.Forms.DataGridViewTextBoxColumn password;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Q1;
-        private System.Windows.Forms.DataGridViewTextBoxColumn A1;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Q2;
-        private System.Windows.Forms.DataGridViewTextBoxColumn A2;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Q3;
-        private System.Windows.Forms.DataGridViewTextBoxColumn A3;
         private System.Windows.Forms.ToolStripMenuItem 导入帐号LToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem 工具TToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem 选项OToolStripMenuItem;
