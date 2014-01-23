@@ -382,6 +382,7 @@ public class Receiver implements Runnable{
 						System.err.println("decrypt is null:"+buffer.length);
 						System.err.println(Converts.bytesToHexString(buffer));
 						System.err.println(Converts.bytesToHexString(details.get("key0828recv")));
+						System.err.println(Converts.bytesToHexString(details.get("key0836x")));
 					}
 					//details.clear();//清空
 					details.put("loginresult", "0".getBytes());//密码正确
