@@ -10,6 +10,7 @@ using ws.hoyland;
 using System.Threading;
 using System.IO;
 using System.Text.RegularExpressions;
+using System.Net;
 
 namespace QQGM
 {
@@ -21,6 +22,7 @@ namespace QQGM
         private bool isLogin = false;
         private bool running = false;
         private DataTable table = new DataTable();
+        private int type = 0;
 
         public Form1()
         {
@@ -169,10 +171,37 @@ namespace QQGM
         {
             if (!running)
             {
-                ThreadPool.QueueUserWorkItem(new WaitCallback(process));
+                type = comboBox2.SelectedIndex;
+                ThreadPool.SetMinThreads(4, 4);
+                ThreadPool.SetMaxThreads(8, 8);
+                Task task = null;
+                for (int i = 0; i < table.Rows.Count; i++)
+                {
+                    task = new Task();
+                    task.ID = Int32.Parse((string)table.Rows[i]["ID"]);
+                    task.Account = (string)table.Rows[i][1];
+                    task.Password = (string)table.Rows[i][2];
+
+                    if (table.Rows[i][3] != null && !table.Rows[i][1].Equals(""))
+                    {
+                        task.Isdna = true;
+                        task.Q1 = (string)table.Rows[i][3];
+                        task.A1 = (string)table.Rows[i][4];
+                        task.Q2 = (string)table.Rows[i][5];
+                        task.A2 = (string)table.Rows[i][6];
+                        task.Q3 = (string)table.Rows[i][7];
+                        task.A3 = (string)table.Rows[i][8];
+                    }
+                    else
+                    {
+                        task.Isdna = false;
+                    }
+                }
+                ThreadPool.QueueUserWorkItem(new WaitCallback(process), task);
             }
             else
             {
+                //ThreadPool.
                 //stop
             }
             running = !running;
@@ -180,14 +209,8 @@ namespace QQGM
 
         private void process(Object stateInfo)
         {
-            switch (comboBox2.SelectedIndex)
-            {
-                case 0://改密，自动判断是否有保
-
-                    break;
-                default:
-                    break;
-            }
+            Task task = (Task)stateInfo;
+            task.process(this.type);
         }
     }
 }
