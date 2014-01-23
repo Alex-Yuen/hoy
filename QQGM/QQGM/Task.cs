@@ -5,18 +5,51 @@ using System.Text;
 using System.Net;
 using System.IO;
 using ws.hoyland;
+using System.Text.RegularExpressions;
+using System.Web;
 
 namespace QQGM
 {
     class Task
     {
         private int idx;
-        private WebClient client = null;
+        private HttpClient client = null;
         private Random random = null;
+
+        private string url = null;
+        private Stream data = null;
+        private StreamReader reader = null;
+        private StringBuilder pCodeResult = null;
+        private int size = -1;
+        private byte[] bytes = new byte[4096];
+        private string content = null;
+        private string[] questions = new string[]{
+            "您父亲的姓名是？",
+            "您父亲的生日是？",
+            "您父亲的职业是？",
+            "您母亲的姓名是？",
+            "您母亲的生日是？",
+            "您母亲的职业是？",
+            "您配偶的姓名是？",
+            "您配偶的生日是？",
+            "您配偶的职业是？",
+            "您小学班主任的名字是？",
+            "您初中班主任的名字是？",
+            "您高中班主任的名字是？",
+            "您的学号（或工号）是？",
+            "您的出生地是？",
+            "您的小学校名是？",
+            "您最熟悉的童年好友名字是？",
+            "您最熟悉的学校宿舍室友名字是？",
+            "对您影响最大的人名字是？"
+        };
+
+        private string[] qs = null;
+        private string[] ans = null;
 
         public Task()
         {
-            client = new WebClient();
+            client = new HttpClient();
             client.Headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:25.0) Gecko/20100101 Firefox/25.0");
 
             random = new Random();
@@ -143,10 +176,6 @@ namespace QQGM
 
         private void gm1()//有保改密
         {
-            string url = null;
-            Stream data = null;
-            StreamReader reader = null;
-            StringBuilder pCodeResult = null;
             switch (idx)
             {
                 case 0:
@@ -173,12 +202,13 @@ namespace QQGM
                     Console.WriteLine(url);
                     data = client.OpenRead(url);
 
-                    int size = -1;
-
-                    byte[] bytes = new byte[4096];
+                    bytes = new byte[4096];
                     size = data.Read(bytes, 0, bytes.Length);
 
                     Console.WriteLine("SIZE:"+size);
+                    idx++;
+                    break;
+                case 3:
                     //MemoryStream ms = new MemoryStream();
 
                     //reader = new StreamReader(data);
@@ -208,14 +238,120 @@ namespace QQGM
                     //isrun = false;
                     idx++;
                     break;
-                case 3:
+                case 4:
                     url = "https://aq.qq.com/cn2/ajax/check_verifycode?session_type=on_rand&verify_code=" + pCodeResult.ToString();
                     data = client.OpenRead(url);
                     data.Close();
+                    idx++;
+                    break;
+                case 5:
+                    url = "https://aq.qq.com/cn2/findpsw/pc/pc_find_pwd_way";
+                    content = "input_find_qq=" + account + "&pw_type=1&verifycode=" + pCodeResult.ToString();
+                    client.UploadString(url, content);
+                    idx++;
+                    break;
+                case 6:
+                    url = "https://aq.qq.com/cn2/ajax/page_optlog?page_name=pc_find_pwd_way&element_name="+account;
+                    data = client.OpenRead(url);
+                    data.Close();
+                    idx++;
+                    break;
+                case 7:
+                    url = "https://aq.qq.com/cn2/unionverify/unionverify_jump?jumpname=pc_find_pwd&session_context=3&PTime=" + random.NextDouble();
+                    //Console.WriteLine(client.Headers);
+                    data = client.OpenRead(url);
+
+                    reader = new StreamReader(data);
+                    string s = reader.ReadToEnd();
+                    //QuerId:[4,1,7],
+                    s = s.Substring(s.IndexOf("QuerId"));
+                    int fidx = s.IndexOf("[") + 1;
+                    int lidx = s.IndexOf("]");
+
+                    s = s.Substring(fidx, lidx - fidx);
+                    qs = Regex.Split(s, ",");
+                    ans = new string[3];
+                    string question = null;
+                    for (int i = 0; i < qs.Length; i++)
+                    {
+                        question = questions[Int32.Parse(qs[i]) - 1];
+                        if (Q1.Equals(question))
+                        {
+                            ans[i] = A1;
+                        }
+                        else if (Q2.Equals(question))
+                        {
+                            ans[i] = A2;
+                        }
+                        else if (Q3.Equals(question))
+                        {
+                            ans[i] = A3;
+                        }
+                    }
+
+                    Console.WriteLine(s);
+
+
+                    reader.Close();
+                    data.Close();
+                    idx++;
+
+                    //isrun = false;
+                    break;
+                case 8:
+                    url = "https://aq.qq.com/cn2/unionverify/pc/pc_uv_verify";
+                    content = "type=1&dnaAnswerHex1=&dnaAnswerHex2=&dnaAnswerHex3=&dnaAnswer1=" + ans[0] + "&dnaAnswer2=" + ans[1] + "&dnaAnswer3=" + ans[2] + "&order=0";
+                    Console.WriteLine(content);
+                    //client.UploadString(url, content);
+                    //client.UploadString(url, 
+                    //client.Encoding = Encoding.UTF8;
+                    //client.Headers[HttpRequestHeader.ContentType] = "application/x-www-form-urlencoded";
+                    
+                    byte[] bs = Encoding.GetEncoding("GB2312").GetBytes(client.UploadString(url, content));
+                    Console.WriteLine(Encoding.UTF8.GetString(bs));
+                    //client.Headers.Remove(HttpRequestHeader.ContentType);
+                    isrun = false;
+                    idx++;
+                    break;
+                case 9:
+                    url = "https://aq.qq.com/cn2/findpsw/pc/pc_find_pwd_input_new_pwd?method=1&sub_method=0";
+                    data = client.OpenRead(url);
+                    data.Close();
+                    idx++;                   
+                    break;
+                case 10:
+                    url = "https://aq.qq.com/cn2/findpsw/pc/pc_find_pwd_result";
+                    content = "psw=qwer1234&psw_ack=qwer1234&method=1&sub_method=0";
+                    //byte[] bs = Encoding.GetEncoding("GB2312").GetBytes(client.UploadString(url, content));
+                    //Console.WriteLine(Encoding.UTF8.GetString(bs));
+                    idx++;
+                    isrun = false;
                     break;
                 default:
                     break;
             }
         }
+
+        
+        public static string UrlEncode(string strCode)
+        {
+            StringBuilder sb = new StringBuilder();
+            byte[] byStr = System.Text.Encoding.UTF8.GetBytes(strCode); //默认是System.Text.Encoding.Default.GetBytes(str)  
+            System.Text.RegularExpressions.Regex regKey = new System.Text.RegularExpressions.Regex("^[A-Za-z0-9]+$");
+            for (int i = 0; i < byStr.Length; i++)
+            {
+                string strBy = Convert.ToChar(byStr[i]).ToString();
+                if (regKey.IsMatch(strBy))
+                {
+                    //是字母或者数字则不进行转换    
+                    sb.Append(strBy);
+                }
+                else
+                {
+                    sb.Append(@"%" + Convert.ToString(byStr[i], 16));
+                }
+            }
+            return (sb.ToString());
+        } 
     }
 }
