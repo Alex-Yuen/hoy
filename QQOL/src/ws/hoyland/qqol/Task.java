@@ -1165,7 +1165,7 @@ public class Task implements Runnable {
 //			if("0058".equals(this.st)){
 //				System.err.println(account+":0058-4");
 //			}
-			System.err.println("->["+account+"]("+Util.format(new Date())+")"+Converts.bytesToHexString(Util.slice(baos.toByteArray(), 3, 2))+"["+retry+"]");//+PacketSender.getInstance().size()
+			//System.err.println("->["+account+"]("+Util.format(new Date())+")"+Converts.bytesToHexString(Util.slice(baos.toByteArray(), 3, 2))+"["+retry+"]");//+PacketSender.getInstance().size()
 			/**
 			//0017处理
 			if("0017".equals(st)){

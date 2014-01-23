@@ -377,7 +377,7 @@ public class Receiver implements Runnable{
 					decrypt = crypter.decrypt(content, details.get("key0828recv"));
 					//System.out.println(decrypt.length);
 					//System.out.println(Converts.bytesToHexString(decrypt));
-					if(decrypt==null){
+					if(decrypt==null){//223?
 						System.err.println(account);
 						System.err.println("decrypt is null:"+buffer.length);
 						System.err.println(Converts.bytesToHexString(buffer));
@@ -386,7 +386,7 @@ public class Receiver implements Runnable{
 					//details.clear();//清空
 					details.put("loginresult", "0".getBytes());//密码正确
 					details.put("sessionkey", Util.slice(decrypt, 63, 0x10));
-					//idx++;		
+					//idx++;
 					//执行00EC
 					info("正在上线");
 					task = new Task(Task.TYPE_00EC, account); //上线包															

@@ -49,7 +49,7 @@ public class PacketSender implements Runnable {
 				type = Converts.bytesToHexString(Util.slice(bs, 3, 2));
 				seq = Converts.bytesToHexString(Util.slice(bs, 5, 2));
 				retry = Integer.parseInt(Converts.bytesToHexString(Util.slice(bs, 13, 1)), 16);
-				System.err.println("-->["+account+"]("+Util.format(new Date())+")"+type+"["+retry+"]");
+				System.err.println("->["+account+"]("+Util.format(new Date())+")"+type+"["+retry+"]");
 				
 //				this.account = String.valueOf(Long.parseLong(Converts.bytesToHexString(Util.slice(buffer, 7, 4)), 16));
 //				this.details = Engine.getInstance().getAcccounts().get(account);
