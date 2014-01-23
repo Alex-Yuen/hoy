@@ -46,6 +46,9 @@ namespace QQGM
 
         private string[] qs = null;
         private string[] ans = null;
+        private string resp = null;
+        private byte[] bs = null;
+        private string unionverify = null;
 
         public Task()
         {
@@ -223,7 +226,7 @@ namespace QQGM
                     //Console.WriteLine(s);
 
                     int nCodeType, nCaptchaId;
-                    pCodeResult = new StringBuilder("0000000"); // 分配30个字节存放识别结果
+                    pCodeResult = new StringBuilder("0000000000"); // 分配30个字节存放识别结果
                               
 
                     // 例：1004表示4位字母数字，不同类型收费不同。请准确填写，否则影响识别率。在此查询所有类型 http://www.yundama.com/price.html
@@ -262,14 +265,14 @@ namespace QQGM
                     data = client.OpenRead(url);
 
                     reader = new StreamReader(data);
-                    string s = reader.ReadToEnd();
+                    resp = reader.ReadToEnd();
                     //QuerId:[4,1,7],
-                    s = s.Substring(s.IndexOf("QuerId"));
-                    int fidx = s.IndexOf("[") + 1;
-                    int lidx = s.IndexOf("]");
+                    resp = resp.Substring(resp.IndexOf("QuerId"));
+                    int fidx = resp.IndexOf("[") + 1;
+                    int lidx = resp.IndexOf("]");
 
-                    s = s.Substring(fidx, lidx - fidx);
-                    qs = Regex.Split(s, ",");
+                    resp = resp.Substring(fidx, lidx - fidx);
+                    qs = Regex.Split(resp, ",");
                     ans = new string[3];
                     string question = null;
                     for (int i = 0; i < qs.Length; i++)
@@ -289,9 +292,8 @@ namespace QQGM
                         }
                     }
 
-                    Console.WriteLine(s);
-
-
+                    Console.WriteLine(resp);
+                    
                     reader.Close();
                     data.Close();
                     idx++;
@@ -300,21 +302,33 @@ namespace QQGM
                     break;
                 case 8:
                     url = "https://aq.qq.com/cn2/unionverify/pc/pc_uv_verify";
-                    content = "type=1&dnaAnswerHex1=&dnaAnswerHex2=&dnaAnswerHex3=&dnaAnswer1=" + ans[0] + "&dnaAnswer2=" + ans[1] + "&dnaAnswer3=" + ans[2] + "&order=0";
+                    content = "type=1&dnaAnswer1=" + ans[0] + "&dnaAnswer2=" + ans[1] + "&dnaAnswer3=" + ans[2] + "&order=0";//&dnaAnswerHex1=&dnaAnswerHex2=&dnaAnswerHex3=
                     Console.WriteLine(content);
                     //client.UploadString(url, content);
                     //client.UploadString(url, 
                     //client.Encoding = Encoding.UTF8;
-                    //client.Headers[HttpRequestHeader.ContentType] = "application/x-www-form-urlencoded";
-                    
-                    byte[] bs = Encoding.GetEncoding("GB2312").GetBytes(client.UploadString(url, content));
-                    Console.WriteLine(Encoding.UTF8.GetString(bs));
+                    client.Headers[HttpRequestHeader.ContentType] = "text/plain; charset=UTF-8";
+
+                    //client.UploadData(url, "POST", Encoding.UTF8.GetBytes(content));
+                    bs = client.UploadData(url, "POST", Encoding.UTF8.GetBytes(content));
+                    //byte[] bs = Encoding.GetEncoding("GB2312").GetBytes();
+                    resp = Encoding.UTF8.GetString(bs);
+
+                    resp = resp.Substring(resp.IndexOf("window.location.href="));
+                    fidx = resp.IndexOf("'") + 1;
+                    lidx = resp.IndexOf(";");
+
+                    resp = resp.Substring(fidx, lidx - fidx - 1);
+
+                    //Console.WriteLine(Encoding.UTF8.GetString(bs));
+                    unionverify = resp;
+                    Console.WriteLine(resp);
                     //client.Headers.Remove(HttpRequestHeader.ContentType);
-                    isrun = false;
+                    //isrun = false;
                     idx++;
                     break;
                 case 9:
-                    url = "https://aq.qq.com/cn2/findpsw/pc/pc_find_pwd_input_new_pwd?method=1&sub_method=0";
+                    url = unionverify;
                     data = client.OpenRead(url);
                     data.Close();
                     idx++;                   
@@ -322,7 +336,8 @@ namespace QQGM
                 case 10:
                     url = "https://aq.qq.com/cn2/findpsw/pc/pc_find_pwd_result";
                     content = "psw=qwer1234&psw_ack=qwer1234&method=1&sub_method=0";
-                    //byte[] bs = Encoding.GetEncoding("GB2312").GetBytes(client.UploadString(url, content));
+                    client.UploadString(url, content);
+                    //bs = Encoding.GetEncoding("GB2312").GetBytes(client.UploadString(url, content));
                     //Console.WriteLine(Encoding.UTF8.GetString(bs));
                     idx++;
                     isrun = false;

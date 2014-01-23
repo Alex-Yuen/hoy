@@ -43,7 +43,7 @@ namespace QQGM
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            comboBox1.SelectedIndex = 0;
+            comboBox2.SelectedIndex = 0;
             comboBox2.SelectedIndex = 0;
         }
 
@@ -70,7 +70,7 @@ namespace QQGM
         {
             dlg = delegate()
             {
-                if (comboBox1.SelectedIndex == 0)
+                if (comboBox2.SelectedIndex == 0)
                 {
                     int nAppId;         // 软件ＩＤ，开发者分成必要参数。登录开发者后台【我的软件】获得！
                     string lpAppKey;    // 软件密钥，开发者分成必要参数。登录开发者后台【我的软件】获得！
@@ -86,8 +86,8 @@ namespace QQGM
                     string username, password;
                     int ret;
 
-                    username = textBox1.Text;
-                    password = textBox2.Text;
+                    username = textBox2.Text;
+                    password = textBox3.Text;
 
                     // 返回云打码用户UID，大于零为登录成功，返回其他错误代码请查询 http://www.yundama.com/apidoc/YDM_ErrorCode.html
                     ret = YDMWrapper.YDM_Login(username, password);
@@ -211,6 +211,16 @@ namespace QQGM
         {
             Task task = (Task)stateInfo;
             task.process(this.type);
+        }
+
+        private void textBox3_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.KeyValue == 13)
+            {
+                button1.Focus();
+                button1.PerformClick();
+            }
+            //Console.WriteLine(e.KeyValue);
         }
     }
 }
