@@ -40,11 +40,6 @@
             this.关于AToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
-            this.toolStripSplitButton1 = new System.Windows.Forms.ToolStripSplitButton();
-            this.直接改密ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.有保改密ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.改保上保ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.改保改密ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.panel2 = new System.Windows.Forms.Panel();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.panel1 = new System.Windows.Forms.Panel();
@@ -78,6 +73,9 @@
             this.label9 = new System.Windows.Forms.Label();
             this.comboBox2 = new System.Windows.Forms.ComboBox();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
+            this.label15 = new System.Windows.Forms.Label();
+            this.label16 = new System.Windows.Forms.Label();
+            this.comboBox1 = new System.Windows.Forms.ComboBox();
             this.menuStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.panel2.SuspendLayout();
@@ -147,7 +145,7 @@
             // 
             this.选项OToolStripMenuItem.Name = "选项OToolStripMenuItem";
             this.选项OToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F4;
-            this.选项OToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.选项OToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
             this.选项OToolStripMenuItem.Text = "选项(&O)...";
             this.选项OToolStripMenuItem.Click += new System.EventHandler(this.选项OToolStripMenuItem_Click);
             // 
@@ -169,8 +167,7 @@
             // statusStrip1
             // 
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripStatusLabel1,
-            this.toolStripSplitButton1});
+            this.toolStripStatusLabel1});
             this.statusStrip1.Location = new System.Drawing.Point(0, 540);
             this.statusStrip1.Name = "statusStrip1";
             this.statusStrip1.Size = new System.Drawing.Size(784, 22);
@@ -182,48 +179,6 @@
             this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
             this.toolStripStatusLabel1.Size = new System.Drawing.Size(44, 17);
             this.toolStripStatusLabel1.Text = "未登录";
-            // 
-            // toolStripSplitButton1
-            // 
-            this.toolStripSplitButton1.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.toolStripSplitButton1.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.直接改密ToolStripMenuItem,
-            this.有保改密ToolStripMenuItem,
-            this.改保上保ToolStripMenuItem,
-            this.改保改密ToolStripMenuItem});
-            this.toolStripSplitButton1.Image = ((System.Drawing.Image)(resources.GetObject("toolStripSplitButton1.Image")));
-            this.toolStripSplitButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripSplitButton1.Name = "toolStripSplitButton1";
-            this.toolStripSplitButton1.Size = new System.Drawing.Size(32, 20);
-            this.toolStripSplitButton1.Text = "toolStripSplitButton1";
-            // 
-            // 直接改密ToolStripMenuItem
-            // 
-            this.直接改密ToolStripMenuItem.Name = "直接改密ToolStripMenuItem";
-            this.直接改密ToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.D1)));
-            this.直接改密ToolStripMenuItem.Size = new System.Drawing.Size(177, 22);
-            this.直接改密ToolStripMenuItem.Text = "直接改密";
-            // 
-            // 有保改密ToolStripMenuItem
-            // 
-            this.有保改密ToolStripMenuItem.Name = "有保改密ToolStripMenuItem";
-            this.有保改密ToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.D2)));
-            this.有保改密ToolStripMenuItem.Size = new System.Drawing.Size(177, 22);
-            this.有保改密ToolStripMenuItem.Text = "有保改密";
-            // 
-            // 改保上保ToolStripMenuItem
-            // 
-            this.改保上保ToolStripMenuItem.Name = "改保上保ToolStripMenuItem";
-            this.改保上保ToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.D3)));
-            this.改保上保ToolStripMenuItem.Size = new System.Drawing.Size(177, 22);
-            this.改保上保ToolStripMenuItem.Text = "改保/上保";
-            // 
-            // 改保改密ToolStripMenuItem
-            // 
-            this.改保改密ToolStripMenuItem.Name = "改保改密ToolStripMenuItem";
-            this.改保改密ToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.D4)));
-            this.改保改密ToolStripMenuItem.Size = new System.Drawing.Size(177, 22);
-            this.改保改密ToolStripMenuItem.Text = "改保+改密";
             // 
             // panel2
             // 
@@ -450,6 +405,7 @@
             this.button2.TabIndex = 4;
             this.button2.Text = "开始";
             this.button2.UseVisualStyleBackColor = true;
+            this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
             // groupBox2
             // 
@@ -464,6 +420,9 @@
             // 
             // loginpanel
             // 
+            this.loginpanel.Controls.Add(this.comboBox1);
+            this.loginpanel.Controls.Add(this.label16);
+            this.loginpanel.Controls.Add(this.label15);
             this.loginpanel.Controls.Add(this.checkBox2);
             this.loginpanel.Controls.Add(this.checkBox1);
             this.loginpanel.Controls.Add(this.button1);
@@ -487,6 +446,7 @@
             this.checkBox2.TabIndex = 7;
             this.checkBox2.Text = "自动登录";
             this.checkBox2.UseVisualStyleBackColor = true;
+            this.checkBox2.CheckedChanged += new System.EventHandler(this.checkBox2_CheckedChanged);
             // 
             // checkBox1
             // 
@@ -497,6 +457,7 @@
             this.checkBox1.TabIndex = 6;
             this.checkBox1.Text = "记住密码";
             this.checkBox1.UseVisualStyleBackColor = true;
+            this.checkBox1.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged);
             // 
             // button1
             // 
@@ -515,6 +476,7 @@
             this.textBox3.PasswordChar = '*';
             this.textBox3.Size = new System.Drawing.Size(144, 21);
             this.textBox3.TabIndex = 2;
+            this.textBox3.Enter += new System.EventHandler(this.textBox3_Enter);
             this.textBox3.KeyUp += new System.Windows.Forms.KeyEventHandler(this.textBox3_KeyUp);
             // 
             // textBox2
@@ -553,6 +515,7 @@
             this.comboBox2.Name = "comboBox2";
             this.comboBox2.Size = new System.Drawing.Size(90, 20);
             this.comboBox2.TabIndex = 6;
+            this.comboBox2.SelectedIndexChanged += new System.EventHandler(this.comboBox2_SelectedIndexChanged);
             // 
             // dataGridView1
             // 
@@ -563,6 +526,38 @@
             this.dataGridView1.RowTemplate.Height = 23;
             this.dataGridView1.Size = new System.Drawing.Size(784, 306);
             this.dataGridView1.TabIndex = 4;
+            // 
+            // label15
+            // 
+            this.label15.AutoSize = true;
+            this.label15.Location = new System.Drawing.Point(53, 51);
+            this.label15.Name = "label15";
+            this.label15.Size = new System.Drawing.Size(0, 12);
+            this.label15.TabIndex = 8;
+            this.label15.Visible = false;
+            // 
+            // label16
+            // 
+            this.label16.AutoSize = true;
+            this.label16.Location = new System.Drawing.Point(54, 77);
+            this.label16.Name = "label16";
+            this.label16.Size = new System.Drawing.Size(0, 12);
+            this.label16.TabIndex = 9;
+            this.label16.Visible = false;
+            // 
+            // comboBox1
+            // 
+            this.comboBox1.FormattingEnabled = true;
+            this.comboBox1.Items.AddRange(new object[] {
+            "操作方式",
+            "直接改密",
+            "有保改密",
+            "改保/上保",
+            "改保+改密"});
+            this.comboBox1.Location = new System.Drawing.Point(107, 17);
+            this.comboBox1.Name = "comboBox1";
+            this.comboBox1.Size = new System.Drawing.Size(90, 20);
+            this.comboBox1.TabIndex = 10;
             // 
             // Form1
             // 
@@ -626,11 +621,6 @@
         private System.Windows.Forms.Panel panel3;
         private System.Windows.Forms.Button button2;
         private System.Windows.Forms.Panel panel6;
-        private System.Windows.Forms.ToolStripSplitButton toolStripSplitButton1;
-        private System.Windows.Forms.ToolStripMenuItem 直接改密ToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem 有保改密ToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem 改保上保ToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem 改保改密ToolStripMenuItem;
         private System.Windows.Forms.Panel loginpanel;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Label label7;
@@ -654,6 +644,9 @@
         private System.Windows.Forms.Label label11;
         private System.Windows.Forms.CheckBox checkBox2;
         private System.Windows.Forms.CheckBox checkBox1;
+        private System.Windows.Forms.Label label16;
+        private System.Windows.Forms.Label label15;
+        private System.Windows.Forms.ComboBox comboBox1;
     }
 }
 
