@@ -64,6 +64,9 @@
             this.button2 = new System.Windows.Forms.Button();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.loginpanel = new System.Windows.Forms.Panel();
+            this.comboBox1 = new System.Windows.Forms.ComboBox();
+            this.label16 = new System.Windows.Forms.Label();
+            this.label15 = new System.Windows.Forms.Label();
             this.checkBox2 = new System.Windows.Forms.CheckBox();
             this.checkBox1 = new System.Windows.Forms.CheckBox();
             this.button1 = new System.Windows.Forms.Button();
@@ -73,9 +76,6 @@
             this.label9 = new System.Windows.Forms.Label();
             this.comboBox2 = new System.Windows.Forms.ComboBox();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
-            this.label15 = new System.Windows.Forms.Label();
-            this.label16 = new System.Windows.Forms.Label();
-            this.comboBox1 = new System.Windows.Forms.ComboBox();
             this.menuStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.panel2.SuspendLayout();
@@ -437,6 +437,39 @@
             this.loginpanel.Size = new System.Drawing.Size(212, 189);
             this.loginpanel.TabIndex = 0;
             // 
+            // comboBox1
+            // 
+            this.comboBox1.FormattingEnabled = true;
+            this.comboBox1.Items.AddRange(new object[] {
+            "操作方式",
+            "直接改密",
+            "有保改密",
+            "改保/上保",
+            "改保+改密"});
+            this.comboBox1.Location = new System.Drawing.Point(107, 17);
+            this.comboBox1.Name = "comboBox1";
+            this.comboBox1.Size = new System.Drawing.Size(90, 20);
+            this.comboBox1.TabIndex = 10;
+            this.comboBox1.SelectedIndexChanged += new System.EventHandler(this.comboBox1_SelectedIndexChanged);
+            // 
+            // label16
+            // 
+            this.label16.AutoSize = true;
+            this.label16.Location = new System.Drawing.Point(54, 77);
+            this.label16.Name = "label16";
+            this.label16.Size = new System.Drawing.Size(0, 12);
+            this.label16.TabIndex = 9;
+            this.label16.Visible = false;
+            // 
+            // label15
+            // 
+            this.label15.AutoSize = true;
+            this.label15.Location = new System.Drawing.Point(53, 51);
+            this.label15.Name = "label15";
+            this.label15.Size = new System.Drawing.Size(0, 12);
+            this.label15.TabIndex = 8;
+            this.label15.Visible = false;
+            // 
             // checkBox2
             // 
             this.checkBox2.AutoSize = true;
@@ -526,38 +559,6 @@
             this.dataGridView1.RowTemplate.Height = 23;
             this.dataGridView1.Size = new System.Drawing.Size(784, 306);
             this.dataGridView1.TabIndex = 4;
-            // 
-            // label15
-            // 
-            this.label15.AutoSize = true;
-            this.label15.Location = new System.Drawing.Point(53, 51);
-            this.label15.Name = "label15";
-            this.label15.Size = new System.Drawing.Size(0, 12);
-            this.label15.TabIndex = 8;
-            this.label15.Visible = false;
-            // 
-            // label16
-            // 
-            this.label16.AutoSize = true;
-            this.label16.Location = new System.Drawing.Point(54, 77);
-            this.label16.Name = "label16";
-            this.label16.Size = new System.Drawing.Size(0, 12);
-            this.label16.TabIndex = 9;
-            this.label16.Visible = false;
-            // 
-            // comboBox1
-            // 
-            this.comboBox1.FormattingEnabled = true;
-            this.comboBox1.Items.AddRange(new object[] {
-            "操作方式",
-            "直接改密",
-            "有保改密",
-            "改保/上保",
-            "改保+改密"});
-            this.comboBox1.Location = new System.Drawing.Point(107, 17);
-            this.comboBox1.Name = "comboBox1";
-            this.comboBox1.Size = new System.Drawing.Size(90, 20);
-            this.comboBox1.TabIndex = 10;
             // 
             // Form1
             // 
