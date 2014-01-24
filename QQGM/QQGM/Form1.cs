@@ -85,7 +85,7 @@ namespace QQGM
         private void 关于AToolStripMenuItem_Click(object sender, EventArgs e)
         {
             AboutBox1 about = new AboutBox1();
-            about.Show();
+            about.ShowDialog();
         }
 
         private void button1_Click(object sender, EventArgs e)
