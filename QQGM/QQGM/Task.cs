@@ -53,6 +53,8 @@ namespace QQGM
         private string unionverify = null;
         private Form1 form;
         private Configuration cfa = null;
+        private int fidx = -1;
+        private int lidx = -1;
 
         public Task()
         {
@@ -307,37 +309,44 @@ namespace QQGM
                     reader = new StreamReader(data);
                     resp = reader.ReadToEnd();
                     //QuerId:[4,1,7],
-                    resp = resp.Substring(resp.IndexOf("QuerId"));
-                    int fidx = resp.IndexOf("[") + 1;
-                    int lidx = resp.IndexOf("]");
-
-                    resp = resp.Substring(fidx, lidx - fidx);
-                    qs = Regex.Split(resp, ",");
-                    ans = new string[3];
-                    string question = null;
-                    for (int i = 0; i < qs.Length; i++)
+                    if (resp.IndexOf("QuerId") == -1)
                     {
-                        question = questions[Int32.Parse(qs[i]) - 1];
-                        if (Q1.Equals(question))
-                        {
-                            ans[i] = A1;
-                        }
-                        else if (Q2.Equals(question))
-                        {
-                            ans[i] = A2;
-                        }
-                        else if (Q3.Equals(question))
-                        {
-                            ans[i] = A3;
-                        }
+                        form.info(id, "需要短信验证");
+                        isrun = false;
                     }
+                    else
+                    {
+                        resp = resp.Substring(resp.IndexOf("QuerId"));
+                        fidx = resp.IndexOf("[") + 1;
+                        lidx = resp.IndexOf("]");
 
-                    Console.WriteLine(resp);
-                    
+                        resp = resp.Substring(fidx, lidx - fidx);
+                        qs = Regex.Split(resp, ",");
+                        ans = new string[3];
+                        string question = null;
+                        for (int i = 0; i < qs.Length; i++)
+                        {
+                            question = questions[Int32.Parse(qs[i]) - 1];
+                            if (Q1.Equals(question))
+                            {
+                                ans[i] = A1;
+                            }
+                            else if (Q2.Equals(question))
+                            {
+                                ans[i] = A2;
+                            }
+                            else if (Q3.Equals(question))
+                            {
+                                ans[i] = A3;
+                            }
+                        }
+
+                        Console.WriteLine(resp);
+                    }
                     reader.Close();
                     data.Close();
-                    idx++;
 
+                    idx++;
                     //isrun = false;
                     break;
                 case 8:
@@ -424,12 +433,13 @@ namespace QQGM
 
                 if ("True".Equals(cfa.AppSettings.Settings["RND_PWD_F2"].Value))
                 {
-                    sb.Append("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz");
+                    sb.Append("abcdefghijklmnopqrstuvwxyz");
                 }
 
                 if ("True".Equals(cfa.AppSettings.Settings["RND_PWD_F3"].Value))
                 {
-                    sb.Append("!\"#$%&'()*+,-./:;<=>?@[\\]^_`{}|~");
+                    sb.Append("ABCDEFGHIJKLMNOPQRSTUVWXYZ");
+                    //sb.Append("!\"#$%&'()*+,-./:;<=>?@[\\]^_`{}|~");
                 }
 
                 char[] ss = sb.ToString().ToCharArray();

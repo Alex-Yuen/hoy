@@ -7,6 +7,8 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using System.Configuration;
+using Microsoft.Win32;
+using System.Runtime.InteropServices;
 
 namespace QQGM
 {
@@ -17,7 +19,6 @@ namespace QQGM
         public Option()
         {
             InitializeComponent();
-            cfa = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
         }
 
         private void button2_Click(object sender, EventArgs e)
@@ -33,6 +34,13 @@ namespace QQGM
                 MessageBox.Show("密码不能是9位以下纯数字");
                 return;
             }
+            cfa = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
+
+            if (cfa == null)
+            {
+                MessageBox.Show("加载配置文件失败!");
+            }
+
             ConfigurationManager.RefreshSection("appSettings");
 
             //Configuration cfa = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
@@ -45,7 +53,20 @@ namespace QQGM
             cfa.AppSettings.Settings["RND_PWD_F1"].Value = checkBox1.Checked.ToString();
             cfa.AppSettings.Settings["RND_PWD_F2"].Value = checkBox2.Checked.ToString();
             cfa.AppSettings.Settings["RND_PWD_F3"].Value = checkBox3.Checked.ToString();
-            
+
+            cfa.AppSettings.Settings["STOP_FLAG"].Value = checkBox4.Checked.ToString();
+            cfa.AppSettings.Settings["STOP_FLAG_F1"].Value = numericUpDown3.Value.ToString();
+            cfa.AppSettings.Settings["STOP_FLAG_F2"].Value = numericUpDown4.Value.ToString();
+
+            cfa.AppSettings.Settings["REC_FLAG"].Value = checkBox5.Checked.ToString();
+            cfa.AppSettings.Settings["REC_FLAG_F1"].Value = numericUpDown5.Value.ToString();
+            cfa.AppSettings.Settings["REC_FLAG_F2"].Value = numericUpDown6.Value.ToString();
+            cfa.AppSettings.Settings["REC_FLAG_F3"].Value = checkBox6.Checked.ToString();
+            cfa.AppSettings.Settings["REC_FLAG_F4"].Value = checkBox7.Checked.ToString();
+            cfa.AppSettings.Settings["REC_FLAG_F5"].Value = comboBox1.SelectedItem.ToString();
+            cfa.AppSettings.Settings["REC_FLAG_F6"].Value = textBox2.Text;
+            cfa.AppSettings.Settings["REC_FLAG_F7"].Value = textBox3.Text;
+
             cfa.Save();
             this.Close();
             //ConfigurationManager.RefreshSection("appSettings");
@@ -53,6 +74,13 @@ namespace QQGM
 
         private void Option_Load(object sender, EventArgs e)
         {
+            cfa = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
+
+            if (cfa == null)
+            {
+                MessageBox.Show("加载配置文件失败!");
+            }
+
             ConfigurationManager.RefreshSection("appSettings");
             try
             {
@@ -113,6 +141,66 @@ namespace QQGM
                 {
                     checkBox3.Checked = false;
                 }
+
+                //高级
+                //ADSL
+                List<string> adls = GetAllAdslName();
+                int i = 0;
+                int idx = 0;
+                foreach(string ad in adls)
+                {
+                    if (ad.Equals(cfa.AppSettings.Settings["REC_FLAG_F5"].Value))
+                    {
+                        idx = i;
+                    }
+                    comboBox1.Items.Add(ad);
+                    i++;
+                }
+                comboBox1.SelectedIndex = idx;
+                textBox2.Text = cfa.AppSettings.Settings["REC_FLAG_F6"].Value;
+                textBox3.Text = cfa.AppSettings.Settings["REC_FLAG_F7"].Value;
+
+                //STOP_FLAG
+                if ("True".Equals(cfa.AppSettings.Settings["STOP_FLAG"].Value))
+                {
+                    checkBox4.Checked = true;
+                }
+                else
+                {
+                    checkBox4.Checked = false;
+                }
+                numericUpDown3.Value = Decimal.Parse(cfa.AppSettings.Settings["STOP_FLAG_F1"].Value);
+                numericUpDown4.Value = Decimal.Parse(cfa.AppSettings.Settings["STOP_FLAG_F2"].Value);
+
+                //REC_FLAG
+                if ("True".Equals(cfa.AppSettings.Settings["REC_FLAG"].Value))
+                {
+                    checkBox5.Checked = true;
+                }
+                else
+                {
+                    checkBox5.Checked = false;
+                }
+                numericUpDown5.Value = Decimal.Parse(cfa.AppSettings.Settings["REC_FLAG_F1"].Value);
+                numericUpDown6.Value = Decimal.Parse(cfa.AppSettings.Settings["REC_FLAG_F2"].Value);
+
+                if ("True".Equals(cfa.AppSettings.Settings["REC_FLAG_F3"].Value))
+                {
+                    checkBox6.Checked = true;
+                }
+                else
+                {
+                    checkBox6.Checked = false;
+                }
+
+                if ("True".Equals(cfa.AppSettings.Settings["REC_FLAG_F4"].Value))
+                {
+                    checkBox7.Checked = true;
+                }
+                else
+                {
+                    checkBox7.Checked = false;
+                }
             }
             catch (Exception ex)
             {
@@ -150,15 +238,117 @@ namespace QQGM
                 textBox1.Enabled = false;
             }
         }
-        
+
         private bool check()
         {
-            if ((checkBox1.Checked && !checkBox2.Checked && !checkBox3.Checked) && numericUpDown2.Value<9)
+            if ((checkBox1.Checked && !checkBox2.Checked && !checkBox3.Checked) && numericUpDown2.Value < 9)
             {
                 return false;
-            }else{
+            }
+            else
+            {
                 return true;
             }
         }
+
+        private void checkBox4_CheckedChanged(object sender, EventArgs e)
+        {
+            if (checkBox4.Checked)
+            {
+                numericUpDown3.Enabled = true;
+                numericUpDown4.Enabled = true;
+            }
+            else
+            {
+                numericUpDown3.Enabled = false;
+                numericUpDown4.Enabled = false;
+            }
+
+        }
+
+        private void checkBox5_CheckedChanged(object sender, EventArgs e)
+        {
+            if (checkBox5.Checked)
+            {
+                numericUpDown5.Enabled = true;
+                numericUpDown6.Enabled = true;
+                checkBox6.Enabled = true;
+                checkBox7.Enabled = true;
+                comboBox1.Enabled = true;
+                textBox2.Enabled = true;
+                textBox3.Enabled = true;
+            }
+            else
+            {
+                numericUpDown5.Enabled = false;
+                numericUpDown6.Enabled = false;
+                checkBox6.Enabled = false;
+                checkBox7.Enabled = false;
+                comboBox1.Enabled = false;
+                textBox2.Enabled = false;
+                textBox3.Enabled = false;
+            }
+        }
+
+        // #region 获取adsl所有宽带连接名称
+
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)]
+        public struct RasEntryName      //define the struct to receive the entry name
+        {
+            public int dwSize;
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 256 + 1)]
+            public string szEntryName;
+#if WINVER5
+     public int dwFlags;
+     [MarshalAs(UnmanagedType.ByValTStr,SizeConst=260+1)]
+     public string szPhonebookPath;
+#endif
+        }
+
+        [DllImport("rasapi32.dll", CharSet = CharSet.Auto)]
+
+        public extern static uint RasEnumEntries(
+            string reserved,              // reserved, must be NULL
+            string lpszPhonebook,         // pointer to full path and file name of phone-book file
+            [In, Out]RasEntryName[] lprasentryname, // buffer to receive phone-book entries
+            ref int lpcb,                  // size in bytes of buffer
+            out int lpcEntries             // number of entries written to buffer
+        );
+
+        public List<string> GetAllAdslName()
+        {
+            List<string> list = new List<string>();
+            int lpNames = 1;
+            int entryNameSize = 0;
+            int lpSize = 0;
+            RasEntryName[] names = null;
+            entryNameSize = Marshal.SizeOf(typeof(RasEntryName));
+            lpSize = lpNames * entryNameSize;
+            names = new RasEntryName[lpNames];
+            names[0].dwSize = entryNameSize;
+            uint retval = RasEnumEntries(null, null, names, ref lpSize, out lpNames);
+
+            //if we have more than one connection, we need to do it again
+            if (lpNames > 1)
+            {
+                names = new RasEntryName[lpNames];
+                for (int i = 0; i < names.Length; i++)
+                {
+                    names[i].dwSize = entryNameSize;
+                }
+                retval = RasEnumEntries(null, null, names, ref lpSize, out lpNames);
+            }
+
+            if (lpNames > 0)
+            {
+                for (int i = 0; i < names.Length; i++)
+                {
+                    list.Add(names[i].szEntryName);
+                }
+            }
+            return list;
+        }
+
+        // #endregion
     }
 }

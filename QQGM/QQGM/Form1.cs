@@ -31,8 +31,6 @@ namespace QQGM
         {
             InitializeComponent();
 
-            cfa = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
-
             table.Columns.Add("ID", Type.GetType("System.String"));
             table.Columns.Add("帐号", Type.GetType("System.String"));
             table.Columns.Add("密码", Type.GetType("System.String"));
@@ -49,6 +47,13 @@ namespace QQGM
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            cfa = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
+
+            if (cfa == null)
+            {
+                MessageBox.Show("加载配置文件失败!");
+            }
+
             comboBox1.SelectedIndex = 0;
             ConfigurationManager.RefreshSection("appSettings");
             try
@@ -68,6 +73,23 @@ namespace QQGM
                 }
 
                 setlogin();
+
+                if (checkBox2.Checked)
+                {//自动登录 
+                    //Thread lt;
+                    //lt = new Thread(login);
+                    //lt.Start();
+
+                    System.Timers.Timer t = new System.Timers.Timer(1000);
+                    //实例化Timer类，设置间隔时间为10000毫秒；   
+                    t.Elapsed +=
+                    new System.Timers.ElapsedEventHandler(login);
+                    //到达时间的时候执行事件；   
+                    t.AutoReset = false;
+                    //设置是执行一次（false）还是一直执行(true)；   
+                    t.Enabled = true;
+                    //是否执行System.Timers.Timer.Elapsed事件；  
+                }
             }
             catch (Exception ex)
             {
@@ -92,10 +114,19 @@ namespace QQGM
         {
             if (comboBox2.Enabled == true)
             {
-                button1.Enabled = false;
+                //button1.Enabled = false;
+                System.Timers.Timer t = new System.Timers.Timer(1);
+                //实例化Timer类，设置间隔时间为10000毫秒；   
+                t.Elapsed +=
+                new System.Timers.ElapsedEventHandler(login);
+                //到达时间的时候执行事件；   
+                t.AutoReset = false;
+                //设置是执行一次（false）还是一直执行(true)；   
+                t.Enabled = true;
+                /**
                 Thread lt;
-                lt = new Thread(login);
-                lt.Start();
+                lt = new Thread(login, null, null);
+                lt.Start();**/
             }
             else
             {
@@ -117,10 +148,11 @@ namespace QQGM
             }
         }
 
-        public void login()
+        public void login(object source, System.Timers.ElapsedEventArgs e)
         {
             dlg = delegate()
             {
+                button1.Enabled = false;
                 int nAppId;         // 软件ＩＤ，开发者分成必要参数。登录开发者后台【我的软件】获得！
                 string lpAppKey;    // 软件密钥，开发者分成必要参数。登录开发者后台【我的软件】获得！
 
@@ -150,11 +182,11 @@ namespace QQGM
                     lpAppKey = "08573f0698dc43b4b35761c9ab64f014";
                     ret = UUWrapper.uu_login(username, password);
                 }
-                
+
                 if (ret > 0)
                 {
                     isLogin = true;
-                    toolStripStatusLabel1.Text = "登陆成功，ID=" + ret.ToString();
+                    toolStripStatusLabel1.Text = "登录成功，ID=" + ret.ToString();
 
                     if (comboBox2.SelectedIndex == 0)
                     {
@@ -165,22 +197,38 @@ namespace QQGM
                     {
                         score = UUWrapper.uu_getScore(username, password);
                     }
+                    //toolStripStatusLabel1.Text = "1";
+                    cfa = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
+
+                    if (cfa == null)
+                    {
+                        MessageBox.Show("加载配置文件失败!");
+                    }
 
                     ConfigurationManager.RefreshSection("appSettings");
-
+                    //toolStripStatusLabel1.Text = "2:" + cfa.AppSettings + "/" + cfa.AppSettings.Settings["ACCOUNT"] + "/" + textBox2;
                     //保存登录参数
                     cfa.AppSettings.Settings["ACCOUNT"].Value = textBox2.Text;
+                    //toolStripStatusLabel1.Text = "2.1";
                     if (checkBox1.Checked)
                     {
+                        //toolStripStatusLabel1.Text = "2.2";
                         cfa.AppSettings.Settings["PASSWORD"].Value = textBox3.Text;
+                        //toolStripStatusLabel1.Text = "2.3";
                     }
                     else
                     {
+                        //toolStripStatusLabel1.Text = "2.4";
                         cfa.AppSettings.Settings["PASSWORD"].Value = "";
+                        //toolStripStatusLabel1.Text = "2.5";
                     }
+                    //toolStripStatusLabel1.Text = "2.6";
                     cfa.AppSettings.Settings["REM_PASSWORD"].Value = checkBox1.Checked.ToString();
+                    //toolStripStatusLabel1.Text = "2.7";
                     cfa.AppSettings.Settings["AUTO_LOGIN"].Value = checkBox2.Checked.ToString();
+                    //toolStripStatusLabel1.Text = "3";
                     cfa.Save();
+                    //toolStripStatusLabel1.Text = "4";
 
                     label10.Text = "题分:";
                     button1.Text = "切换帐号";
@@ -196,6 +244,7 @@ namespace QQGM
 
                     label16.Text = score.ToString();
                     label16.Visible = true;
+                    //toolStripStatusLabel1.Text = "5";
                 }
                 else
                 {
@@ -204,14 +253,17 @@ namespace QQGM
                 }
 
                 button1.Enabled = true;
+                //toolStripStatusLabel1.Text = "6";
                 ready();
             };
+            //toolStripStatusLabel1.Text = "7";
             this.BeginInvoke(dlg);
+            //toolStripStatusLabel1.Text = "8";
         }
 
         private void ready()
         {
-            if (isLogin && table.Rows.Count > 0)
+            if (isLogin && table.Rows.Count > 0&&comboBox1.SelectedIndex!=0)
             {
                 button2.Enabled = true;
             }
@@ -285,8 +337,9 @@ namespace QQGM
                 }
                 ConfigurationManager.RefreshSection("appSettings");
                 int mt = Int32.Parse(cfa.AppSettings.Settings["THREAD_COUNT"].Value);
-                ThreadPool.SetMinThreads(4, 4);
-                ThreadPool.SetMaxThreads(mt, mt);
+                Console.WriteLine("MT:" + mt);
+                ThreadPool.SetMinThreads(1, 0);
+                ThreadPool.SetMaxThreads(mt, 0);
                 Task task = null;
                 for (int i = 0; i < table.Rows.Count; i++)
                 {
@@ -294,7 +347,7 @@ namespace QQGM
                     task.ID = Int32.Parse((string)table.Rows[i]["ID"]);
                     task.Account = (string)table.Rows[i][1];
                     task.Password = (string)table.Rows[i][2];
-                    
+
                     if (table.Rows[i][4] != null && !table.Rows[i][4].Equals(""))
                     {
                         task.Isdna = true;
@@ -309,11 +362,13 @@ namespace QQGM
                     {
                         task.Isdna = false;
                     }
+                    ThreadPool.QueueUserWorkItem(new WaitCallback(process), task);
                 }
-                ThreadPool.QueueUserWorkItem(new WaitCallback(process), task);
+                button2.Text = "结束";
             }
             else
             {
+                button2.Text = "开始";
                 //ThreadPool.
                 //stop
             }
@@ -360,7 +415,7 @@ namespace QQGM
         private void textBox3_Enter(object sender, EventArgs e)
         {
             textBox3.SelectAll();
- //           ns = true;
+            //           ns = true;
         }
 
         /**
@@ -415,9 +470,14 @@ namespace QQGM
         {
             dlg = delegate()
             {
-                this.table.Rows[tid-1][3] = info;
+                this.table.Rows[tid - 1][3] = info;
             };
             this.BeginInvoke(dlg);
+        }
+
+        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            ready();
         }
     }
 }
