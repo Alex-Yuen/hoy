@@ -222,5 +222,10 @@ namespace QQGM
             }
             //Console.WriteLine(e.KeyValue);
         }
+
+        private void 选项OToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            new Option().ShowDialog();
+        }
     }
 }
