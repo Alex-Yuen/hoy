@@ -7,6 +7,8 @@ using System.IO;
 using ws.hoyland;
 using System.Text.RegularExpressions;
 using System.Web;
+using Newtonsoft.Json;
+using System.Configuration;
 
 namespace QQGM
 {
@@ -49,6 +51,8 @@ namespace QQGM
         private string resp = null;
         private byte[] bs = null;
         private string unionverify = null;
+        private Form1 form;
+        private Configuration cfa = null;
 
         public Task()
         {
@@ -57,6 +61,8 @@ namespace QQGM
 
             random = new Random();
             isrun = true;
+
+            cfa = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
         }
 
         public int IDX
@@ -149,21 +155,24 @@ namespace QQGM
             set { a3 = value; }
         }
 
-        public void process(int type)
-        {            ;
+        public void process(Form1 form, int type)
+        {
+            this.form = form;
             switch (type)
             {
-                case 0://改密，自动判断是否有保
+                case 1:
+                    while (isrun)//无保
+                    {
+                        gm0();
+                    }
+                    break;
+                case 2://改密，自动判断是否有保
                     if (isdna)//有保
                     {
                         while (isrun)
                         {
                             gm1();
                         }
-                    }
-                    else//无保
-                    {
-                        gm0();
                     }
                     break;
                 default:
@@ -182,6 +191,7 @@ namespace QQGM
             switch (idx)
             {
                 case 0:
+                    form.info(id, "正在开始");
                     url = "https://aq.qq.com/cn2/findpsw/findpsw_index";
                     data = client.OpenRead(url);
                     //StreamReader reader = new StreamReader(data);
@@ -194,6 +204,7 @@ namespace QQGM
 //                    isrun = false;
                     break;
                 case 1:
+                    form.info(id, "输入帐号");
                     url = "https://aq.qq.com/cn2/findpsw/pc/pc_find_pwd_input_account?pw_type=0&aquin=";
                     data = client.OpenRead(url);
                     data.Close();
@@ -201,14 +212,17 @@ namespace QQGM
                     idx++;
                     break;
                 case 2:
+                    form.info(id, "下载验证码");
                     url = "https://ssl.captcha.qq.com/getimage?aid=2001601&" + random.NextDouble() + "&uin=" + account;
-                    Console.WriteLine(url);
+                    //Console.WriteLine(url);
                     data = client.OpenRead(url);
 
                     bytes = new byte[4096];
                     size = data.Read(bytes, 0, bytes.Length);
 
-                    Console.WriteLine("SIZE:"+size);
+                    this.form.setImage(bytes, size);
+                    
+                    //Console.WriteLine("SIZE:"+size);
                     idx++;
                     break;
                 case 3:
@@ -224,7 +238,7 @@ namespace QQGM
                     //}
                     //string s = reader.ReadToEnd();
                     //Console.WriteLine(s);
-
+                    form.info(id, "识别验证码");
                     int nCodeType, nCaptchaId;
                     pCodeResult = new StringBuilder("0000000000"); // 分配30个字节存放识别结果
                               
@@ -242,24 +256,50 @@ namespace QQGM
                     idx++;
                     break;
                 case 4:
+                    form.info(id, "提交验证码");
                     url = "https://aq.qq.com/cn2/ajax/check_verifycode?session_type=on_rand&verify_code=" + pCodeResult.ToString();
                     data = client.OpenRead(url);
+
+                    reader = new StreamReader(data);
+                    string s = reader.ReadToEnd();
+                    Console.WriteLine(s);
+                    JsonTextReader jtr = new JsonTextReader(new StringReader(s));
+                    jtr.Read();
+                    jtr.Read();
+                    jtr.Read();// && (jtr.TokenType!=JsonToken.StartObject)
+                    {
+                        if (jtr.Value.ToString().Equals("0"))
+                        {
+                            form.info(id, "验证码正确");
+                            idx++;
+                        }
+                        else
+                        {
+                            form.info(id, "验证码错误");
+                            idx = 2;
+                        }
+                        //Console.WriteLine(jtr.Value);
+                    }
+                    //.WriteLine(jtr.ReadAsString());
+                    reader.Close();
                     data.Close();
-                    idx++;
                     break;
                 case 5:
+                    form.info(id, "选择方式");
                     url = "https://aq.qq.com/cn2/findpsw/pc/pc_find_pwd_way";
                     content = "input_find_qq=" + account + "&pw_type=1&verifycode=" + pCodeResult.ToString();
                     client.UploadString(url, content);
                     idx++;
                     break;
                 case 6:
+                    form.info(id, "提交页面操作记录");
                     url = "https://aq.qq.com/cn2/ajax/page_optlog?page_name=pc_find_pwd_way&element_name="+account;
                     data = client.OpenRead(url);
                     data.Close();
                     idx++;
                     break;
                 case 7:
+                    form.info(id, "跳转");
                     url = "https://aq.qq.com/cn2/unionverify/unionverify_jump?jumpname=pc_find_pwd&session_context=3&PTime=" + random.NextDouble();
                     //Console.WriteLine(client.Headers);
                     data = client.OpenRead(url);
@@ -301,6 +341,7 @@ namespace QQGM
                     //isrun = false;
                     break;
                 case 8:
+                    form.info(id, "提交密保答案");
                     url = "https://aq.qq.com/cn2/unionverify/pc/pc_uv_verify";
                     content = "type=1&dnaAnswer1=" + ans[0] + "&dnaAnswer2=" + ans[1] + "&dnaAnswer3=" + ans[2] + "&order=0";//&dnaAnswerHex1=&dnaAnswerHex2=&dnaAnswerHex3=
                     Console.WriteLine(content);
@@ -328,17 +369,33 @@ namespace QQGM
                     idx++;
                     break;
                 case 9:
+                    form.info(id, "成功，继续跳转");
                     url = unionverify;
                     data = client.OpenRead(url);
                     data.Close();
-                    idx++;                   
+                    idx++;            
                     break;
                 case 10:
+                    form.info(id, "提交新密码");
                     url = "https://aq.qq.com/cn2/findpsw/pc/pc_find_pwd_result";
-                    content = "psw=qwer1234&psw_ack=qwer1234&method=1&sub_method=0";
-                    client.UploadString(url, content);
-                    //bs = Encoding.GetEncoding("GB2312").GetBytes(client.UploadString(url, content));
-                    //Console.WriteLine(Encoding.UTF8.GetString(bs));
+                    string pwd = GetPassWord();
+                    Console.WriteLine("PWD:" + pwd);
+                    content = "psw="+pwd+"&psw_ack="+pwd+"&method=1&sub_method=0";
+                    //client.UploadString(url, content);
+                    bs = Encoding.GetEncoding("GB2312").GetBytes(client.UploadString(url, content));
+                    resp = Encoding.UTF8.GetString(bs);
+                    Console.WriteLine(resp.IndexOf("修改成功"));
+                    if (resp.IndexOf("same_psw")!=-1)
+                    {
+                        form.info(id, "密码相同");
+                        //Console.WriteLine("");
+                    }
+                    else if (resp.IndexOf("修改成功") != -1)
+                    {
+                        form.info(id, "修改成功");
+                        //Console.WriteLine("修改成功");
+                    }
+                    //Console.WriteLine(resp);
                     idx++;
                     isrun = false;
                     break;
@@ -347,8 +404,47 @@ namespace QQGM
             }
         }
 
-        
-        public static string UrlEncode(string strCode)
+        private string GetPassWord()
+        {
+            ConfigurationManager.RefreshSection("appSettings");
+
+            if ("True".Equals(cfa.AppSettings.Settings["FIX_PWD"].Value))
+            {
+                return cfa.AppSettings.Settings["FIX_PWD_VALUE"].Value;
+            }
+            else
+            {
+                int len = Int32.Parse(cfa.AppSettings.Settings["RND_PWD_LEN"].Value);
+                StringBuilder sb = new StringBuilder();
+                
+                if ("True".Equals(cfa.AppSettings.Settings["FIX_PWD_F1"].Value))
+                {
+                    sb.Append("0123456789");
+                }
+
+                if ("True".Equals(cfa.AppSettings.Settings["FIX_PWD_F2"].Value))
+                {
+                    sb.Append("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz");
+                }
+
+                if ("True".Equals(cfa.AppSettings.Settings["FIX_PWD_F3"].Value))
+                {
+                    sb.Append("!\"#$%&'()*+,-./:;<=>?@[\\]^_`{}|~");
+                }
+
+                char[] ss = sb.ToString().ToCharArray();
+                StringBuilder rr = new StringBuilder();
+
+                for (int i = 0; i < len; i++)
+                {
+                    rr.Append(ss[random.Next(ss.Length)]);
+                }
+                return rr.ToString();
+            }
+        }
+                
+        /**
+        private string UrlEncode(string strCode)
         {
             StringBuilder sb = new StringBuilder();
             byte[] byStr = System.Text.Encoding.UTF8.GetBytes(strCode); //默认是System.Text.Encoding.Default.GetBytes(str)  
@@ -367,6 +463,6 @@ namespace QQGM
                 }
             }
             return (sb.ToString());
-        } 
+        } **/
     }
 }
