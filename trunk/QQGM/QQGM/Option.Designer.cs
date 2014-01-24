@@ -266,6 +266,7 @@
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "Option";
+            this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "设置";
             this.Load += new System.EventHandler(this.Option_Load);

@@ -416,18 +416,18 @@ namespace QQGM
             {
                 int len = Int32.Parse(cfa.AppSettings.Settings["RND_PWD_LEN"].Value);
                 StringBuilder sb = new StringBuilder();
-                
-                if ("True".Equals(cfa.AppSettings.Settings["FIX_PWD_F1"].Value))
+
+                if ("True".Equals(cfa.AppSettings.Settings["RND_PWD_F1"].Value))
                 {
                     sb.Append("0123456789");
                 }
 
-                if ("True".Equals(cfa.AppSettings.Settings["FIX_PWD_F2"].Value))
+                if ("True".Equals(cfa.AppSettings.Settings["RND_PWD_F2"].Value))
                 {
                     sb.Append("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz");
                 }
 
-                if ("True".Equals(cfa.AppSettings.Settings["FIX_PWD_F3"].Value))
+                if ("True".Equals(cfa.AppSettings.Settings["RND_PWD_F3"].Value))
                 {
                     sb.Append("!\"#$%&'()*+,-./:;<=>?@[\\]^_`{}|~");
                 }
