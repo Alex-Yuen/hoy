@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "holy-mail-core", "holy-mail-core\holy-mail-core.csproj", "{BF313B3D-1431-42AF-91D4-FAB344FF94FF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "holy-mail", "holy-mail\holy-mail.csproj", "{B5701CEA-A9B8-428E-8672-83C5104A285D}"
-EndProject
 Global
 	GlobalSection(SubversionScc) = preSolution
 		Svn-Managed = True
@@ -19,10 +17,6 @@ Global
 		{BF313B3D-1431-42AF-91D4-FAB344FF94FF}.Debug|x86.Build.0 = Debug|x86
 		{BF313B3D-1431-42AF-91D4-FAB344FF94FF}.Release|x86.ActiveCfg = Release|x86
 		{BF313B3D-1431-42AF-91D4-FAB344FF94FF}.Release|x86.Build.0 = Release|x86
-		{B5701CEA-A9B8-428E-8672-83C5104A285D}.Debug|x86.ActiveCfg = Debug|x86
-		{B5701CEA-A9B8-428E-8672-83C5104A285D}.Debug|x86.Build.0 = Debug|x86
-		{B5701CEA-A9B8-428E-8672-83C5104A285D}.Release|x86.ActiveCfg = Release|x86
-		{B5701CEA-A9B8-428E-8672-83C5104A285D}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
