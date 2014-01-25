@@ -28,47 +28,72 @@ namespace QQGM
 
         private void button1_Click(object sender, EventArgs e)
         {
-
+            //MessageBox.Show("1");
             if (!check())
             {
                 MessageBox.Show("密码不能是9位以下纯数字");
                 return;
             }
+            //MessageBox.Show("2");
             cfa = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
 
             if (cfa == null)
             {
                 MessageBox.Show("加载配置文件失败!");
             }
-
+            //MessageBox.Show("3");
             ConfigurationManager.RefreshSection("appSettings");
-
+            //MessageBox.Show("4.1:"+cfa);
+            //MessageBox.Show("4.2:" + cfa.AppSettings);
+            //MessageBox.Show("4.3:" + cfa.AppSettings.Settings);
+            //MessageBox.Show("4.4:" + cfa.AppSettings.Settings["THREAD_COUNT"]);
             //Configuration cfa = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
             cfa.AppSettings.Settings["THREAD_COUNT"].Value = numericUpDown1.Value.ToString();
+            //MessageBox.Show("4.5");
             cfa.AppSettings.Settings["FIX_PWD"].Value = radioButton1.Checked.ToString();
+            //MessageBox.Show("5");
             cfa.AppSettings.Settings["RND_PWD"].Value = radioButton2.Checked.ToString();
+            //MessageBox.Show("6");
             cfa.AppSettings.Settings["FIX_PWD_VALUE"].Value = textBox1.Text;
-
+            //MessageBox.Show("7");
             cfa.AppSettings.Settings["RND_PWD_LEN"].Value = numericUpDown2.Value.ToString();
+            //MessageBox.Show("8");
             cfa.AppSettings.Settings["RND_PWD_F1"].Value = checkBox1.Checked.ToString();
+            //MessageBox.Show("9");
             cfa.AppSettings.Settings["RND_PWD_F2"].Value = checkBox2.Checked.ToString();
             cfa.AppSettings.Settings["RND_PWD_F3"].Value = checkBox3.Checked.ToString();
-
+            //MessageBox.Show("10");
             cfa.AppSettings.Settings["STOP_FLAG"].Value = checkBox4.Checked.ToString();
             cfa.AppSettings.Settings["STOP_FLAG_F1"].Value = numericUpDown3.Value.ToString();
             cfa.AppSettings.Settings["STOP_FLAG_F2"].Value = numericUpDown4.Value.ToString();
-
+            //MessageBox.Show("11");
             cfa.AppSettings.Settings["REC_FLAG"].Value = checkBox5.Checked.ToString();
+            //MessageBox.Show("11.1");
             cfa.AppSettings.Settings["REC_FLAG_F1"].Value = numericUpDown5.Value.ToString();
+            //MessageBox.Show("11.2");
             cfa.AppSettings.Settings["REC_FLAG_F2"].Value = numericUpDown6.Value.ToString();
+            //MessageBox.Show("11.3");
             cfa.AppSettings.Settings["REC_FLAG_F3"].Value = checkBox6.Checked.ToString();
+            //MessageBox.Show("11.4");
             cfa.AppSettings.Settings["REC_FLAG_F4"].Value = checkBox7.Checked.ToString();
-            cfa.AppSettings.Settings["REC_FLAG_F5"].Value = comboBox1.SelectedItem.ToString();
+            //MessageBox.Show("11.5");
+            if (comboBox1.SelectedItem != null)
+            {
+                cfa.AppSettings.Settings["REC_FLAG_F5"].Value = comboBox1.SelectedItem.ToString();
+            }
+            else
+            {
+                cfa.AppSettings.Settings["REC_FLAG_F5"].Value = "";
+            }
+            //MessageBox.Show("11.6");
             cfa.AppSettings.Settings["REC_FLAG_F6"].Value = textBox2.Text;
+            //MessageBox.Show("11.7");
             cfa.AppSettings.Settings["REC_FLAG_F7"].Value = textBox3.Text;
-
+            //MessageBox.Show("12");
             cfa.Save();
+            //MessageBox.Show("13");
             this.Close();
+            //MessageBox.Show("14");
             //ConfigurationManager.RefreshSection("appSettings");
         }
 

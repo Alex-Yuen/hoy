@@ -361,7 +361,7 @@ namespace QQGM
                         }
                         else
                         {
-                            form.info(id, "验证码错误[A]");
+                            form.info(id, "验证码错误[A]:" + jtr.Value.ToString());
                             id++;
                         }
                         //Console.WriteLine(jtr.Value);
@@ -484,6 +484,13 @@ namespace QQGM
                     if (line.IndexOf("为了您的帐号安全") != -1)
                     {
                         form.info(id, "非常用IP");
+                        isrun = false;
+                        form.log(1, original);
+                        form.stat(3);
+                    }
+                    else if (line.IndexOf("频繁的操作") != -1)
+                    {
+                        form.info(id, "本IP操作频繁");
                         isrun = false;
                         form.log(1, original);
                         form.stat(3);
