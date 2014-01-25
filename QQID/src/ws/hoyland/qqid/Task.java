@@ -566,7 +566,7 @@ public class Task implements Runnable, Observer {
 					idx += 2;
 				}else if(line.startsWith("ptuiCB('3'")){ //您输入的帐号或密码不正确，请重新输入
 					finish = 2;
-					info("帐号帐号或密码不正确, 退出任务");
+					info("帐号或密码不正确, 退出任务");
 					run = false;
 				}else if(line.startsWith("ptuiCB('19'")){ //帐号冻结，提示暂时无法登录
 					finish = 3;
