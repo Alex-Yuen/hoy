@@ -8,7 +8,7 @@ using System.Threading;
 using System.Diagnostics;
 using System.Security.Permissions;
 
-namespace xplayer
+namespace ws.hoyland.holymail
 {
     static class Program
     {

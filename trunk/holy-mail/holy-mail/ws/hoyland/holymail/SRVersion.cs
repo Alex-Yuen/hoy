@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace xplayer
+namespace ws.hoyland.holymail
 {
     [Serializable]
     public class SRVersion
