@@ -12,6 +12,7 @@ using System.IO;
 using System.Text.RegularExpressions;
 using System.Net;
 using System.Configuration;
+using System.Globalization;
 
 namespace QQGM
 {
@@ -27,6 +28,8 @@ namespace QQGM
         private int cptype = -1;
         private Configuration cfa = null;
         //private bool ns = false;
+        private int[] statis = new int[6];
+        private StreamWriter[] output = new StreamWriter[2];
 
         public Form1()
         {
@@ -317,6 +320,8 @@ namespace QQGM
                         }
 
                     }
+                    statis[0] = table.Rows.Count;
+                    label4.Text = statis[0].ToString();
                     m_streamReader.Close();
                     m_streamReader.Dispose();
                     fs.Close();
@@ -333,11 +338,39 @@ namespace QQGM
             if (!running)
             {
                 type = comboBox1.SelectedIndex;
+                toolStripProgressBar1.Value = 0;
+                toolStripProgressBar1.Visible = true;
+                
+                for (int i = 1; i < statis.Length; i++)//0 not need init
+                {
+                    statis[i] = 0;
+                    //label4.Text = statis[0].ToString();
+                }
+
+                label5.Text = statis[1].ToString();
+                label11.Text = statis[2].ToString();
+                label12.Text = statis[3].ToString();
+                label13.Text = statis[4].ToString();
+                label14.Text = statis[5].ToString();
+
                 if (type == 0)
                 {
                     MessageBox.Show("请选择操作类型");
                     return;
                 }
+
+                DateTime dt = DateTime.Now;
+
+                if (type==0||type==1||type==3)
+                {
+                    output[0] = File.AppendText(Application.StartupPath + "\\改密结果-" + dt.ToString("yyyy年MM月dd日HH时mm分ss秒", DateTimeFormatInfo.InvariantInfo) + ".txt");
+                }
+                
+                if(type==2||type==3)
+                {
+                    output[1] = File.AppendText(Application.StartupPath + "\\改保结果-" + dt.ToString("yyyy年MM月dd日HH时mm分ss秒", DateTimeFormatInfo.InvariantInfo) + ".txt");
+                }
+
                 cfa = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
 
                 if (cfa == null)
@@ -352,7 +385,7 @@ namespace QQGM
 
                 //ConfigurationManager.RefreshSection("appSettings");
                 int mt = Int32.Parse(cfa.AppSettings.Settings["THREAD_COUNT"].Value);
-                Console.WriteLine("MT:" + mt);
+                //Console.WriteLine("MT:" + mt);
                 ThreadPool.SetMinThreads(1, 0);
                 ThreadPool.SetMaxThreads(mt, 0);
                 Task task = null;
@@ -383,9 +416,9 @@ namespace QQGM
             }
             else
             {
+                //toolStripProgressBar1.Visible = false;
                 button2.Text = "开始";
-                //ThreadPool.
-                //stop
+                shutdown();
             }
             running = !running;
         }
@@ -499,5 +532,60 @@ namespace QQGM
         {
             return cptype;
         }
+
+        public void saveNewPWD(string account, string pwd)
+        {            
+            output[0].WriteLine(account + "----" + pwd);
+            output[0].Flush();
+        }
+
+        public void saveNewDNA(string account, string[] dna)
+        {
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < dna.Length; i++)
+            {
+                sb.Append("----" + dna[i]);
+            }
+            output[1].WriteLine(account + sb.ToString());
+            output[1].Flush();
+        }
+
+        public void stat(int type)
+        {
+            //Console.WriteLine(">>:" + type);
+            dlg = delegate()
+            {
+                statis[type]++;
+                //label4.Text = statis[0].ToString();
+                label5.Text = statis[1].ToString();
+                label11.Text = statis[2].ToString();
+                label12.Text = statis[3].ToString();
+                label13.Text = statis[4].ToString();
+                label14.Text = statis[5].ToString();
+
+                if (type == 1)
+                {
+                    toolStripProgressBar1.Value = (statis[1] * 100) / statis[0];
+                }
+            };
+            this.BeginInvoke(dlg);
+        }
+
+        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            shutdown();
+        }
+
+        private void shutdown()
+        {
+            for (int i = 0; i < output.Length; i++)
+            {
+                if (output[i] != null)
+                {
+                    output[i].Close();
+                }
+            }
+        }
+
     }
 }
