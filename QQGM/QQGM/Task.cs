@@ -346,7 +346,7 @@ namespace QQGM
                         }
                         else
                         {
-                            form.info(id, "验证码错误");
+                            form.info(id, "验证码错误[A]");
                             id++;
                         }
                         //Console.WriteLine(jtr.Value);
@@ -404,7 +404,40 @@ namespace QQGM
                     url = "https://ssl.ptlogin2.qq.com/login?u=" + account + "&p=" + ecp + "&verifycode=" + vcode + "&aid=2001601&u1=http%3A%2F%2Faq.qq.com%2Fcn2%2Findex&h=1&ptredirect=1&ptlang=2052&from_ui=1&dumy=&fp=loginerroralert&action=4-14-" + currentTimeMillis() + "&mibao_css=&t=1&g=1&js_type=0&js_ver=" + version + "&login_sig=" + loginsig;
                     data = client.OpenRead(url);
 
-                    idx++;
+                    reader = new StreamReader(data);
+                    line = reader.ReadToEnd();
+                    
+                    if (line.StartsWith("ptuiCB('4'"))
+                    { //验证码错误
+                        form.info(id, "验证码错误[B]");
+                        idx = 3;
+                    }
+                    else if (line.StartsWith("ptuiCB('0'"))
+                    { //成功登录
+                        form.info(id, "登录成功");
+                        idx ++;
+                    }
+                    else if (line.StartsWith("ptuiCB('3'"))
+                    { //您输入的帐号或密码不正确，请重新输入
+                        //finish = 2;
+                        form.info(id, "帐号或密码不正确, 退出任务");
+                        isrun = false;
+                    }
+                    else if (line.StartsWith("ptuiCB('19'"))
+                    { //帐号冻结，提示暂时无法登录
+                        //finish = 3;
+                        form.info(id, "帐号冻结");
+                        isrun = false;
+                    }
+                    else
+                    {
+                        // ptuiCB('19' 暂停使用
+                        // ptuiCB('7' 网络连接异常
+                        form.info(id, "帐号异常, 退出任务");
+                        isrun = false;
+                    }
+
+                    //idx++;
                     break;
                 case 8:
                     form.info(id, "打开修改密码页面");
