@@ -185,10 +185,16 @@ namespace QQGM
                             gm1();
                         }
                     }
+                    else
+                    {
+                        form.info(id, "导入格式错误");
+                        form.stat(3);
+                    }
                     break;
                 default:
                     break;
             }
+            form.stat(1);//处理完毕
         }
 
 
@@ -422,12 +428,14 @@ namespace QQGM
                         //finish = 2;
                         form.info(id, "帐号或密码不正确, 退出任务");
                         isrun = false;
+                        form.stat(3);
                     }
                     else if (line.StartsWith("ptuiCB('19'"))
                     { //帐号冻结，提示暂时无法登录
                         //finish = 3;
                         form.info(id, "帐号冻结");
                         isrun = false;
+                        form.stat(3);
                     }
                     else
                     {
@@ -435,6 +443,7 @@ namespace QQGM
                         // ptuiCB('7' 网络连接异常
                         form.info(id, "帐号异常, 退出任务");
                         isrun = false;
+                        form.stat(3);
                     }
 
                     //idx++;
@@ -457,10 +466,16 @@ namespace QQGM
                     form.info(id, "跳转");
                     url = "https://aq.qq.com/cn2/change_psw/pc/pc_change_pwd_way";
                     data = client.OpenRead(url);
-                    //reader = new StreamReader(data);
-                    //line = reader.ReadToEnd();
-                    //Console.WriteLine(s);
-                    
+                    reader = new StreamReader(data);
+                    line = reader.ReadToEnd();
+                    //Console.WriteLine(line);
+                    if (line.IndexOf("为了您的帐号安全") != -1)
+                    {
+                        form.info(id, "非常用IP");
+                        isrun = false;
+                        form.stat(3);
+                    }
+
                     data.Close();
                     reader.Close();
 
@@ -511,16 +526,20 @@ namespace QQGM
                     if (resp.IndexOf("same_psw") != -1)
                     {
                         form.info(id, "密码相同");
+                        form.stat(3);
                         //Console.WriteLine("");
                     }
                     else if (resp.IndexOf("修改成功") != -1)
                     {
                         form.info(id, "修改成功");
+                        form.saveNewPWD(account, pwd);
+                        form.stat(2);
                         //Console.WriteLine("修改成功");
                     }
                     else if (resp.IndexOf("操作非法或者超时") != -1)
                     {
                         form.info(id, "操作非法或者超时");
+                        form.stat(3);
                     }
                     //Console.WriteLine(resp);
                     idx++;
@@ -677,6 +696,7 @@ namespace QQGM
                     {
                         form.info(id, "需要短信验证");
                         isrun = false;
+                        form.stat(3);
                     }
                     else
                     {
@@ -761,16 +781,20 @@ namespace QQGM
                     if (resp.IndexOf("same_psw") != -1)
                     {
                         form.info(id, "密码相同");
+                        form.stat(3);
                         //Console.WriteLine("");
                     }
                     else if (resp.IndexOf("修改成功") != -1)
                     {
                         form.info(id, "修改成功");
+                        form.saveNewPWD(account, pwd);
+                        form.stat(2);
                         //Console.WriteLine("修改成功");
                     }
                     else if (resp.IndexOf("操作非法或者超时") != -1)
                     {
                         form.info(id, "操作非法或者超时");
+                        form.stat(3);
                     }
                     //Console.WriteLine(resp);
                     idx++;
