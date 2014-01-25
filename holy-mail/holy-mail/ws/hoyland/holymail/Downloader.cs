@@ -11,7 +11,7 @@ using System.IO;
 using System.Reflection;
 using System.Security.Cryptography;
 
-namespace xplayer
+namespace ws.hoyland.holymail
 {
     public partial class Downloader : Form
     {
@@ -36,13 +36,13 @@ namespace xplayer
                 }
                 string update = null;
                 // string version = null;
-                string url = "http://www.hoyland.ws/x-player/update";
+                string url = "http://www.hoyland.ws/holy-mail/update";
 
                 WebRequest req = WebRequest.Create(url);
                 req.Method = "GET";
                 WebResponse res = req.GetResponse();
                 
-                Encoding resEncoding = Encoding.GetEncoding("utf-8");
+                Encoding resEncoding = Encoding.UTF8;
                 StreamReader reader = new StreamReader(res.GetResponseStream(), resEncoding);
                 
                 update = reader.ReadLine();
@@ -83,7 +83,7 @@ namespace xplayer
                 if (update != null && version != null && !update.Equals(version))
                 {
                     //download
-                    url = "http://www.hoyland.ws/x-player/update/x-player-core.dll";
+                    url = "http://www.hoyland.ws/holy-mail/update/holy-mail-core.dll";
                     string filename = Path.GetDirectoryName(Assembly.GetExecutingAssembly().GetModules()[0].FullyQualifiedName) + "\\x-player-core.dll";
                     //Console.WriteLine("...."+filename);
 
@@ -273,7 +273,7 @@ namespace xplayer
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "Error");
+                MessageBox.Show(ex.Message, "错误");
             }
         }
 

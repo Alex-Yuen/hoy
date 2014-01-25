@@ -1,4 +1,4 @@
-﻿namespace xplayer
+﻿namespace ws.hoyland.holymail
 {
     partial class Downloader
     {
@@ -54,15 +54,15 @@
             this.label2.BackColor = System.Drawing.Color.Transparent;
             this.label2.Location = new System.Drawing.Point(12, 221);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(113, 12);
+            this.label2.Size = new System.Drawing.Size(95, 12);
             this.label2.TabIndex = 3;
-            this.label2.Text = "Checking update...";
+            this.label2.Text = "正在检查更新...";
             // 
             // button1
             // 
             this.button1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.button1.BackColor = System.Drawing.Color.Transparent;
-            this.button1.BackgroundImage = global::xplayer.Properties.Resources.close;
+            this.button1.BackgroundImage = global::ws.hoyland.holymail.Properties.Resources.close;
             this.button1.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
             this.button1.FlatAppearance.BorderSize = 0;
             this.button1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
@@ -77,7 +77,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackgroundImage = global::xplayer.Properties.Resources.splash;
+            this.BackgroundImage = global::ws.hoyland.holymail.Properties.Resources.splash;
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.ClientSize = new System.Drawing.Size(400, 250);
             this.Controls.Add(this.button1);
