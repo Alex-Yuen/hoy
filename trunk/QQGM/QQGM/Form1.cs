@@ -24,6 +24,7 @@ namespace QQGM
         private bool running = false;
         private DataTable table = new DataTable();
         private int type = 0;
+        private int cptype = -1;
         private Configuration cfa = null;
         //private bool ns = false;
 
@@ -59,6 +60,8 @@ namespace QQGM
             try
             {
                 comboBox2.SelectedIndex = Int32.Parse(cfa.AppSettings.Settings["CPT_TYPE"].Value);
+                comboBox1.SelectedIndex = Int32.Parse(cfa.AppSettings.Settings["OPT_TYPE"].Value);
+
                 textBox2.Text = cfa.AppSettings.Settings["ACCOUNT"].Value;
                 if ("True".Equals(cfa.AppSettings.Settings["REM_PASSWORD"].Value))
                 {
@@ -71,7 +74,7 @@ namespace QQGM
                     checkBox2.Checked = true;
                     //TODO, autologin
                 }
-
+                
                 setlogin();
 
                 if (checkBox2.Checked)
@@ -156,7 +159,7 @@ namespace QQGM
                 int nAppId;         // 软件ＩＤ，开发者分成必要参数。登录开发者后台【我的软件】获得！
                 string lpAppKey;    // 软件密钥，开发者分成必要参数。登录开发者后台【我的软件】获得！
 
-
+                cptype = comboBox2.SelectedIndex;
 
                 //login
                 toolStripStatusLabel1.Text = "正在登录...";
@@ -303,7 +306,7 @@ namespace QQGM
 
                             DataRow row = table.NewRow();
                             //row[0] = ++i;
-                            for (int m = 0; m < table.Columns.Count; m++)
+                            for (int m = 0; m < table.Columns.Count&&m<lns.Length; m++)
                             {
                                 row[m] = lns[m];
                             }
@@ -335,7 +338,19 @@ namespace QQGM
                     MessageBox.Show("请选择操作类型");
                     return;
                 }
+                cfa = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
+
+                if (cfa == null)
+                {
+                    MessageBox.Show("加载配置文件失败!");
+                }
+
                 ConfigurationManager.RefreshSection("appSettings");
+                //保存操作类型参数
+                cfa.AppSettings.Settings["OPT_TYPE"].Value = comboBox1.SelectedIndex.ToString();
+                cfa.Save();
+
+                //ConfigurationManager.RefreshSection("appSettings");
                 int mt = Int32.Parse(cfa.AppSettings.Settings["THREAD_COUNT"].Value);
                 Console.WriteLine("MT:" + mt);
                 ThreadPool.SetMinThreads(1, 0);
@@ -348,7 +363,7 @@ namespace QQGM
                     task.Account = (string)table.Rows[i][1];
                     task.Password = (string)table.Rows[i][2];
 
-                    if (table.Rows[i][4] != null && !table.Rows[i][4].Equals(""))
+                    if (table.Rows[i][4] != null && !table.Rows[i][4].ToString().Equals(""))
                     {
                         task.Isdna = true;
                         task.Q1 = (string)table.Rows[i][4];
@@ -478,6 +493,11 @@ namespace QQGM
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
             ready();
+        }
+
+        public int getCptType()
+        {
+            return cptype;
         }
     }
 }
