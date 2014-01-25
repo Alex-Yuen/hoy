@@ -399,6 +399,7 @@
             // 
             // panel3
             // 
+            this.panel3.Controls.Add(this.comboBox1);
             this.panel3.Controls.Add(this.button2);
             this.panel3.Dock = System.Windows.Forms.DockStyle.Right;
             this.panel3.Location = new System.Drawing.Point(378, 0);
@@ -409,9 +410,9 @@
             // button2
             // 
             this.button2.Enabled = false;
-            this.button2.Location = new System.Drawing.Point(20, 14);
+            this.button2.Location = new System.Drawing.Point(19, 32);
             this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(150, 55);
+            this.button2.Size = new System.Drawing.Size(150, 50);
             this.button2.TabIndex = 4;
             this.button2.Text = "开始";
             this.button2.UseVisualStyleBackColor = true;
@@ -430,7 +431,6 @@
             // 
             // loginpanel
             // 
-            this.loginpanel.Controls.Add(this.comboBox1);
             this.loginpanel.Controls.Add(this.label16);
             this.loginpanel.Controls.Add(this.label15);
             this.loginpanel.Controls.Add(this.checkBox2);
@@ -456,9 +456,9 @@
             "有保改密",
             "改保/上保",
             "改保+改密"});
-            this.comboBox1.Location = new System.Drawing.Point(107, 17);
+            this.comboBox1.Location = new System.Drawing.Point(19, 6);
             this.comboBox1.Name = "comboBox1";
-            this.comboBox1.Size = new System.Drawing.Size(90, 20);
+            this.comboBox1.Size = new System.Drawing.Size(150, 20);
             this.comboBox1.TabIndex = 10;
             this.comboBox1.SelectedIndexChanged += new System.EventHandler(this.comboBox1_SelectedIndexChanged);
             // 
