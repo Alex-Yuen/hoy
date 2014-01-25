@@ -309,9 +309,19 @@ namespace QQGM
 
                             DataRow row = table.NewRow();
                             //row[0] = ++i;
-                            for (int m = 0; m < table.Columns.Count&&m<lns.Length; m++)
+                            if (lns.Length < 9)
                             {
-                                row[m] = lns[m];
+                                for (int m = 0; m < 4; m++)
+                                {
+                                    row[m] = lns[m];
+                                }
+                            }
+                            else
+                            {
+                                for (int m = 0; m < table.Columns.Count && m <lns.Length; m++)
+                                {
+                                    row[m] = lns[m];
+                                }
                             }
                             //row[1] = lns[0];
                             table.Rows.Add(row);

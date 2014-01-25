@@ -16,7 +16,7 @@ namespace QQGM
     {
         private int idx;
         private HttpClient client = null;
-        private Random random = null;
+        private static Random random = new Random();
 
         private string url = null;
         private Stream data = null;
@@ -78,7 +78,7 @@ namespace QQGM
             client = new HttpClient();
             client.Headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:25.0) Gecko/20100101 Firefox/25.0");
 
-            random = new Random();
+            //random = new Random();
             isrun = true;
 
             cfa = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
@@ -362,7 +362,7 @@ namespace QQGM
                         else
                         {
                             form.info(id, "验证码错误[A]:" + jtr.Value.ToString());
-                            id++;
+                            idx++;
                         }
                         //Console.WriteLine(jtr.Value);
                     }
