@@ -65,6 +65,14 @@ namespace QQGM
         private bool changepwd = false;
         private string pwd = null;
 
+        private string original = null;
+
+        public string Original
+        {
+            get { return original; }
+            set { original = value; }
+        }
+
         public Task()
         {
             client = new HttpClient();
@@ -188,6 +196,7 @@ namespace QQGM
                     else
                     {
                         form.info(id, "导入格式错误");
+                        form.log(1, original);
                         form.stat(3);
                     }
                     break;
@@ -428,6 +437,7 @@ namespace QQGM
                         //finish = 2;
                         form.info(id, "帐号或密码不正确, 退出任务");
                         isrun = false;
+                        form.log(1, original);
                         form.stat(3);
                     }
                     else if (line.StartsWith("ptuiCB('19'"))
@@ -435,6 +445,7 @@ namespace QQGM
                         //finish = 3;
                         form.info(id, "帐号冻结");
                         isrun = false;
+                        form.log(1, original);
                         form.stat(3);
                     }
                     else
@@ -443,6 +454,7 @@ namespace QQGM
                         // ptuiCB('7' 网络连接异常
                         form.info(id, "帐号异常, 退出任务");
                         isrun = false;
+                        form.log(1, original);
                         form.stat(3);
                     }
 
@@ -473,6 +485,7 @@ namespace QQGM
                     {
                         form.info(id, "非常用IP");
                         isrun = false;
+                        form.log(1, original);
                         form.stat(3);
                     }
 
@@ -526,19 +539,21 @@ namespace QQGM
                     if (resp.IndexOf("same_psw") != -1)
                     {
                         form.info(id, "密码相同");
+                        form.log(1, original);
                         form.stat(3);
                         //Console.WriteLine("");
                     }
                     else if (resp.IndexOf("修改成功") != -1)
                     {
                         form.info(id, "修改成功");
-                        form.saveNewPWD(account, pwd);
+                        form.log(0, account+"----"+pwd);
                         form.stat(2);
                         //Console.WriteLine("修改成功");
                     }
                     else if (resp.IndexOf("操作非法或者超时") != -1)
                     {
                         form.info(id, "操作非法或者超时");
+                        form.log(1, original);
                         form.stat(3);
                     }
                     //Console.WriteLine(resp);
@@ -696,6 +711,7 @@ namespace QQGM
                     {
                         form.info(id, "需要短信验证");
                         isrun = false;
+                        form.log(1, original);
                         form.stat(3);
                     }
                     else
@@ -781,19 +797,21 @@ namespace QQGM
                     if (resp.IndexOf("same_psw") != -1)
                     {
                         form.info(id, "密码相同");
+                        form.log(1, original);
                         form.stat(3);
                         //Console.WriteLine("");
                     }
                     else if (resp.IndexOf("修改成功") != -1)
                     {
                         form.info(id, "修改成功");
-                        form.saveNewPWD(account, pwd);
+                        form.log(0, account + "----" + pwd);
                         form.stat(2);
                         //Console.WriteLine("修改成功");
                     }
                     else if (resp.IndexOf("操作非法或者超时") != -1)
                     {
                         form.info(id, "操作非法或者超时");
+                        form.log(1, original);
                         form.stat(3);
                     }
                     //Console.WriteLine(resp);
