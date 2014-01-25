@@ -29,7 +29,7 @@ namespace QQGM
         private Configuration cfa = null;
         //private bool ns = false;
         private int[] statis = new int[6];
-        private StreamWriter[] output = new StreamWriter[2];
+        private StreamWriter[] output = new StreamWriter[4];//
 
         public Form1()
         {
@@ -363,12 +363,14 @@ namespace QQGM
 
                 if (type==0||type==1||type==3)
                 {
-                    output[0] = File.AppendText(Application.StartupPath + "\\改密结果-" + dt.ToString("yyyy年MM月dd日HH时mm分ss秒", DateTimeFormatInfo.InvariantInfo) + ".txt");
+                    output[0] = File.AppendText(Application.StartupPath + "\\改密成功-" + dt.ToString("yyyy年MM月dd日HH时mm分ss秒", DateTimeFormatInfo.InvariantInfo) + ".txt");
+                    output[1] = File.AppendText(Application.StartupPath + "\\改密失败-" + dt.ToString("yyyy年MM月dd日HH时mm分ss秒", DateTimeFormatInfo.InvariantInfo) + ".txt");
                 }
                 
                 if(type==2||type==3)
                 {
-                    output[1] = File.AppendText(Application.StartupPath + "\\改保结果-" + dt.ToString("yyyy年MM月dd日HH时mm分ss秒", DateTimeFormatInfo.InvariantInfo) + ".txt");
+                    output[2] = File.AppendText(Application.StartupPath + "\\改保成功-" + dt.ToString("yyyy年MM月dd日HH时mm分ss秒", DateTimeFormatInfo.InvariantInfo) + ".txt");
+                    output[3] = File.AppendText(Application.StartupPath + "\\改保失败-" + dt.ToString("yyyy年MM月dd日HH时mm分ss秒", DateTimeFormatInfo.InvariantInfo) + ".txt");
                 }
 
                 cfa = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
@@ -405,10 +407,13 @@ namespace QQGM
                         task.A2 = (string)table.Rows[i][7];
                         task.Q3 = (string)table.Rows[i][8];
                         task.A3 = (string)table.Rows[i][9];
+
+                        task.Original = (string)table.Rows[i][1] + "----" + (string)table.Rows[i][2] + "----" + (string)table.Rows[i][4] + "----" + (string)table.Rows[i][5] + "----" + (string)table.Rows[i][6] + "----" + (string)table.Rows[i][7] + "----" + (string)table.Rows[i][8] + "----" + (string)table.Rows[i][9];
                     }
                     else
                     {
                         task.Isdna = false;
+                        task.Original = (string)table.Rows[i][1] + "----" + (string)table.Rows[i][2];
                     }
                     ThreadPool.QueueUserWorkItem(new WaitCallback(process), task);
                 }
@@ -533,12 +538,13 @@ namespace QQGM
             return cptype;
         }
 
-        public void saveNewPWD(string account, string pwd)
-        {            
-            output[0].WriteLine(account + "----" + pwd);
-            output[0].Flush();
+        public void log(int type, string info)
+        {
+            output[type].WriteLine(info);
+            output[type].Flush();
         }
 
+        /**
         public void saveNewDNA(string account, string[] dna)
         {
             StringBuilder sb = new StringBuilder();
@@ -548,7 +554,7 @@ namespace QQGM
             }
             output[1].WriteLine(account + sb.ToString());
             output[1].Flush();
-        }
+        }**/
 
         public void stat(int type)
         {
