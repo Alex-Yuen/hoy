@@ -361,13 +361,13 @@ namespace QQGM
 
                 DateTime dt = DateTime.Now;
 
-                if (type==0||type==1||type==3)
+                if (type==1||type==2||type==4)
                 {
                     output[0] = File.AppendText(Application.StartupPath + "\\改密成功-" + dt.ToString("yyyy年MM月dd日HH时mm分ss秒", DateTimeFormatInfo.InvariantInfo) + ".txt");
                     output[1] = File.AppendText(Application.StartupPath + "\\改密失败-" + dt.ToString("yyyy年MM月dd日HH时mm分ss秒", DateTimeFormatInfo.InvariantInfo) + ".txt");
                 }
                 
-                if(type==2||type==3)
+                if(type==3||type==4)
                 {
                     output[2] = File.AppendText(Application.StartupPath + "\\改保成功-" + dt.ToString("yyyy年MM月dd日HH时mm分ss秒", DateTimeFormatInfo.InvariantInfo) + ".txt");
                     output[3] = File.AppendText(Application.StartupPath + "\\改保失败-" + dt.ToString("yyyy年MM月dd日HH时mm分ss秒", DateTimeFormatInfo.InvariantInfo) + ".txt");
