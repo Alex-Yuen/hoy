@@ -398,7 +398,7 @@ namespace QQGM
                     task.Account = (string)table.Rows[i][1];
                     task.Password = (string)table.Rows[i][2];
 
-                    if (table.Rows[i][4] != null && !table.Rows[i][4].ToString().Equals(""))
+                    if (table.Rows[i][9] != null && !table.Rows[i][9].ToString().Equals(""))
                     {
                         task.Isdna = true;
                         task.Q1 = (string)table.Rows[i][4];
