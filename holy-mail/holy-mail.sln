@@ -1,0 +1,30 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "holy-mail", "holy-mail\holy-mail.csproj", "{447D956E-4BF6-4DFF-BF65-6EB406959E13}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "holy-mail-core", "holy-mail-core\holy-mail-core.csproj", "{A95B184C-D506-4EE7-AA98-9B3B98535945}"
+EndProject
+Global
+	GlobalSection(SubversionScc) = preSolution
+		Svn-Managed = True
+		Manager = AnkhSVN - Subversion Support for Visual Studio
+	EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x86 = Debug|x86
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{447D956E-4BF6-4DFF-BF65-6EB406959E13}.Debug|x86.ActiveCfg = Debug|x86
+		{447D956E-4BF6-4DFF-BF65-6EB406959E13}.Debug|x86.Build.0 = Debug|x86
+		{447D956E-4BF6-4DFF-BF65-6EB406959E13}.Release|x86.ActiveCfg = Release|x86
+		{447D956E-4BF6-4DFF-BF65-6EB406959E13}.Release|x86.Build.0 = Release|x86
+		{A95B184C-D506-4EE7-AA98-9B3B98535945}.Debug|x86.ActiveCfg = Debug|x86
+		{A95B184C-D506-4EE7-AA98-9B3B98535945}.Debug|x86.Build.0 = Debug|x86
+		{A95B184C-D506-4EE7-AA98-9B3B98535945}.Release|x86.ActiveCfg = Release|x86
+		{A95B184C-D506-4EE7-AA98-9B3B98535945}.Release|x86.Build.0 = Release|x86
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
