@@ -5,13 +5,13 @@ using System.Runtime.InteropServices;
 // 有关程序集的常规信息通过以下
 // 特性集控制。更改这些特性值可修改
 // 与程序集关联的信息。
-[assembly: AssemblyTitle("")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("QQ改密改保辅助工具")]
+[assembly: AssemblyDescription("http://www.hoyland.ws")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("www.hoyland.ws")]
+[assembly: AssemblyCompany("hoyland")]
 [assembly: AssemblyProduct("QQ改密改保辅助工具")]
 [assembly: AssemblyCopyright("Copyright ©  2014")]
-[assembly: AssemblyTrademark("")]
+[assembly: AssemblyTrademark("hoyland")]
 [assembly: AssemblyCulture("")]
 
 // 将 ComVisible 设置为 false 使此程序集中的类型
