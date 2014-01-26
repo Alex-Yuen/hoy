@@ -9,6 +9,7 @@ using System.Text.RegularExpressions;
 using System.Web;
 using Newtonsoft.Json;
 using System.Configuration;
+using System.Threading;
 
 namespace QQGM
 {
@@ -64,6 +65,7 @@ namespace QQGM
         private int nCaptchaId = 0;
         private bool changepwd = false;
         private string pwd = null;
+        private bool pause = false;
 
         private string original = null;
 
@@ -182,6 +184,7 @@ namespace QQGM
                 case 1:
                     while (isrun)//直接改密
                     {
+                        CheckPause();
                         gm0();
                     }
                     break;
@@ -190,6 +193,7 @@ namespace QQGM
                     {
                         while (isrun)
                         {
+                            CheckPause();
                             gm1();
                         }
                     }
@@ -438,6 +442,7 @@ namespace QQGM
                         form.info(id, "帐号或密码不正确, 退出任务");
                         isrun = false;
                         form.log(1, original);
+                        form.log(5, original);
                         form.stat(3);
                     }
                     else if (line.StartsWith("ptuiCB('19'"))
@@ -446,6 +451,7 @@ namespace QQGM
                         form.info(id, "帐号冻结");
                         isrun = false;
                         form.log(1, original);
+                        form.log(4, original);
                         form.stat(3);
                     }
                     else
@@ -719,6 +725,7 @@ namespace QQGM
                         form.info(id, "需要短信验证");
                         isrun = false;
                         form.log(1, original);
+                        form.log(6, original);
                         form.stat(3);
                     }
                     else
@@ -918,5 +925,20 @@ namespace QQGM
         }
         private static string[] hexDigits = {"0", "1", "2", "3", "4",  
 	        "5", "6", "7", "8", "9", "a", "b", "c", "d", "e", "f"};
+
+        public void Pause()
+        {
+            this.pause = !this.pause;
+        }
+
+        private void CheckPause()
+        {
+            if (this.pause)
+            {
+                form.info(id, "等待重拨");
+                Monitor.Wait(form);
+                form.info(id, "等待重拨结束，继续执行");
+            }
+        }
     }
 }
