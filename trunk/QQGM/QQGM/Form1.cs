@@ -13,6 +13,9 @@ using System.Text.RegularExpressions;
 using System.Net;
 using System.Configuration;
 using System.Globalization;
+using System.Runtime.CompilerServices;
+using System.Collections;
+using System.Diagnostics;
 
 namespace QQGM
 {
@@ -29,8 +32,11 @@ namespace QQGM
         private Configuration cfa = null;
         //private bool ns = false;
         private int[] statis = new int[6];
-        private StreamWriter[] output = new StreamWriter[4];//
-
+        private StreamWriter[] output = new StreamWriter[7];//
+        private int frec = 0;
+        private HashSet<Task> tasks = new HashSet<Task>();
+        private Hashtable ips = new Hashtable();
+        //System.Collections.Hashtable
         public Form1()
         {
             InitializeComponent();
@@ -77,7 +83,7 @@ namespace QQGM
                     checkBox2.Checked = true;
                     //TODO, autologin
                 }
-                
+
                 setlogin();
 
                 if (checkBox2.Checked)
@@ -269,7 +275,7 @@ namespace QQGM
 
         private void ready()
         {
-            if (isLogin && table.Rows.Count > 0&&comboBox1.SelectedIndex!=0)
+            if (isLogin && table.Rows.Count > 0 && comboBox1.SelectedIndex != 0)
             {
                 button2.Enabled = true;
             }
@@ -318,7 +324,7 @@ namespace QQGM
                             }
                             else
                             {
-                                for (int m = 0; m < table.Columns.Count && m <lns.Length; m++)
+                                for (int m = 0; m < table.Columns.Count && m < lns.Length; m++)
                                 {
                                     row[m] = lns[m];
                                 }
@@ -350,7 +356,8 @@ namespace QQGM
                 type = comboBox1.SelectedIndex;
                 toolStripProgressBar1.Value = 0;
                 toolStripProgressBar1.Visible = true;
-                
+                tasks.Clear();
+
                 for (int i = 1; i < statis.Length; i++)//0 not need init
                 {
                     statis[i] = 0;
@@ -371,17 +378,21 @@ namespace QQGM
 
                 DateTime dt = DateTime.Now;
 
-                if (type==1||type==2||type==4)
+                if (type == 1 || type == 2 || type == 4)
                 {
                     output[0] = File.AppendText(Application.StartupPath + "\\改密成功-" + dt.ToString("yyyy年MM月dd日HH时mm分ss秒", DateTimeFormatInfo.InvariantInfo) + ".txt");
                     output[1] = File.AppendText(Application.StartupPath + "\\改密失败-" + dt.ToString("yyyy年MM月dd日HH时mm分ss秒", DateTimeFormatInfo.InvariantInfo) + ".txt");
                 }
-                
-                if(type==3||type==4)
+
+                if (type == 3 || type == 4)
                 {
                     output[2] = File.AppendText(Application.StartupPath + "\\改保成功-" + dt.ToString("yyyy年MM月dd日HH时mm分ss秒", DateTimeFormatInfo.InvariantInfo) + ".txt");
                     output[3] = File.AppendText(Application.StartupPath + "\\改保失败-" + dt.ToString("yyyy年MM月dd日HH时mm分ss秒", DateTimeFormatInfo.InvariantInfo) + ".txt");
                 }
+
+                output[4] = File.AppendText(Application.StartupPath + "\\帐号冻结-" + dt.ToString("yyyy年MM月dd日HH时mm分ss秒", DateTimeFormatInfo.InvariantInfo) + ".txt");
+                output[5] = File.AppendText(Application.StartupPath + "\\密码错误-" + dt.ToString("yyyy年MM月dd日HH时mm分ss秒", DateTimeFormatInfo.InvariantInfo) + ".txt");
+                output[6] = File.AppendText(Application.StartupPath + "\\短信验证-" + dt.ToString("yyyy年MM月dd日HH时mm分ss秒", DateTimeFormatInfo.InvariantInfo) + ".txt");
 
                 cfa = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
 
@@ -425,6 +436,7 @@ namespace QQGM
                         task.Isdna = false;
                         task.Original = (string)table.Rows[i][1] + "----" + (string)table.Rows[i][2];
                     }
+                    tasks.Add(task);
                     ThreadPool.QueueUserWorkItem(new WaitCallback(process), task);
                 }
                 button2.Text = "结束";
@@ -579,9 +591,43 @@ namespace QQGM
                 label13.Text = statis[4].ToString();
                 label14.Text = statis[5].ToString();
 
-                if (type == 1)
+                lock (this)
                 {
-                    toolStripProgressBar1.Value = (statis[1] * 100) / statis[0];
+                    if (type == 1)
+                    {
+                        toolStripProgressBar1.Value = (statis[1] * 100) / statis[0];
+                        frec++;
+                        //是否启动重拨功能
+                        ConfigurationManager.RefreshSection("appSettings");
+                        if ("True".Equals(cfa.AppSettings.Settings["REC_FLAG"].Value) && Int32.Parse(cfa.AppSettings.Settings["REC_FLAG_F1"].Value) == frec)
+                        {
+                            frec = 0;
+
+                            //通知阻塞
+                            foreach (Task task in tasks)
+                            {
+                                task.Pause();
+                            }
+
+                            try
+                            {
+                                //Thread.Sleep(Int32.Parse(cfa.AppSettings.Settings["REC_FLAG_F2"].Value));
+                                //重拨
+                                System.Timers.Timer t = new System.Timers.Timer(Int32.Parse(cfa.AppSettings.Settings["REC_FLAG_F2"].Value) * 1000);
+                                //实例化Timer类，设置间隔时间为10000毫秒；   
+                                t.Elapsed +=
+                                new System.Timers.ElapsedEventHandler(Recon);
+                                //到达时间的时候执行事件；   
+                                t.AutoReset = false;
+                                //设置是执行一次（false）还是一直执行(true)；   
+                                t.Enabled = true;
+                            }
+                            catch (Exception e)
+                            {
+                                MessageBox.Show(e.Message);
+                            }
+                        }
+                    }
                 }
             };
             this.BeginInvoke(dlg);
@@ -603,5 +649,208 @@ namespace QQGM
             }
         }
 
+        private void Recon(object source, System.Timers.ElapsedEventArgs e)
+        {
+            dlg = delegate()
+            {
+                MessageBox.Show("正在重拨");
+
+                ConfigurationManager.RefreshSection("appSettings");
+                string adsl = cfa.AppSettings.Settings["REC_FLAG_F5"].Value;
+                string account = cfa.AppSettings.Settings["REC_FLAG_F6"].Value;
+                string password = cfa.AppSettings.Settings["REC_FLAG_F7"].Value;
+
+                bool st = false;
+                string cut = "rasdial " + adsl + " /disconnect";
+                string link = "rasdial " + adsl + " "
+                                        + account
+                                        + " "
+                                        + password;
+                try
+                {
+                    bool fo = true;
+                    bool fi = true;
+
+                    int tfo = 0;
+                    int tfi = 0;
+
+                    while (fo && tfo < 4)
+                    {
+                        string result = Execute(cut);
+                        //System.err.println("CUT:" + result);
+                        if (result.IndexOf("没有连接") == -1)
+                        {
+                            //System.err.println("CUT1");
+                            fo = false; // 断线成功，将跳出外循环
+                            fi = true;
+
+                            tfi = 0;
+                            //System.err.println("CUT2:" + fi + "/" + configuration.getProperty("AWCONN") + "/" + tfi);
+                            while (fi && ("True".Equals(cfa.AppSettings.Settings["REC_FLAG_F3"].Value) || ("False".Equals(cfa.AppSettings.Settings["REC_FLAG_F3"].Value) && tfi < 4)))
+                            {
+                                //System.err.println("CUT3");
+                                result = Execute(link);
+                                //System.err.println("LINK:" + result);
+                                if (result
+                                        .IndexOf("已连接") > 0 || result
+                                        .IndexOf("已经连接") > 0)
+                                {
+                                    //System.err.println("CUT4");
+
+                                    result = Execute("ipconfig");
+                                    result = result.Substring(result.IndexOf(adsl));
+                                    if (result.IndexOf("IP Address") != -1)
+                                    {
+                                        result = result.Substring(result.IndexOf("IP Address"));
+                                    }
+                                    if (result.IndexOf("IPv4 地址") != -1)
+                                    {
+                                        result = result.Substring(result.IndexOf("IPv4 地址"));
+                                    }
+
+                                    result = result.Substring(result.IndexOf(":") + 2);
+                                    result = result.Substring(0, result.IndexOf("\n "));
+                                    //String ip = result;
+                                    string rip = result;
+                                    string ip = rip;
+                                    /**
+                                     * IP段重复的判断
+                                    if ("true".equals(recflag))
+                                    {
+                                        ip = result.substring(0, result.lastIndexOf("."));
+                                    }**/
+
+                                    //System.err.println("ip=" + ip);
+                                    if (ips.ContainsKey(ip) && "True".Equals(cfa.AppSettings.Settings["REC_FLAG_F4"].Value)) //判断是否重复
+                                    {
+                                        long time = (long)ips[ip];
+                                        if (currentTimeMillis() - time >= 1 * 60 * 60 * 1000)
+                                        {
+                                            //System.err.println("IP重复，但超过1小时，拨号成功:" + ip);
+                                            //cip = rip;
+                                            ips[ip] = currentTimeMillis();
+                                            fi = false;//跳出内循环
+                                            st = true;
+                                            //break;
+                                        }
+                                        else
+                                        {
+                                            //System.err.println("IP重复，未超过1小时，重新拨号:" + ip);
+                                            fo = true;
+                                            fi = false;
+                                            tfo = 0;
+                                            st = false;
+                                            //continue;
+                                        }
+                                    }
+                                    else
+                                    {
+                                        //System.err.println("IP不重复，拨号成功:" + ip);
+                                        //cip = rip;
+                                        ips[ip] = currentTimeMillis();
+                                        fi = false;
+                                        st = true;
+                                        //break;
+                                    }
+                                }
+                                else
+                                {
+                                    //System.err.println("CUT5");
+                                    //System.err.println("连接失败(" + tfi + ")");
+                                    try
+                                    {
+                                        Thread.Sleep(1000 * 30);
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        MessageBox.Show(ex.Message);
+                                    }
+                                    tfi++;//允许3次循环
+                                    //break;
+                                }
+                            }//while in
+                        }
+                        else
+                        {
+                            //System.err.println("CUT6");
+                            //System.err.println("没有连接(" + tfo + ")");
+                            try
+                            {
+                                Thread.Sleep(1000 * 30);
+                            }
+                            catch (Exception ex)
+                            {
+                                MessageBox.Show(ex.Message);
+                            }
+                            tfo++; //允许3次循环
+                            //break;
+                        }
+                    }//while out
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
+
+                if (st)
+                {
+                    //唤醒
+                    foreach (Task task in tasks)
+                    {
+                        task.Pause();//避免下次继续pause
+                    }
+                    //notify
+                    Monitor.PulseAll(this);
+
+                    MessageBox.Show("重拨结束");
+                }
+                else
+                {
+                    MessageBox.Show("重拨失败");
+                }
+
+                //MessageBox.Show("重拨结束");
+            };
+            this.BeginInvoke(dlg);
+        }
+
+        private string Execute(string cmd)
+        {
+            string output = "";
+            Process p = new Process();
+            p.StartInfo.FileName = "cmd /c " + cmd;
+            p.StartInfo.UseShellExecute = false;
+            p.StartInfo.RedirectStandardInput = true;
+            p.StartInfo.RedirectStandardOutput = true;
+
+            p.StartInfo.CreateNoWindow = true;
+            p.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
+
+            p.Start();
+	 
+            output = p.StandardOutput.ReadToEnd();
+	        //Console.WriteLine(output);
+            p.WaitForExit();
+            p.Close();
+            return output;
+
+            /**
+            Runtime.getRuntime().exec("cmd /c " + cmd);
+            StringBuilder result = new StringBuilder();
+            BufferedReader br = new BufferedReader(new InputStreamReader(
+                    p.getInputStream(), "GB2312"));
+            String line;
+            while ((line = br.readLine()) != null)
+            {
+                result.append(line + "\n");
+            }
+            return result.toString();**/
+        }
+
+        private long currentTimeMillis()
+        {
+            DateTime Jan1st1970 = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+            return (long)((DateTime.UtcNow - Jan1st1970).TotalMilliseconds);
+        }
     }
 }
