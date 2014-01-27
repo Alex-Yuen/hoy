@@ -33,7 +33,7 @@ namespace QQGM
         private Configuration cfa = null;
         //private bool ns = false;
         private int[] statis = new int[6];
-        private StreamWriter[] output = new StreamWriter[8];//
+        private StreamWriter[] output = new StreamWriter[9];//
         private int frec = 0;
         private HashSet<Task> tasks = new HashSet<Task>();
         private Hashtable ips = new Hashtable();
@@ -417,6 +417,7 @@ namespace QQGM
                 output[5] = File.AppendText(Application.StartupPath + "\\密码错误-" + dt.ToString("yyyy年MM月dd日HH时mm分ss秒", DateTimeFormatInfo.InvariantInfo) + ".txt");
                 output[6] = File.AppendText(Application.StartupPath + "\\短信验证-" + dt.ToString("yyyy年MM月dd日HH时mm分ss秒", DateTimeFormatInfo.InvariantInfo) + ".txt");
                 output[7] = File.AppendText(Application.StartupPath + "\\激活靓号-" + dt.ToString("yyyy年MM月dd日HH时mm分ss秒", DateTimeFormatInfo.InvariantInfo) + ".txt");
+                output[8] = File.AppendText(Application.StartupPath + "\\密保异常-" + dt.ToString("yyyy年MM月dd日HH时mm分ss秒", DateTimeFormatInfo.InvariantInfo) + ".txt");
 
                 cfa = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
 
