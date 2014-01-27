@@ -185,7 +185,15 @@ namespace QQGM
                     while (isrun)//直接改密
                     {
                         CheckPause();
-                        gm0();
+                        try
+                        {
+                            gm0();
+                        }
+                        catch (Exception e)
+                        {
+                            form.info(id, "系统异常:"+e.Message);
+                            isrun = false;
+                        }
                     }
                     break;
                 case 2://有保改密，自动判断是否有保
@@ -194,7 +202,15 @@ namespace QQGM
                         while (isrun)
                         {
                             CheckPause();
-                            gm1();
+                            try
+                            {
+                                gm1();
+                            }
+                            catch (Exception e)
+                            {
+                                form.info(id, "系统异常:" + e.Message);
+                                isrun = false;
+                            }
                         }
                     }
                     else
@@ -433,8 +449,19 @@ namespace QQGM
                     }
                     else if (line.StartsWith("ptuiCB('0'"))
                     { //成功登录
-                        form.info(id, "登录成功");
-                        idx ++;
+                        if (line.IndexOf("haoma") != -1)
+                        {
+                            form.info(id, "需要激活靓号");
+                            isrun = false;
+                            form.log(1, original);
+                            form.log(7, original);
+                            form.stat(3);
+                        }
+                        else
+                        {
+                            form.info(id, "登录成功");
+                            idx++;
+                        }
                     }
                     else if (line.StartsWith("ptuiCB('3'"))
                     { //您输入的帐号或密码不正确，请重新输入
@@ -522,7 +549,7 @@ namespace QQGM
                     //data = client.OpenRead(url);
                     pwd = GetPassWord();
                     Console.WriteLine("PWD:" + pwd);
-                    content = "new_psw="+pwd;
+                    content = "new_psw=" + UrlEncode(pwd);
                     client.UploadString(url, content);
 
                     data.Close();
@@ -541,9 +568,9 @@ namespace QQGM
                 case 13:
                     form.info(id, "提交新密码");
                     url = "https://aq.qq.com/cn2/change_psw/pc/pc_change_pwd_result";
-                    
-                    
-                    content = "psw_old="+password+"&psw="+pwd+"&psw_ack="+pwd+"&verifycode="+vcode+"&method=2&sub_method=0";
+
+
+                    content = "psw_old=" + UrlEncode(password) + "&psw=" + UrlEncode(pwd) + "&psw_ack=" + UrlEncode(pwd) + "&verifycode=" + vcode + "&method=2&sub_method=0";
                     //client.UploadString(url, content);
                     bs = Encoding.GetEncoding("GB2312").GetBytes(client.UploadString(url, content));
                     resp = Encoding.UTF8.GetString(bs);
@@ -803,7 +830,7 @@ namespace QQGM
                     url = "https://aq.qq.com/cn2/findpsw/pc/pc_find_pwd_result";
                     string pwd = GetPassWord();
                     Console.WriteLine("PWD:" + pwd);
-                    content = "psw=" + pwd + "&psw_ack=" + pwd + "&method=1&sub_method=0";
+                    content = "psw=" + UrlEncode(pwd) + "&psw_ack=" + UrlEncode(pwd) + "&method=1&sub_method=0";
                     //client.UploadString(url, content);
                     bs = Encoding.GetEncoding("GB2312").GetBytes(client.UploadString(url, content));
                     resp = Encoding.UTF8.GetString(bs);
@@ -877,7 +904,7 @@ namespace QQGM
             }
         }
 
-        /**
+        
         private string UrlEncode(string strCode)
         {
             StringBuilder sb = new StringBuilder();
@@ -897,7 +924,7 @@ namespace QQGM
                 }
             }
             return (sb.ToString());
-        } **/
+        } 
 
         private long currentTimeMillis()
         {

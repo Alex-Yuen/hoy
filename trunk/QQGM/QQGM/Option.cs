@@ -171,7 +171,7 @@ namespace QQGM
                 //ADSL
                 List<string> adls = GetAllAdslName();
                 int i = 0;
-                int idx = 0;
+                int idx = -1;
                 foreach(string ad in adls)
                 {
                     if (ad.Equals(cfa.AppSettings.Settings["REC_FLAG_F5"].Value))
@@ -181,7 +181,10 @@ namespace QQGM
                     comboBox1.Items.Add(ad);
                     i++;
                 }
-                comboBox1.SelectedIndex = idx;
+                if (idx != -1)
+                {
+                    comboBox1.SelectedIndex = idx;
+                }
                 textBox2.Text = cfa.AppSettings.Settings["REC_FLAG_F6"].Value;
                 textBox3.Text = cfa.AppSettings.Settings["REC_FLAG_F7"].Value;
 
