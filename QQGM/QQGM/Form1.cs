@@ -16,6 +16,7 @@ using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Collections;
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 
 namespace QQGM
 {
@@ -32,7 +33,7 @@ namespace QQGM
         private Configuration cfa = null;
         //private bool ns = false;
         private int[] statis = new int[6];
-        private StreamWriter[] output = new StreamWriter[7];//
+        private StreamWriter[] output = new StreamWriter[8];//
         private int frec = 0;
         private HashSet<Task> tasks = new HashSet<Task>();
         private Hashtable ips = new Hashtable();
@@ -162,25 +163,31 @@ namespace QQGM
 
         public void login(object source, System.Timers.ElapsedEventArgs e)
         {
+            string username = null;
+            string password = null;
+
+            int ret = -1;
+            int score = 0;
+
             dlg = delegate()
             {
                 button1.Enabled = false;
-                int nAppId;         // 软件ＩＤ，开发者分成必要参数。登录开发者后台【我的软件】获得！
-                string lpAppKey;    // 软件密钥，开发者分成必要参数。登录开发者后台【我的软件】获得！
-
                 cptype = comboBox2.SelectedIndex;
-
-                //login
                 toolStripStatusLabel1.Text = "正在登录...";
-
-                string username, password;
-                int ret = -1;
-                int score = 0;
                 username = textBox2.Text;
                 password = textBox3.Text;
+            };
+            this.Invoke(dlg);
+
+            //dlg = delegate()
+            {
+                int nAppId;         // 软件ＩＤ，开发者分成必要参数。登录开发者后台【我的软件】获得！
+                string lpAppKey;    // 软件密钥，开发者分成必要参数。登录开发者后台【我的软件】获得！
+                              
+                //login
 
 
-                if (comboBox2.SelectedIndex == 0)
+                if (cptype == 0)
                 {
                     nAppId = 175;
                     lpAppKey = "8c31eb9cf312478eda8301b87232e731";
@@ -188,7 +195,7 @@ namespace QQGM
                     YDMWrapper.YDM_SetAppInfo(nAppId, lpAppKey);
                     ret = YDMWrapper.YDM_Login(username, password);
                 }
-                else if (comboBox2.SelectedIndex == 1)
+                else
                 {
                     nAppId = 95099;
                     lpAppKey = "08573f0698dc43b4b35761c9ab64f014";
@@ -198,9 +205,8 @@ namespace QQGM
                 if (ret > 0)
                 {
                     isLogin = true;
-                    toolStripStatusLabel1.Text = "登录成功，ID=" + ret.ToString();
 
-                    if (comboBox2.SelectedIndex == 0)
+                    if (cptype == 0)
                     {
                         //获取题分
                         score = YDMWrapper.YDM_GetBalance(username, password);
@@ -210,6 +216,22 @@ namespace QQGM
                         score = UUWrapper.uu_getScore(username, password);
                     }
                     //toolStripStatusLabel1.Text = "1";
+                    
+                    //toolStripStatusLabel1.Text = "5";
+                }
+                else
+                {
+                    isLogin = false;
+                }
+
+            }
+
+            dlg = delegate()
+            {
+                if (isLogin)
+                {
+                    toolStripStatusLabel1.Text = "登录成功，ID=" + ret.ToString();
+
                     cfa = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
 
                     if (cfa == null)
@@ -256,11 +278,10 @@ namespace QQGM
 
                     label16.Text = score.ToString();
                     label16.Visible = true;
-                    //toolStripStatusLabel1.Text = "5";
                 }
                 else
                 {
-                    isLogin = false;
+
                     toolStripStatusLabel1.Text = "登陆失败，错误代码：" + ret.ToString();
                 }
 
@@ -268,8 +289,10 @@ namespace QQGM
                 //toolStripStatusLabel1.Text = "6";
                 ready();
             };
+
+            this.Invoke(dlg);
             //toolStripStatusLabel1.Text = "7";
-            this.BeginInvoke(dlg);
+            //this.BeginInvoke(dlg);
             //toolStripStatusLabel1.Text = "8";
         }
 
@@ -393,6 +416,7 @@ namespace QQGM
                 output[4] = File.AppendText(Application.StartupPath + "\\帐号冻结-" + dt.ToString("yyyy年MM月dd日HH时mm分ss秒", DateTimeFormatInfo.InvariantInfo) + ".txt");
                 output[5] = File.AppendText(Application.StartupPath + "\\密码错误-" + dt.ToString("yyyy年MM月dd日HH时mm分ss秒", DateTimeFormatInfo.InvariantInfo) + ".txt");
                 output[6] = File.AppendText(Application.StartupPath + "\\短信验证-" + dt.ToString("yyyy年MM月dd日HH时mm分ss秒", DateTimeFormatInfo.InvariantInfo) + ".txt");
+                output[7] = File.AppendText(Application.StartupPath + "\\激活靓号-" + dt.ToString("yyyy年MM月dd日HH时mm分ss秒", DateTimeFormatInfo.InvariantInfo) + ".txt");
 
                 cfa = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
 
@@ -651,18 +675,41 @@ namespace QQGM
 
         private void Recon(object source, System.Timers.ElapsedEventArgs e)
         {
-            dlg = delegate()
+            //dlg = delegate()
             {
-                MessageBox.Show("正在重拨");
+                //MessageBox.Show("正在重拨");
 
                 ConfigurationManager.RefreshSection("appSettings");
                 string adsl = cfa.AppSettings.Settings["REC_FLAG_F5"].Value;
+                if (adsl == null || "".Equals(adsl))
+                {
+                    MessageBox.Show("请指定宽带连接名称");
+                    return;
+                }
+
+                List<string> adls = GetAllAdslName();
+                bool hasadls = false ;
+                foreach (string ad in adls)
+                {
+                    if (ad.Equals(adsl))
+                    {
+                        hasadls = true;
+                        break;
+                    }
+                }
+
+                if (!hasadls)
+                {
+                    MessageBox.Show("请指定宽带连接名称");
+                    return;
+                }
+
                 string account = cfa.AppSettings.Settings["REC_FLAG_F6"].Value;
                 string password = cfa.AppSettings.Settings["REC_FLAG_F7"].Value;
 
                 bool st = false;
-                string cut = "rasdial " + adsl + " /disconnect";
-                string link = "rasdial " + adsl + " "
+                string cut = "rasdial \"" + adsl + "\" /disconnect";
+                string link = "rasdial \"" + adsl + "\" "
                                         + account
                                         + " "
                                         + password;
@@ -677,7 +724,7 @@ namespace QQGM
                     while (fo && tfo < 4)
                     {
                         string result = Execute(cut);
-                        //System.err.println("CUT:" + result);
+                        Console.WriteLine("CUT:" + result);
                         if (result.IndexOf("没有连接") == -1)
                         {
                             //System.err.println("CUT1");
@@ -757,13 +804,16 @@ namespace QQGM
                                 {
                                     //System.err.println("CUT5");
                                     //System.err.println("连接失败(" + tfi + ")");
-                                    try
+                                    if (tfi < 3)
                                     {
-                                        Thread.Sleep(1000 * 30);
-                                    }
-                                    catch (Exception ex)
-                                    {
-                                        MessageBox.Show(ex.Message);
+                                        try
+                                        {
+                                            Thread.Sleep(1000 * 30);
+                                        }
+                                        catch (Exception ex)
+                                        {
+                                            MessageBox.Show(ex.Message);
+                                        }
                                     }
                                     tfi++;//允许3次循环
                                     //break;
@@ -773,14 +823,17 @@ namespace QQGM
                         else
                         {
                             //System.err.println("CUT6");
-                            //System.err.println("没有连接(" + tfo + ")");
-                            try
+                            Console.WriteLine("没有连接(" + tfo + ")");
+                            if (tfo < 3)
                             {
-                                Thread.Sleep(1000 * 30);
-                            }
-                            catch (Exception ex)
-                            {
-                                MessageBox.Show(ex.Message);
+                                try
+                                {
+                                    Thread.Sleep(1000 * 30);
+                                }
+                                catch (Exception ex)
+                                {
+                                    MessageBox.Show(ex.Message);
+                                }
                             }
                             tfo++; //允许3次循环
                             //break;
@@ -802,36 +855,44 @@ namespace QQGM
                     //notify
                     Monitor.PulseAll(this);
 
-                    MessageBox.Show("重拨结束");
+                    //MessageBox.Show("重拨结束");
                 }
                 else
                 {
-                    MessageBox.Show("重拨失败");
+                    //MessageBox.Show("重拨失败");
                 }
 
                 //MessageBox.Show("重拨结束");
-            };
-            this.BeginInvoke(dlg);
+            }
+            //this.BeginInvoke(dlg);
         }
 
         private string Execute(string cmd)
         {
             string output = "";
-            Process p = new Process();
-            p.StartInfo.FileName = "cmd /c " + cmd;
-            p.StartInfo.UseShellExecute = false;
-            p.StartInfo.RedirectStandardInput = true;
-            p.StartInfo.RedirectStandardOutput = true;
+            try
+            {
+                Process p = new Process();
+                p.StartInfo.FileName = "cmd.exe";
+                p.StartInfo.Arguments = "/c " + cmd;
+                p.StartInfo.UseShellExecute = false;
+                p.StartInfo.RedirectStandardInput = true;
+                p.StartInfo.RedirectStandardOutput = true;
 
-            p.StartInfo.CreateNoWindow = true;
-            p.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
+                p.StartInfo.CreateNoWindow = true;
+                p.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
 
-            p.Start();
-	 
-            output = p.StandardOutput.ReadToEnd();
-	        //Console.WriteLine(output);
-            p.WaitForExit();
-            p.Close();
+                p.Start();
+
+                //Console.WriteLine(output);
+                p.WaitForExit();
+                output = p.StandardOutput.ReadToEnd();
+                p.Close();
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message);
+            }
             return output;
 
             /**
@@ -851,6 +912,63 @@ namespace QQGM
         {
             DateTime Jan1st1970 = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
             return (long)((DateTime.UtcNow - Jan1st1970).TotalMilliseconds);
+        }
+
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)]
+        public struct RasEntryName      //define the struct to receive the entry name
+        {
+            public int dwSize;
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 256 + 1)]
+            public string szEntryName;
+#if WINVER5
+     public int dwFlags;
+     [MarshalAs(UnmanagedType.ByValTStr,SizeConst=260+1)]
+     public string szPhonebookPath;
+#endif
+        }
+
+        [DllImport("rasapi32.dll", CharSet = CharSet.Auto)]
+
+        public extern static uint RasEnumEntries(
+            string reserved,              // reserved, must be NULL
+            string lpszPhonebook,         // pointer to full path and file name of phone-book file
+            [In, Out]RasEntryName[] lprasentryname, // buffer to receive phone-book entries
+            ref int lpcb,                  // size in bytes of buffer
+            out int lpcEntries             // number of entries written to buffer
+        );
+
+        public List<string> GetAllAdslName()
+        {
+            List<string> list = new List<string>();
+            int lpNames = 1;
+            int entryNameSize = 0;
+            int lpSize = 0;
+            RasEntryName[] names = null;
+            entryNameSize = Marshal.SizeOf(typeof(RasEntryName));
+            lpSize = lpNames * entryNameSize;
+            names = new RasEntryName[lpNames];
+            names[0].dwSize = entryNameSize;
+            uint retval = RasEnumEntries(null, null, names, ref lpSize, out lpNames);
+
+            //if we have more than one connection, we need to do it again
+            if (lpNames > 1)
+            {
+                names = new RasEntryName[lpNames];
+                for (int i = 0; i < names.Length; i++)
+                {
+                    names[i].dwSize = entryNameSize;
+                }
+                retval = RasEnumEntries(null, null, names, ref lpSize, out lpNames);
+            }
+
+            if (lpNames > 0)
+            {
+                for (int i = 0; i < names.Length; i++)
+                {
+                    list.Add(names[i].szEntryName);
+                }
+            }
+            return list;
         }
     }
 }
