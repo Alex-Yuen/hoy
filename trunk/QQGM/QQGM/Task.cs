@@ -191,7 +191,7 @@ namespace QQGM
                         }
                         catch (Exception e)
                         {
-                            form.info(id, "系统异常:"+e.Message);
+                            form.info(id, "系统异常:" + e.Message);
                             isrun = false;
                         }
                     }
@@ -221,21 +221,21 @@ namespace QQGM
                     }
                     break;
                 case 3:
-                   // if (isdna)
-                   // {
-                        while (isrun)//有保改保, 无保上保
+                    // if (isdna)
+                    // {
+                    while (isrun)//有保改保, 无保上保
+                    {
+                        CheckPause();
+                        try
                         {
-                            CheckPause();
-                            try
-                            {
-                                gm2();
-                            }
-                            catch (Exception e)
-                            {
-                                form.info(id, "系统异常:" + e.Message);
-                                isrun = false;
-                            }
+                            gm2();
                         }
+                        catch (Exception e)
+                        {
+                            form.info(id, "系统异常:" + e.Message);
+                            isrun = false;
+                        }
+                    }
                     //}
                     break;
                 default:
@@ -419,7 +419,7 @@ namespace QQGM
                     {
                         reportErrorResult = UUWrapper.uu_reportError(nCaptchaId);
                     }
-                    Console.WriteLine("REPORT:"+reportErrorResult);
+                    Console.WriteLine("REPORT:" + reportErrorResult);
                     idx = 3;
                     break;
                 case 7:
@@ -459,7 +459,7 @@ namespace QQGM
 
                     reader = new StreamReader(data);
                     line = reader.ReadToEnd();
-                    
+
                     if (line.StartsWith("ptuiCB('4'"))
                     { //验证码错误
                         form.info(id, "验证码错误[B]");
@@ -518,7 +518,7 @@ namespace QQGM
                     //reader = new StreamReader(data);
                     //line = reader.ReadToEnd();
                     //Console.WriteLine(s);
-                    
+
                     data.Close();
                     reader.Close();
 
@@ -553,7 +553,7 @@ namespace QQGM
                     idx++;
                     //isrun = false;
                     break;
-                     
+
                 case 10:
                     form.info(id, "提交页面操作记录");
                     url = "https://aq.qq.com/cn2/ajax/page_optlog?logid=180&page_name=change_pwd&element_name=input_old_pwd_page_count&uin=" + account;
@@ -576,9 +576,9 @@ namespace QQGM
                     break;
                 case 12://第二次验证通过
                     form.info(id, "获取密码强度");
-                    url = "https://aq.qq.com/cn2/ajax/get_psw_sgh?psw="+pwd;
+                    url = "https://aq.qq.com/cn2/ajax/get_psw_sgh?psw=" + pwd;
                     data = client.OpenRead(url);
-                    
+
                     data.Close();
                     changepwd = true;
                     idx++;
@@ -604,7 +604,7 @@ namespace QQGM
                     else if (resp.IndexOf("修改成功") != -1)
                     {
                         form.info(id, "修改成功");
-                        form.log(0, account+"----"+pwd);
+                        form.log(0, account + "----" + pwd);
                         form.stat(2);
                         //Console.WriteLine("修改成功");
                     }
@@ -974,10 +974,7 @@ namespace QQGM
                         if (jtr.Value.ToString().Equals("0"))
                         {
                             form.info(id, "验证码正确");
-                            if (isdna)//有保改保
-                            {
-                                idx += 2;
-                            }
+                            idx += 2;
                         }
                         else
                         {
@@ -1004,22 +1001,38 @@ namespace QQGM
                     Console.WriteLine("REPORT:" + reportErrorResult);
                     idx = 2;
                     break;
-                case 6://有保改保
+                case 6:
                     form.info(id, "打开密保问题页面");
                     url = "http://aq.qq.com/cn2/manage/question/my_question?source_id=2228";
                     data = client.OpenRead(url);
                     reader = new StreamReader(data);
                     line = reader.ReadToEnd();
-                    if (line.IndexOf("正常使用") != -1)
+                    
+                    if (line.IndexOf("正常使用") != -1) //有保改保
                     {
-                        form.info(id, "密保正常使用");
+                        form.info(id, "密保正常");
+                        //TODO, 准备修改
+                    }
+                    else if (line.IndexOf("立即设置") != -1) //无保上保
+                    {
+                        form.info(id, "准备设置");
+                        //TODO 
+                        //准备设置
+                    }
+                    else if (line.IndexOf("立即申请") != -1)
+                    {
+                        form.info(id, "无法上保");
+                        isrun = false;
+                        form.log(3, original);//改保失败
+                        form.log(8, original);//密保异常
+                        form.stat(5);//改保失败+1
                     }
                     else
                     {
                         form.info(id, "密保异常");
                         isrun = false;
                         form.log(3, original);//改保失败
-                        form.log(8, original);//密保一场
+                        form.log(8, original);//密保异常
                         form.stat(5);//改保失败+1
                     }
                     idx++;
@@ -1031,8 +1044,8 @@ namespace QQGM
                     data.Close();
                     idx++;
                     break;
-                    //TODO
                 case 8:
+                    //TODO
                     form.info(id, "跳转");
                     url = "https://aq.qq.com/cn2/unionverify/unionverify_jump?jumpname=pc_find_pwd&session_context=3&PTime=" + random.NextDouble();
                     //Console.WriteLine(client.Headers);
@@ -1198,7 +1211,7 @@ namespace QQGM
             }
         }
 
-        
+
         private string UrlEncode(string strCode)
         {
             StringBuilder sb = new StringBuilder();
@@ -1218,7 +1231,7 @@ namespace QQGM
                 }
             }
             return (sb.ToString());
-        } 
+        }
 
         private long currentTimeMillis()
         {
