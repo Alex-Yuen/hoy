@@ -17,6 +17,7 @@ using System.Runtime.CompilerServices;
 using System.Collections;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
+using FileEncoding;
 
 namespace QQGM
 {
@@ -320,8 +321,10 @@ namespace QQGM
                     table.Clear();
 
                     string fn = dialog.FileName;
+
+                    Encoding ecdtype = EncodingType.GetType(fn);
                     FileStream fs = new FileStream(fn, FileMode.Open);
-                    StreamReader m_streamReader = new StreamReader(fs);
+                    StreamReader m_streamReader = new StreamReader(fs, ecdtype);
                     m_streamReader.BaseStream.Seek(0, SeekOrigin.Begin);
                     int i = 0;
                     string line = null;
