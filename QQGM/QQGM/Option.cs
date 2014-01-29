@@ -31,7 +31,6 @@ namespace QQGM
             //MessageBox.Show("1");
             if (!check())
             {
-                MessageBox.Show("密码不能是9位以下纯数字");
                 return;
             }
             //MessageBox.Show("2");
@@ -89,6 +88,15 @@ namespace QQGM
             cfa.AppSettings.Settings["REC_FLAG_F6"].Value = textBox2.Text;
             //MessageBox.Show("11.7");
             cfa.AppSettings.Settings["REC_FLAG_F7"].Value = textBox3.Text;
+
+            cfa.AppSettings.Settings["DNA_Q1"].Value = comboBox2.SelectedIndex.ToString();
+            cfa.AppSettings.Settings["DNA_Q2"].Value = comboBox3.SelectedIndex.ToString();
+            cfa.AppSettings.Settings["DNA_Q3"].Value = comboBox4.SelectedIndex.ToString();
+
+            cfa.AppSettings.Settings["DNA_A1"].Value = textBox4.Text;
+            cfa.AppSettings.Settings["DNA_A2"].Value = textBox5.Text;
+            cfa.AppSettings.Settings["DNA_A3"].Value = textBox6.Text;
+            
             //MessageBox.Show("12");
             cfa.Save();
             //MessageBox.Show("13");
@@ -229,6 +237,14 @@ namespace QQGM
                 {
                     checkBox7.Checked = false;
                 }
+
+                comboBox2.SelectedIndex = Int32.Parse(cfa.AppSettings.Settings["DNA_Q1"].Value);
+                comboBox3.SelectedIndex = Int32.Parse(cfa.AppSettings.Settings["DNA_Q2"].Value);
+                comboBox4.SelectedIndex = Int32.Parse(cfa.AppSettings.Settings["DNA_Q3"].Value);
+
+                textBox4.Text = cfa.AppSettings.Settings["DNA_A1"].Value;
+                textBox5.Text = cfa.AppSettings.Settings["DNA_A2"].Value;
+                textBox6.Text = cfa.AppSettings.Settings["DNA_A3"].Value;
             }
             catch (Exception ex)
             {
@@ -271,12 +287,24 @@ namespace QQGM
         {
             if ((checkBox1.Checked && !checkBox2.Checked && !checkBox3.Checked) && numericUpDown2.Value < 9)
             {
+                MessageBox.Show("密码不能是9位以下纯数字");
                 return false;
             }
-            else
+
+            if (comboBox2.SelectedIndex == comboBox3.SelectedIndex || comboBox2.SelectedIndex == comboBox4.SelectedIndex || comboBox3.SelectedIndex == comboBox4.SelectedIndex)
             {
-                return true;
+                MessageBox.Show("密保问题不能一样");
+                return false;
             }
+
+            if (textBox4.Text.Equals(textBox5.Text) || textBox4.Text.Equals(textBox6.Text) || textBox5.Text.Equals(textBox6.Text))
+            {
+                MessageBox.Show("密保答案不能一样");
+                return false;
+            }
+            
+            return true;
+            
         }
 
         private void checkBox4_CheckedChanged(object sender, EventArgs e)

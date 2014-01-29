@@ -35,6 +35,9 @@
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.textBox6 = new System.Windows.Forms.TextBox();
+            this.textBox5 = new System.Windows.Forms.TextBox();
+            this.textBox4 = new System.Windows.Forms.TextBox();
             this.comboBox4 = new System.Windows.Forms.ComboBox();
             this.comboBox3 = new System.Windows.Forms.ComboBox();
             this.comboBox2 = new System.Windows.Forms.ComboBox();
@@ -70,9 +73,6 @@
             this.label3 = new System.Windows.Forms.Label();
             this.checkBox4 = new System.Windows.Forms.CheckBox();
             this.numericUpDown3 = new System.Windows.Forms.NumericUpDown();
-            this.textBox4 = new System.Windows.Forms.TextBox();
-            this.textBox5 = new System.Windows.Forms.TextBox();
-            this.textBox6 = new System.Windows.Forms.TextBox();
             this.panel1.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
@@ -158,6 +158,27 @@
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "密保问题和答案";
             // 
+            // textBox6
+            // 
+            this.textBox6.Location = new System.Drawing.Point(198, 76);
+            this.textBox6.Name = "textBox6";
+            this.textBox6.Size = new System.Drawing.Size(150, 21);
+            this.textBox6.TabIndex = 5;
+            // 
+            // textBox5
+            // 
+            this.textBox5.Location = new System.Drawing.Point(198, 50);
+            this.textBox5.Name = "textBox5";
+            this.textBox5.Size = new System.Drawing.Size(150, 21);
+            this.textBox5.TabIndex = 4;
+            // 
+            // textBox4
+            // 
+            this.textBox4.Location = new System.Drawing.Point(198, 24);
+            this.textBox4.Name = "textBox4";
+            this.textBox4.Size = new System.Drawing.Size(150, 21);
+            this.textBox4.TabIndex = 3;
+            // 
             // comboBox4
             // 
             this.comboBox4.FormattingEnabled = true;
@@ -182,7 +203,7 @@
             "对您影响最大的人名字是？"});
             this.comboBox4.Location = new System.Drawing.Point(6, 77);
             this.comboBox4.Name = "comboBox4";
-            this.comboBox4.Size = new System.Drawing.Size(160, 20);
+            this.comboBox4.Size = new System.Drawing.Size(180, 20);
             this.comboBox4.TabIndex = 2;
             // 
             // comboBox3
@@ -209,7 +230,7 @@
             "对您影响最大的人名字是？"});
             this.comboBox3.Location = new System.Drawing.Point(6, 51);
             this.comboBox3.Name = "comboBox3";
-            this.comboBox3.Size = new System.Drawing.Size(160, 20);
+            this.comboBox3.Size = new System.Drawing.Size(180, 20);
             this.comboBox3.TabIndex = 1;
             // 
             // comboBox2
@@ -236,7 +257,7 @@
             "对您影响最大的人名字是？"});
             this.comboBox2.Location = new System.Drawing.Point(6, 25);
             this.comboBox2.Name = "comboBox2";
-            this.comboBox2.Size = new System.Drawing.Size(160, 20);
+            this.comboBox2.Size = new System.Drawing.Size(180, 20);
             this.comboBox2.TabIndex = 0;
             // 
             // panel3
@@ -648,27 +669,6 @@
             0,
             0});
             this.numericUpDown3.Visible = false;
-            // 
-            // textBox4
-            // 
-            this.textBox4.Location = new System.Drawing.Point(177, 24);
-            this.textBox4.Name = "textBox4";
-            this.textBox4.Size = new System.Drawing.Size(150, 21);
-            this.textBox4.TabIndex = 3;
-            // 
-            // textBox5
-            // 
-            this.textBox5.Location = new System.Drawing.Point(177, 50);
-            this.textBox5.Name = "textBox5";
-            this.textBox5.Size = new System.Drawing.Size(150, 21);
-            this.textBox5.TabIndex = 4;
-            // 
-            // textBox6
-            // 
-            this.textBox6.Location = new System.Drawing.Point(177, 76);
-            this.textBox6.Name = "textBox6";
-            this.textBox6.Size = new System.Drawing.Size(150, 21);
-            this.textBox6.TabIndex = 5;
             // 
             // Option
             // 
