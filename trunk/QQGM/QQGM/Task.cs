@@ -10,6 +10,8 @@ using System.Web;
 using Newtonsoft.Json;
 using System.Configuration;
 using System.Threading;
+using System.Security.Cryptography.X509Certificates;
+using System.Net.Security;
 
 namespace QQGM
 {
@@ -66,6 +68,17 @@ namespace QQGM
         private bool changepwd = false;
         private string pwd = null;
         private bool pause = false;
+
+        private string[] tqs = new string[3];//问题
+        private string[] tas = new string[3];//答案
+        private string[] qtag = new string[3]{
+                        "问题一", 
+                        "问题二", 
+                        "问题三"
+                    };
+        private StringBuilder sb = null;
+        private bool edit = false;
+        private Cookie cookie = null;
 
         private string original = null;
 
@@ -176,9 +189,16 @@ namespace QQGM
             set { a3 = value; }
         }
 
+        private bool ValidateServerCertificate(object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors)
+        {
+            return true;
+        }  
+
         public void process(Form1 form, int type)
         {
             this.form = form;
+            ServicePointManager.ServerCertificateValidationCallback = ValidateServerCertificate;  
+
             switch (type)
             {
                 case 1:
@@ -887,27 +907,83 @@ namespace QQGM
             switch (idx)
             {
                 case 0:
-                    form.info(id, "正在开始");
-                    url = "https://aq.qq.com/cn2/findpsw/findpsw_index";
+                    form.info(id, "打开首页");
+                    url = "http://aq.qq.com/";
                     data = client.OpenRead(url);
-                    //StreamReader reader = new StreamReader(data);
-                    //string s = reader.ReadToEnd();
+                    //reader = new StreamReader(data);
+                    //line = reader.ReadToEnd();
                     //Console.WriteLine(s);
+
                     data.Close();
                     //reader.Close();
 
                     idx++;
-                    //                    isrun = false;
+                    //isrun = false;
                     break;
                 case 1:
-                    form.info(id, "输入帐号");
-                    url = "https://aq.qq.com/cn2/findpsw/pc/pc_find_pwd_input_account?pw_type=0&aquin=";
+                    form.info(id, "正在登录");
+                    url = "https://ui.ptlogin2.qq.com/cgi-bin/login?appid=2001601&no_verifyimg=1&f_url=loginerroralert&lang=0&target=top&hide_title_bar=1&s_url=http%3A//aq.qq.com/cn2/index&qlogin_jumpname=aqjump&qlogin_param=aqdest%3Dhttp%253A//aq.qq.com/cn2/index&css=https%3A//aq.qq.com/v2/css/login.css";
                     data = client.OpenRead(url);
+                    reader = new StreamReader(data);
+                    line = reader.ReadToEnd();
+                    //Console.WriteLine(s);
+
+                    loginsig = line.Substring(line.IndexOf("var g_login_sig=encodeURIComponent") + 36).Substring(0, 64);
+
                     data.Close();
+                    reader.Close();
 
                     idx++;
+                    //isrun = false;
                     break;
                 case 2:
+                    form.info(id, "获取版本号");
+                    url = "https://ui.ptlogin2.qq.com/ptui_ver.js?v=" + random.NextDouble();
+                    data = client.OpenRead(url);
+                    reader = new StreamReader(data);
+                    line = reader.ReadToEnd();
+
+                    version = line.Substring(line.IndexOf("ptuiV(\"") + 7, 5);//line.IndexOf("\");")
+
+                    //Console.WriteLine(s);
+                    data.Close();
+                    reader.Close();
+
+                    idx++;
+                    //isrun = false;
+                    break;
+                case 3:
+                    form.info(id, "检查帐号");
+                    url = "https://ssl.ptlogin2.qq.com/check?uin=" + account + "&appid=2001601&js_ver=" + version + "&js_type=0&login_sig=" + loginsig + "&u1=http%3A%2F%2Faq.qq.com%2Fcn2%2Findex&r=" + random.NextDouble();
+                    data = client.OpenRead(url);
+                    reader = new StreamReader(data);
+                    line = reader.ReadToEnd();
+
+                    bool nvc = line.ToCharArray()[14] == '1' ? true : false;
+                    //没有做RSAKEY检查，默认是应该有KEY，用getEncryption；否则用getRSAEncryption
+
+                    fidx = line.IndexOf(",");
+                    lidx = line.LastIndexOf(",");
+
+                    vcode = line.Substring(fidx + 2, 4);
+                    salt = line.Substring(lidx + 2, 32);
+
+                    if (nvc)
+                    {
+                        //Encryption.getRSAEncryption(K, G)
+                        idx++; //进入下一步验证码
+                    }
+                    else
+                    {
+                        idx += 5;
+                    }
+                    //Console.WriteLine(s);
+                    data.Close();
+                    reader.Close();
+
+                    //isrun = false;
+                    break;
+                case 4:
                     form.info(id, "下载验证码");
                     url = "https://ssl.captcha.qq.com/getimage?aid=2001601&" + random.NextDouble() + "&uin=" + account;
                     //Console.WriteLine(url);
@@ -921,7 +997,7 @@ namespace QQGM
                     //Console.WriteLine("SIZE:"+size);
                     idx++;
                     break;
-                case 3:
+                case 5:
                     //MemoryStream ms = new MemoryStream();
 
                     //reader = new StreamReader(data);
@@ -958,9 +1034,17 @@ namespace QQGM
                     //isrun = false;
                     idx++;
                     break;
-                case 4:
+                case 6:
                     form.info(id, "提交验证码");
-                    url = "https://aq.qq.com/cn2/ajax/check_verifycode?session_type=on_rand&verify_code=" + pCodeResult.ToString();
+                    if (!changepwd)
+                    {
+                        url = "https://aq.qq.com/cn2/ajax/check_verifycode?session_type=on_rand&verify_code=" + pCodeResult.ToString();
+
+                    }
+                    else
+                    {
+                        url = "https://aq.qq.com/cn2/ajax/check_verifycode?verify_code=" + pCodeResult.ToString();
+                    }
                     data = client.OpenRead(url);
 
                     reader = new StreamReader(data);
@@ -974,11 +1058,19 @@ namespace QQGM
                         if (jtr.Value.ToString().Equals("0"))
                         {
                             form.info(id, "验证码正确");
-                            idx += 2;
+                            vcode = pCodeResult.ToString();
+                            if (!changepwd)
+                            {
+                                idx += 2;
+                            }
+                            else//第二次
+                            {
+                                idx = 13;
+                            }
                         }
                         else
                         {
-                            form.info(id, "验证码错误");
+                            form.info(id, "验证码错误[A]:" + jtr.Value.ToString());
                             idx++;
                         }
                         //Console.WriteLine(jtr.Value);
@@ -987,7 +1079,7 @@ namespace QQGM
                     reader.Close();
                     data.Close();
                     break;
-                case 5:
+                case 7:
                     form.info(id, "报告验证码错误");
                     int reportErrorResult = -1;
                     if (form.getCptType() == 0)
@@ -999,9 +1091,114 @@ namespace QQGM
                         reportErrorResult = UUWrapper.uu_reportError(nCaptchaId);
                     }
                     Console.WriteLine("REPORT:" + reportErrorResult);
-                    idx = 2;
+                    idx = 3;
                     break;
-                case 6:
+                case 8:
+                    form.info(id, "提交登录请求");
+                    //计算ECP
+                    System.Security.Cryptography.MD5CryptoServiceProvider md5CSP = new System.Security.Cryptography.MD5CryptoServiceProvider();
+
+                    byte[] results = md5CSP.ComputeHash(Encoding.UTF8.GetBytes(this.password));
+
+                    int psz = results.Length;
+                    byte[] rs = new byte[psz + 8];
+                    for (int i = 0; i < psz; i++)
+                    {
+                        rs[i] = results[i];
+                    }
+
+                    string[] salts = Regex.Split(this.salt.Substring(2), "\\\\x");
+
+                    //string[] salts = this.salt.Substring(2).split("\\\\x");
+                    //System.out.println(salts.length);
+                    for (int i = 0; i < salts.Length; i++)
+                    {
+                        rs[psz + i] = (byte)Int32.Parse(salts[i], System.Globalization.NumberStyles.HexNumber);
+                    }
+
+                    results = md5CSP.ComputeHash(rs);
+                    string resultString = byteArrayToHexString(results).ToUpper();
+
+                    //vcode = "!RQM";
+                    results = md5CSP.ComputeHash(Encoding.UTF8.GetBytes(resultString + vcode.ToUpper()));
+                    resultString = byteArrayToHexString(results).ToUpper();
+                    //System.out.println(resultString);
+                    string ecp = resultString;
+
+                    url = "https://ssl.ptlogin2.qq.com/login?u=" + account + "&p=" + ecp + "&verifycode=" + vcode + "&aid=2001601&u1=http%3A%2F%2Faq.qq.com%2Fcn2%2Findex&h=1&ptredirect=1&ptlang=2052&from_ui=1&dumy=&fp=loginerroralert&action=4-14-" + currentTimeMillis() + "&mibao_css=&t=1&g=1&js_type=0&js_ver=" + version + "&login_sig=" + loginsig;
+                    data = client.OpenRead(url);
+
+                    reader = new StreamReader(data);
+                    line = reader.ReadToEnd();
+
+                    if (line.StartsWith("ptuiCB('4'"))
+                    { //验证码错误
+                        form.info(id, "验证码错误[B]");
+                        idx = 3;
+                    }
+                    else if (line.StartsWith("ptuiCB('0'"))
+                    { //成功登录
+                        if (line.IndexOf("haoma") != -1)
+                        {
+                            form.info(id, "需要激活靓号");
+                            isrun = false;
+                            form.log(3, original);
+                            form.log(7, original);
+                            form.stat(5);
+                        }
+                        else
+                        {
+                            form.info(id, "登录成功");
+                            //idx++;
+                            idx = 9;//9, 10
+                        }
+                    }
+                    else if (line.StartsWith("ptuiCB('3'"))
+                    { //您输入的帐号或密码不正确，请重新输入
+                        //finish = 2;
+                        form.info(id, "帐号或密码不正确, 退出任务");
+                        isrun = false;
+                        form.log(3, original);
+                        form.log(5, original);
+                        form.stat(5);
+                    }
+                    else if (line.StartsWith("ptuiCB('19'"))
+                    { //帐号冻结，提示暂时无法登录
+                        //finish = 3;
+                        form.info(id, "帐号冻结");
+                        isrun = false;
+                        form.log(3, original);
+                        form.log(4, original);
+                        form.stat(5);
+                    }
+                    else
+                    {
+                        // ptuiCB('19' 暂停使用
+                        // ptuiCB('7' 网络连接异常
+                        form.info(id, "帐号异常, 退出任务");
+                        isrun = false;
+                        form.log(3, original);
+                        form.stat(5);
+                    }
+
+                    //idx++;
+                    break;
+                    
+                case 9:
+                    form.info(id, "回到首页");
+                    url = "http://aq.qq.com/cn2/index";
+                    data = client.OpenRead(url);
+                    //reader = new StreamReader(data);
+                    //line = reader.ReadToEnd();
+                    //Console.WriteLine(s);
+
+                    data.Close();
+                    reader.Close();
+
+                    idx++;
+                    //isrun = false;
+                    break;
+                case 10:
                     form.info(id, "打开密保问题页面");
                     url = "http://aq.qq.com/cn2/manage/question/my_question?source_id=2228";
                     data = client.OpenRead(url);
@@ -1010,14 +1207,17 @@ namespace QQGM
                     
                     if (line.IndexOf("正常使用") != -1) //有保改保
                     {
+                        //准备修改
                         form.info(id, "密保正常");
-                        //TODO, 准备修改
+                        edit = true;
+                        idx = 18;
                     }
                     else if (line.IndexOf("立即设置") != -1) //无保上保
                     {
-                        form.info(id, "准备设置");
-                        //TODO 
                         //准备设置
+                        form.info(id, "未上保");
+                        edit = false;
+                        idx = 11;
                     }
                     else if (line.IndexOf("立即申请") != -1)
                     {
@@ -1035,32 +1235,249 @@ namespace QQGM
                         form.log(8, original);//密保异常
                         form.stat(5);//改保失败+1
                     }
-                    idx++;
+                    //idx++;
                     break;
-                case 7:
-                    form.info(id, "跳转");
-                    url = "http://aq.qq.com/cn2/unionverify/unionverify_jump?jumpname=modifyquestion&PTime=" + random.NextDouble();
+                case 11:
+                    form.info(id, "打开设置页面");
+                    url = "http://aq.qq.com/cn2/manage/upgrade/upgrade_determin?mb_up_from=from_set_question&to=question";
                     data = client.OpenRead(url);
                     data.Close();
+
                     idx++;
                     break;
-                case 8:
-                    //TODO
+                case 12:
+                    form.info(id, "打开问题列表");
+                    url = "http://aq.qq.com/cn2/manage/question/set_question_sel?mb_flow_type=setdir&outurl=setdir&mb_up_from=from_set_question&";
+                    data = client.OpenRead(url);
+                    data.Close();                 
+                    idx++;
+                    break;
+                case 13:
+                    form.info(id, "设置问题和答案");
+                    url = "https://aq.qq.com/cn2/manage/question/set_question_vry";
+                    if (edit)
+                    {
+                        content = "dna_ques_1=" + (Int32.Parse(cfa.AppSettings.Settings["DNA_Q1"].Value) + 1) + "&dna_answer_1=" + cfa.AppSettings.Settings["DNA_A1"].Value + "&dna_ques_2=" + (Int32.Parse(cfa.AppSettings.Settings["DNA_Q2"].Value) + 1) + "&dna_answer_2=" + cfa.AppSettings.Settings["DNA_A2"].Value + "&dna_ques_3=" + (Int32.Parse(cfa.AppSettings.Settings["DNA_Q3"].Value) + 1) + "&dna_answer_3=" + cfa.AppSettings.Settings["DNA_A3"].Value + "&mb_flow_type=dna&mb_up_from=";
+                    }
+                    else
+                    {
+                        content = "dna_ques_1=" + (Int32.Parse(cfa.AppSettings.Settings["DNA_Q1"].Value) + 1) + "&dna_answer_1=" + cfa.AppSettings.Settings["DNA_A1"].Value + "&dna_ques_2=" + (Int32.Parse(cfa.AppSettings.Settings["DNA_Q2"].Value) + 1) + "&dna_answer_2=" + cfa.AppSettings.Settings["DNA_A2"].Value + "&dna_ques_3=" + (Int32.Parse(cfa.AppSettings.Settings["DNA_Q3"].Value) + 1) + "&dna_answer_3=" + cfa.AppSettings.Settings["DNA_A3"].Value + "&mb_flow_type=setdir&mb_up_from=from_set_question";
+                    }
+                    Console.WriteLine(content);
+                    //client.UploadString(url, content);
+                    //client.UploadString(url, 
+                    //client.Encoding = Encoding.UTF8;
+                    client.Headers[HttpRequestHeader.ContentType] = "text/plain; charset=UTF-8";
+
+                    //client.UploadData(url, "POST", Encoding.UTF8.GetBytes(content));
+                    bs = client.UploadData(url, "POST", Encoding.UTF8.GetBytes(content));
+                    //byte[] bs = Encoding.GetEncoding("GB2312").GetBytes();
+                    resp = Encoding.UTF8.GetString(bs);
+                    
+                    for (int i = 0; i < tqs.Length; i++)
+                    {
+                        fidx = resp.IndexOf(qtag[i]) + 39;
+                        resp = resp.Substring(fidx);
+                        lidx = resp.IndexOf("<");
+                        tqs[i] = resp.Substring(0, lidx);//问题中文
+                        if (tqs[i].Equals("您初中班主任的名字？"))
+                        {
+                            tqs[i] = "您初中班主任的名字是？";
+                        }
+                        for (int m = 0; m < 3; m++)
+                        {
+                            if (tqs[i].Equals(questions[(Int32.Parse(cfa.AppSettings.Settings["DNA_Q"+(m+1)].Value))]))
+                            //Console.WriteLine(questions[(Int32.Parse(cfa.AppSettings.Settings["DNA_Q" + (m + 1)].Value))]);
+                            //Console.WriteLine(tqs[i]);
+
+                            //if(questions[(Int32.Parse(cfa.AppSettings.Settings["DNA_Q"+(m+1)].Value))].IndexOf(tqs[i])!=-1)
+                            {
+                                tas[i] = cfa.AppSettings.Settings["DNA_A" + (m + 1)].Value;
+                                break;
+                            }
+                        }
+                    }
+
+                    idx++;
+                    break;
+                case 14:
+                    form.info(id, "确认问题和答案");
+                    sb = new StringBuilder();
+                    for(int i=0;i<tas.Length;i++){
+                        sb.Append("answer" + (i + 1) + "=" + UrlEncode(tas[i])+"&");
+                    }
+                    url = "https://aq.qq.com/cn2/manage/question/vry_question_ajax?" + sb.ToString();
+                    if (edit)
+                    {
+                        url += "mb_flow_type=dna";
+                        /**
+                        client.Headers["Referer"] = "https://aq.qq.com/cn2/manage/question/set_question_vry";
+                        client.Headers["X-Requested-With"] = "XMLHttpRequest";
+
+                        cookie = new Cookie();
+                        cookie.Value = account;
+                        cookie.Name = "ptui_loginuin";
+                        cookie.Domain = "aq.qq.com";
+                        client.Cookies.Add(cookie);
+
+                        cookie = new Cookie();
+                        cookie.Value = "aq.qq.com/cn2/manage/question/my_question";
+                        cookie.Name = "ts_last";
+                        cookie.Domain = "aq.qq.com";
+                        client.Cookies.Add(cookie);**/
+                    }
+                    else
+                    {
+                        url += "mb_flow_type=setdir";
+                    }
+                    data = client.OpenRead(url);
+                    //{answer:[1,1,1,1],jumpname:"setquestion_end"}
+                    data.Close();
+                    /**
+                    if (edit)
+                    {
+                        client.Headers.Remove("Referer");
+                    }**/
+
+                    if (!edit)
+                    {
+                        idx = 16;
+                    }
+                    else
+                    {
+                        idx = 15;
+                    }
+                    break;
+                case 15:
+                    form.info(id, "提交新密保");
+                    url = "https://aq.qq.com/cn2/manage/question/dna_question_imp";
+                    sb = new StringBuilder();
+                    for(int i=0;i<tas.Length;i++){
+                        sb.Append("dna_answer_" + (i + 1) + "=" +  UrlEncode(tas[i]) + "&");
+                    }
+                    content = sb.ToString() + "mb_flow_type=dna&mb_up_from=";
+                    Console.WriteLine(content);
+                    client.Headers[HttpRequestHeader.ContentType] = "text/plain; charset=UTF-8";
+
+                    bs = client.UploadData(url, "POST", Encoding.UTF8.GetBytes(content));
+                    resp = Encoding.UTF8.GetString(bs);
+
+
+                    if (resp.IndexOf("修改成功") != -1)
+                    {
+                        form.info(id, "改保成功");
+
+                        sb = new StringBuilder();
+                        for (int i = 0; i < tas.Length; i++)
+                        {
+                            if (i != tas.Length - 1)
+                            {
+                                sb.Append(tqs[i] + "----" + tas[i] + "----");
+                            }
+                            else
+                            {
+                                sb.Append(tqs[i] + "----" + tas[i]);
+                            }
+                        }
+
+                        form.log(2, account + "----" + password + "----" + sb.ToString());
+                        form.stat(4);
+                        //isrun = false;
+                    }
+                    else
+                    {
+                        form.info(id, "改保失败");
+                        form.log(3, original);//改保失败
+                        form.stat(5);//改保失败+1
+                    }
+
+                    isrun = false;
+                    break;
+                case 16:
+                    form.info(id, "打开手机密保");
+                    url = "https://aq.qq.com/cn2/manage/question/set_question_mobile";
+                    sb = new StringBuilder();
+                    for(int i=0;i<tas.Length;i++){
+                        sb.Append("dna_answer_" + (i + 1) + "=" +  UrlEncode(tas[i]) + "&");
+                    }
+                    content = sb.ToString()+"mb_flow_type=setdir&mb_up_from=from_set_question";
+                    Console.WriteLine(content);
+                    client.Headers[HttpRequestHeader.ContentType] = "text/plain; charset=UTF-8";
+
+                    bs = client.UploadData(url, "POST", Encoding.UTF8.GetBytes(content));
+                    //resp = Encoding.UTF8.GetString(bs);
+
+                    idx++;
+                    break;
+                case 17:
+                    form.info(id, "跳过手机密保");
+                    url = "https://aq.qq.com/cn2/manage/question/setdir_question_imp";
+                    sb = new StringBuilder();
+                    for(int i=0;i<tas.Length;i++){
+                        sb.Append("dna_answer_" + (i + 1) + "=" + UrlEncode(tas[i]));
+                        if (i != tas.Length - 1)
+                        {
+                            sb.Append("&");
+                        }
+                    }
+                    content = "phone=&re_phone=&mb_flow_type=setdir&mb_up_from=from_set_question";
+                    Console.WriteLine(content);
+                    client.Headers[HttpRequestHeader.ContentType] = "text/plain; charset=UTF-8";
+
+                    bs = client.UploadData(url, "POST", Encoding.UTF8.GetBytes(content));
+                    resp = Encoding.UTF8.GetString(bs);
+
+                    if (resp.IndexOf("成功设置") != -1)
+                    {
+                        form.info(id, "上保成功");
+                        //isrun = false;
+
+                        sb = new StringBuilder();
+                        for (int i = 0; i < tas.Length; i++)
+                        {
+                            if (i != tas.Length - 1)
+                            {
+                                sb.Append(tqs[i] + "----" + tas[i] + "----");
+                            }
+                            else
+                            {
+                                sb.Append(tqs[i] + "----" + tas[i]);
+                            }
+                        }
+
+                        form.log(2, account+"----"+password+"----"+sb.ToString());
+                        form.stat(4);
+                    }
+                    else if (resp.IndexOf("") != -1)
+                    {
+                        form.info(id, "系统繁忙");
+                        form.log(3, original);//改保失败
+                        form.stat(5);//改保失败+1
+                    }
+                    else
+                    {
+                        form.info(id, "上保失败");
+                        form.log(3, original);//改保失败
+                        form.stat(5);//改保失败+1
+                    }
+                    isrun = false;
+                    break;
+                case 18:
                     form.info(id, "跳转");
-                    url = "https://aq.qq.com/cn2/unionverify/unionverify_jump?jumpname=pc_find_pwd&session_context=3&PTime=" + random.NextDouble();
+                    url = "http://aq.qq.com/cn2/unionverify/unionverify_jump?jumpname=modifyquestion&PTime=" + random.NextDouble();
                     //Console.WriteLine(client.Headers);
                     data = client.OpenRead(url);
 
                     reader = new StreamReader(data);
                     resp = reader.ReadToEnd();
                     //QuerId:[4,1,7],
-                    if (resp.IndexOf("QuerId") == -1)
+                    if (resp.IndexOf("密保问题") == -1) //包括：无法进行验证等
                     {
-                        form.info(id, "需要短信验证");
+                        form.info(id, "非常用IP改保");
                         isrun = false;
-                        form.log(1, original);
-                        form.log(6, original);
-                        form.stat(3);
+                        //form.log(1, original);
+                        //form.log(6, original);
+                        //form.stat(3);
                     }
                     else
                     {
@@ -1097,7 +1514,7 @@ namespace QQGM
                     idx++;
                     //isrun = false;
                     break;
-                case 9:
+                case 19:
                     form.info(id, "提交密保答案");
                     url = "https://aq.qq.com/cn2/unionverify/pc/pc_uv_verify";
                     content = "type=1&dnaAnswer1=" + ans[0] + "&dnaAnswer2=" + ans[1] + "&dnaAnswer3=" + ans[2] + "&order=0";//&dnaAnswerHex1=&dnaAnswerHex2=&dnaAnswerHex3=
@@ -1111,7 +1528,12 @@ namespace QQGM
                     bs = client.UploadData(url, "POST", Encoding.UTF8.GetBytes(content));
                     //byte[] bs = Encoding.GetEncoding("GB2312").GetBytes();
                     resp = Encoding.UTF8.GetString(bs);
-
+                    if (resp.IndexOf("code:123") != -1)
+                    {
+                        form.info(id, "密保错误");
+                        isrun = false;
+                        break;
+                    }
                     resp = resp.Substring(resp.IndexOf("window.location.href="));
                     fidx = resp.IndexOf("'") + 1;
                     lidx = resp.IndexOf(";");
@@ -1125,46 +1547,44 @@ namespace QQGM
                     //isrun = false;
                     idx++;
                     break;
-                case 10:
+                case 20:
                     form.info(id, "成功，继续跳转");
                     url = unionverify;
                     data = client.OpenRead(url);
+                    reader = new StreamReader(data);
+                    line = reader.ReadToEnd();
+
+                    fidx = line.IndexOf("top.location='")+14;
+                    line = line.Substring(fidx);
+                    lidx = line.IndexOf("';};");
+                    unionverify = line.Substring(0, lidx);
+
+                    reader.Close();
                     data.Close();
                     idx++;
                     break;
-                case 11:
-                    form.info(id, "提交新密码");
-                    url = "https://aq.qq.com/cn2/findpsw/pc/pc_find_pwd_result";
-                    string pwd = GetPassWord();
-                    Console.WriteLine("PWD:" + pwd);
-                    content = "psw=" + UrlEncode(pwd) + "&psw_ack=" + UrlEncode(pwd) + "&method=1&sub_method=0";
-                    //client.UploadString(url, content);
-                    bs = Encoding.GetEncoding("GB2312").GetBytes(client.UploadString(url, content));
-                    resp = Encoding.UTF8.GetString(bs);
-                    //Console.WriteLine(resp.IndexOf("修改成功"));
-                    if (resp.IndexOf("same_psw") != -1)
-                    {
-                        form.info(id, "密码相同");
-                        form.log(1, original);
-                        form.stat(3);
-                        //Console.WriteLine("");
-                    }
-                    else if (resp.IndexOf("修改成功") != -1)
-                    {
-                        form.info(id, "修改成功");
-                        form.log(0, account + "----" + pwd);
-                        form.stat(2);
-                        //Console.WriteLine("修改成功");
-                    }
-                    else if (resp.IndexOf("操作非法或者超时") != -1)
-                    {
-                        form.info(id, "操作非法或者超时");
-                        form.log(1, original);
-                        form.stat(3);
-                    }
-                    //Console.WriteLine(resp);
+                case 21:
+                    form.info(id, "进入修改密保页面");
+                    url = unionverify;
+                    data = client.OpenRead(url);
+                    reader = new StreamReader(data);
+                    line = reader.ReadToEnd();
+
+                    fidx = line.IndexOf("<iframe id=\"ifid\"")+23;
+                    line = line.Substring(fidx);
+                    lidx = line.IndexOf("\"");
+                    unionverify = line.Substring(0, lidx);
+
+                    reader.Close();
+                    data.Close();
                     idx++;
-                    isrun = false;
+                    break;
+                case 22:
+                    form.info(id, "打开问题列表");
+                    url = "https://aq.qq.com" + unionverify;
+                    data = client.OpenRead(url);
+                    data.Close();                 
+                    idx= 13;//输入和提交密保
                     break;
                 default:
                     break;
