@@ -258,6 +258,36 @@ namespace QQGM
                     }
                     //}
                     break;
+                case 4:
+                    while (isrun)//有保改密
+                    {
+                        CheckPause();
+                        try
+                        {
+                            gm1();
+                        }
+                        catch (Exception e)
+                        {
+                            form.info(id, "系统异常:" + e.Message);
+                            isrun = false;
+                        }
+                    }
+                    idx = 0;
+                    password = pwd;//用新密码登录
+                    while (isrun)//有保改保
+                    {
+                        CheckPause();
+                        try
+                        {
+                            gm2();
+                        }
+                        catch (Exception e)
+                        {
+                            form.info(id, "系统异常:" + e.Message);
+                            isrun = false;
+                        }
+                    }
+                    break;
                 default:
                     break;
             }
@@ -1590,7 +1620,7 @@ namespace QQGM
                     break;
             }
         }
-
+        
         private string GetPassWord()
         {
             ConfigurationManager.RefreshSection("appSettings");
