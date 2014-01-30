@@ -6,12 +6,12 @@ using System.Runtime.InteropServices;
 // 特性集控制。更改这些特性值可修改
 // 与程序集关联的信息。
 [assembly: AssemblyTitle("x-mail")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("http://www.hoyland.ws")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("hoyland")]
 [assembly: AssemblyProduct("x-mail")]
 [assembly: AssemblyCopyright("Copyright ©  2014")]
-[assembly: AssemblyTrademark("")]
+[assembly: AssemblyTrademark("x-mail")]
 [assembly: AssemblyCulture("")]
 
 // 将 ComVisible 设置为 false 使此程序集中的类型
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // 如果此项目向 COM 公开，则下列 GUID 用于类型库的 ID
-[assembly: Guid("ffa67585-3128-414b-9147-c905c97f3085")]
+[assembly: Guid("a76fc0f1-e23f-4458-aca0-065f2a7899bd")]
 
 // 程序集的版本信息由下面四个值组成:
 //
