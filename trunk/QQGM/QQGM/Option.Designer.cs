@@ -73,6 +73,9 @@
             this.label3 = new System.Windows.Forms.Label();
             this.checkBox4 = new System.Windows.Forms.CheckBox();
             this.numericUpDown3 = new System.Windows.Forms.NumericUpDown();
+            this.checkBox8 = new System.Windows.Forms.CheckBox();
+            this.checkBox9 = new System.Windows.Forms.CheckBox();
+            this.checkBox10 = new System.Windows.Forms.CheckBox();
             this.panel1.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
@@ -144,6 +147,9 @@
             // 
             // groupBox2
             // 
+            this.groupBox2.Controls.Add(this.checkBox10);
+            this.groupBox2.Controls.Add(this.checkBox9);
+            this.groupBox2.Controls.Add(this.checkBox8);
             this.groupBox2.Controls.Add(this.textBox6);
             this.groupBox2.Controls.Add(this.textBox5);
             this.groupBox2.Controls.Add(this.textBox4);
@@ -160,21 +166,21 @@
             // 
             // textBox6
             // 
-            this.textBox6.Location = new System.Drawing.Point(198, 76);
+            this.textBox6.Location = new System.Drawing.Point(264, 76);
             this.textBox6.Name = "textBox6";
             this.textBox6.Size = new System.Drawing.Size(150, 21);
             this.textBox6.TabIndex = 5;
             // 
             // textBox5
             // 
-            this.textBox5.Location = new System.Drawing.Point(198, 50);
+            this.textBox5.Location = new System.Drawing.Point(264, 50);
             this.textBox5.Name = "textBox5";
             this.textBox5.Size = new System.Drawing.Size(150, 21);
             this.textBox5.TabIndex = 4;
             // 
             // textBox4
             // 
-            this.textBox4.Location = new System.Drawing.Point(198, 24);
+            this.textBox4.Location = new System.Drawing.Point(264, 25);
             this.textBox4.Name = "textBox4";
             this.textBox4.Size = new System.Drawing.Size(150, 21);
             this.textBox4.TabIndex = 3;
@@ -201,7 +207,7 @@
             "您最熟悉的童年好友名字是？",
             "您最熟悉的学校宿舍室友名字是？",
             "对您影响最大的人名字是？"});
-            this.comboBox4.Location = new System.Drawing.Point(6, 77);
+            this.comboBox4.Location = new System.Drawing.Point(6, 76);
             this.comboBox4.Name = "comboBox4";
             this.comboBox4.Size = new System.Drawing.Size(180, 20);
             this.comboBox4.TabIndex = 2;
@@ -228,7 +234,7 @@
             "您最熟悉的童年好友名字是？",
             "您最熟悉的学校宿舍室友名字是？",
             "对您影响最大的人名字是？"});
-            this.comboBox3.Location = new System.Drawing.Point(6, 51);
+            this.comboBox3.Location = new System.Drawing.Point(6, 50);
             this.comboBox3.Name = "comboBox3";
             this.comboBox3.Size = new System.Drawing.Size(180, 20);
             this.comboBox3.TabIndex = 1;
@@ -670,6 +676,39 @@
             0});
             this.numericUpDown3.Visible = false;
             // 
+            // checkBox8
+            // 
+            this.checkBox8.AutoSize = true;
+            this.checkBox8.Location = new System.Drawing.Point(192, 27);
+            this.checkBox8.Name = "checkBox8";
+            this.checkBox8.Size = new System.Drawing.Size(72, 16);
+            this.checkBox8.TabIndex = 6;
+            this.checkBox8.Text = "固定答案";
+            this.checkBox8.UseVisualStyleBackColor = true;
+            this.checkBox8.CheckedChanged += new System.EventHandler(this.checkBox8_CheckedChanged);
+            // 
+            // checkBox9
+            // 
+            this.checkBox9.AutoSize = true;
+            this.checkBox9.Location = new System.Drawing.Point(192, 52);
+            this.checkBox9.Name = "checkBox9";
+            this.checkBox9.Size = new System.Drawing.Size(72, 16);
+            this.checkBox9.TabIndex = 7;
+            this.checkBox9.Text = "固定答案";
+            this.checkBox9.UseVisualStyleBackColor = true;
+            this.checkBox9.CheckedChanged += new System.EventHandler(this.checkBox9_CheckedChanged);
+            // 
+            // checkBox10
+            // 
+            this.checkBox10.AutoSize = true;
+            this.checkBox10.Location = new System.Drawing.Point(192, 78);
+            this.checkBox10.Name = "checkBox10";
+            this.checkBox10.Size = new System.Drawing.Size(72, 16);
+            this.checkBox10.TabIndex = 8;
+            this.checkBox10.Text = "固定答案";
+            this.checkBox10.UseVisualStyleBackColor = true;
+            this.checkBox10.CheckedChanged += new System.EventHandler(this.checkBox10_CheckedChanged);
+            // 
             // Option
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -756,6 +795,9 @@
         private System.Windows.Forms.TextBox textBox6;
         private System.Windows.Forms.TextBox textBox5;
         private System.Windows.Forms.TextBox textBox4;
+        private System.Windows.Forms.CheckBox checkBox10;
+        private System.Windows.Forms.CheckBox checkBox9;
+        private System.Windows.Forms.CheckBox checkBox8;
 
     }
 }

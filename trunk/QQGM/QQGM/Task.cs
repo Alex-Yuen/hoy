@@ -1285,13 +1285,42 @@ namespace QQGM
                 case 13:
                     form.info(id, "设置问题和答案");
                     url = "https://aq.qq.com/cn2/manage/question/set_question_vry";
-                    if (edit)
+
+                    string[] tobeuploadans = new string[3];
+                    if ("False".Equals(cfa.AppSettings.Settings["DNA_F1"].Value))
                     {
-                        content = "dna_ques_1=" + (Int32.Parse(cfa.AppSettings.Settings["DNA_Q1"].Value) + 1) + "&dna_answer_1=" + cfa.AppSettings.Settings["DNA_A1"].Value + "&dna_ques_2=" + (Int32.Parse(cfa.AppSettings.Settings["DNA_Q2"].Value) + 1) + "&dna_answer_2=" + cfa.AppSettings.Settings["DNA_A2"].Value + "&dna_ques_3=" + (Int32.Parse(cfa.AppSettings.Settings["DNA_Q3"].Value) + 1) + "&dna_answer_3=" + cfa.AppSettings.Settings["DNA_A3"].Value + "&mb_flow_type=dna&mb_up_from=";
+                        tobeuploadans[0] = genAns();
                     }
                     else
                     {
-                        content = "dna_ques_1=" + (Int32.Parse(cfa.AppSettings.Settings["DNA_Q1"].Value) + 1) + "&dna_answer_1=" + cfa.AppSettings.Settings["DNA_A1"].Value + "&dna_ques_2=" + (Int32.Parse(cfa.AppSettings.Settings["DNA_Q2"].Value) + 1) + "&dna_answer_2=" + cfa.AppSettings.Settings["DNA_A2"].Value + "&dna_ques_3=" + (Int32.Parse(cfa.AppSettings.Settings["DNA_Q3"].Value) + 1) + "&dna_answer_3=" + cfa.AppSettings.Settings["DNA_A3"].Value + "&mb_flow_type=setdir&mb_up_from=from_set_question";
+                        tobeuploadans[0] = cfa.AppSettings.Settings["DNA_A1"].Value;
+                    }
+
+                    if ("False".Equals(cfa.AppSettings.Settings["DNA_F2"].Value))
+                    {
+                        tobeuploadans[1] = genAns();
+                    }
+                    else
+                    {
+                        tobeuploadans[1] = cfa.AppSettings.Settings["DNA_A2"].Value;
+                    }
+
+                    if ("False".Equals(cfa.AppSettings.Settings["DNA_F3"].Value))
+                    {
+                        tobeuploadans[2] = genAns();
+                    }
+                    else
+                    {
+                        tobeuploadans[2] = cfa.AppSettings.Settings["DNA_A3"].Value;
+                    }
+
+                    if (edit)
+                    {
+                        content = "dna_ques_1=" + (Int32.Parse(cfa.AppSettings.Settings["DNA_Q1"].Value) + 1) + "&dna_answer_1=" + tobeuploadans[0] + "&dna_ques_2=" + (Int32.Parse(cfa.AppSettings.Settings["DNA_Q2"].Value) + 1) + "&dna_answer_2=" + tobeuploadans[1] + "&dna_ques_3=" + (Int32.Parse(cfa.AppSettings.Settings["DNA_Q3"].Value) + 1) + "&dna_answer_3=" + tobeuploadans[2] + "&mb_flow_type=dna&mb_up_from=";
+                    }
+                    else
+                    {
+                        content = "dna_ques_1=" + (Int32.Parse(cfa.AppSettings.Settings["DNA_Q1"].Value) + 1) + "&dna_answer_1=" + tobeuploadans[0] + "&dna_ques_2=" + (Int32.Parse(cfa.AppSettings.Settings["DNA_Q2"].Value) + 1) + "&dna_answer_2=" + tobeuploadans[1] + "&dna_ques_3=" + (Int32.Parse(cfa.AppSettings.Settings["DNA_Q3"].Value) + 1) + "&dna_answer_3=" + tobeuploadans[2] + "&mb_flow_type=setdir&mb_up_from=from_set_question";
                     }
                     Console.WriteLine(content);
                     //client.UploadString(url, content);
@@ -1723,6 +1752,29 @@ namespace QQGM
                 Monitor.Wait(form);
                 form.info(id, "等待重拨结束，继续执行");
             }
+        }
+
+        private string genAns()
+        {
+            StringBuilder sb = new StringBuilder();
+            int area, code;//汉字由区位和码位组成(都为0-94,其中区位16-55为一级汉字区,56-87为二级汉字区,1-9为特殊字符区)
+            string chara;
+            Random rand = new Random();
+            for (int i = 0; i < 3; i++)
+            {
+                area = rand.Next(16, 88);
+                if (area == 55)//第55区只有89个字符
+                {
+                    code = rand.Next(1, 90);
+                }
+                else
+                {
+                    code = rand.Next(1, 94);
+                }
+                chara = Encoding.GetEncoding("GB2312").GetString(new byte[] { Convert.ToByte(area + 160), Convert.ToByte(code + 160) });
+                sb.Append(chara);
+            }
+            return sb.ToString();
         }
     }
 }
