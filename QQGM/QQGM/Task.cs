@@ -78,7 +78,7 @@ namespace QQGM
                     };
         private StringBuilder sb = null;
         private bool edit = false;
-        private Cookie cookie = null;
+        //private Cookie cookie = null;
 
         private string original = null;
 
