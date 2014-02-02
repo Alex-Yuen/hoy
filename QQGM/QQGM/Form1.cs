@@ -249,33 +249,42 @@ namespace QQGM
 
         private void ge(object source, System.Timers.ElapsedEventArgs e)
         {
-            WebClient wc = new WebClient();
-            QQCrypt crypt = new QQCrypt();
-            ManagementObject disk = new ManagementObject("win32_logicaldisk.deviceid=\"c:\"");
-            disk.Get();
-            byte[] mc = UMD5(disk.GetPropertyValue("VolumeSerialNumber").ToString());
+            int expire = 0;
+            try
+            {
+                WebClient wc = new WebClient();
+                QQCrypt crypt = new QQCrypt();
+                ManagementObject disk = new ManagementObject("win32_logicaldisk.deviceid=\"c:\"");
+                disk.Get();
+                byte[] mc = UMD5(disk.GetPropertyValue("VolumeSerialNumber").ToString());
 
-            string url = "http://222.186.26.132:8086/ge";
-            byte[] key = getKey();
-            string content = byteArrayToHexString(key).ToUpper() + byteArrayToHexString(crypt.QQ_Encrypt(mc, key)).ToUpper();
-            //Console.WriteLine(byteArrayToHexString(key).ToUpper());
-            //Console.WriteLine(content);
-            //client.UploadString(url, content);
-            //client.UploadString(url, 
-            //client.Encoding = Encoding.UTF8;
-            wc.Headers[HttpRequestHeader.ContentType] = "text/plain; charset=UTF-8";
+                string url = "http://222.186.26.132:8086/ge";
+                byte[] key = getKey();
+                string content = byteArrayToHexString(key).ToUpper() + byteArrayToHexString(crypt.QQ_Encrypt(mc, key)).ToUpper();
+                //Console.WriteLine(byteArrayToHexString(key).ToUpper());
+                //Console.WriteLine(content);
+                //client.UploadString(url, content);
+                //client.UploadString(url, 
+                //client.Encoding = Encoding.UTF8;
+                wc.Headers[HttpRequestHeader.ContentType] = "text/plain; charset=UTF-8";
 
-            //client.UploadData(url, "POST", Encoding.UTF8.GetBytes(content));
-            byte[] bs = null;
-            bs = wc.UploadData(url, "POST", Encoding.UTF8.GetBytes(content));
-            //byte[] bs = Encoding.GetEncoding("GB2312").GetBytes();
+                //client.UploadData(url, "POST", Encoding.UTF8.GetBytes(content));
+                byte[] bs = null;
+                bs = wc.UploadData(url, "POST", Encoding.UTF8.GetBytes(content));
+                //byte[] bs = Encoding.GetEncoding("GB2312").GetBytes();
 
-            //bs = crypt.QQ_Decrypt(bs, key);
-            string resp = Encoding.UTF8.GetString(bs);
-            //Console.WriteLine("1:"+resp);
-            bs = crypt.QQ_Decrypt(hexStringToByte(resp), key);
-            int expire = Int32.Parse(Encoding.UTF8.GetString(bs));
-            Console.WriteLine("2:" + expire);
+                //bs = crypt.QQ_Decrypt(bs, key);
+                string resp = Encoding.UTF8.GetString(bs);
+                //Console.WriteLine("1:"+resp);
+                bs = crypt.QQ_Decrypt(hexStringToByte(resp), key);
+                expire = Int32.Parse(Encoding.UTF8.GetString(bs));
+                Console.WriteLine("2:" + expire);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+
             dlg = delegate()
             {
                 if (expire <= 0)
