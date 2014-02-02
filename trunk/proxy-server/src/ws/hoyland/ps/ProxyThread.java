@@ -215,7 +215,7 @@ public class ProxyThread extends Thread {
 					// System.out.println(hs);
 					// OutputStream os;
 					// System.out.println(conn.getContentEncoding());
-					if (conn.getContentType()!=null&&conn.getContentType().startsWith("text/html")) {
+					if (conn.getContentType()!=null&&(conn.getContentType().startsWith("text/html")||conn.getContentType().contains("javascript"))) {
 						if ("gzip".equals(conn.getContentEncoding())) {
 							is = new GZIPInputStream(is);
 							os = new GZIPOutputStream(os);
@@ -476,10 +476,26 @@ public class ProxyThread extends Thread {
 							baos.write(ct.getBytes());
 						}
 					}else if (conn.getContentType()!=null&&conn.getContentType().contains("javascript")){
+						//System.err.println("H1:"+conn.getContentType());
 						String ct = new String(baos.toByteArray());						
 						boolean edited = false;
 						
-						if(ct.contains("beforeunload")){//关闭页面时候出现对话窗口
+						if(host.endsWith("aq.qq.com")){ 
+							//System.err.println("HERE:"+ct);
+							/**
+							if(ct.contains("function setCookie(C,E){")){
+								//System.err.println("HEREXXX");
+								ct = ct.replace("function setCookie(C,E){", "function setCookie(C,E){alert(C);");
+								ct = ct.replace("function setCookieExpire(C,E){", "function setCookieExpire(C,E){alert(C);");
+								System.err.println(ct);
+								edited = true;
+							}**/
+							if(ct.contains("function setCookie(A,B){")){
+								ct = ct.replace("function setCookie(A,B){", "function setCookie(A,B){alert(A);");
+								System.err.println(ct);
+								edited = true;
+							}
+						}else if(ct.contains("beforeunload")){//关闭页面时候出现对话窗口
 							ct = ct.replace("beforeunload", "x");
 							edited = true;
 						}else if(ct.contains("top.location")){
