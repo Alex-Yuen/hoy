@@ -6,9 +6,9 @@ using System.Runtime.InteropServices;
 // 特性集控制。更改这些特性值可修改
 // 与程序集关联的信息。
 [assembly: AssemblyTitle("QQ改密改保辅助工具")]
-[assembly: AssemblyDescription("http://www.hoyland.ws")]
+[assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("hoyland")]
+[assembly: AssemblyCompany("www.hoyland.ws")]
 [assembly: AssemblyProduct("QQ改密改保辅助工具")]
 [assembly: AssemblyCopyright("Copyright ©  2014")]
 [assembly: AssemblyTrademark("hoyland")]

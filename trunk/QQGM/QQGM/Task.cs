@@ -19,7 +19,7 @@ namespace QQGM
     {
         private int idx;
         private HttpClient client = null;
-        private static Random random = new Random();
+        public static Random random = new Random();
 
         private string url = null;
         private Stream data = null;
