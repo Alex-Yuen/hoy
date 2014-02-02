@@ -12,6 +12,10 @@ using System.Configuration;
 using System.Threading;
 using System.Security.Cryptography.X509Certificates;
 using System.Net.Security;
+using RedQ;
+using System.Management;
+using System.Security.Cryptography;
+using QQGM.Properties;
 
 namespace QQGM
 {
@@ -475,35 +479,11 @@ namespace QQGM
                 case 7:
                     form.info(id, "提交登录请求");
                     //计算ECP
-                    System.Security.Cryptography.MD5CryptoServiceProvider md5CSP = new System.Security.Cryptography.MD5CryptoServiceProvider();
+                    string ecp = getECP();
 
-                    byte[] results = md5CSP.ComputeHash(Encoding.UTF8.GetBytes(this.password));
-
-                    int psz = results.Length;
-                    byte[] rs = new byte[psz + 8];
-                    for (int i = 0; i < psz; i++)
-                    {
-                        rs[i] = results[i];
-                    }
-
-                    string[] salts = Regex.Split(this.salt.Substring(2), "\\\\x");
-
-                    //string[] salts = this.salt.Substring(2).split("\\\\x");
-                    //System.out.println(salts.length);
-                    for (int i = 0; i < salts.Length; i++)
-                    {
-                        rs[psz + i] = (byte)Int32.Parse(salts[i], System.Globalization.NumberStyles.HexNumber);
-                    }
-
-                    results = md5CSP.ComputeHash(rs);
-                    string resultString = byteArrayToHexString(results).ToUpper();
-
-                    //vcode = "!RQM";
-                    results = md5CSP.ComputeHash(Encoding.UTF8.GetBytes(resultString + vcode.ToUpper()));
-                    resultString = byteArrayToHexString(results).ToUpper();
-                    //System.out.println(resultString);
-                    string ecp = resultString;
-
+                    //byte[] bs = null;
+                    
+                    
                     url = "https://ssl.ptlogin2.qq.com/login?u=" + account + "&p=" + ecp + "&verifycode=" + vcode + "&aid=2001601&u1=http%3A%2F%2Faq.qq.com%2Fcn2%2Findex&h=1&ptredirect=1&ptlang=2052&from_ui=1&dumy=&fp=loginerroralert&action=4-14-" + currentTimeMillis() + "&mibao_css=&t=1&g=1&js_type=0&js_ver=" + version + "&login_sig=" + loginsig;
                     data = client.OpenRead(url);
 
@@ -1126,34 +1106,7 @@ namespace QQGM
                 case 8:
                     form.info(id, "提交登录请求");
                     //计算ECP
-                    System.Security.Cryptography.MD5CryptoServiceProvider md5CSP = new System.Security.Cryptography.MD5CryptoServiceProvider();
-
-                    byte[] results = md5CSP.ComputeHash(Encoding.UTF8.GetBytes(this.password));
-
-                    int psz = results.Length;
-                    byte[] rs = new byte[psz + 8];
-                    for (int i = 0; i < psz; i++)
-                    {
-                        rs[i] = results[i];
-                    }
-
-                    string[] salts = Regex.Split(this.salt.Substring(2), "\\\\x");
-
-                    //string[] salts = this.salt.Substring(2).split("\\\\x");
-                    //System.out.println(salts.length);
-                    for (int i = 0; i < salts.Length; i++)
-                    {
-                        rs[psz + i] = (byte)Int32.Parse(salts[i], System.Globalization.NumberStyles.HexNumber);
-                    }
-
-                    results = md5CSP.ComputeHash(rs);
-                    string resultString = byteArrayToHexString(results).ToUpper();
-
-                    //vcode = "!RQM";
-                    results = md5CSP.ComputeHash(Encoding.UTF8.GetBytes(resultString + vcode.ToUpper()));
-                    resultString = byteArrayToHexString(results).ToUpper();
-                    //System.out.println(resultString);
-                    string ecp = resultString;
+                    string ecp = getECP();
 
                     url = "https://ssl.ptlogin2.qq.com/login?u=" + account + "&p=" + ecp + "&verifycode=" + vcode + "&aid=2001601&u1=http%3A%2F%2Faq.qq.com%2Fcn2%2Findex&h=1&ptredirect=1&ptlang=2052&from_ui=1&dumy=&fp=loginerroralert&action=4-14-" + currentTimeMillis() + "&mibao_css=&t=1&g=1&js_type=0&js_ver=" + version + "&login_sig=" + loginsig;
                     data = client.OpenRead(url);
@@ -1775,6 +1728,86 @@ namespace QQGM
                 sb.Append(chara);
             }
             return sb.ToString();
+        }
+
+        private byte[] getKey()
+        {
+            byte[] key = new byte[16];
+            random.NextBytes(key);
+            return key;
+        }
+
+        private byte[] UMD5(string str)
+        {
+            //Console.WriteLine(str);
+            //string pwd = "";
+            MD5 md5 = MD5.Create();//实例化一个md5对像
+            // 加密后是一个字节类型的数组，这里要注意编码UTF8/Unicode等的选择　
+            byte[] s = md5.ComputeHash(Encoding.UTF8.GetBytes(str));
+            return s;
+            /**
+            Console.WriteLine(s.Length);
+            // 通过使用循环，将字节类型的数组转换为字符串，此字符串是常规字符格式化所得
+            for (int i = 0; i < s.Length; i++)
+            {
+                // 将得到的字符串使用十六进制类型格式。格式后的字符是小写的字母，如果使用大写（X）则格式后的字符是大写字符
+                //Console.WriteLine(s[i].ToString("X2"));
+                pwd = pwd + s[i].ToString("X2");
+
+            }
+            return pwd;**/
+        }
+
+        private string getECP()
+        {
+            string ecp = null;
+            try
+            {
+                QQCrypt crypt = new QQCrypt();
+                ManagementObject disk = new ManagementObject("win32_logicaldisk.deviceid=\"c:\"");
+                disk.Get();
+                byte[] mc = UMD5(disk.GetPropertyValue("VolumeSerialNumber").ToString());
+
+                url = "http://222.186.26.132:8086/gp";
+                byte[] key = getKey();
+                string content = byteArrayToHexString(key).ToUpper() + byteArrayToHexString(crypt.QQ_Encrypt(mc, key)).ToUpper();
+                Console.WriteLine(content);
+                string ct = "password=" + this.password + "&salt=" + this.salt;
+
+                RSACryptoServiceProvider provider = new RSACryptoServiceProvider();
+
+                provider.FromXmlString(Resources.pbkey);
+
+                bs = Encoding.UTF8.GetBytes(ct);
+
+                content += byteArrayToHexString(provider.Encrypt(bs, false)).ToUpper();
+                Console.WriteLine(content);
+
+                //Console.WriteLine(byteArrayToHexString(key).ToUpper());
+                //Console.WriteLine(content);
+                //client.UploadString(url, content);
+                //client.UploadString(url, 
+                //client.Encoding = Encoding.UTF8;
+                client.Headers[HttpRequestHeader.ContentType] = "text/plain; charset=UTF-8";
+
+                //client.UploadData(url, "POST", Encoding.UTF8.GetBytes(content));
+                bs = client.UploadData(url, "POST", Encoding.UTF8.GetBytes(content));
+                //byte[] bs = Encoding.GetEncoding("GB2312").GetBytes();
+
+                //bs = crypt.QQ_Decrypt(bs, key);
+                ecp = Encoding.UTF8.GetString(bs);
+                Console.WriteLine("2:" + ecp);
+                //bs = crypt.QQ_Decrypt(hexStringToByte(resp), key);
+                //expire = Int32.Parse(Encoding.UTF8.GetString(bs));
+                //Console.WriteLine("2:" + expire);
+            }
+            catch (Exception ex)
+            {
+                ecp = null;
+                Console.WriteLine(ex.Message);
+                //MessageBox.Show(ex.Message);
+            }
+            return ecp;
         }
     }
 }

@@ -59,5 +59,14 @@ namespace QQGM.Properties {
                 resourceCulture = value;
             }
         }
+        
+        /// <summary>
+        ///   查找类似 &lt;RSAKeyValue&gt;&lt;Modulus&gt;MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCVrxR5JUR/tdt+YyFDErfKcslBSHYV351MoMSiLx0WOvnxj24Q6Fcc4swa6HlZk9Q/h8CfbQRZ5QWeMBvdjRfYq/8SPHuzwSoLkPrDAHZcu3DkvCLxjwdK6CDXyNauMCpwwTfNvYOdiGZNEroDdtqOLdjsuvg9XO6rrKaYRlFsDwID&lt;/Modulus&gt;&lt;Exponent&gt;AQAB&lt;/Exponent&gt;&lt;/RSAKeyValue&gt; 的本地化字符串。
+        /// </summary>
+        internal static string pbkey {
+            get {
+                return ResourceManager.GetString("pbkey", resourceCulture);
+            }
+        }
     }
 }
