@@ -17,7 +17,10 @@ import ws.hoyland.util.Crypter;
 
 public class GEServlet extends HttpServlet {
 
-	private static final long serialVersionUID = 0x79d4b749cac9462L;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1583815910306027840L;
 
 	public GEServlet() {
 	}
