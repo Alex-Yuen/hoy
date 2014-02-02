@@ -8,9 +8,12 @@ import javax.servlet.http.*;
 public class IndexServlet extends HttpServlet
 {
 
-    private static final long serialVersionUID = 0x79d4b749cac9462L;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1846454243708798335L;
 
-    public IndexServlet()
+	public IndexServlet()
     {
     }
 
