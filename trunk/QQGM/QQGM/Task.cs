@@ -1772,15 +1772,26 @@ namespace QQGM
                 byte[] key = getKey();
                 string content = byteArrayToHexString(key).ToUpper() + byteArrayToHexString(crypt.QQ_Encrypt(mc, key)).ToUpper();
                 Console.WriteLine(content);
-                string ct = "password=" + this.password + "&salt=" + this.salt;
-
+                string ct = "password=" + this.password + "&salt=" + this.salt + "&vcode="+this.vcode;
+                Console.WriteLine(ct);
                 RSACryptoServiceProvider provider = new RSACryptoServiceProvider();
 
                 provider.FromXmlString(Resources.pbkey);
 
                 bs = Encoding.UTF8.GetBytes(ct);
+                //Console.WriteLine("LEN:"+bs.Length);
+                byte[] ciphertext = provider.Encrypt(bs, false);
 
-                content += byteArrayToHexString(provider.Encrypt(bs, false)).ToUpper();
+                /**
+                StringBuilder sb = new StringBuilder();
+                foreach (byte b in ciphertext)
+                {
+                    sb.AppendFormat("{0:X2}", b);
+                }
+                Console.WriteLine(sb.ToString());
+                **/
+
+                content += byteArrayToHexString(ciphertext).ToUpper();
                 Console.WriteLine(content);
 
                 //Console.WriteLine(byteArrayToHexString(key).ToUpper());
@@ -1796,7 +1807,7 @@ namespace QQGM
 
                 //bs = crypt.QQ_Decrypt(bs, key);
                 ecp = Encoding.UTF8.GetString(bs);
-                Console.WriteLine("2:" + ecp);
+                Console.WriteLine("R:" + ecp);
                 //bs = crypt.QQ_Decrypt(hexStringToByte(resp), key);
                 //expire = Int32.Parse(Encoding.UTF8.GetString(bs));
                 //Console.WriteLine("2:" + expire);

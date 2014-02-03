@@ -278,7 +278,7 @@ namespace QQGM
                 //Console.WriteLine("1:"+resp);
                 bs = crypt.QQ_Decrypt(hexStringToByte(resp), key);
                 expire = Int32.Parse(Encoding.UTF8.GetString(bs));
-                Console.WriteLine("2:" + expire);
+                Console.WriteLine("R:" + expire);
             }
             catch (Exception ex)
             {
