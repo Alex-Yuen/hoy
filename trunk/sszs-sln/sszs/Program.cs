@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
+using ws.hoyland.sszs;
 
-namespace sszs
+namespace ws.hoyland.sszs
 {
     static class Program
     {
@@ -15,7 +16,7 @@ namespace sszs
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Form1());
+            Application.Run(new SSZS());
         }
     }
 }
