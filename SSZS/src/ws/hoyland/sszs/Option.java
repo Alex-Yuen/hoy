@@ -85,6 +85,11 @@ public class Option extends Dialog implements Observer {
 	private Button button;
 	private Spinner spinner_6;
 	private Spinner spinner_7;
+	private Button btnCheckButton_1;
+	private Spinner spinner_9;
+	private Spinner spinner_10;
+	private Spinner spinner_11;
+	private Spinner spinner_8;
 	/**
 	 * Create the dialog.
 	 * @param parent
@@ -171,6 +176,24 @@ public class Option extends Dialog implements Observer {
 				spinner_6.setSelection(Integer.parseInt(this.configuration.getProperty("ACC_ITV_COUNT")));
 				spinner_7.setSelection(Integer.parseInt(this.configuration.getProperty("ACC_ITV_PERIOD")));
 				//btnCheckButton.setSelection(Boolean.parseBoolean(this.configuration.getProperty("AWCONN")));
+				
+				spinner_8.setSelection(Integer.parseInt(this.configuration.getProperty("REC_ITV")));
+				
+				spinner_9.setSelection(Integer.parseInt(this.configuration.getProperty("IP3_1")));
+				spinner_10.setSelection(Integer.parseInt(this.configuration.getProperty("IP3_2")));
+				spinner_11.setSelection(Integer.parseInt(this.configuration.getProperty("IP3_3")));
+				
+				if("true".equals(configuration.getProperty("IP3FLAG"))){
+					btnCheckButton_1.setSelection(true);
+					spinner_9.setEnabled(true);
+					spinner_10.setEnabled(true);
+					spinner_11.setEnabled(true);
+				}else{
+					btnCheckButton_1.setSelection(false);
+					spinner_9.setEnabled(false);
+					spinner_10.setEnabled(false);
+					spinner_11.setEnabled(false);
+				}
 			}
 		}catch(Exception e){
 			e.printStackTrace();
@@ -205,6 +228,13 @@ public class Option extends Dialog implements Observer {
 		this.configuration.put("ACC_ITV_COUNT", spinner_6.getText());
 		this.configuration.put("ACC_ITV_PERIOD", spinner_7.getText());
 				
+		this.configuration.put("IP3FLAG", String.valueOf(btnCheckButton_1.getSelection()));		
+		
+		this.configuration.put("REC_ITV", spinner_8.getText());
+		this.configuration.put("IP3_1", spinner_9.getText());
+		this.configuration.put("IP3_2", spinner_10.getText());
+		this.configuration.put("IP3_3", spinner_11.getText());
+		
 		this.configuration.save();
 	}
 
@@ -465,15 +495,66 @@ public class Option extends Dialog implements Observer {
 		spinner_4.setMaximum(10);
 		spinner_4.setMinimum(1);
 		spinner_4.setSelection(2);
-		spinner_4.setBounds(302, 69, 45, 23);
+		spinner_4.setBounds(77, 152, 45, 23);
 		
 		Label label_9 = new Label(composite_1, SWT.NONE);
 		label_9.setText("读取线程:");
-		label_9.setBounds(235, 72, 61, 17);
+		label_9.setBounds(10, 155, 61, 17);
 		
 		btnIp = new Button(composite_1, SWT.CHECK);
 		btnIp.setText("IP类似重拨");
 		btnIp.setBounds(235, 43, 120, 17);
+		
+		spinner_8 = new Spinner(composite_1, SWT.BORDER);
+		spinner_8.setMaximum(48);
+		spinner_8.setMinimum(1);
+		spinner_8.setSelection(2);
+		spinner_8.setBounds(235, 122, 45, 23);
+		
+		Label lblNewLabel_3 = new Label(composite_1, SWT.NONE);
+		lblNewLabel_3.setBounds(286, 125, 100, 17);
+		lblNewLabel_3.setText("小时内IP重复重拨");
+		
+		btnCheckButton_1 = new Button(composite_1, SWT.CHECK);
+		btnCheckButton_1.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				if(btnCheckButton_1.getSelection()){
+					spinner_9.setEnabled(true);
+					spinner_10.setEnabled(true);
+					spinner_11.setEnabled(true);
+				}else{
+					spinner_9.setEnabled(false);
+					spinner_10.setEnabled(false);
+					spinner_11.setEnabled(false);
+				}
+			}
+		});
+		btnCheckButton_1.setBounds(235, 69, 139, 17);
+		btnCheckButton_1.setText("前三段非以下IP重拨:");
+		
+		spinner_9 = new Spinner(composite_1, SWT.BORDER);
+		spinner_9.setMaximum(255);
+		spinner_9.setSelection(2);
+		spinner_9.setBounds(235, 92, 45, 23);
+		
+		spinner_10 = new Spinner(composite_1, SWT.BORDER);
+		spinner_10.setMaximum(255);
+		spinner_10.setSelection(2);
+		spinner_10.setBounds(296, 92, 45, 23);
+		
+		spinner_11 = new Spinner(composite_1, SWT.BORDER);
+		spinner_11.setMaximum(255);
+		spinner_11.setSelection(2);
+		spinner_11.setBounds(361, 92, 45, 23);
+		
+		Label label_11 = new Label(composite_1, SWT.NONE);
+		label_11.setText(".");
+		label_11.setBounds(282, 99, 8, 17);
+		
+		Label label_14 = new Label(composite_1, SWT.NONE);
+		label_14.setText(".");
+		label_14.setBounds(347, 99, 8, 17);
 		
 		Button btnNewButton = new Button(shell, SWT.NONE);
 		btnNewButton.addSelectionListener(new SelectionAdapter() {
