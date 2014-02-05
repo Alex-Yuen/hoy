@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.IO;
 
-namespace FileEncoding
+namespace ws.hoyland.util
 {
     /// <summary>
     /// 获取文件的编码格式

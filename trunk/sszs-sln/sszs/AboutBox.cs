@@ -9,11 +9,11 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Management;
 
-namespace ws.hoyland.sszs
+namespace ws.hoyland.util
 {
-    partial class AboutBox1 : Form
+    partial class AboutBox : Form
     {
-        public AboutBox1()
+        public AboutBox()
         {
             InitializeComponent();
             this.Text = String.Format("关于 {0}", AssemblyTitle);
