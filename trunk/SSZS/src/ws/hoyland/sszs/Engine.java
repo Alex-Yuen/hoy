@@ -600,15 +600,15 @@ public class Engine extends Observable {
 											        System.err.println("ip="+ip);
 													if(ips.containsKey(ip)){
 														long time = ips.get(ip);
-														if(System.currentTimeMillis()-time>=1*60*60*1000){
-															System.err.println("IP重复，但超过1小时，拨号成功:"+ip);
+														if(System.currentTimeMillis()-time>=1000*60*60*Integer.parseInt(configuration.getProperty("REC_ITV"))){
+															System.err.println("IP重复，但超过"+configuration.getProperty("REC_ITV")+"小时，拨号成功:"+ip);
 															//cip = rip;
 															ips.put(ip, System.currentTimeMillis());
 															fi = false;//跳出内循环
 															st = true;
 															//break;
 														}else{
-															System.err.println("IP重复，未超过1小时，重新拨号:"+ip);
+															System.err.println("IP重复，未超过"+configuration.getProperty("REC_ITV")+"小时，重新拨号:"+ip);
 															fo = true;
 															fi = false;
 															tfo = 0;
@@ -616,11 +616,22 @@ public class Engine extends Observable {
 															//continue;
 														}
 													}else{
-														System.err.println("IP不重复，拨号成功:"+ip);
-														//cip = rip;
-														ips.put(ip, new Long(System.currentTimeMillis()));
-														fi = false;
-														st = true;
+														String[] ipx = ip.split(".");
+														if("true".equals(configuration.getProperty("IP3FLAG"))){
+															if((ipx[0].equals(configuration.getProperty("IP3_1")))&&(ipx[1].equals(configuration.getProperty("IP3_2")))&&(ipx[2].equals(configuration.getProperty("IP3_3")))){
+																System.err.println("前3段IP不符合条件，重新拨号");
+																fo = true;
+																fi = false;
+																tfo = 0;
+																st = false;
+															}
+														}else{
+															System.err.println("IP符合设定条件，拨号成功:"+ip);
+															//cip = rip;
+															ips.put(ip, new Long(System.currentTimeMillis()));
+															fi = false;
+															st = true;
+														}
 														//break;
 													}
 												}else {
