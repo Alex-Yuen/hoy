@@ -40,6 +40,10 @@
     <StartupObject>ws.hoyland.sszs.Program</StartupObject>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>.\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.configuration" />
     <Reference Include="System.Core" />
@@ -54,25 +58,41 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AboutBox1.cs">
+    <Compile Include="AboutBox.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="AboutBox1.Designer.cs">
-      <DependentUpon>AboutBox1.cs</DependentUpon>
+    <Compile Include="AboutBox.Designer.cs">
+      <DependentUpon>AboutBox.cs</DependentUpon>
     </Compile>
+    <Compile Include="Basket.cs" />
     <Compile Include="EncodingType.cs" />
+    <Compile Include="Engine.cs" />
+    <Compile Include="EngineMessage.cs" />
+    <Compile Include="EngineMessageType.cs" />
     <Compile Include="Expire.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Expire.Designer.cs">
       <DependentUpon>Expire.cs</DependentUpon>
     </Compile>
+    <Compile Include="FinishObject.cs" />
+    <Compile Include="HttpClient.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="MailObject.cs" />
+    <Compile Include="Names.cs" />
+    <Compile Include="Observable.cs" />
+    <Compile Include="Observer.cs" />
     <Compile Include="Option.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Option.Designer.cs">
       <DependentUpon>Option.cs</DependentUpon>
     </Compile>
+    <Compile Include="PauseCountObject.cs" />
+    <Compile Include="PauseObject.cs" />
+    <Compile Include="PauseXObject.cs" />
+    <Compile Include="ReconObject.cs" />
     <Compile Include="SSZS.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -81,10 +101,13 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="StartObject.cs" />
+    <Compile Include="Task.cs" />
+    <Compile Include="Util.cs" />
     <Compile Include="UUWrapper.cs" />
     <Compile Include="YDMWrapper.cs" />
-    <EmbeddedResource Include="AboutBox1.resx">
-      <DependentUpon>AboutBox1.cs</DependentUpon>
+    <EmbeddedResource Include="AboutBox.resx">
+      <DependentUpon>AboutBox.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Expire.resx">
       <DependentUpon>Expire.cs</DependentUpon>

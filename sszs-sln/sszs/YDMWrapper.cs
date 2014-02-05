@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Runtime.InteropServices;
 
-namespace ws.hoyland
+namespace ws.hoyland.util
 {
     public class YDMWrapper
     {

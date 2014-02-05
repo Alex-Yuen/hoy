@@ -1,4 +1,4 @@
-﻿namespace ws.hoyland
+﻿namespace ws.hoyland.util
 {
     partial class Expire
     {

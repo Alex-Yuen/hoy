@@ -9,7 +9,7 @@ using System.Windows.Forms;
 using System.Management;
 using System.Security.Cryptography;
 
-namespace ws.hoyland
+namespace ws.hoyland.util
 {
     public partial class Expire : Form
     {
