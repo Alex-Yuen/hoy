@@ -100,8 +100,9 @@ namespace ws.hoyland.sszs
         cfa = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
 	}
 
-	
-	public void run() {
+
+    public void run(Object stateInfo)
+    {
 		info("开始运行");
 
         ConfigurationManager.RefreshSection("appSettings");
@@ -352,7 +353,7 @@ namespace ws.hoyland.sszs
                 reader = new StreamReader(data);
 				line = reader.ReadToEnd();
 
-				JsonTextReader jtr = new JsonTextReader(new StringReader(s));
+                JsonTextReader jtr = new JsonTextReader(new StringReader(line));
                     jtr.Read();
                     jtr.Read();
                     jtr.Read();
@@ -473,7 +474,7 @@ namespace ws.hoyland.sszs
 //				props.setProperty("mail.store.protocol", "pop3");
 //				props.setProperty("mail.pop3.host", "pop3.163.com");
 				props.put("mail.imap.host", "imap.163.com");	            
-	            props.put("mail.imap.auth.plain.disable", "true");
+	            props.put("mail.imap.auth.plain.disable", "True");
 	             
 				Session session = Session.getDefaultInstance(props);
 				session.setDebug(false); 
@@ -651,34 +652,34 @@ namespace ws.hoyland.sszs
 				nvps.add(new BasicNameValuePair("pwdOldPW6", (this.pwds.Length>5&&!standard)?this.pwds[5]:""));
 				
 				nvps.add(new BasicNameValuePair("ddlLoginLocCountry1", "0"));
-				nvps.add(new BasicNameValuePair("ddlLoginLocProvince1", String.valueOf(Integer.parseInt(configuration.getProperty("P1"))-1)));
-				nvps.add(new BasicNameValuePair("ddlLoginLocCity1", Integer.parseInt(configuration.getProperty("C1"))==0?"-1":configuration.getProperty("C1")));
+				nvps.add(new BasicNameValuePair("ddlLoginLocProvince1", String.valueOf(Int32.Parse(configuration.getProperty("P1"))-1)));
+				nvps.add(new BasicNameValuePair("ddlLoginLocCity1", Int32.Parse(configuration.getProperty("C1"))==0?"-1":configuration.getProperty("C1")));
 				nvps.add(new BasicNameValuePair("txtLoginLocCountry1", "国家"));
 				nvps.add(new BasicNameValuePair("txtLoginLocProvince1", "省份"));
 				nvps.add(new BasicNameValuePair("txtLoginLocCity1", "城市"));
 				nvps.add(new BasicNameValuePair("txtHLoginLocCountry1", "0"));
-				nvps.add(new BasicNameValuePair("txtHLoginLocProvince1", String.valueOf(Integer.parseInt(configuration.getProperty("P1"))-1)));
-				nvps.add(new BasicNameValuePair("txtHLoginLocCity1", Integer.parseInt(configuration.getProperty("C1"))==0?"-1":configuration.getProperty("C1")));
+				nvps.add(new BasicNameValuePair("txtHLoginLocProvince1", String.valueOf(Int32.Parse(configuration.getProperty("P1"))-1)));
+				nvps.add(new BasicNameValuePair("txtHLoginLocCity1", Int32.Parse(configuration.getProperty("C1"))==0?"-1":configuration.getProperty("C1")));
 				
 				nvps.add(new BasicNameValuePair("ddlLoginLocCountry2", "0"));
-				nvps.add(new BasicNameValuePair("ddlLoginLocProvince2", String.valueOf(Integer.parseInt(configuration.getProperty("P2"))-1)));
-				nvps.add(new BasicNameValuePair("ddlLoginLocCity2", Integer.parseInt(configuration.getProperty("C2"))==0?"-1":configuration.getProperty("C2")));
+				nvps.add(new BasicNameValuePair("ddlLoginLocProvince2", String.valueOf(Int32.Parse(configuration.getProperty("P2"))-1)));
+				nvps.add(new BasicNameValuePair("ddlLoginLocCity2", Int32.Parse(configuration.getProperty("C2"))==0?"-1":configuration.getProperty("C2")));
 				nvps.add(new BasicNameValuePair("txtLoginLocCountry2", "国家"));
 				nvps.add(new BasicNameValuePair("txtLoginLocProvince2", "省份"));
 				nvps.add(new BasicNameValuePair("txtLoginLocCity2", "城市"));
 				nvps.add(new BasicNameValuePair("txtHLoginLocCountry2", "0"));
-				nvps.add(new BasicNameValuePair("txtHLoginLocProvince2", String.valueOf(Integer.parseInt(configuration.getProperty("P2"))-1)));
-				nvps.add(new BasicNameValuePair("txtHLoginLocCity2", Integer.parseInt(configuration.getProperty("C2"))==0?"-1":configuration.getProperty("C2")));
+				nvps.add(new BasicNameValuePair("txtHLoginLocProvince2", String.valueOf(Int32.Parse(configuration.getProperty("P2"))-1)));
+				nvps.add(new BasicNameValuePair("txtHLoginLocCity2", Int32.Parse(configuration.getProperty("C2"))==0?"-1":configuration.getProperty("C2")));
 			
 				nvps.add(new BasicNameValuePair("ddlLoginLocCountry3", "0"));
-				nvps.add(new BasicNameValuePair("ddlLoginLocProvince3", String.valueOf(Integer.parseInt(configuration.getProperty("P3"))-1)));
-				nvps.add(new BasicNameValuePair("ddlLoginLocCity3", Integer.parseInt(configuration.getProperty("C3"))==0?"-1":configuration.getProperty("C3")));
+				nvps.add(new BasicNameValuePair("ddlLoginLocProvince3", String.valueOf(Int32.Parse(configuration.getProperty("P3"))-1)));
+				nvps.add(new BasicNameValuePair("ddlLoginLocCity3", Int32.Parse(configuration.getProperty("C3"))==0?"-1":configuration.getProperty("C3")));
 				nvps.add(new BasicNameValuePair("txtLoginLocCountry3", "国家"));
 				nvps.add(new BasicNameValuePair("txtLoginLocProvince3", "省份"));
 				nvps.add(new BasicNameValuePair("txtLoginLocCity3", "城市"));
 				nvps.add(new BasicNameValuePair("txtHLoginLocCountry2", "0"));
-				nvps.add(new BasicNameValuePair("txtHLoginLocProvince3", String.valueOf(Integer.parseInt(configuration.getProperty("P3"))-1)));
-				nvps.add(new BasicNameValuePair("txtHLoginLocCity3", Integer.parseInt(configuration.getProperty("C3"))==0?"-1":configuration.getProperty("C3")));
+				nvps.add(new BasicNameValuePair("txtHLoginLocProvince3", String.valueOf(Int32.Parse(configuration.getProperty("P3"))-1)));
+				nvps.add(new BasicNameValuePair("txtHLoginLocCity3", Int32.Parse(configuration.getProperty("C3"))==0?"-1":configuration.getProperty("C3")));
 				
 				nvps.add(new BasicNameValuePair("ddlLocYear4", ""));
 				nvps.add(new BasicNameValuePair("txtHLoginLocCountry4", "0"));
@@ -831,7 +832,7 @@ namespace ws.hoyland.sszs
 //				props.setProperty("mail.store.protocol", "pop3");
 //				props.setProperty("mail.pop3.host", "pop3.163.com");
 				props.put("mail.imap.host", "imap.163.com");	            
-	            props.put("mail.imap.auth.plain.disable", "true");
+	            props.put("mail.imap.auth.plain.disable", "True");
 	             
 				Session session = Session.getDefaultInstance(props);
 				session.setDebug(false); 
@@ -980,5 +981,20 @@ namespace ws.hoyland.sszs
 			}
 		}
 	}
+
+    public void Pause()
+    {
+        this.pause = !this.pause;
+    }
+
+    private void CheckPause()
+    {
+        if (this.pause)
+        {
+            form.info(id, "等待重拨");
+            Monitor.Wait(form);
+            form.info(id, "等待重拨结束，继续执行");
+        }
+    }
     }
 }
