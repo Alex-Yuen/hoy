@@ -6,6 +6,7 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+using ws.hoyland.util;
 
 namespace ws.hoyland.sszs
 {
@@ -28,7 +29,7 @@ namespace ws.hoyland.sszs
 
         private void 关于AToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            new AboutBox1().ShowDialog();
+            new AboutBox().ShowDialog();
         }
 
         private void 选项OToolStripMenuItem_Click(object sender, EventArgs e)
