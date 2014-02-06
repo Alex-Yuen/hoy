@@ -9,6 +9,7 @@ using System.Threading;
 using System.Configuration;
 using Newtonsoft.Json;
 using System.Net;
+using Naya.WebAppApi.Tencent.TencentMailApi;
 
 namespace ws.hoyland.sszs
 {
@@ -469,7 +470,15 @@ namespace ws.hoyland.sszs
 					sf = true;
 					Thread.Sleep(1000*4); //意外中断，继续等待
 				}
-				
+
+                TencentMailClient client = new TencentMailClient(this.mail, this.mpwd);
+                client.LoginCompleted += new EventHandler<LoginEventArgs>(client_LoginCompleted);
+                client.LoginNeedVerify += new EventHandler<LoginEventArgs>(client_LoginNeedVerify);
+                client.MailCommandDone += new EventHandler<MailEventArgs>(client_MailCommandDone);
+                client.SessionTimeout += new EventHandler(client_SessionTimeout);
+                client.UnhandledRespReturn += new EventHandler<ApiCmdRespEventArgs>(client_UnhandledRespReturn);
+                client.StartLogin();
+
 				Properties props = new Properties();
 //				props.setProperty("mail.store.protocol", "pop3");
 //				props.setProperty("mail.pop3.host", "pop3.163.com");
