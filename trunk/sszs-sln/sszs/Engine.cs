@@ -150,8 +150,12 @@ namespace ws.hoyland.sszs
                                 line = i + "----" + line;
                                 string[] lns = Regex.Split(line, "----");
                                 List<string> listArr = new List<string>();
-                                listArr.AddRange(lns);
-                                listArr.Insert(3, "初始化");
+                                listArr.Add(lns[0]);
+                                listArr.Add(lns[1]);
+                                listArr.Add(lns[2]);
+                                listArr.Add("初始化");
+                                //listArr.AddRange(lns);
+                                //listArr.Insert(3, "初始化");
                                 lns = listArr.ToArray();
 
                                 accounts.Add(paths[0] + "----" + line);
