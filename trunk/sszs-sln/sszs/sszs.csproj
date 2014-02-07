@@ -34,20 +34,12 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>logo.ico</ApplicationIcon>
+    <ApplicationIcon>appeal.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup>
     <StartupObject>ws.hoyland.sszs.Program</StartupObject>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Naya.NayaHttpClient, Version=1.0.0.0, Culture=neutral, PublicKeyToken=1e5a4f281510866e, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>.\Naya.NayaHttpClient.dll</HintPath>
-    </Reference>
-    <Reference Include="Naya.WebAppApi, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>.\Naya.WebAppApi.dll</HintPath>
-    </Reference>
     <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>.\Newtonsoft.Json.dll</HintPath>
@@ -150,6 +142,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="appeal.ico" />
     <Content Include="logo.ico" />
     <Content Include="Naya.NayaHttpClient.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -160,6 +153,10 @@
     <Content Include="Newtonsoft.Json.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <None Include="Resources\account3.png" />
+    <None Include="Resources\mail3.png" />
+    <None Include="Resources\result.png" />
+    <None Include="Resources\accountx.png" />
     <Content Include="UUWiseHelper.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

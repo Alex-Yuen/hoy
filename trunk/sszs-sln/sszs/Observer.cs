@@ -7,6 +7,6 @@ namespace ws.hoyland.util
 {
     public interface Observer
     {
-        public void update(object sender, EventArgs e);
+        void update(object sender, EventArgs e);
     }
 }

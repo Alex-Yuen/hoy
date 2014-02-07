@@ -31,6 +31,12 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SSZS));
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.wenjianToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.导入帐号LToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.常规导入SToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.带历史密码导入LToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.导入邮件MToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.申诉结果RToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
             this.退出XToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.工具TToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.选项OToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -72,6 +78,16 @@
             this.label10 = new System.Windows.Forms.Label();
             this.label9 = new System.Windows.Forms.Label();
             this.comboBox2 = new System.Windows.Forms.ComboBox();
+            this.toolStrip1 = new System.Windows.Forms.ToolStrip();
+            this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
+            this.toolStripButton5 = new System.Windows.Forms.ToolStripButton();
+            this.toolStripButton2 = new System.Windows.Forms.ToolStripButton();
+            this.toolStripButton3 = new System.Windows.Forms.ToolStripSeparator();
+            this.toolStripButton4 = new System.Windows.Forms.ToolStripButton();
+            this.panel7 = new System.Windows.Forms.Panel();
+            this.panel9 = new System.Windows.Forms.Panel();
+            this.dataGridView2 = new System.Windows.Forms.DataGridView();
+            this.panel8 = new System.Windows.Forms.Panel();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
             this.menuStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
@@ -85,6 +101,11 @@
             this.panel3.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.loginpanel.SuspendLayout();
+            this.toolStrip1.SuspendLayout();
+            this.panel7.SuspendLayout();
+            this.panel9.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView2)).BeginInit();
+            this.panel8.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -103,15 +124,63 @@
             // wenjianToolStripMenuItem
             // 
             this.wenjianToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.导入帐号LToolStripMenuItem,
+            this.导入邮件MToolStripMenuItem,
+            this.申诉结果RToolStripMenuItem,
+            this.toolStripMenuItem1,
             this.退出XToolStripMenuItem});
             this.wenjianToolStripMenuItem.Name = "wenjianToolStripMenuItem";
             this.wenjianToolStripMenuItem.Size = new System.Drawing.Size(58, 21);
             this.wenjianToolStripMenuItem.Text = "文件(&F)";
             // 
+            // 导入帐号LToolStripMenuItem
+            // 
+            this.导入帐号LToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.常规导入SToolStripMenuItem,
+            this.带历史密码导入LToolStripMenuItem});
+            this.导入帐号LToolStripMenuItem.Name = "导入帐号LToolStripMenuItem";
+            this.导入帐号LToolStripMenuItem.Size = new System.Drawing.Size(174, 22);
+            this.导入帐号LToolStripMenuItem.Text = "导入帐号(&A)";
+            // 
+            // 常规导入SToolStripMenuItem
+            // 
+            this.常规导入SToolStripMenuItem.Name = "常规导入SToolStripMenuItem";
+            this.常规导入SToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F2;
+            this.常规导入SToolStripMenuItem.Size = new System.Drawing.Size(238, 22);
+            this.常规导入SToolStripMenuItem.Text = "常规导入...(&S)";
+            this.常规导入SToolStripMenuItem.Click += new System.EventHandler(this.常规导入SToolStripMenuItem_Click);
+            // 
+            // 带历史密码导入LToolStripMenuItem
+            // 
+            this.带历史密码导入LToolStripMenuItem.Name = "带历史密码导入LToolStripMenuItem";
+            this.带历史密码导入LToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Shift | System.Windows.Forms.Keys.F2)));
+            this.带历史密码导入LToolStripMenuItem.Size = new System.Drawing.Size(238, 22);
+            this.带历史密码导入LToolStripMenuItem.Text = "带历史密码导入...(&L)";
+            this.带历史密码导入LToolStripMenuItem.Click += new System.EventHandler(this.带历史密码导入LToolStripMenuItem_Click);
+            // 
+            // 导入邮件MToolStripMenuItem
+            // 
+            this.导入邮件MToolStripMenuItem.Name = "导入邮件MToolStripMenuItem";
+            this.导入邮件MToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F3;
+            this.导入邮件MToolStripMenuItem.Size = new System.Drawing.Size(174, 22);
+            this.导入邮件MToolStripMenuItem.Text = "导入邮件...(&M)";
+            // 
+            // 申诉结果RToolStripMenuItem
+            // 
+            this.申诉结果RToolStripMenuItem.Name = "申诉结果RToolStripMenuItem";
+            this.申诉结果RToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F5;
+            this.申诉结果RToolStripMenuItem.Size = new System.Drawing.Size(174, 22);
+            this.申诉结果RToolStripMenuItem.Text = "申诉结果...(&R)";
+            // 
+            // toolStripMenuItem1
+            // 
+            this.toolStripMenuItem1.Name = "toolStripMenuItem1";
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(171, 6);
+            // 
             // 退出XToolStripMenuItem
             // 
             this.退出XToolStripMenuItem.Name = "退出XToolStripMenuItem";
-            this.退出XToolStripMenuItem.Size = new System.Drawing.Size(116, 22);
+            this.退出XToolStripMenuItem.Size = new System.Drawing.Size(174, 22);
             this.退出XToolStripMenuItem.Text = "退出(&X)";
             this.退出XToolStripMenuItem.Click += new System.EventHandler(this.退出XToolStripMenuItem_Click);
             // 
@@ -126,7 +195,8 @@
             // 选项OToolStripMenuItem
             // 
             this.选项OToolStripMenuItem.Name = "选项OToolStripMenuItem";
-            this.选项OToolStripMenuItem.Size = new System.Drawing.Size(118, 22);
+            this.选项OToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F4;
+            this.选项OToolStripMenuItem.Size = new System.Drawing.Size(139, 22);
             this.选项OToolStripMenuItem.Text = "选项(&O)";
             this.选项OToolStripMenuItem.Click += new System.EventHandler(this.选项OToolStripMenuItem_Click);
             // 
@@ -141,7 +211,7 @@
             // 关于AToolStripMenuItem
             // 
             this.关于AToolStripMenuItem.Name = "关于AToolStripMenuItem";
-            this.关于AToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.关于AToolStripMenuItem.Size = new System.Drawing.Size(116, 22);
             this.关于AToolStripMenuItem.Text = "关于(&A)";
             this.关于AToolStripMenuItem.Click += new System.EventHandler(this.关于AToolStripMenuItem_Click);
             // 
@@ -508,22 +578,117 @@
             this.comboBox2.Size = new System.Drawing.Size(90, 20);
             this.comboBox2.TabIndex = 6;
             // 
+            // toolStrip1
+            // 
+            this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripButton1,
+            this.toolStripButton5,
+            this.toolStripButton2,
+            this.toolStripButton3,
+            this.toolStripButton4});
+            this.toolStrip1.Location = new System.Drawing.Point(0, 25);
+            this.toolStrip1.Name = "toolStrip1";
+            this.toolStrip1.Size = new System.Drawing.Size(794, 25);
+            this.toolStrip1.TabIndex = 8;
+            this.toolStrip1.Text = "toolStrip1";
+            // 
+            // toolStripButton1
+            // 
+            this.toolStripButton1.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripButton1.Image = global::ws.hoyland.sszs.Properties.Resources.account1;
+            this.toolStripButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton1.Name = "toolStripButton1";
+            this.toolStripButton1.Size = new System.Drawing.Size(23, 22);
+            this.toolStripButton1.Text = "导入帐号-常规(F2)";
+            // 
+            // toolStripButton5
+            // 
+            this.toolStripButton5.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripButton5.Image = global::ws.hoyland.sszs.Properties.Resources.accountx;
+            this.toolStripButton5.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton5.Name = "toolStripButton5";
+            this.toolStripButton5.Size = new System.Drawing.Size(23, 22);
+            this.toolStripButton5.Text = "导入帐号-历史密码(Shift+F2)";
+            // 
+            // toolStripButton2
+            // 
+            this.toolStripButton2.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripButton2.Image = global::ws.hoyland.sszs.Properties.Resources.mail1;
+            this.toolStripButton2.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton2.Name = "toolStripButton2";
+            this.toolStripButton2.Size = new System.Drawing.Size(23, 22);
+            this.toolStripButton2.Text = "导入邮箱(F3)";
+            this.toolStripButton2.ToolTipText = "导入邮箱(F3)";
+            // 
+            // toolStripButton3
+            // 
+            this.toolStripButton3.Name = "toolStripButton3";
+            this.toolStripButton3.Size = new System.Drawing.Size(6, 25);
+            // 
+            // toolStripButton4
+            // 
+            this.toolStripButton4.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripButton4.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton4.Image")));
+            this.toolStripButton4.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton4.Name = "toolStripButton4";
+            this.toolStripButton4.Size = new System.Drawing.Size(23, 22);
+            this.toolStripButton4.Text = "申诉结果(F5)";
+            // 
+            // panel7
+            // 
+            this.panel7.Controls.Add(this.panel9);
+            this.panel7.Controls.Add(this.panel8);
+            this.panel7.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panel7.Location = new System.Drawing.Point(0, 50);
+            this.panel7.Name = "panel7";
+            this.panel7.Size = new System.Drawing.Size(794, 291);
+            this.panel7.TabIndex = 9;
+            // 
+            // panel9
+            // 
+            this.panel9.Controls.Add(this.dataGridView2);
+            this.panel9.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panel9.Location = new System.Drawing.Point(406, 0);
+            this.panel9.Name = "panel9";
+            this.panel9.Size = new System.Drawing.Size(388, 291);
+            this.panel9.TabIndex = 1;
+            // 
+            // dataGridView2
+            // 
+            this.dataGridView2.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGridView2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.dataGridView2.Location = new System.Drawing.Point(0, 0);
+            this.dataGridView2.Name = "dataGridView2";
+            this.dataGridView2.RowTemplate.Height = 23;
+            this.dataGridView2.Size = new System.Drawing.Size(388, 291);
+            this.dataGridView2.TabIndex = 1;
+            // 
+            // panel8
+            // 
+            this.panel8.Controls.Add(this.dataGridView1);
+            this.panel8.Dock = System.Windows.Forms.DockStyle.Left;
+            this.panel8.Location = new System.Drawing.Point(0, 0);
+            this.panel8.Name = "panel8";
+            this.panel8.Size = new System.Drawing.Size(406, 291);
+            this.panel8.TabIndex = 0;
+            // 
             // dataGridView1
             // 
             this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataGridView1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.dataGridView1.Location = new System.Drawing.Point(0, 25);
+            this.dataGridView1.Location = new System.Drawing.Point(0, 0);
             this.dataGridView1.Name = "dataGridView1";
             this.dataGridView1.RowTemplate.Height = 23;
-            this.dataGridView1.Size = new System.Drawing.Size(794, 316);
-            this.dataGridView1.TabIndex = 5;
+            this.dataGridView1.Size = new System.Drawing.Size(406, 291);
+            this.dataGridView1.TabIndex = 0;
             // 
             // SSZS
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(794, 572);
-            this.Controls.Add(this.dataGridView1);
+            this.Controls.Add(this.panel7);
+            this.Controls.Add(this.toolStrip1);
             this.Controls.Add(this.panel2);
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.menuStrip1);
@@ -553,6 +718,12 @@
             this.groupBox2.ResumeLayout(false);
             this.loginpanel.ResumeLayout(false);
             this.loginpanel.PerformLayout();
+            this.toolStrip1.ResumeLayout(false);
+            this.toolStrip1.PerformLayout();
+            this.panel7.ResumeLayout(false);
+            this.panel9.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView2)).EndInit();
+            this.panel8.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -604,7 +775,23 @@
         private System.Windows.Forms.Label label10;
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.ComboBox comboBox2;
+        private System.Windows.Forms.ToolStrip toolStrip1;
+        private System.Windows.Forms.Panel panel7;
+        private System.Windows.Forms.Panel panel9;
+        private System.Windows.Forms.DataGridView dataGridView2;
+        private System.Windows.Forms.Panel panel8;
         private System.Windows.Forms.DataGridView dataGridView1;
+        private System.Windows.Forms.ToolStripButton toolStripButton1;
+        private System.Windows.Forms.ToolStripButton toolStripButton2;
+        private System.Windows.Forms.ToolStripSeparator toolStripButton3;
+        private System.Windows.Forms.ToolStripButton toolStripButton4;
+        private System.Windows.Forms.ToolStripMenuItem 导入帐号LToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem 导入邮件MToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem 申诉结果RToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripMenuItem1;
+        private System.Windows.Forms.ToolStripMenuItem 常规导入SToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem 带历史密码导入LToolStripMenuItem;
+        private System.Windows.Forms.ToolStripButton toolStripButton5;
     }
 }
 
