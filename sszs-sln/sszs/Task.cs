@@ -9,7 +9,7 @@ using System.Threading;
 using System.Configuration;
 using Newtonsoft.Json;
 using System.Net;
-using Naya.WebAppApi.Tencent.TencentMailApi;
+using System.Globalization;
 
 namespace ws.hoyland.sszs
 {
@@ -76,6 +76,8 @@ namespace ws.hoyland.sszs
     private byte[] bytes = new byte[4096];
     private StringBuilder pCodeResult = null;
     private int nCaptchaId = 0;
+
+    private List<KeyValuePair<string, string>> nvps = null;
 
 	public Task(String line) {
 		// TODO Auto-generated constructor stub
@@ -243,9 +245,11 @@ namespace ws.hoyland.sszs
 				// System.err.println(sig);
 
 				idx++;
-			} catch (Exception e) {
+            }
+            catch (Exception e)
+            {
+                fb = true;
 				throw e;
-				fb = true;
 			}
 			break;
 		case 1:
@@ -269,9 +273,11 @@ namespace ws.hoyland.sszs
 				Engine.getInstance().fire(message);
 
 				idx++;
-			} catch (Exception e) {
+            }
+            catch (Exception e)
+            {
+                fb = true;
 				throw e;
-				fb = true;
 			}
 			break;
 		case 2:
@@ -302,9 +308,11 @@ namespace ws.hoyland.sszs
 				//System.out.println("---"+result);
 
 				idx++;
-			} catch (Exception e) {
+            }
+            catch (Exception e)
+            {
+                fb = true;
 				throw e;
-				fb = true;
 			}
 			break;
 		case 3:
@@ -319,9 +327,11 @@ namespace ws.hoyland.sszs
 				// System.err.println(line);
 
 				idx++;
-			} catch (Exception e) {
+            }
+            catch (Exception e)
+            {
+                fb = true;
 				throw e;
-				fb = true;
 			}
 			break;
 		case 4:
@@ -337,9 +347,11 @@ namespace ws.hoyland.sszs
 				// System.err.println(line);
 
 				idx++;
-			} catch (Exception e) {
+            }
+            catch (Exception e)
+            {
+                fb = true;
 				throw e;
-				fb = true;
 			}
 			break;
 		case 5:
@@ -368,9 +380,11 @@ namespace ws.hoyland.sszs
 				}
 				// System.err.println(line);
 
-			} catch (Exception e) {
+            }
+            catch (Exception e)
+            {
+                fb = true;
 				throw e;
-				fb = true;
 			}
 			break;
 		case 6:
@@ -388,9 +402,11 @@ namespace ws.hoyland.sszs
                     }
 				
 				idx = 0; // 重新开始
-			} catch (Exception e) {
+            }
+            catch (Exception e)
+            {
+                fb = true;
 				throw e;
-				fb = true;
 			}
 			break;
 		case 7:
@@ -423,9 +439,11 @@ namespace ws.hoyland.sszs
 				// block = true;
 
 				idx++;
-			} catch (Exception e) {
+            }
+            catch (Exception e)
+            {
+                fb = true;
 				throw e;
-				fb = true;
 			}
 			break;
 		case 8:
@@ -456,9 +474,11 @@ namespace ws.hoyland.sszs
 				// System.err.println(line);
 
 				idx++;
-			} catch (Exception e) {
+            }
+            catch (Exception e)
+            {
+                fb = true;
 				throw e;
-				fb = true;
 			}
 			break;
 		case 9: // 收邮件 
@@ -466,98 +486,30 @@ namespace ws.hoyland.sszs
 			try {
 				try{
 					Thread.Sleep(1000*itv);
-				}catch(Exception e){
+				}catch(Exception){
 					sf = true;
 					Thread.Sleep(1000*4); //意外中断，继续等待
 				}
 
-                TencentMailClient client = new TencentMailClient(this.mail, this.mpwd);
-                client.LoginCompleted += new EventHandler<LoginEventArgs>(client_LoginCompleted);
-                client.LoginNeedVerify += new EventHandler<LoginEventArgs>(client_LoginNeedVerify);
-                client.MailCommandDone += new EventHandler<MailEventArgs>(client_MailCommandDone);
-                client.SessionTimeout += new EventHandler(client_SessionTimeout);
-                client.UnhandledRespReturn += new EventHandler<ApiCmdRespEventArgs>(client_UnhandledRespReturn);
-                client.StartLogin();
+                url = 
+						"http://aq.qq.com/cn2/appeal/appeal_contact_confirm";
 
-				Properties props = new Properties();
-//				props.setProperty("mail.store.protocol", "pop3");
-//				props.setProperty("mail.pop3.host", "pop3.163.com");
-				props.put("mail.imap.host", "imap.163.com");	            
-	            props.put("mail.imap.auth.plain.disable", "True");
-	             
-				Session session = Session.getDefaultInstance(props);
-				session.setDebug(false); 
-				IMAPStore store = (IMAPStore)session.getStore("imap");
-				store.connect(this.mail, this.mpwd);
-				IMAPFolder folder = (IMAPFolder)store.getFolder("INBOX");
-				folder.open(Folder.READ_WRITE);
-
-				// 全部邮件
-				Message[] messages = folder.getMessages();
+                content = "uin="+this.mail+"&aliastype=@qq.com&tmss=1&pwd="+this.mpwd+"&f=wml&spcache=&plain=&mtk=&delegate_url=";
 				
-				bool seen = true;
-				//System.err.println(messages.Length);
-				info("X");
-				for (int i = messages.Length-1; i >=0; i--) {
-					seen = true;
-					Message message = messages[i];
-					// 删除邮件
-					// message.setFlag(Flags.Flag.DELETED,true);
-					message.getAllHeaders();
-					info("A");
-					Flags flags = message.getFlags();
-					if (flags.contains(Flags.Flag.SEEN)){
-						info("A1");
-						seen = true;
-					} else {
-						info("A2");
-						seen = false;
-					}
-					info("B");
-					info(String.valueOf(seen));
-					//info(message.get)
-					info(message.getSubject());
-					if(!seen&&message.getSubject().startsWith("QQ号码申诉联系方式确认")){
-						info("C");
-//						bool isold = false;
-//				        Flags flags = message.getFlags();
-//				        Flags.Flag[] flag = flags.getSystemFlags(); 
-//				        
-//				        for (int ix = 0; ix< flag.Length; ix++) {      
-//				            if (flag[ix] == Flags.Flag.SEEN) {      
-//				            	isold = true;
-//				                break;
-//				            }
-//				        }
 
-						String ssct = (String)message.getContent();
-						message.setFlag(Flags.Flag.SEEN, false);
-						if(ssct.contains("[<b>"+account.substring(0, 1))&&ssct.contains(account.substring(account.Length()-1)+"</b>]")){
-				        //if(!isold){
-							info("D");
-							message.setFlag(Flags.Flag.SEEN, true);	// 标记为已读
-							rc = ssct.substring(ssct.indexOf("<b class=\"red\">")+15, ssct.indexOf("<b class=\"red\">")+23);
-								
-							System.err.println(rc);
-							break;
-						}
-//						else {
-//							info("D1");
-//							message.setFlag(Flags.Flag.SEEN, false);
-//							info("D2");
-//						}
-						info("E");
-				        //}
-					}else{
-//						if(!seen){
-//							message.setFlag(Flags.Flag.SEEN, false);
-//						}
-					}
-				}
-				info("F");
-				folder.close(true);
-				store.close();
-				
+				bs = client.UploadData(url, "POST", Encoding.UTF8.GetBytes(content));
+                    //byte[] bs = Encoding.GetEncoding("GB2312").GetBytes();
+                    line = Encoding.UTF8.GetString(bs);
+
+                    if (line.IndexOf("请稍候...") != -1)
+                    {
+                        Console.WriteLine("EEEEEEEEEEEEEEEEEEEEEE");
+                    }
+                    else
+                    {
+                        Console.WriteLine("FFFFFFFFFFFFFFFFFFFFFFF");
+                    }
+
 				if(rc==null){
 					tcconfirm++;					
 					idx = 9;
@@ -573,9 +525,9 @@ namespace ws.hoyland.sszs
 					idx++;
 				}
 			} catch (Exception e) {
-				info("连接邮箱失败");
+                info("连接邮箱失败");
+                fb = true;
 				throw e;
-				fb = true;
 			}
 			break;
 		case 10:
@@ -589,7 +541,7 @@ namespace ws.hoyland.sszs
                 reader = new StreamReader(data);
 				line = reader.ReadToEnd();
 
-				JsonTextReader jtr = new JsonTextReader(new StringReader(s));
+                JsonTextReader jtr = new JsonTextReader(new StringReader(line));
                     jtr.Read();
                     jtr.Read();
                     jtr.Read();
@@ -617,9 +569,11 @@ namespace ws.hoyland.sszs
 				// System.err.println(line);
 
 				idx++;
-			} catch (Exception e) {
+            }
+            catch (Exception e)
+            {
+                fb = true;
 				throw e;
-				fb = true;
 			}
 			break;
 		case 11:
@@ -627,114 +581,118 @@ namespace ws.hoyland.sszs
 			try {
 				url = 
 						"http://aq.qq.com/cn2/appeal/appeal_historyinfo_judge";
-                 content = "txtLoginUin="+this.account+"&txtCtCheckBox=0&txtName="+Names.getInstance()
-						.getName()+"&txtAddress=&txtIDCard=&txtContactQQ=&txtContactQQPW=&txtContactQQPW2=&radiobutton=mail&txtContactEmail"+this.mail+"&txtContactMobile=请填写您的常用手机";
-				
+               
 
-				bs = client.UploadData(url, "POST", Encoding.UTF8.GetBytes(content));
-                    //byte[] bs = Encoding.GetEncoding("GB2312").GetBytes();
-                    line = Encoding.UTF8.GetString(bs);
-
-				nvps = new ArrayList<NameValuePair>();
-				nvps.add(new BasicNameValuePair("txtBackToInfo", "1"));
-				nvps.add(new BasicNameValuePair("txtEmail", this.mail));
-				nvps.add(new BasicNameValuePair("txtUin", this.account));
-				nvps.add(new BasicNameValuePair("txtBackFromFd", ""));
-				nvps.add(new BasicNameValuePair("txtEmailVerifyCode", this.rc));
-				nvps.add(new BasicNameValuePair("pwdHOldPW1", ""));
-				nvps.add(new BasicNameValuePair("txtOldPW1", ""));
-				nvps.add(new BasicNameValuePair("pwdOldPW1", this.password));
-				nvps.add(new BasicNameValuePair("pwdHOldPW2", ""));
-				nvps.add(new BasicNameValuePair("txtOldPW2", ""));
-				nvps.add(new BasicNameValuePair("pwdOldPW2", (this.pwds.Length>1&&!standard)?this.pwds[1]:""));
-				nvps.add(new BasicNameValuePair("pwdHOldPW3", ""));
-				nvps.add(new BasicNameValuePair("txtOldPW3", ""));
-				nvps.add(new BasicNameValuePair("pwdOldPW3", (this.pwds.Length>2&&!standard)?this.pwds[2]:""));
-				nvps.add(new BasicNameValuePair("pwdHOldPW4", ""));
-				nvps.add(new BasicNameValuePair("txtOldPW4", ""));
-				nvps.add(new BasicNameValuePair("pwdOldPW4", (this.pwds.Length>3&&!standard)?this.pwds[3]:""));
-				nvps.add(new BasicNameValuePair("pwdHOldPW5", ""));
-				nvps.add(new BasicNameValuePair("txtOldPW5", ""));
-				nvps.add(new BasicNameValuePair("pwdOldPW5", (this.pwds.Length>4&&!standard)?this.pwds[4]:""));
-				nvps.add(new BasicNameValuePair("pwdHOldPW6", ""));
-				nvps.add(new BasicNameValuePair("txtOldPW6", ""));
-				nvps.add(new BasicNameValuePair("pwdOldPW6", (this.pwds.Length>5&&!standard)?this.pwds[5]:""));
+                    nvps = new List<KeyValuePair<string, string>>();
+                    nvps.Add(new KeyValuePair<string, string>("txtBackToInfo", "1"));
+				nvps.Add(new KeyValuePair<string, string>("txtEmail", this.mail));
+				nvps.Add(new KeyValuePair<string, string>("txtUin", this.account));
+				nvps.Add(new KeyValuePair<string, string>("txtBackFromFd", ""));
+				nvps.Add(new KeyValuePair<string, string>("txtEmailVerifyCode", this.rc));
+				nvps.Add(new KeyValuePair<string, string>("pwdHOldPW1", ""));
+				nvps.Add(new KeyValuePair<string, string>("txtOldPW1", ""));
+				nvps.Add(new KeyValuePair<string, string>("pwdOldPW1", this.password));
+				nvps.Add(new KeyValuePair<string, string>("pwdHOldPW2", ""));
+				nvps.Add(new KeyValuePair<string, string>("txtOldPW2", ""));
+				nvps.Add(new KeyValuePair<string, string>("pwdOldPW2", (this.pwds.Length>1&&!standard)?this.pwds[1]:""));
+				nvps.Add(new KeyValuePair<string, string>("pwdHOldPW3", ""));
+				nvps.Add(new KeyValuePair<string, string>("txtOldPW3", ""));
+				nvps.Add(new KeyValuePair<string, string>("pwdOldPW3", (this.pwds.Length>2&&!standard)?this.pwds[2]:""));
+				nvps.Add(new KeyValuePair<string, string>("pwdHOldPW4", ""));
+				nvps.Add(new KeyValuePair<string, string>("txtOldPW4", ""));
+				nvps.Add(new KeyValuePair<string, string>("pwdOldPW4", (this.pwds.Length>3&&!standard)?this.pwds[3]:""));
+				nvps.Add(new KeyValuePair<string, string>("pwdHOldPW5", ""));
+				nvps.Add(new KeyValuePair<string, string>("txtOldPW5", ""));
+				nvps.Add(new KeyValuePair<string, string>("pwdOldPW5", (this.pwds.Length>4&&!standard)?this.pwds[4]:""));
+				nvps.Add(new KeyValuePair<string, string>("pwdHOldPW6", ""));
+				nvps.Add(new KeyValuePair<string, string>("txtOldPW6", ""));
+				nvps.Add(new KeyValuePair<string, string>("pwdOldPW6", (this.pwds.Length>5&&!standard)?this.pwds[5]:""));
 				
-				nvps.add(new BasicNameValuePair("ddlLoginLocCountry1", "0"));
-				nvps.add(new BasicNameValuePair("ddlLoginLocProvince1", String.valueOf(Int32.Parse(configuration.getProperty("P1"))-1)));
-				nvps.add(new BasicNameValuePair("ddlLoginLocCity1", Int32.Parse(configuration.getProperty("C1"))==0?"-1":configuration.getProperty("C1")));
-				nvps.add(new BasicNameValuePair("txtLoginLocCountry1", "国家"));
-				nvps.add(new BasicNameValuePair("txtLoginLocProvince1", "省份"));
-				nvps.add(new BasicNameValuePair("txtLoginLocCity1", "城市"));
-				nvps.add(new BasicNameValuePair("txtHLoginLocCountry1", "0"));
-				nvps.add(new BasicNameValuePair("txtHLoginLocProvince1", String.valueOf(Int32.Parse(configuration.getProperty("P1"))-1)));
-				nvps.add(new BasicNameValuePair("txtHLoginLocCity1", Int32.Parse(configuration.getProperty("C1"))==0?"-1":configuration.getProperty("C1")));
+				nvps.Add(new KeyValuePair<string, string>("ddlLoginLocCountry1", "0"));
+                nvps.Add(new KeyValuePair<string, string>("ddlLoginLocProvince1", (Int32.Parse(cfa.AppSettings.Settings["P1"].Value) - 1).ToString()));
+                nvps.Add(new KeyValuePair<string, string>("ddlLoginLocCity1", Int32.Parse(cfa.AppSettings.Settings["C1"].Value) == 0 ? "-1" : cfa.AppSettings.Settings["C1"].Value));
+				nvps.Add(new KeyValuePair<string, string>("txtLoginLocCountry1", "国家"));
+				nvps.Add(new KeyValuePair<string, string>("txtLoginLocProvince1", "省份"));
+				nvps.Add(new KeyValuePair<string, string>("txtLoginLocCity1", "城市"));
+				nvps.Add(new KeyValuePair<string, string>("txtHLoginLocCountry1", "0"));
+				nvps.Add(new KeyValuePair<string, string>("txtHLoginLocProvince1",  (Int32.Parse(cfa.AppSettings.Settings["P1"].Value) - 1).ToString()));
+                nvps.Add(new KeyValuePair<string, string>("txtHLoginLocCity1", Int32.Parse(cfa.AppSettings.Settings["C1"].Value) == 0 ? "-1" : cfa.AppSettings.Settings["C1"].Value));
 				
-				nvps.add(new BasicNameValuePair("ddlLoginLocCountry2", "0"));
-				nvps.add(new BasicNameValuePair("ddlLoginLocProvince2", String.valueOf(Int32.Parse(configuration.getProperty("P2"))-1)));
-				nvps.add(new BasicNameValuePair("ddlLoginLocCity2", Int32.Parse(configuration.getProperty("C2"))==0?"-1":configuration.getProperty("C2")));
-				nvps.add(new BasicNameValuePair("txtLoginLocCountry2", "国家"));
-				nvps.add(new BasicNameValuePair("txtLoginLocProvince2", "省份"));
-				nvps.add(new BasicNameValuePair("txtLoginLocCity2", "城市"));
-				nvps.add(new BasicNameValuePair("txtHLoginLocCountry2", "0"));
-				nvps.add(new BasicNameValuePair("txtHLoginLocProvince2", String.valueOf(Int32.Parse(configuration.getProperty("P2"))-1)));
-				nvps.add(new BasicNameValuePair("txtHLoginLocCity2", Int32.Parse(configuration.getProperty("C2"))==0?"-1":configuration.getProperty("C2")));
+				nvps.Add(new KeyValuePair<string, string>("ddlLoginLocCountry2", "0"));
+				nvps.Add(new KeyValuePair<string, string>("ddlLoginLocProvince2",  (Int32.Parse(cfa.AppSettings.Settings["P2"].Value) - 1).ToString()));
+				nvps.Add(new KeyValuePair<string, string>("ddlLoginLocCity2", Int32.Parse(cfa.AppSettings.Settings["C2"].Value) == 0 ? "-1" : cfa.AppSettings.Settings["C2"].Value));
+				nvps.Add(new KeyValuePair<string, string>("txtLoginLocCountry2", "国家"));
+				nvps.Add(new KeyValuePair<string, string>("txtLoginLocProvince2", "省份"));
+				nvps.Add(new KeyValuePair<string, string>("txtLoginLocCity2", "城市"));
+				nvps.Add(new KeyValuePair<string, string>("txtHLoginLocCountry2", "0"));
+				nvps.Add(new KeyValuePair<string, string>("txtHLoginLocProvince2",  (Int32.Parse(cfa.AppSettings.Settings["P2"].Value) - 1).ToString()));
+                nvps.Add(new KeyValuePair<string, string>("txtHLoginLocCity2", Int32.Parse(cfa.AppSettings.Settings["C2"].Value) == 0 ? "-1" : cfa.AppSettings.Settings["C2"].Value));
 			
-				nvps.add(new BasicNameValuePair("ddlLoginLocCountry3", "0"));
-				nvps.add(new BasicNameValuePair("ddlLoginLocProvince3", String.valueOf(Int32.Parse(configuration.getProperty("P3"))-1)));
-				nvps.add(new BasicNameValuePair("ddlLoginLocCity3", Int32.Parse(configuration.getProperty("C3"))==0?"-1":configuration.getProperty("C3")));
-				nvps.add(new BasicNameValuePair("txtLoginLocCountry3", "国家"));
-				nvps.add(new BasicNameValuePair("txtLoginLocProvince3", "省份"));
-				nvps.add(new BasicNameValuePair("txtLoginLocCity3", "城市"));
-				nvps.add(new BasicNameValuePair("txtHLoginLocCountry2", "0"));
-				nvps.add(new BasicNameValuePair("txtHLoginLocProvince3", String.valueOf(Int32.Parse(configuration.getProperty("P3"))-1)));
-				nvps.add(new BasicNameValuePair("txtHLoginLocCity3", Int32.Parse(configuration.getProperty("C3"))==0?"-1":configuration.getProperty("C3")));
+				nvps.Add(new KeyValuePair<string, string>("ddlLoginLocCountry3", "0"));
+				nvps.Add(new KeyValuePair<string, string>("ddlLoginLocProvince3",  (Int32.Parse(cfa.AppSettings.Settings["P3"].Value) - 1).ToString()));
+                nvps.Add(new KeyValuePair<string, string>("ddlLoginLocCity3", Int32.Parse(cfa.AppSettings.Settings["C3"].Value) == 0 ? "-1" : cfa.AppSettings.Settings["C3"].Value));
+				nvps.Add(new KeyValuePair<string, string>("txtLoginLocCountry3", "国家"));
+				nvps.Add(new KeyValuePair<string, string>("txtLoginLocProvince3", "省份"));
+				nvps.Add(new KeyValuePair<string, string>("txtLoginLocCity3", "城市"));
+				nvps.Add(new KeyValuePair<string, string>("txtHLoginLocCountry2", "0"));
+				nvps.Add(new KeyValuePair<string, string>("txtHLoginLocProvince3",  (Int32.Parse(cfa.AppSettings.Settings["P3"].Value) - 1).ToString()));
+                nvps.Add(new KeyValuePair<string, string>("txtHLoginLocCity3", Int32.Parse(cfa.AppSettings.Settings["C3"].Value) == 0 ? "-1" : cfa.AppSettings.Settings["C3"].Value));
 				
-				nvps.add(new BasicNameValuePair("ddlLocYear4", ""));
-				nvps.add(new BasicNameValuePair("txtHLoginLocCountry4", "0"));
-				nvps.add(new BasicNameValuePair("txtHLoginLocProvince4", "-1"));
-				nvps.add(new BasicNameValuePair("txtHLoginLocCity4", "-1"));
-				nvps.add(new BasicNameValuePair("ddlLoginLocCountry4", "0"));
-				nvps.add(new BasicNameValuePair("ddlLoginLocProvince4", "-1"));
-				nvps.add(new BasicNameValuePair("ddlLoginLocCity4", "-1"));
-				nvps.add(new BasicNameValuePair("txtLoginLocCountry4", "国家"));
-				nvps.add(new BasicNameValuePair("txtLoginLocProvince4", "省份"));
-				nvps.add(new BasicNameValuePair("txtLoginLocCity4", "城市"));
+				nvps.Add(new KeyValuePair<string, string>("ddlLocYear4", ""));
+				nvps.Add(new KeyValuePair<string, string>("txtHLoginLocCountry4", "0"));
+				nvps.Add(new KeyValuePair<string, string>("txtHLoginLocProvince4", "-1"));
+				nvps.Add(new KeyValuePair<string, string>("txtHLoginLocCity4", "-1"));
+				nvps.Add(new KeyValuePair<string, string>("ddlLoginLocCountry4", "0"));
+				nvps.Add(new KeyValuePair<string, string>("ddlLoginLocProvince4", "-1"));
+				nvps.Add(new KeyValuePair<string, string>("ddlLoginLocCity4", "-1"));
+				nvps.Add(new KeyValuePair<string, string>("txtLoginLocCountry4", "国家"));
+				nvps.Add(new KeyValuePair<string, string>("txtLoginLocProvince4", "省份"));
+				nvps.Add(new KeyValuePair<string, string>("txtLoginLocCity4", "城市"));
 				
-				nvps.add(new BasicNameValuePair("ddlRegType", "0"));
-				nvps.add(new BasicNameValuePair("ddlRegYear", ""));
-				nvps.add(new BasicNameValuePair("ddlRegMonth", ""));
-				nvps.add(new BasicNameValuePair("ddlRegCountry", "0"));
-				nvps.add(new BasicNameValuePair("ddlRegProvince", "-1"));
-				nvps.add(new BasicNameValuePair("ddlRegCity", "-1"));
-				nvps.add(new BasicNameValuePair("txtRegCountry", "国家"));
-				nvps.add(new BasicNameValuePair("txtRegProvince", "省份"));
-				nvps.add(new BasicNameValuePair("txtRegCity", "城市"));
-				nvps.add(new BasicNameValuePair("txtRegMobile", ""));
-				nvps.add(new BasicNameValuePair("ddlRegPayMode", "0"));
-				nvps.add(new BasicNameValuePair("txtRegPayAccount", ""));
+				nvps.Add(new KeyValuePair<string, string>("ddlRegType", "0"));
+				nvps.Add(new KeyValuePair<string, string>("ddlRegYear", ""));
+				nvps.Add(new KeyValuePair<string, string>("ddlRegMonth", ""));
+				nvps.Add(new KeyValuePair<string, string>("ddlRegCountry", "0"));
+				nvps.Add(new KeyValuePair<string, string>("ddlRegProvince", "-1"));
+				nvps.Add(new KeyValuePair<string, string>("ddlRegCity", "-1"));
+				nvps.Add(new KeyValuePair<string, string>("txtRegCountry", "国家"));
+				nvps.Add(new KeyValuePair<string, string>("txtRegProvince", "省份"));
+				nvps.Add(new KeyValuePair<string, string>("txtRegCity", "城市"));
+				nvps.Add(new KeyValuePair<string, string>("txtRegMobile", ""));
+				nvps.Add(new KeyValuePair<string, string>("ddlRegPayMode", "0"));
+				nvps.Add(new KeyValuePair<string, string>("txtRegPayAccount", ""));
 				
-				nvps.add(new BasicNameValuePair("txtHLoginLocYear1", ""));
-				nvps.add(new BasicNameValuePair("txtHLoginLocYear2", ""));				
-				nvps.add(new BasicNameValuePair("txtHLoginLocYear3", ""));
-				nvps.add(new BasicNameValuePair("txtHLoginLocYear4", ""));
+				nvps.Add(new KeyValuePair<string, string>("txtHLoginLocYear1", ""));
+				nvps.Add(new KeyValuePair<string, string>("txtHLoginLocYear2", ""));				
+				nvps.Add(new KeyValuePair<string, string>("txtHLoginLocYear3", ""));
+				nvps.Add(new KeyValuePair<string, string>("txtHLoginLocYear4", ""));
 				
-				nvps.add(new BasicNameValuePair("txtHRegType", "0"));
-				nvps.add(new BasicNameValuePair("txtHRegTimeYear", ""));				
-				nvps.add(new BasicNameValuePair("txtHRegTimeMonth", ""));
-				nvps.add(new BasicNameValuePair("txtHRegPayType", "0"));
-				nvps.add(new BasicNameValuePair("txtHRegPayAccount", ""));
-				nvps.add(new BasicNameValuePair("txtHRegMobile", ""));				
-				nvps.add(new BasicNameValuePair("txtHRegLocationProvince", "-1"));
-				nvps.add(new BasicNameValuePair("txtHRegLocationCountry", "0"));
-				nvps.add(new BasicNameValuePair("txtHRegLocationCity", "-1"));
+				nvps.Add(new KeyValuePair<string, string>("txtHRegType", "0"));
+				nvps.Add(new KeyValuePair<string, string>("txtHRegTimeYear", ""));				
+				nvps.Add(new KeyValuePair<string, string>("txtHRegTimeMonth", ""));
+				nvps.Add(new KeyValuePair<string, string>("txtHRegPayType", "0"));
+				nvps.Add(new KeyValuePair<string, string>("txtHRegPayAccount", ""));
+				nvps.Add(new KeyValuePair<string, string>("txtHRegMobile", ""));				
+				nvps.Add(new KeyValuePair<string, string>("txtHRegLocationProvince", "-1"));
+				nvps.Add(new KeyValuePair<string, string>("txtHRegLocationCountry", "0"));
+				nvps.Add(new KeyValuePair<string, string>("txtHRegLocationCity", "-1"));
 				
 //				System.err.println(line);
 
+
+                content = getNVPString(nvps);
+
+
+                bs = client.UploadData(url, "POST", Encoding.UTF8.GetBytes(content));
+                //byte[] bs = Encoding.GetEncoding("GB2312").GetBytes();
+                line = Encoding.UTF8.GetString(bs);
+
 				idx++;
-			} catch (Exception e) {
+            }
+            catch (Exception e)
+            {
+                fb = true;
 				throw e;
-				fb = true;
 			}
 			break;
 		case 12:
@@ -750,9 +708,11 @@ namespace ws.hoyland.sszs
 //				System.err.println(line);
 
 				idx++;
-			} catch (Exception e) {
+            }
+            catch (Exception e)
+            {
+                fb = true;
 				throw e;
-				fb = true;
 			}
 			break;
 		case 13:
@@ -761,34 +721,38 @@ namespace ws.hoyland.sszs
 				url = 
 						"http://aq.qq.com/cn2/appeal/appeal_invite_friend";
 
-				content = "txtLoginUin="+this.account+"&txtCtCheckBox=0&txtName="+Names.getInstance()
-						.getName()+"&txtAddress=&txtIDCard=&txtContactQQ=&txtContactQQPW=&txtContactQQPW2=&radiobutton=mail&txtContactEmail"+this.mail+"&txtContactMobile=请填写您的常用手机";
-				
 
-				bs = client.UploadData(url, "POST", Encoding.UTF8.GetBytes(content));
-                    //byte[] bs = Encoding.GetEncoding("GB2312").GetBytes();
-                    line = Encoding.UTF8.GetString(bs);
-
-				nvps = new ArrayList<NameValuePair>();
-				nvps.add(new BasicNameValuePair("txtUserChoice", "2"));
-				nvps.add(new BasicNameValuePair("txtOldDNAEmailSuffix", ""));
-				nvps.add(new BasicNameValuePair("txtOldDNAAnswer3", ""));
-				nvps.add(new BasicNameValuePair("txtOldDNAAnswer2", ""));
-				nvps.add(new BasicNameValuePair("txtOldDNAAnswer1", ""));
-				nvps.add(new BasicNameValuePair("txtBackToInfo", "1"));
-				nvps.add(new BasicNameValuePair("txtBackFromFd", ""));
-				nvps.add(new BasicNameValuePair("OldDNAMobile", ""));
-				nvps.add(new BasicNameValuePair("OldDNAEmail", ""));
-				nvps.add(new BasicNameValuePair("OldDNACertCardID", ""));
+                    nvps = new List<KeyValuePair<string, string>>();
+				nvps.Add(new KeyValuePair<string, string>("txtUserChoice", "2"));
+				nvps.Add(new KeyValuePair<string, string>("txtOldDNAEmailSuffix", ""));
+				nvps.Add(new KeyValuePair<string, string>("txtOldDNAAnswer3", ""));
+				nvps.Add(new KeyValuePair<string, string>("txtOldDNAAnswer2", ""));
+				nvps.Add(new KeyValuePair<string, string>("txtOldDNAAnswer1", ""));
+				nvps.Add(new KeyValuePair<string, string>("txtBackToInfo", "1"));
+				nvps.Add(new KeyValuePair<string, string>("txtBackFromFd", ""));
+				nvps.Add(new KeyValuePair<string, string>("OldDNAMobile", ""));
+				nvps.Add(new KeyValuePair<string, string>("OldDNAEmail", ""));
+				nvps.Add(new KeyValuePair<string, string>("OldDNACertCardID", ""));
 				
 				// line = EntityUtils.toString(entity);
 
 				// System.err.println(line);
 
+
+                content = getNVPString(nvps);
+
+
+                bs = client.UploadData(url, "POST", Encoding.UTF8.GetBytes(content));
+                //byte[] bs = Encoding.GetEncoding("GB2312").GetBytes();
+                line = Encoding.UTF8.GetString(bs);
+
+
 				idx++;
-			} catch (Exception e) {
+            }
+            catch (Exception e)
+            {
+                fb = true;
 				throw e;
-				fb = true;
 			}
 			break;
 		case 14:
@@ -796,33 +760,36 @@ namespace ws.hoyland.sszs
 			try {
 				url = 
 						"http://aq.qq.com/cn2/appeal/appeal_end";
-                content = "txtLoginUin=" + this.account + "&txtCtCheckBox=0&txtName=" + Names.getInstance()
-                        .getName() + "&txtAddress=&txtIDCard=&txtContactQQ=&txtContactQQPW=&txtContactQQPW2=&radiobutton=mail&txtContactEmail" + this.mail + "&txtContactMobile=请填写您的常用手机";
+
+                nvps = new List<KeyValuePair<string, string>>();
+				nvps.Add(new KeyValuePair<string, string>("txtPcMgr", "1"));
+				nvps.Add(new KeyValuePair<string, string>("txtUserPPSType", "1"));
+				nvps.Add(new KeyValuePair<string, string>("txtBackFromFd", "1"));
+				nvps.Add(new KeyValuePair<string, string>("txtBackToInfo", "1"));
+				nvps.Add(new KeyValuePair<string, string>("usernum", this.account));
+				nvps.Add(new KeyValuePair<string, string>("FriendQQNum1", ""));
+				nvps.Add(new KeyValuePair<string, string>("FriendQQNum2", ""));
+				nvps.Add(new KeyValuePair<string, string>("FriendQQNum3", ""));
+				nvps.Add(new KeyValuePair<string, string>("FriendQQNum4", ""));
+				nvps.Add(new KeyValuePair<string, string>("FriendQQNum5", ""));
+				nvps.Add(new KeyValuePair<string, string>("FriendQQNum6", ""));
+				nvps.Add(new KeyValuePair<string, string>("FriendQQNum7", ""));
+
+
+                content = getNVPString(nvps);
 
 
                 bs = client.UploadData(url, "POST", Encoding.UTF8.GetBytes(content));
                 //byte[] bs = Encoding.GetEncoding("GB2312").GetBytes();
                 line = Encoding.UTF8.GetString(bs);
 
-				nvps = new ArrayList<NameValuePair>();
-				nvps.add(new BasicNameValuePair("txtPcMgr", "1"));
-				nvps.add(new BasicNameValuePair("txtUserPPSType", "1"));
-				nvps.add(new BasicNameValuePair("txtBackFromFd", "1"));
-				nvps.add(new BasicNameValuePair("txtBackToInfo", "1"));
-				nvps.add(new BasicNameValuePair("usernum", this.account));
-				nvps.add(new BasicNameValuePair("FriendQQNum1", ""));
-				nvps.add(new BasicNameValuePair("FriendQQNum2", ""));
-				nvps.add(new BasicNameValuePair("FriendQQNum3", ""));
-				nvps.add(new BasicNameValuePair("FriendQQNum4", ""));
-				nvps.add(new BasicNameValuePair("FriendQQNum5", ""));
-				nvps.add(new BasicNameValuePair("FriendQQNum6", ""));
-				nvps.add(new BasicNameValuePair("FriendQQNum7", ""));
-                
 				//System.err.println(line);
 				idx++;
-			} catch (Exception e) {
+            }
+            catch (Exception e)
+            {
+                fb = true;
 				throw e;
-				fb = true;
 			}
 			
 			break;
@@ -831,80 +798,12 @@ namespace ws.hoyland.sszs
 			info("等待"+itv+"秒，接收邮件[回执]");
 			try {
 				try{
-					Thread.sleep(1000*itv);
-				}catch(Exception e){
+					Thread.Sleep(1000*itv);
+				}catch(Exception){
 					sf = true;
-					Thread.sleep(1000*4); //意外中断，继续等待
+					Thread.Sleep(1000*4); //意外中断，继续等待
 				}
-				
-				Properties props = new Properties();
-//				props.setProperty("mail.store.protocol", "pop3");
-//				props.setProperty("mail.pop3.host", "pop3.163.com");
-				props.put("mail.imap.host", "imap.163.com");	            
-	            props.put("mail.imap.auth.plain.disable", "True");
-	             
-				Session session = Session.getDefaultInstance(props);
-				session.setDebug(false); 
-				IMAPStore store = (IMAPStore)session.getStore("imap");
-				store.connect(this.mail, this.mpwd);
-				IMAPFolder folder = (IMAPFolder)store.getFolder("INBOX");
-				folder.open(Folder.READ_WRITE);
-
-				// 全部邮件
-				Message[] messages = folder.getMessages();
-				
-				bool seen = true;
-				//System.err.println(messages.Length);
-				for (int i = messages.Length-1; i >=0; i--) {
-					seen = true;
-					Message message = messages[i];
-					// 删除邮件
-					// message.setFlag(Flags.Flag.DELETED,true);
-
-					Flags flags = message.getFlags();    
-					if (flags.contains(Flags.Flag.SEEN)){
-						seen = true;    
-					} else {    
-						seen = false;    
-					}
-		               
-					if(!seen&&message.getSubject().startsWith("QQ号码申诉单已受理")){
-						
-//						bool isold = false;      
-//				        Flags flags = message.getFlags();      
-//				        Flags.Flag[] flag = flags.getSystemFlags();      
-//				        
-//				        for (int ix = 0; ix< flag.Length; ix++) {      
-//				            if (flag[ix] == Flags.Flag.SEEN) {      
-//				            	isold = true;
-//				                break;
-//				            }
-//				        }
-
-						String ssct = (String)message.getContent();
-						message.setFlag(Flags.Flag.SEEN, false);
-						if(ssct.contains("[<b>"+account.substring(0, 1))&&ssct.contains(account.substring(account.Length()-1)+"</b>]")){
-				        //if(!isold){
-							message.setFlag(Flags.Flag.SEEN, true);	// 标记为已读
-							rcl = ssct.substring(ssct.indexOf("<b class=\"red\">")+15, ssct.indexOf("<b class=\"red\">")+25);
-							
-							System.err.println(rcl);
-							break;
-						} 
-//						else {
-//							message.setFlag(Flags.Flag.SEEN, false);
-////							message.getFlags().remove(Flags.Flag.SEEN);
-//						}
-				        //}
-					}else{
-//						if(!seen){
-//							message.setFlag(Flags.Flag.SEEN, false);
-//							//message.getFlags().remove(Flags.Flag.SEEN);
-//						}
-					}
-				}
-				folder.close(true);
-				store.close();
+				//TODO
 				
 				if(rcl==null){					
 					tcback++;					
@@ -923,9 +822,9 @@ namespace ws.hoyland.sszs
 					this.runx = false; //结束运行
 				}
 			} catch (Exception e) {
-				info("连接邮箱失败");
+                info("连接邮箱失败");
+                fb = true;
 				throw e;
-				fb = true;
 			}
 
 			break;
@@ -940,16 +839,17 @@ namespace ws.hoyland.sszs
 		message.setType(EngineMessageType.IM_INFO);
 		message.setData(info);
 
-		DateFormat format = new java.text.SimpleDateFormat("yyyy/MM/dd hh:mm:ss");
-		String tm = format.format(new Date());
+        String tm = DateTime.Now.ToString("yyyy/MM/dd hh:mm:ss", DateTimeFormatInfo.InvariantInfo);
+
 		
-		System.err.println("["+this.account+"]"+info+"("+tm+")");
+		//System.err.println("["+this.account+"]"+info+"("+tm+")");
 		Engine.getInstance().fire(message);
 	}
-	
-	
-	public void update(Observable obj, Object arg) {
-		const EngineMessage msg = (EngineMessage) arg;
+
+
+    public void update(object sender, EventArgs e)
+    {
+		EngineMessage msg = (EngineMessage) e;
 
 		if (msg.getTid() == this.id || msg.getTid()==-1) { //-1, all tasks message
 			int type = msg.getType();
@@ -958,7 +858,7 @@ namespace ws.hoyland.sszs
 			case EngineMessageType.OM_REQUIRE_MAIL:
 				if(msg.getData()!=null){
 					String[] ms = (String[]) msg.getData();
-					System.err.println(ms[0] + "/" + ms[1] + "/" + ms[2]);
+					//System.err.println(ms[0] + "/" + ms[1] + "/" + ms[2]);
 					this.mid = ms[0];
 					this.mail = ms[1];
 					this.mpwd = ms[2];
@@ -996,6 +896,7 @@ namespace ws.hoyland.sszs
         this.pause = !this.pause;
     }
 
+        /**
     private void CheckPause()
     {
         if (this.pause)
@@ -1004,6 +905,21 @@ namespace ws.hoyland.sszs
             Monitor.Wait(form);
             form.info(id, "等待重拨结束，继续执行");
         }
+    }
+        **/
+    private string getNVPString(List<KeyValuePair<string, string>> parms)
+    {
+
+        var data = "";
+        for (int i = 0; i < parms.Count; i++)
+        {
+            if (i == 0)
+                data += parms[i].Key + "=" + parms[i].Value;
+            else
+                data += "&" + parms[i].Key + "=" + parms[i].Value;
+        }
+
+        return Uri.EscapeUriString(data);
     }
     }
 }
