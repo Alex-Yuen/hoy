@@ -163,7 +163,8 @@
             this.导入邮件MToolStripMenuItem.Name = "导入邮件MToolStripMenuItem";
             this.导入邮件MToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F3;
             this.导入邮件MToolStripMenuItem.Size = new System.Drawing.Size(174, 22);
-            this.导入邮件MToolStripMenuItem.Text = "导入邮件...(&M)";
+            this.导入邮件MToolStripMenuItem.Text = "导入邮箱...(&M)";
+            this.导入邮件MToolStripMenuItem.Click += new System.EventHandler(this.导入邮件MToolStripMenuItem_Click);
             // 
             // 申诉结果RToolStripMenuItem
             // 
@@ -359,7 +360,7 @@
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(59, 12);
             this.label8.TabIndex = 4;
-            this.label8.Text = "已经处理:";
+            this.label8.Text = "邮箱总数:";
             // 
             // label3
             // 
@@ -532,6 +533,7 @@
             this.button1.TabIndex = 3;
             this.button1.Text = "登录";
             this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click_1);
             // 
             // textBox3
             // 
@@ -580,6 +582,7 @@
             // 
             // toolStrip1
             // 
+            this.toolStrip1.ImageScalingSize = new System.Drawing.Size(32, 32);
             this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripButton1,
             this.toolStripButton5,
@@ -588,7 +591,7 @@
             this.toolStripButton4});
             this.toolStrip1.Location = new System.Drawing.Point(0, 25);
             this.toolStrip1.Name = "toolStrip1";
-            this.toolStrip1.Size = new System.Drawing.Size(794, 25);
+            this.toolStrip1.Size = new System.Drawing.Size(794, 39);
             this.toolStrip1.TabIndex = 8;
             this.toolStrip1.Text = "toolStrip1";
             // 
@@ -598,8 +601,9 @@
             this.toolStripButton1.Image = global::ws.hoyland.sszs.Properties.Resources.account1;
             this.toolStripButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButton1.Name = "toolStripButton1";
-            this.toolStripButton1.Size = new System.Drawing.Size(23, 22);
+            this.toolStripButton1.Size = new System.Drawing.Size(36, 36);
             this.toolStripButton1.Text = "导入帐号-常规(F2)";
+            this.toolStripButton1.Click += new System.EventHandler(this.toolStripButton1_Click);
             // 
             // toolStripButton5
             // 
@@ -609,6 +613,7 @@
             this.toolStripButton5.Name = "toolStripButton5";
             this.toolStripButton5.Size = new System.Drawing.Size(23, 22);
             this.toolStripButton5.Text = "导入帐号-历史密码(Shift+F2)";
+            this.toolStripButton5.Click += new System.EventHandler(this.toolStripButton5_Click);
             // 
             // toolStripButton2
             // 
@@ -619,6 +624,7 @@
             this.toolStripButton2.Size = new System.Drawing.Size(23, 22);
             this.toolStripButton2.Text = "导入邮箱(F3)";
             this.toolStripButton2.ToolTipText = "导入邮箱(F3)";
+            this.toolStripButton2.Click += new System.EventHandler(this.toolStripButton2_Click);
             // 
             // toolStripButton3
             // 
@@ -631,7 +637,7 @@
             this.toolStripButton4.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton4.Image")));
             this.toolStripButton4.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButton4.Name = "toolStripButton4";
-            this.toolStripButton4.Size = new System.Drawing.Size(23, 22);
+            this.toolStripButton4.Size = new System.Drawing.Size(36, 36);
             this.toolStripButton4.Text = "申诉结果(F5)";
             // 
             // panel7
@@ -639,9 +645,9 @@
             this.panel7.Controls.Add(this.panel9);
             this.panel7.Controls.Add(this.panel8);
             this.panel7.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel7.Location = new System.Drawing.Point(0, 50);
+            this.panel7.Location = new System.Drawing.Point(0, 64);
             this.panel7.Name = "panel7";
-            this.panel7.Size = new System.Drawing.Size(794, 291);
+            this.panel7.Size = new System.Drawing.Size(794, 277);
             this.panel7.TabIndex = 9;
             // 
             // panel9
@@ -650,7 +656,7 @@
             this.panel9.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel9.Location = new System.Drawing.Point(406, 0);
             this.panel9.Name = "panel9";
-            this.panel9.Size = new System.Drawing.Size(388, 291);
+            this.panel9.Size = new System.Drawing.Size(388, 277);
             this.panel9.TabIndex = 1;
             // 
             // dataGridView2
@@ -660,7 +666,7 @@
             this.dataGridView2.Location = new System.Drawing.Point(0, 0);
             this.dataGridView2.Name = "dataGridView2";
             this.dataGridView2.RowTemplate.Height = 23;
-            this.dataGridView2.Size = new System.Drawing.Size(388, 291);
+            this.dataGridView2.Size = new System.Drawing.Size(388, 277);
             this.dataGridView2.TabIndex = 1;
             // 
             // panel8
@@ -669,7 +675,7 @@
             this.panel8.Dock = System.Windows.Forms.DockStyle.Left;
             this.panel8.Location = new System.Drawing.Point(0, 0);
             this.panel8.Name = "panel8";
-            this.panel8.Size = new System.Drawing.Size(406, 291);
+            this.panel8.Size = new System.Drawing.Size(406, 277);
             this.panel8.TabIndex = 0;
             // 
             // dataGridView1
@@ -679,9 +685,8 @@
             this.dataGridView1.Location = new System.Drawing.Point(0, 0);
             this.dataGridView1.Name = "dataGridView1";
             this.dataGridView1.RowTemplate.Height = 23;
-            this.dataGridView1.Size = new System.Drawing.Size(406, 291);
+            this.dataGridView1.Size = new System.Drawing.Size(406, 277);
             this.dataGridView1.TabIndex = 0;
-            this.dataGridView1.RowsAdded += new System.Windows.Forms.DataGridViewRowsAddedEventHandler(this.dataGridView1_RowsAdded);
             // 
             // SSZS
             // 
