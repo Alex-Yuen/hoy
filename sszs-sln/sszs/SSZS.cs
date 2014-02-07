@@ -12,7 +12,7 @@ using System.Configuration;
 namespace ws.hoyland.sszs
 {
 
-    public partial class SSZS : Form
+    public partial class SSZS : Form, Observer
     {
         private delegate void Delegate();
         private Delegate dlg;
@@ -45,6 +45,8 @@ namespace ws.hoyland.sszs
 
         private void SSZS_Load(object sender, EventArgs e)
         {
+            Engine.getInstance().addObserver(this);
+
             cfa = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
 
             comboBox2.SelectedIndex = 0;
@@ -116,8 +118,14 @@ namespace ws.hoyland.sszs
 
                 if (dialog.ShowDialog() == DialogResult.OK)
                 {
-                    table1.Clear();
                     string fn = dialog.FileName;
+                    if (fn != null)
+                    {
+                        EngineMessage message = new EngineMessage();
+                        message.setType(EngineMessageType.IM_LOAD_ACCOUNT);
+                        message.setData("S|" + fn);
+                        Engine.getInstance().fire(message);
+                    }
                 }
             };
             this.BeginInvoke(dlg);
@@ -134,13 +142,59 @@ namespace ws.hoyland.sszs
 
                 if (dialog.ShowDialog() == DialogResult.OK)
                 {
-                    table1.Clear();
                     string fn = dialog.FileName;
+                    if (fn != null)
+                    {
+                        EngineMessage message = new EngineMessage();
+                        message.setType(EngineMessageType.IM_LOAD_ACCOUNT);
+                        message.setData("H|" + fn);
+                        Engine.getInstance().fire(message);
+                    }
                 }
             };
             this.BeginInvoke(dlg);
         }
+        
+        public void update(object sender, EventArgs e)
+        {
+            EngineMessage msg = (EngineMessage)e;
+            int type = msg.getType();
 
+            switch (type)
+            {
+                case EngineMessageType.OM_CLEAR_ACC_TBL:
+                    dlg = delegate
+                    {
+                        table1.Clear();
+                    };
+                    this.BeginInvoke(dlg);
 
+                    break;
+                case EngineMessageType.OM_ADD_ACC_TBIT:
+                    dlg = delegate
+                    {
+                       DataRow row = table1.NewRow();
+                       String[] dt = (String[])msg.getData();
+                       for (int i = 0; i < dt.Length; i++)
+                       {
+                           row[i] = dt[i];
+                       }
+                       table1.Rows.Add(row);
+                       dataGridView1.DataSource = table1;
+                       //dataGridView1.Rows[dataGridView1.Rows.Count - 1].Selected = true;
+                    };
+                    this.BeginInvoke(dlg);
+
+                    break;
+                default:
+                    break;
+            }
+
+        }
+
+        private void dataGridView1_RowsAdded(object sender, DataGridViewRowsAddedEventArgs e)
+        {
+           
+        }
     }
 }
