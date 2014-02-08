@@ -31,6 +31,7 @@ namespace ws.hoyland.sszs
         public const int IM_FREQ = 0x1025; //申诉频繁
 
         public const int IM_PAUSE_COUNT = 0x1026;
+        public const int IM_USERCHANGE = 0x1027;
 
         //outgoing message
         public const int OM_LOGINING = 0x2010;
@@ -53,5 +54,7 @@ namespace ws.hoyland.sszs
         public const int OM_RECONN = 0x2025;
         public const int OM_PAUSE = 0x2026;
         public const int OM_NP = 0x2027; //need pause
+
+        public const int OM_USERCHANGE = 0x2028;
     }
 }
