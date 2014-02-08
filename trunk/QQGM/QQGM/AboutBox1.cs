@@ -25,7 +25,7 @@ namespace QQGM
 
             ManagementObject disk = new ManagementObject("win32_logicaldisk.deviceid=\"c:\"");
             disk.Get();
-            string mc = UMD5(disk.GetPropertyValue("VolumeSerialNumber").ToString());
+            string mc = UMD5(disk.GetPropertyValue("VolumeSerialNumber").ToString() + "MBZS");
             this.textBoxDescription.Text = mc;
         }
 
