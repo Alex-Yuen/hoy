@@ -11,6 +11,9 @@ using System.Globalization;
 using System.Threading;
 using System.Windows.Forms;
 using System.Diagnostics;
+using RedQ;
+using System.Management;
+using System.Net;
 
 namespace ws.hoyland.sszs
 {
@@ -48,6 +51,7 @@ namespace ws.hoyland.sszs
         private Hashtable ips = new Hashtable();
         private HashSet<Task> tasks = new HashSet<Task>();
         private Object data = null;
+        private System.Timers.Timer t = null;
 
         private Engine()
         {
@@ -83,10 +87,22 @@ namespace ws.hoyland.sszs
                     //
                     break;
                 case EngineMessageType.IM_USERLOGIN:
-                    System.Timers.Timer t = new System.Timers.Timer(100);
+                    t = new System.Timers.Timer(100);
                     //实例化Timer类，设置间隔时间为10000毫秒；   
                     t.Elapsed +=
                     new System.Timers.ElapsedEventHandler(login);
+
+                    //到达时间的时候执行事件；   
+                    t.AutoReset = false;
+                    //设置是执行一次（false）还是一直执行(true)；   
+                    t.Enabled = true;
+
+                    break;
+                case EngineMessageType.IM_CHECKEXP:
+                    t = new System.Timers.Timer(100);
+                    //实例化Timer类，设置间隔时间为10000毫秒；   
+                    t.Elapsed +=
+                    new System.Timers.ElapsedEventHandler(checkexp);
 
                     //到达时间的时候执行事件；   
                     t.AutoReset = false;
@@ -739,6 +755,50 @@ namespace ws.hoyland.sszs
                     throw ex;
                 }
             }
+        }
+
+        private void checkexp(object source, System.Timers.ElapsedEventArgs e)
+        {
+            int expire = 0;
+            try
+            {
+                WebClient wc = new WebClient();
+                QQCrypt crypt = new QQCrypt();
+                byte[] mc = Expire.getMC();
+
+                string url = "http://222.186.26.132:8086/ge";
+                byte[] key = Util.getKey();
+                string content = Util.byteArrayToHexString(key).ToUpper() + Util.byteArrayToHexString(crypt.QQ_Encrypt(mc, key)).ToUpper();
+                //Console.WriteLine(byteArrayToHexString(key).ToUpper());
+                //Console.WriteLine(content);
+                //client.UploadString(url, content);
+                //client.UploadString(url, 
+                //client.Encoding = Encoding.UTF8;
+                wc.Headers[HttpRequestHeader.ContentType] = "text/plain; charset=UTF-8";
+
+                //client.UploadData(url, "POST", Encoding.UTF8.GetBytes(content));
+                byte[] bs = null;
+                bs = wc.UploadData(url, "POST", Encoding.UTF8.GetBytes(content));
+                //byte[] bs = Encoding.GetEncoding("GB2312").GetBytes();
+
+                //bs = crypt.QQ_Decrypt(bs, key);
+                string resp = Encoding.UTF8.GetString(bs);
+                //Console.WriteLine("1:"+resp);
+                bs = crypt.QQ_Decrypt(Util.hexStringToByte(resp), key);
+                expire = Int32.Parse(Encoding.UTF8.GetString(bs));
+                Console.WriteLine("R:" + expire);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+                expire = 0;
+            }
+
+            EngineMessage msg = new EngineMessage();
+            msg.setType(EngineMessageType.OM_CHECKEXP);
+            msg.setData(expire);
+
+            this.notifyObservers(msg);
         }
 
         private void login(object source, System.Timers.ElapsedEventArgs e)

@@ -92,6 +92,7 @@
     <Compile Include="PauseCountObject.cs" />
     <Compile Include="PauseObject.cs" />
     <Compile Include="PauseXObject.cs" />
+    <Compile Include="QQCrypt.cs" />
     <Compile Include="ReconObject.cs" />
     <Compile Include="SSZS.cs">
       <SubType>Form</SubType>

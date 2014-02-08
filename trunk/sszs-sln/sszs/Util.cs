@@ -3,11 +3,96 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Runtime.InteropServices;
+using System.Security.Cryptography;
 
 namespace ws.hoyland.util
 {
     class Util
     {
+        private static Random RANDOM = new Random();
+
+        public static  byte[] getKey()
+        {
+            byte[] key = new byte[16];
+            RANDOM.NextBytes(key);
+            return key;
+        }
+
+
+        public static byte[] hexStringToByte(string hex)
+        {
+            if (hex.Length % 2 != 0)
+            {
+                hex = "0" + hex;
+            }
+            int len = (hex.Length / 2);
+            byte[] result = new byte[len];
+            char[] achar = hex.ToCharArray();
+            for (int i = 0; i < len; i++)
+            {
+                int pos = i * 2;
+                result[i] = (byte)(toByte(achar[pos]) << 4 | toByte(achar[pos + 1]));
+            }
+            return result;
+        }
+
+        private static byte toByte(char c)
+        {
+            byte b = (byte)"0123456789ABCDEF".IndexOf(c);
+            return b;
+        }
+
+        public static string byteArrayToHexString(byte[] b)
+        {
+            StringBuilder resultSb = new StringBuilder();
+            for (int i = 0; i < b.Length; i++)
+            {
+                resultSb.Append(byteToHexString(b[i]));
+            }
+            return resultSb.ToString();
+        }
+        private static string byteToHexString(byte b)
+        {
+            int n = b;
+            if (n < 0)
+                n = 256 + n;
+            int d1 = n / 16;
+            int d2 = n % 16;
+            return hexDigits[d1] + hexDigits[d2];
+        }
+        private static string[] hexDigits = {"0", "1", "2", "3", "4",  
+	        "5", "6", "7", "8", "9", "a", "b", "c", "d", "e", "f"};
+
+
+        public static byte[] UMD5(string str)
+        {
+            //Console.WriteLine(str);
+            //string pwd = "";
+            MD5 md5 = MD5.Create();//实例化一个md5对像
+            // 加密后是一个字节类型的数组，这里要注意编码UTF8/Unicode等的选择　
+            byte[] s = md5.ComputeHash(Encoding.UTF8.GetBytes(str));
+            return s;
+        }
+
+        public static string UMD5X(string str)
+        {
+            //Console.WriteLine(str);
+            string pwd = "";
+            MD5 md5 = MD5.Create();//实例化一个md5对像
+            // 加密后是一个字节类型的数组，这里要注意编码UTF8/Unicode等的选择　
+            byte[] s = md5.ComputeHash(Encoding.UTF8.GetBytes(str));
+            //Console.WriteLine(s.Length);
+            // 通过使用循环，将字节类型的数组转换为字符串，此字符串是常规字符格式化所得
+            for (int i = 0; i < s.Length; i++)
+            {
+                // 将得到的字符串使用十六进制类型格式。格式后的字符是小写的字母，如果使用大写（X）则格式后的字符是大写字符
+                //Console.WriteLine(s[i].ToString("X2"));
+                pwd = pwd + s[i].ToString("X2");
+
+            }
+            return pwd;
+        }
+
         public static string UrlEncode(string strCode)
         {
             StringBuilder sb = new StringBuilder();

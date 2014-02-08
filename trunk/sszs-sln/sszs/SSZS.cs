@@ -8,6 +8,7 @@ using System.Text;
 using System.Windows.Forms;
 using ws.hoyland.util;
 using System.Configuration;
+using System.Globalization;
 
 namespace ws.hoyland.sszs
 {
@@ -49,7 +50,47 @@ namespace ws.hoyland.sszs
 
             cfa = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
 
-            comboBox2.SelectedIndex = 0;
+            if (cfa == null)
+            {
+                MessageBox.Show("加载配置文件失败!");
+            }
+            ConfigurationManager.RefreshSection("appSettings");
+
+            try
+            {
+                comboBox2.SelectedIndex = Int32.Parse(cfa.AppSettings.Settings["CPT_TYPE"].Value);
+
+                textBox2.Text = cfa.AppSettings.Settings["ACCOUNT"].Value;
+                if ("True".Equals(cfa.AppSettings.Settings["REM_PASSWORD"].Value))
+                {
+                    checkBox1.Checked = true;
+                    textBox3.Text = cfa.AppSettings.Settings["PASSWORD"].Value;
+                }
+
+                if ("True".Equals(cfa.AppSettings.Settings["AUTO_LOGIN"].Value))
+                {
+                    checkBox2.Checked = true;
+                    //TODO, autologin
+                }
+
+                setLoginPanel();
+
+                //自动登录 
+                if (checkBox2.Checked)
+                {
+                    button1.PerformClick();
+                }
+
+                EngineMessage message = new EngineMessage();
+                message.setType(EngineMessageType.IM_CHECKEXP);
+                message.setData(null);
+
+                Engine.getInstance().fire(message);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
         }
 
         private void 关于AToolStripMenuItem_Click(object sender, EventArgs e)
@@ -299,6 +340,23 @@ namespace ws.hoyland.sszs
                             };
                     this.BeginInvoke(dlg);
                     break;
+                case EngineMessageType.OM_CHECKEXP:
+                    dlg = delegate()
+                    {
+                        int expire = (Int32)msg.getData();
+                        if (expire <= 0)
+                        {
+                           new Expire().ShowDialog();//Show("此机器授权已经过期:" + byteArrayToHexString(mc).ToUpper());
+                           Application.Exit();
+                        }
+                        else
+                        {
+                           //Console.WriteLine(byteArrayToHexString(mc).ToUpper());
+                           this.Text += "        [到期时间: " + DateTime.Now.AddDays(expire).ToString("yyyy-MM-dd", DateTimeFormatInfo.InvariantInfo) + "]";
+                        }
+                    };
+                    this.BeginInvoke(dlg);
+                    break;
                 default:
                     break;
             }
@@ -344,6 +402,26 @@ namespace ws.hoyland.sszs
             导入邮件MToolStripMenuItem.PerformClick();
         }
 
+        private void setLoginPanel()
+        {
+            if (comboBox2.SelectedIndex == 2)
+            {
+                textBox2.Enabled = false;
+                textBox3.Enabled = false;
+                checkBox1.Enabled = false;
+                checkBox2.Enabled = false;
+                button1.Enabled = false;
+            }
+            else
+            {
+                textBox2.Enabled = true;
+                textBox3.Enabled = true;
+                checkBox1.Enabled = true;
+                checkBox2.Enabled = true;
+                button1.Enabled = true;
+            }
+        }
+
         private void button1_Click_1(object sender, EventArgs e)
         {
             if (comboBox2.Enabled)
@@ -373,22 +451,7 @@ namespace ws.hoyland.sszs
 
         private void comboBox2_SelectedIndexChanged_1(object sender, EventArgs e)
         {
-            if (comboBox2.SelectedIndex == 2)
-            {
-                textBox2.Enabled = false;
-                textBox3.Enabled = false;
-                checkBox1.Enabled = false;
-                checkBox2.Enabled = false;
-                button1.Enabled = false;
-            }
-            else
-            {
-                textBox2.Enabled = true;
-                textBox3.Enabled = true;
-                checkBox1.Enabled = true;
-                checkBox2.Enabled = true;
-                button1.Enabled = true;
-            }
+            setLoginPanel();
 
             EngineMessage message = new EngineMessage();
             message.setType(EngineMessageType.IM_CAPTCHA_TYPE);
