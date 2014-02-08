@@ -47,8 +47,8 @@ namespace ws.hoyland.sszs
 	private String password = null;
 	private String[] pwds = null;
 
-	private MemoryStream baos = null;
-	private int codeID = -1;
+//	private MemoryStream baos = null;
+//	private int codeID = -1;
 	private String result;
 	
 	private String rc = null; //red code in mail
