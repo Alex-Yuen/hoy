@@ -89,6 +89,8 @@
             this.dataGridView2 = new System.Windows.Forms.DataGridView();
             this.panel8 = new System.Windows.Forms.Panel();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
+            this.label17 = new System.Windows.Forms.Label();
+            this.label18 = new System.Windows.Forms.Label();
             this.menuStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.panel2.SuspendLayout();
@@ -471,6 +473,8 @@
             // 
             // loginpanel
             // 
+            this.loginpanel.Controls.Add(this.label18);
+            this.loginpanel.Controls.Add(this.label17);
             this.loginpanel.Controls.Add(this.label16);
             this.loginpanel.Controls.Add(this.label15);
             this.loginpanel.Controls.Add(this.checkBox2);
@@ -542,6 +546,7 @@
             this.textBox3.PasswordChar = '*';
             this.textBox3.Size = new System.Drawing.Size(144, 21);
             this.textBox3.TabIndex = 2;
+            this.textBox3.KeyDown += new System.Windows.Forms.KeyEventHandler(this.textBox3_KeyDown);
             // 
             // textBox2
             // 
@@ -579,6 +584,7 @@
             this.comboBox2.Name = "comboBox2";
             this.comboBox2.Size = new System.Drawing.Size(90, 20);
             this.comboBox2.TabIndex = 6;
+            this.comboBox2.SelectedIndexChanged += new System.EventHandler(this.comboBox2_SelectedIndexChanged_1);
             // 
             // toolStrip1
             // 
@@ -611,7 +617,7 @@
             this.toolStripButton5.Image = global::ws.hoyland.sszs.Properties.Resources.accountx;
             this.toolStripButton5.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButton5.Name = "toolStripButton5";
-            this.toolStripButton5.Size = new System.Drawing.Size(23, 22);
+            this.toolStripButton5.Size = new System.Drawing.Size(36, 36);
             this.toolStripButton5.Text = "导入帐号-历史密码(Shift+F2)";
             this.toolStripButton5.Click += new System.EventHandler(this.toolStripButton5_Click);
             // 
@@ -621,7 +627,7 @@
             this.toolStripButton2.Image = global::ws.hoyland.sszs.Properties.Resources.mail1;
             this.toolStripButton2.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButton2.Name = "toolStripButton2";
-            this.toolStripButton2.Size = new System.Drawing.Size(23, 22);
+            this.toolStripButton2.Size = new System.Drawing.Size(36, 36);
             this.toolStripButton2.Text = "导入邮箱(F3)";
             this.toolStripButton2.ToolTipText = "导入邮箱(F3)";
             this.toolStripButton2.Click += new System.EventHandler(this.toolStripButton2_Click);
@@ -629,7 +635,7 @@
             // toolStripButton3
             // 
             this.toolStripButton3.Name = "toolStripButton3";
-            this.toolStripButton3.Size = new System.Drawing.Size(6, 25);
+            this.toolStripButton3.Size = new System.Drawing.Size(6, 39);
             // 
             // toolStripButton4
             // 
@@ -687,6 +693,24 @@
             this.dataGridView1.RowTemplate.Height = 23;
             this.dataGridView1.Size = new System.Drawing.Size(406, 277);
             this.dataGridView1.TabIndex = 0;
+            // 
+            // label17
+            // 
+            this.label17.AutoSize = true;
+            this.label17.Location = new System.Drawing.Point(54, 51);
+            this.label17.Name = "label17";
+            this.label17.Size = new System.Drawing.Size(0, 12);
+            this.label17.TabIndex = 10;
+            this.label17.Visible = false;
+            // 
+            // label18
+            // 
+            this.label18.AutoSize = true;
+            this.label18.Location = new System.Drawing.Point(53, 77);
+            this.label18.Name = "label18";
+            this.label18.Size = new System.Drawing.Size(0, 12);
+            this.label18.TabIndex = 11;
+            this.label18.Visible = false;
             // 
             // SSZS
             // 
@@ -798,6 +822,8 @@
         private System.Windows.Forms.ToolStripMenuItem 常规导入SToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem 带历史密码导入LToolStripMenuItem;
         private System.Windows.Forms.ToolStripButton toolStripButton5;
+        private System.Windows.Forms.Label label18;
+        private System.Windows.Forms.Label label17;
     }
 }
 

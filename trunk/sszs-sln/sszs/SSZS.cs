@@ -162,49 +162,70 @@ namespace ws.hoyland.sszs
 
             switch (type)
             {
-                    case EngineMessageType.OM_LOGINING:
-				dlg = delegate
-                    {
-                        button1.Enabled = false;
-                        toolStripStatusLabel1.Text = "正在登录";
-					};				
-				this.BeginInvoke(dlg);
-				break;
-			case EngineMessageType.OM_LOGINED:
-				dlg = delegate
-                    {
-						Object[] objs = (Object[])msg.getData();
-						
-						lblNewLabel.setText((String)objs[2]);
-						label_9.setText(String.valueOf(((Integer)objs[1]).intValue()));
+                case EngineMessageType.OM_LOGINING:
+                    dlg = delegate
+                        {
+                            button1.Enabled = false;
+                            toolStripStatusLabel1.Text = "正在登录";
+                        };
+                    this.BeginInvoke(dlg);
+                    break;
+                case EngineMessageType.OM_LOGINED:
+                    dlg = delegate
+                        {
+                            Object[] objs = (Object[])msg.getData();
 
-                        button1.Enabled = true;
-						lblNewLabel.setVisible(true);
-						label_9.setVisible(true);
-						button.setVisible(true);
-						label_6.setVisible(true);
-						
-						//btnUu.setVisible(false);
-						combo.setEnabled(false);
-						button_1.setVisible(false);
-						button_3.setVisible(false);
-						text_1.setVisible(false);
-						text_3.setVisible(false);
-						label_3.setVisible(false);
-                        button1.setVisible(false);
-						 toolStripStatusLabel1.Text = "登录成功: ID="+((Int32)objs[0]);
-					};
-                this.BeginInvoke(dlg);
-				break;
-			case EngineMessageType.OM_LOGIN_ERROR:
-				dlg = delegate
+                            label17.Text = (String)objs[2];
+                            label17.Visible = true;
+                            label18.Text = ((Int32)objs[1]).ToString();
+                            label18.Visible = true;
+
+                            button1.Text = "切换帐号";
+                            button1.Enabled = true;
+                            label10.Text = "题分:";
+
+                            comboBox2.Enabled = false;
+                            checkBox1.Visible = false;
+                            checkBox2.Visible = false;
+                            textBox2.Visible = false;
+                            textBox3.Text = "";
+                            textBox3.Visible = false;
+
+                            toolStripStatusLabel1.Text = "登录成功: ID=" + ((Int32)objs[0]);
+                        };
+                    this.BeginInvoke(dlg);
+                    break;
+                case EngineMessageType.OM_USERCHANGE:
+                    dlg = delegate
                     {
-						Object[] objs = (Object[])msg.getData();
-                        button1.Enabled = true;
-						toolStripStatusLabel1.Text =  "登录失败: ERR="+((Int32)objs[0]);
-					};
-                this.BeginInvoke(dlg);
-				break;
+                        label17.Text = "";
+                        label17.Visible = false;
+                        label18.Text = "";
+                        label18.Visible = false;
+
+                        button1.Text = "登录";
+                        //button1.Enabled = true;
+                        label10.Text = "密码:";
+
+                        comboBox2.Enabled = true;
+                        checkBox1.Visible = true;
+                        checkBox2.Visible = true;
+                        textBox2.Visible = true;
+                        textBox3.Visible = true;
+
+                        toolStripStatusLabel1.Text = "未登录";
+                    };
+                    this.BeginInvoke(dlg);
+                    break;
+                case EngineMessageType.OM_LOGIN_ERROR:
+                    dlg = delegate
+                        {
+                            Object[] objs = (Object[])msg.getData();
+                            button1.Enabled = true;
+                            toolStripStatusLabel1.Text = "登录失败: ERR=" + ((Int32)objs[0]);
+                        };
+                    this.BeginInvoke(dlg);
+                    break;
 
                 case EngineMessageType.OM_CLEAR_ACC_TBL:
                     dlg = delegate
@@ -325,18 +346,63 @@ namespace ws.hoyland.sszs
 
         private void button1_Click_1(object sender, EventArgs e)
         {
-            List<String> param = new List<String>();
-		    param.Add(textBox2.Text);
-            param.Add(textBox3.Text);
-		    param.Add(checkBox1.Checked.ToString());
-            param.Add(checkBox2.Checked.ToString());
-            param.Add(comboBox2.SelectedIndex.ToString());
-		
-		    EngineMessage message = new EngineMessage();
-		    message.setType(EngineMessageType.IM_USERLOGIN);
-		    message.setData(param);
-		
-		    Engine.getInstance().fire(message);
+            if (comboBox2.Enabled)
+            {
+                List<String> param = new List<String>();
+                param.Add(textBox2.Text);
+                param.Add(textBox3.Text);
+                param.Add(checkBox1.Checked.ToString());
+                param.Add(checkBox2.Checked.ToString());
+                param.Add(comboBox2.SelectedIndex.ToString());
+
+                EngineMessage message = new EngineMessage();
+                message.setType(EngineMessageType.IM_USERLOGIN);
+                message.setData(param);
+
+                Engine.getInstance().fire(message);
+            }
+            else
+            {
+                EngineMessage message = new EngineMessage();
+                message.setType(EngineMessageType.IM_USERCHANGE);
+                message.setData(null);
+
+                Engine.getInstance().fire(message);
+            }
+        }
+
+        private void comboBox2_SelectedIndexChanged_1(object sender, EventArgs e)
+        {
+            if (comboBox2.SelectedIndex == 2)
+            {
+                textBox2.Enabled = false;
+                textBox3.Enabled = false;
+                checkBox1.Enabled = false;
+                checkBox2.Enabled = false;
+                button1.Enabled = false;
+            }
+            else
+            {
+                textBox2.Enabled = true;
+                textBox3.Enabled = true;
+                checkBox1.Enabled = true;
+                checkBox2.Enabled = true;
+                button1.Enabled = true;
+            }
+
+            EngineMessage message = new EngineMessage();
+            message.setType(EngineMessageType.IM_CAPTCHA_TYPE);
+            message.setData(comboBox2.SelectedIndex);
+
+            Engine.getInstance().fire(message);
+        }
+
+        private void textBox3_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                button1.PerformClick();
+            }
         }
     }
 }

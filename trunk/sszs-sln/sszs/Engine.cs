@@ -94,6 +94,15 @@ namespace ws.hoyland.sszs
                     t.Enabled = true;
 
                     break;
+                case EngineMessageType.IM_USERCHANGE:
+                    loginx = false;
+                    msg = new EngineMessage();
+                    msg.setType(EngineMessageType.OM_USERCHANGE);
+                    this.notifyObservers(msg);
+
+                    ready();
+
+                    break;
                 case EngineMessageType.IM_UL_STATUS:
                     msg = new EngineMessage();
 
@@ -741,6 +750,7 @@ namespace ws.hoyland.sszs
             message.setData(null);
             Engine.getInstance().fire(message);
 
+            //cptType = Int32.Parse(msg[4]);
             int ret = -1;
             int score = 0;
 
@@ -781,6 +791,37 @@ namespace ws.hoyland.sszs
                     //toolStripStatusLabel1.Text = "1";
 
                     //toolStripStatusLabel1.Text = "5";
+                    //保存登录参数
+                    cfa = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
+
+                    if (cfa == null)
+                    {
+                        MessageBox.Show("加载配置文件失败!");
+                    }
+                    ConfigurationManager.RefreshSection("appSettings");
+
+                    cfa.AppSettings.Settings["ACCOUNT"].Value = msg[0];
+                    //toolStripStatusLabel1.Text = "2.1";
+                    if ("True".Equals(msg[2]))
+                    {
+                        //toolStripStatusLabel1.Text = "2.2";
+                        cfa.AppSettings.Settings["PASSWORD"].Value = msg[1];
+                        //toolStripStatusLabel1.Text = "2.3";
+                    }
+                    else
+                    {
+                        //toolStripStatusLabel1.Text = "2.4";
+                        cfa.AppSettings.Settings["PASSWORD"].Value = "";
+                        //toolStripStatusLabel1.Text = "2.5";
+                    }
+                    //toolStripStatusLabel1.Text = "2.6";
+                    cfa.AppSettings.Settings["REM_PASSWORD"].Value = msg[2];
+                    //toolStripStatusLabel1.Text = "2.7";
+                    cfa.AppSettings.Settings["AUTO_LOGIN"].Value = msg[3];
+                    cfa.AppSettings.Settings["CPT_TYPE"].Value = msg[4];
+                    //toolStripStatusLabel1.Text = "3";
+                    cfa.Save();
+
                 }
                 else
                 {
