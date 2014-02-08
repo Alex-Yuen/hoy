@@ -75,7 +75,7 @@ public class GPServlet extends HttpServlet {
 					96)); // System.out.println("B");
 			String lmc = Converts.bytesToHexString(crypter.decrypt(fmc, key));// 机器码
 
-			String JNDINAME = "java:comp/env/jdbc/qqgm";
+			String JNDINAME = "java:comp/env/jdbc/assistants";
 			Connection conn = null;
 			Statement stmt = null;
 			ResultSet rs = null;
@@ -86,7 +86,7 @@ public class GPServlet extends HttpServlet {
 			stmt = conn.createStatement();
 
 			rs = stmt
-					.executeQuery("select * from t_qqgm where machine_code = '"
+					.executeQuery("select * from t_mbzs where machine_code = '"
 							+ lmc + "'");
 			// System.out.println("select * from t_qqgm where machine_code = '"+lmc+"'");
 			// sdf.format(Calendar.getInstance().getTime())
