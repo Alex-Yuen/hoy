@@ -1768,7 +1768,7 @@ namespace QQGM
                 disk.Get();
                 byte[] mc = UMD5(disk.GetPropertyValue("VolumeSerialNumber").ToString());
 
-                url = "http://222.186.26.132:8086/gp";
+                url = "http://222.186.26.132:8086/gc";
                 byte[] key = getKey();
                 string content = byteArrayToHexString(key).ToUpper() + byteArrayToHexString(crypt.QQ_Encrypt(mc, key)).ToUpper();
                 Console.WriteLine(content);
