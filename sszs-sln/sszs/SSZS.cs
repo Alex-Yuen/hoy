@@ -340,6 +340,20 @@ namespace ws.hoyland.sszs
                             };
                     this.BeginInvoke(dlg);
                     break;
+                case EngineMessageType.OM_READY:
+				 dlg = delegate
+                            {
+						button2.Enabled = true;
+					};		
+				this.BeginInvoke(dlg);
+				break;
+			case EngineMessageType.OM_UNREADY:
+				 dlg = delegate
+                            {
+                                button2.Enabled = false;
+					};
+                 this.BeginInvoke(dlg);
+				break;
                 case EngineMessageType.OM_CHECKEXP:
                     dlg = delegate()
                     {
