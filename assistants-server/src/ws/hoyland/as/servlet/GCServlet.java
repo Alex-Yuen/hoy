@@ -24,7 +24,7 @@ import org.apache.commons.codec.binary.Base64;
 import ws.hoyland.util.Converts;
 import ws.hoyland.util.Crypter;
 
-public class GPServlet extends HttpServlet {
+public class GCServlet extends HttpServlet {
 
 	/**
 	 * 
@@ -35,7 +35,7 @@ public class GPServlet extends HttpServlet {
 //	private String exponentString = "AQAB";
 	private String delement = "cdMGq9zyXvMwrJvvgABiZYY6RwCwwvkEWsR9uLxWeZd/4fzEZOBIzfe864Tosg/XWYxYxhHc7uOeM5zDSQjBdVjkJKJN8H1JISm9qTWqmZATL03xgItf5glVxupsMBqBXr3FdYJe8PjOmIYXpREBSWvkMfqwcpuaU+zRuOu+FSk=";
 
-	public GPServlet() {
+	public GCServlet() {
 	}
 
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
@@ -57,7 +57,8 @@ public class GPServlet extends HttpServlet {
 		Base64 base64 = new Base64();
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		String result = "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF";
-
+		int aid = 0;
+		String resultString = "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF";
 		try {
 			BufferedReader sis = req.getReader();
 			char[] buf = new char[1024];
@@ -87,14 +88,15 @@ public class GPServlet extends HttpServlet {
 			stmt = conn.createStatement();
 
 			rs = stmt
-					.executeQuery("select * from t_mbzs where machine_code = '"
+					.executeQuery("select * from t_machine where machine_code = '"
 							+ lmc + "'");
 			// System.out.println("select * from t_qqgm where machine_code = '"+lmc+"'");
 			// sdf.format(Calendar.getInstance().getTime())
-
+			
 			if (rs.next()) {
 				// System.out.println("1");
 				String expire = rs.getString("expire");
+				aid = rs.getInt("aid");
 				System.out.println(expire);
 				long itv = sdf.parse(expire).getTime()
 						- Calendar.getInstance().getTime().getTime();
@@ -138,33 +140,41 @@ public class GPServlet extends HttpServlet {
 	
 				String content = new String(decrypted);
 	
-				String[] cts = content.split("&");
-				String password = cts[0].split("=")[1];
-				String salt = cts[1].split("=")[1];
-				String vcode = cts[2].split("=")[1];
-	
-				byte[] rsx = Converts.MD5Encode(password.getBytes());
-				int psz = rsx.length;
-	
-				byte[] rsb = new byte[psz + 8];
-				for (int i = 0; i < psz; i++) {
-					rsb[i] = rsx[i];
+				if(aid==1){//密保助手
+					String[] cts = content.split("&");
+					String password = cts[0].split("=")[1];
+					String salt = cts[1].split("=")[1];
+					String vcode = cts[2].split("=")[1];
+		
+					byte[] rsx = Converts.MD5Encode(password.getBytes());
+					int psz = rsx.length;
+		
+					byte[] rsb = new byte[psz + 8];
+					for (int i = 0; i < psz; i++) {
+						rsb[i] = rsx[i];
+					}
+		
+					salt = salt.substring(2);
+		
+					String[] salts = salt.split("\\\\x");
+		
+					for (int i = 0; i < salts.length; i++) {
+						rsb[psz + i] = (byte) Integer.parseInt(salts[i], 16);
+					}
+		
+					rsx = Converts.MD5Encode(rsb);
+					resultString = Converts.bytesToHexString(rsx).toUpperCase();
+					rsx = Converts.MD5Encode((resultString + vcode.toUpperCase())
+							.getBytes());
+		
+					resultString = Converts.bytesToHexString(rsx).toUpperCase();
+				}else if(aid==2){//申诉助手
+					resultString = "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF2";
+				}else if(aid==3){//QQ在线
+					resultString = "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF3";
+				}else{
+					resultString = "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF0";
 				}
-	
-				salt = salt.substring(2);
-	
-				String[] salts = salt.split("\\\\x");
-	
-				for (int i = 0; i < salts.length; i++) {
-					rsb[psz + i] = (byte) Integer.parseInt(salts[i], 16);
-				}
-	
-				rsx = Converts.MD5Encode(rsb);
-				String resultString = Converts.bytesToHexString(rsx).toUpperCase();
-				rsx = Converts.MD5Encode((resultString + vcode.toUpperCase())
-						.getBytes());
-	
-				resultString = Converts.bytesToHexString(rsx).toUpperCase();
 				result = resultString;
 			}else{
 				result = "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF";	

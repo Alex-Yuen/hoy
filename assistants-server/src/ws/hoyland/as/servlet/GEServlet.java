@@ -71,7 +71,7 @@ public class GEServlet extends HttpServlet {
 			conn = ds.getConnection();
 			stmt = conn.createStatement();
 			
-			rs = stmt.executeQuery("select * from t_mbzs where machine_code = '"+lmc+"'");
+			rs = stmt.executeQuery("select * from t_machine where machine_code = '"+lmc+"'");
 			//System.out.println("select * from t_qqgm where machine_code = '"+lmc+"'");
 			//sdf.format(Calendar.getInstance().getTime())
 			
