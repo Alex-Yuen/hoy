@@ -9,6 +9,8 @@ using System.Windows.Forms;
 using ws.hoyland.util;
 using System.Configuration;
 using System.Globalization;
+using System.Threading;
+using System.IO;
 
 namespace ws.hoyland.sszs
 {
@@ -21,6 +23,10 @@ namespace ws.hoyland.sszs
         private DataTable table1 = new DataTable();
         private DataTable table2 = new DataTable();
         private Configuration cfa = null;
+
+        private int first = -1;
+        private int last = -1;
+        private int mfirst = -1;
 
         public SSZS()
         {
@@ -341,33 +347,83 @@ namespace ws.hoyland.sszs
                     this.BeginInvoke(dlg);
                     break;
                 case EngineMessageType.OM_READY:
-				 dlg = delegate
-                            {
-						button2.Enabled = true;
-					};		
-				this.BeginInvoke(dlg);
-				break;
-			case EngineMessageType.OM_UNREADY:
-				 dlg = delegate
-                            {
-                                button2.Enabled = false;
-					};
-                 this.BeginInvoke(dlg);
-				break;
+                    dlg = delegate
+                               {
+                                   button2.Enabled = true;
+                               };
+                    this.BeginInvoke(dlg);
+                    break;
+                case EngineMessageType.OM_UNREADY:
+                    dlg = delegate
+                               {
+                                   button2.Enabled = false;
+                               };
+                    this.BeginInvoke(dlg);
+                    break;
                 case EngineMessageType.OM_CHECKEXP:
                     dlg = delegate()
                     {
                         int expire = (Int32)msg.getData();
                         if (expire <= 0)
                         {
-                           new Expire().ShowDialog();//Show("此机器授权已经过期:" + byteArrayToHexString(mc).ToUpper());
-                           Application.Exit();
+                            new Expire().ShowDialog();//Show("此机器授权已经过期:" + byteArrayToHexString(mc).ToUpper());
+                            Application.Exit();
                         }
                         else
                         {
-                           //Console.WriteLine(byteArrayToHexString(mc).ToUpper());
-                           this.Text += "        [到期时间: " + DateTime.Now.AddDays(expire).ToString("yyyy-MM-dd", DateTimeFormatInfo.InvariantInfo) + "]";
+                            //Console.WriteLine(byteArrayToHexString(mc).ToUpper());
+                            this.Text += "        [到期时间: " + DateTime.Now.AddDays(expire).ToString("yyyy-MM-dd", DateTimeFormatInfo.InvariantInfo) + "]";
                         }
+                    };
+                    this.BeginInvoke(dlg);
+                    break;
+                case EngineMessageType.OM_RUNNING:
+                    dlg = delegate()
+                    {
+                        if ((Boolean)msg.getData())
+                        {
+                            toolStripStatusLabel1.Text = "正在运行...";
+                            button2.Text = "停止";
+                            button3.Enabled = true;
+                        }
+                        else
+                        {
+                            first = -1;
+                            last = -1;
+                            mfirst = -1;
+                            toolStripStatusLabel1.Text = "运行停止";
+                            button2.Text = "开始";
+                            button3.Enabled = false;
+                        }
+                    };
+                    this.BeginInvoke(dlg);
+                    break;
+                case EngineMessageType.OM_IMAGE_DATA:
+                    dlg = delegate()
+                    {
+                        MemoryStream ms = (MemoryStream)msg.getData();
+                        pictureBox1.Image = Image.FromStream(ms);
+                        ms.Close();
+                    };
+                    this.BeginInvoke(dlg);
+                    break;
+                case EngineMessageType.OM_INFO:
+                    dlg = delegate()
+                    {
+                        table1.Rows[msg.getTid() - 1][3] = (String)msg.getData();
+
+                        dataGridView1.FirstDisplayedScrollingRowIndex = msg.getTid() - 1;
+
+                    };
+                    this.BeginInvoke(dlg);
+                    break;
+                case EngineMessageType.OM_REQUIRE_MAIL:
+                    dlg = delegate()
+                    {
+                        int mid = Int32.Parse(((String[])msg.getData())[0]);
+                        int mc = Int32.Parse(table2.Rows[msg.getTid() - 1][3].ToString()) + 1;
+                        table2.Rows[msg.getTid() - 1][3] = mc.ToString();
+                        dataGridView2.FirstDisplayedScrollingRowIndex = mid - 1;
                     };
                     this.BeginInvoke(dlg);
                     break;
@@ -479,6 +535,155 @@ namespace ws.hoyland.sszs
             if (e.KeyCode == Keys.Enter)
             {
                 button1.PerformClick();
+            }
+        }
+
+        private void button2_Click_1(object sender, EventArgs e)
+        {
+            if (first == -1)
+            {
+                first = 0;
+            }
+            if (last == -1)
+            {
+                last = dataGridView1.RowCount - 2;//table.getItemCount() - 1;
+            }
+
+            Thread t = new Thread(new ThreadStart(() =>
+            {
+                Int32[] flidx = new Int32[3];
+                flidx[0] = first;
+                flidx[1] = last;
+                flidx[2] = mfirst;
+                EngineMessage message = new EngineMessage();
+                message.setType(EngineMessageType.IM_PROCESS);
+                message.setData(flidx);
+                Engine.getInstance().fire(message);
+            }));
+            t.Start();
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            if ("暂停".Equals(button3.Text))
+            {
+                button3.Text = "继续";
+            }
+            else
+            {
+                button3.Text = "暂停";
+            }
+
+            EngineMessage message = new EngineMessage();
+            message.setType(EngineMessageType.IM_PAUSE);
+            Engine.getInstance().fire(message);
+        }
+
+        private void 只执行选定行LToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (dataGridView1.SelectedRows.Count == 0)
+            {
+                return;
+            }
+
+            first =  dataGridView1.SelectedRows[0].Index;
+            last = first;
+
+            button2.PerformClick();
+        }
+
+        private void 从选定行开始执行ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (dataGridView1.SelectedRows.Count == 0)
+            {
+                return;
+            }
+
+            first = dataGridView1.SelectedRows[0].Index;
+            last = dataGridView1.RowCount - 2;
+
+            button2.PerformClick();
+        }
+
+        private void 复制CToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (dataGridView1.SelectedRows.Count == 0)
+            {
+                return;
+            }
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < dataGridView1.SelectedRows.Count; i++)
+            {
+                sb.Append(table1.Rows[dataGridView1.SelectedRows[i].Index][0] + "----" + table1.Rows[dataGridView1.SelectedRows[i].Index][1] + "----" + table1.Rows[dataGridView1.SelectedRows[i].Index][2] + "----" + table1.Rows[dataGridView1.SelectedRows[i].Index][3] + "\r\n");
+                //System.out.println("OK");
+            }
+
+            Clipboard.SetDataObject(sb.ToString()); 
+        }
+
+        private void dataGridView1_SelectionChanged(object sender, EventArgs e)
+        {
+            if (dataGridView1.SelectedRows.Count == 0)
+            {
+                复制CToolStripMenuItem.Enabled = false;
+                只执行选定行LToolStripMenuItem.Enabled = false;
+                从选定行开始执行ToolStripMenuItem.Enabled = false;
+            }
+            else
+            {
+                if (button2.Enabled)
+                {
+                    只执行选定行LToolStripMenuItem.Enabled = true;
+                    从选定行开始执行ToolStripMenuItem.Enabled = true;
+                }
+                复制CToolStripMenuItem.Enabled = true;
+            }
+        }
+
+        private void 复制CToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            if (dataGridView2.SelectedRows.Count == 0)
+            {
+                return;
+            }
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < dataGridView2.SelectedRows.Count; i++)
+            {
+                sb.Append(table2.Rows[dataGridView2.SelectedRows[i].Index][0] + "----" + table2.Rows[dataGridView2.SelectedRows[i].Index][1] + "----" + table2.Rows[dataGridView2.SelectedRows[i].Index][2] + "----" + table2.Rows[dataGridView2.SelectedRows[i].Index][3] + "\r\n");
+                //System.out.println("OK");
+            }
+
+            Clipboard.SetDataObject(sb.ToString()); 
+
+        }
+
+        private void dataGridView2_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            if (dataGridView2.SelectedRows.Count == 0)
+            {
+                return;
+            }
+            int lidx = dataGridView2.SelectedRows[0].Index;
+            for (int i = 0; i < lidx; i++)
+            {
+                dataGridView2.Rows[i].DefaultCellStyle.BackColor = Color.Gray;
+            }
+            for (int i = lidx; i < dataGridView2.RowCount; i++)
+            {
+                dataGridView2.Rows[i].DefaultCellStyle.BackColor = Color.White;
+            }
+            mfirst = lidx;
+        }
+
+        private void dataGridView2_SelectionChanged(object sender, EventArgs e)
+        {
+            if (dataGridView2.SelectedRows.Count == 0)
+            {
+                复制CToolStripMenuItem1.Enabled = false;
+            }
+            else
+            {
+                复制CToolStripMenuItem1.Enabled = true;
             }
         }
     }

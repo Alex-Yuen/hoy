@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SSZS));
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.wenjianToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -65,9 +66,12 @@
             this.panel5 = new System.Windows.Forms.Panel();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.panel3 = new System.Windows.Forms.Panel();
+            this.button3 = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.loginpanel = new System.Windows.Forms.Panel();
+            this.label18 = new System.Windows.Forms.Label();
+            this.label17 = new System.Windows.Forms.Label();
             this.label16 = new System.Windows.Forms.Label();
             this.label15 = new System.Windows.Forms.Label();
             this.checkBox2 = new System.Windows.Forms.CheckBox();
@@ -89,8 +93,13 @@
             this.dataGridView2 = new System.Windows.Forms.DataGridView();
             this.panel8 = new System.Windows.Forms.Panel();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
-            this.label17 = new System.Windows.Forms.Label();
-            this.label18 = new System.Windows.Forms.Label();
+            this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.只执行选定行LToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.从选定行开始执行ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.复制CToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripSeparator();
+            this.contextMenuStrip2 = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.复制CToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.panel2.SuspendLayout();
@@ -109,6 +118,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView2)).BeginInit();
             this.panel8.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
+            this.contextMenuStrip1.SuspendLayout();
+            this.contextMenuStrip2.SuspendLayout();
             this.SuspendLayout();
             // 
             // menuStrip1
@@ -443,6 +454,7 @@
             // 
             // panel3
             // 
+            this.panel3.Controls.Add(this.button3);
             this.panel3.Controls.Add(this.button2);
             this.panel3.Dock = System.Windows.Forms.DockStyle.Right;
             this.panel3.Location = new System.Drawing.Point(388, 0);
@@ -450,15 +462,27 @@
             this.panel3.Size = new System.Drawing.Size(182, 87);
             this.panel3.TabIndex = 8;
             // 
+            // button3
+            // 
+            this.button3.Enabled = false;
+            this.button3.Location = new System.Drawing.Point(17, 49);
+            this.button3.Name = "button3";
+            this.button3.Size = new System.Drawing.Size(150, 29);
+            this.button3.TabIndex = 5;
+            this.button3.Text = "暂停";
+            this.button3.UseVisualStyleBackColor = true;
+            this.button3.Click += new System.EventHandler(this.button3_Click);
+            // 
             // button2
             // 
             this.button2.Enabled = false;
-            this.button2.Location = new System.Drawing.Point(15, 19);
+            this.button2.Location = new System.Drawing.Point(17, 10);
             this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(150, 50);
+            this.button2.Size = new System.Drawing.Size(150, 29);
             this.button2.TabIndex = 4;
             this.button2.Text = "开始";
             this.button2.UseVisualStyleBackColor = true;
+            this.button2.Click += new System.EventHandler(this.button2_Click_1);
             // 
             // groupBox2
             // 
@@ -490,6 +514,24 @@
             this.loginpanel.Name = "loginpanel";
             this.loginpanel.Size = new System.Drawing.Size(212, 189);
             this.loginpanel.TabIndex = 0;
+            // 
+            // label18
+            // 
+            this.label18.AutoSize = true;
+            this.label18.Location = new System.Drawing.Point(53, 77);
+            this.label18.Name = "label18";
+            this.label18.Size = new System.Drawing.Size(0, 12);
+            this.label18.TabIndex = 11;
+            this.label18.Visible = false;
+            // 
+            // label17
+            // 
+            this.label17.AutoSize = true;
+            this.label17.Location = new System.Drawing.Point(54, 51);
+            this.label17.Name = "label17";
+            this.label17.Size = new System.Drawing.Size(0, 12);
+            this.label17.TabIndex = 10;
+            this.label17.Visible = false;
             // 
             // label16
             // 
@@ -668,12 +710,15 @@
             // dataGridView2
             // 
             this.dataGridView2.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGridView2.ContextMenuStrip = this.contextMenuStrip2;
             this.dataGridView2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dataGridView2.Location = new System.Drawing.Point(0, 0);
             this.dataGridView2.Name = "dataGridView2";
             this.dataGridView2.RowTemplate.Height = 23;
             this.dataGridView2.Size = new System.Drawing.Size(388, 277);
             this.dataGridView2.TabIndex = 1;
+            this.dataGridView2.SelectionChanged += new System.EventHandler(this.dataGridView2_SelectionChanged);
+            this.dataGridView2.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.dataGridView2_MouseDoubleClick);
             // 
             // panel8
             // 
@@ -687,30 +732,68 @@
             // dataGridView1
             // 
             this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGridView1.ContextMenuStrip = this.contextMenuStrip1;
             this.dataGridView1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dataGridView1.Location = new System.Drawing.Point(0, 0);
             this.dataGridView1.Name = "dataGridView1";
             this.dataGridView1.RowTemplate.Height = 23;
             this.dataGridView1.Size = new System.Drawing.Size(406, 277);
             this.dataGridView1.TabIndex = 0;
+            this.dataGridView1.SelectionChanged += new System.EventHandler(this.dataGridView1_SelectionChanged);
             // 
-            // label17
+            // contextMenuStrip1
             // 
-            this.label17.AutoSize = true;
-            this.label17.Location = new System.Drawing.Point(54, 51);
-            this.label17.Name = "label17";
-            this.label17.Size = new System.Drawing.Size(0, 12);
-            this.label17.TabIndex = 10;
-            this.label17.Visible = false;
+            this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.只执行选定行LToolStripMenuItem,
+            this.从选定行开始执行ToolStripMenuItem,
+            this.toolStripMenuItem2,
+            this.复制CToolStripMenuItem});
+            this.contextMenuStrip1.Name = "contextMenuStrip1";
+            this.contextMenuStrip1.Size = new System.Drawing.Size(188, 76);
             // 
-            // label18
+            // 只执行选定行LToolStripMenuItem
             // 
-            this.label18.AutoSize = true;
-            this.label18.Location = new System.Drawing.Point(53, 77);
-            this.label18.Name = "label18";
-            this.label18.Size = new System.Drawing.Size(0, 12);
-            this.label18.TabIndex = 11;
-            this.label18.Visible = false;
+            this.只执行选定行LToolStripMenuItem.Enabled = false;
+            this.只执行选定行LToolStripMenuItem.Name = "只执行选定行LToolStripMenuItem";
+            this.只执行选定行LToolStripMenuItem.Size = new System.Drawing.Size(187, 22);
+            this.只执行选定行LToolStripMenuItem.Text = "只执行选定行(&L)";
+            this.只执行选定行LToolStripMenuItem.Click += new System.EventHandler(this.只执行选定行LToolStripMenuItem_Click);
+            // 
+            // 从选定行开始执行ToolStripMenuItem
+            // 
+            this.从选定行开始执行ToolStripMenuItem.Enabled = false;
+            this.从选定行开始执行ToolStripMenuItem.Name = "从选定行开始执行ToolStripMenuItem";
+            this.从选定行开始执行ToolStripMenuItem.Size = new System.Drawing.Size(187, 22);
+            this.从选定行开始执行ToolStripMenuItem.Text = "从选定行开始执行(&S)";
+            this.从选定行开始执行ToolStripMenuItem.Click += new System.EventHandler(this.从选定行开始执行ToolStripMenuItem_Click);
+            // 
+            // 复制CToolStripMenuItem
+            // 
+            this.复制CToolStripMenuItem.Enabled = false;
+            this.复制CToolStripMenuItem.Name = "复制CToolStripMenuItem";
+            this.复制CToolStripMenuItem.Size = new System.Drawing.Size(187, 22);
+            this.复制CToolStripMenuItem.Text = "复制(&C)";
+            this.复制CToolStripMenuItem.Click += new System.EventHandler(this.复制CToolStripMenuItem_Click);
+            // 
+            // toolStripMenuItem2
+            // 
+            this.toolStripMenuItem2.Name = "toolStripMenuItem2";
+            this.toolStripMenuItem2.Size = new System.Drawing.Size(184, 6);
+            // 
+            // contextMenuStrip2
+            // 
+            this.contextMenuStrip2.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.复制CToolStripMenuItem1});
+            this.contextMenuStrip2.Name = "contextMenuStrip2";
+            this.contextMenuStrip2.Size = new System.Drawing.Size(117, 26);
+            // 
+            // 复制CToolStripMenuItem1
+            // 
+            this.复制CToolStripMenuItem1.Enabled = false;
+            this.复制CToolStripMenuItem1.Name = "复制CToolStripMenuItem1";
+            this.复制CToolStripMenuItem1.Size = new System.Drawing.Size(152, 22);
+            this.复制CToolStripMenuItem1.Text = "复制(&C)";
+            this.复制CToolStripMenuItem1.Click += new System.EventHandler(this.复制CToolStripMenuItem1_Click);
             // 
             // SSZS
             // 
@@ -755,6 +838,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView2)).EndInit();
             this.panel8.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
+            this.contextMenuStrip1.ResumeLayout(false);
+            this.contextMenuStrip2.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -824,6 +909,14 @@
         private System.Windows.Forms.ToolStripButton toolStripButton5;
         private System.Windows.Forms.Label label18;
         private System.Windows.Forms.Label label17;
+        private System.Windows.Forms.Button button3;
+        private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
+        private System.Windows.Forms.ToolStripMenuItem 只执行选定行LToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem 从选定行开始执行ToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem 复制CToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripMenuItem2;
+        private System.Windows.Forms.ContextMenuStrip contextMenuStrip2;
+        private System.Windows.Forms.ToolStripMenuItem 复制CToolStripMenuItem1;
     }
 }
 

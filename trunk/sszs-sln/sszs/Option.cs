@@ -100,6 +100,10 @@ namespace ws.hoyland.sszs
                 cfa.AppSettings.Settings["THREAD_COUNT"].Value = numericUpDown1.Value.ToString();
                 cfa.AppSettings.Settings["TOOL_COUNT"].Value = numericUpDown3.Value.ToString();
 
+                cfa.AppSettings.Settings["STOP_FLAG"].Value = checkBox2.Checked.ToString();
+                cfa.AppSettings.Settings["STOP_FLAG_F1"].Value = numericUpDown12.Value.ToString();
+                cfa.AppSettings.Settings["STOP_FLAG_F2"].Value = numericUpDown11.Value.ToString();
+
                 cfa.AppSettings.Settings["REC_FLAG"].Value = checkBox5.Checked.ToString();
                 cfa.AppSettings.Settings["REC_FLAG_F1"].Value = numericUpDown5.Value.ToString();
                 cfa.AppSettings.Settings["REC_FLAG_F2"].Value = numericUpDown6.Value.ToString();
@@ -164,7 +168,24 @@ namespace ws.hoyland.sszs
 
                 numericUpDown1.Value = Decimal.Parse(cfa.AppSettings.Settings["THREAD_COUNT"].Value);
                 numericUpDown3.Value = Decimal.Parse(cfa.AppSettings.Settings["TOOL_COUNT"].Value);
-                
+
+
+                if ("True".Equals(cfa.AppSettings.Settings["STOP_FLAG"].Value))
+                {
+                    checkBox2.Checked = true;
+                    numericUpDown12.Enabled = true;
+                    numericUpDown11.Enabled = true;
+                }
+                else
+                {
+                    checkBox2.Checked = false;
+                    numericUpDown12.Enabled = false;
+                    numericUpDown11.Enabled = false;
+                }
+
+                numericUpDown12.Value = Decimal.Parse(cfa.AppSettings.Settings["STOP_FLAG_F1"].Value);
+                numericUpDown11.Value = Decimal.Parse(cfa.AppSettings.Settings["STOP_FLAG_F2"].Value);
+
                 //高级
                 //ADSL
                 List<string> adls = Util.GetAllAdslName();
@@ -374,6 +395,20 @@ namespace ws.hoyland.sszs
             comboBox7.Items.Clear();
             comboBox7.Items.AddRange(cities[comboBox4.SelectedIndex]);
             comboBox7.SelectedIndex = 0;
+        }
+
+        private void checkBox2_CheckedChanged(object sender, EventArgs e)
+        {
+            if (checkBox2.Checked)
+            {
+                numericUpDown12.Enabled = true;
+                numericUpDown11.Enabled = true;
+            }
+            else
+            {
+                numericUpDown12.Enabled = false;
+                numericUpDown11.Enabled = false;
+            }
         }
 
         // #endregion

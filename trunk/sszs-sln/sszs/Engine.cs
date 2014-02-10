@@ -321,7 +321,7 @@ namespace ws.hoyland.sszs
 
                     if (running)
                     {
-                        recflag = cfa.AppSettings.Settings["REC_TYPE"].Value; //每次开始，读一次
+                        recflag = cfa.AppSettings.Settings["REC_FLAG"].Value; //每次开始，读一次
                         //创建日志文件
                         //long tm = System.currentTimeMillis();
                         String tm = DateTime.Now.ToString("yyyy年MM月dd日 hh时mm分ss秒", DateTimeFormatInfo.InvariantInfo);
@@ -428,9 +428,9 @@ namespace ws.hoyland.sszs
                 case EngineMessageType.IM_START:
                     //优先处理暂停
                     pausec++;
-                    atpausec = Int32.Parse(cfa.AppSettings.Settings["ACC_ITV_COUNT"].Value);
+                    atpausec = Int32.Parse(cfa.AppSettings.Settings["STOP_FLAG_F1"].Value);
                     //暂停通知的触发
-                    if ("True".Equals(cfa.AppSettings.Settings["ACC_ITV_FLAG"].Value) && pausec == atpausec)
+                    if ("True".Equals(cfa.AppSettings.Settings["STOP_FLAG"].Value) && pausec == atpausec)
                     {
                         pausec = 0;
 
@@ -444,9 +444,9 @@ namespace ws.hoyland.sszs
                     }
 
                     recc++;
-                    atrecc = Int32.Parse(cfa.AppSettings.Settings["AUTO_RECON"].Value);
+                    atrecc = Int32.Parse(cfa.AppSettings.Settings["REC_FLAG_F1"].Value);
                     //System.err.println("通知重拨:"+atrecc+"/"+recc+"/"+frecc);
-                    if (atrecc != 0 && atrecc == recc)
+                    if ("True".Equals(cfa.AppSettings.Settings["REC_FLAG"].Value) && atrecc == recc)//atrecc != 0
                     {//重拨的触发条件
                         recc = 0;
 
@@ -515,15 +515,15 @@ namespace ws.hoyland.sszs
                     }
 
                     fpausec++;
-                    atpausec = Int32.Parse(cfa.AppSettings.Settings["ACC_ITV_COUNT"].Value);
+                    atpausec = Int32.Parse(cfa.AppSettings.Settings["STOP_FLAG_F1"].Value);
                     //执行暂停
-                    if ("True".Equals(cfa.AppSettings.Settings["ACC_ITV_FLAG"].Value) && fpausec == atpausec)
+                    if ("True".Equals(cfa.AppSettings.Settings["STOP_FLAG"].Value) && fpausec == atpausec)
                     {
                         fpausec = 0;
                         try
                         {
                             //System.err.println("自动暂停...");
-                            Thread.Sleep(60 * 1000 * Int32.Parse(cfa.AppSettings.Settings["ACC_ITV_PERIOD"].Value));
+                            Thread.Sleep(60 * 1000 * Int32.Parse(cfa.AppSettings.Settings["STOP_FLAG_F2"].Value));
 
                             //所有线程切换状态
                             msg = new EngineMessage();
@@ -556,12 +556,12 @@ namespace ws.hoyland.sszs
 
                     frecc++;
 
-                    atrecc = Int32.Parse(cfa.AppSettings.Settings["AUTO_RECON"].Value);
+                    atrecc = Int32.Parse(cfa.AppSettings.Settings["REC_FLAG_F1"].Value);
                     //System.err.println(atrecc+"/"+frecc+"/"+freq+"/"+recc);
                     //System.err.println("ACT:"+pool.getActiveCount());
                     //只剩下当前线程，因为START时候发出停止新后之后，可能有遗漏线程已经开始执行了，需等待最后一个线程执行完毕
 
-                    if ((atrecc != 0 && atrecc == frecc) || (freq == true && frecc == recc))
+                    if (("True".Equals(cfa.AppSettings.Settings["REC_FLAG"].Value) && atrecc == frecc) || (freq == true && frecc == recc))//atrecc != 0
                     {//执行重拨 第二个条件不一定可行
                         //System.err.println("Y0");
                         if (freq == true && frecc == recc)

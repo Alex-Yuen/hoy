@@ -35,6 +35,12 @@
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.comboBox7 = new System.Windows.Forms.ComboBox();
+            this.comboBox6 = new System.Windows.Forms.ComboBox();
+            this.comboBox5 = new System.Windows.Forms.ComboBox();
+            this.label16 = new System.Windows.Forms.Label();
+            this.label15 = new System.Windows.Forms.Label();
+            this.label14 = new System.Windows.Forms.Label();
             this.comboBox4 = new System.Windows.Forms.ComboBox();
             this.comboBox3 = new System.Windows.Forms.ComboBox();
             this.comboBox2 = new System.Windows.Forms.ComboBox();
@@ -73,12 +79,11 @@
             this.label3 = new System.Windows.Forms.Label();
             this.numericUpDown1 = new System.Windows.Forms.NumericUpDown();
             this.label1 = new System.Windows.Forms.Label();
-            this.label14 = new System.Windows.Forms.Label();
-            this.label15 = new System.Windows.Forms.Label();
-            this.label16 = new System.Windows.Forms.Label();
-            this.comboBox5 = new System.Windows.Forms.ComboBox();
-            this.comboBox6 = new System.Windows.Forms.ComboBox();
-            this.comboBox7 = new System.Windows.Forms.ComboBox();
+            this.label17 = new System.Windows.Forms.Label();
+            this.numericUpDown11 = new System.Windows.Forms.NumericUpDown();
+            this.label18 = new System.Windows.Forms.Label();
+            this.checkBox2 = new System.Windows.Forms.CheckBox();
+            this.numericUpDown12 = new System.Windows.Forms.NumericUpDown();
             this.panel1.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
@@ -97,6 +102,8 @@
             this.panel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown3)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown11)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown12)).BeginInit();
             this.SuspendLayout();
             // 
             // panel1
@@ -170,6 +177,63 @@
             this.groupBox2.TabIndex = 12;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "常用QQ的地点";
+            // 
+            // comboBox7
+            // 
+            this.comboBox7.FormattingEnabled = true;
+            this.comboBox7.Items.AddRange(new object[] {
+            "城市"});
+            this.comboBox7.Location = new System.Drawing.Point(167, 78);
+            this.comboBox7.Name = "comboBox7";
+            this.comboBox7.Size = new System.Drawing.Size(185, 20);
+            this.comboBox7.TabIndex = 26;
+            // 
+            // comboBox6
+            // 
+            this.comboBox6.FormattingEnabled = true;
+            this.comboBox6.Items.AddRange(new object[] {
+            "城市"});
+            this.comboBox6.Location = new System.Drawing.Point(167, 51);
+            this.comboBox6.Name = "comboBox6";
+            this.comboBox6.Size = new System.Drawing.Size(185, 20);
+            this.comboBox6.TabIndex = 25;
+            // 
+            // comboBox5
+            // 
+            this.comboBox5.FormattingEnabled = true;
+            this.comboBox5.Items.AddRange(new object[] {
+            "城市"});
+            this.comboBox5.Location = new System.Drawing.Point(167, 22);
+            this.comboBox5.Name = "comboBox5";
+            this.comboBox5.Size = new System.Drawing.Size(185, 20);
+            this.comboBox5.TabIndex = 24;
+            // 
+            // label16
+            // 
+            this.label16.AutoSize = true;
+            this.label16.Location = new System.Drawing.Point(8, 82);
+            this.label16.Name = "label16";
+            this.label16.Size = new System.Drawing.Size(41, 12);
+            this.label16.TabIndex = 23;
+            this.label16.Text = "2012年";
+            // 
+            // label15
+            // 
+            this.label15.AutoSize = true;
+            this.label15.Location = new System.Drawing.Point(8, 55);
+            this.label15.Name = "label15";
+            this.label15.Size = new System.Drawing.Size(41, 12);
+            this.label15.TabIndex = 22;
+            this.label15.Text = "2013年";
+            // 
+            // label14
+            // 
+            this.label14.AutoSize = true;
+            this.label14.Location = new System.Drawing.Point(8, 26);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(41, 12);
+            this.label14.TabIndex = 21;
+            this.label14.Text = "2014年";
             // 
             // comboBox4
             // 
@@ -308,6 +372,11 @@
             // 
             // panel3
             // 
+            this.panel3.Controls.Add(this.label17);
+            this.panel3.Controls.Add(this.numericUpDown11);
+            this.panel3.Controls.Add(this.label18);
+            this.panel3.Controls.Add(this.checkBox2);
+            this.panel3.Controls.Add(this.numericUpDown12);
             this.panel3.Controls.Add(this.label10);
             this.panel3.Controls.Add(this.label2);
             this.panel3.Controls.Add(this.numericUpDown2);
@@ -771,62 +840,75 @@
             this.label1.TabIndex = 18;
             this.label1.Text = "申诉线程:";
             // 
-            // label14
+            // label17
             // 
-            this.label14.AutoSize = true;
-            this.label14.Location = new System.Drawing.Point(8, 26);
-            this.label14.Name = "label14";
-            this.label14.Size = new System.Drawing.Size(41, 12);
-            this.label14.TabIndex = 21;
-            this.label14.Text = "2014年";
+            this.label17.AutoSize = true;
+            this.label17.Location = new System.Drawing.Point(243, 41);
+            this.label17.Name = "label17";
+            this.label17.Size = new System.Drawing.Size(29, 12);
+            this.label17.TabIndex = 26;
+            this.label17.Text = "分钟";
             // 
-            // label15
+            // numericUpDown11
             // 
-            this.label15.AutoSize = true;
-            this.label15.Location = new System.Drawing.Point(8, 55);
-            this.label15.Name = "label15";
-            this.label15.Size = new System.Drawing.Size(41, 12);
-            this.label15.TabIndex = 22;
-            this.label15.Text = "2013年";
+            this.numericUpDown11.Enabled = false;
+            this.numericUpDown11.Location = new System.Drawing.Point(186, 37);
+            this.numericUpDown11.Maximum = new decimal(new int[] {
+            6000,
+            0,
+            0,
+            0});
+            this.numericUpDown11.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.numericUpDown11.Name = "numericUpDown11";
+            this.numericUpDown11.Size = new System.Drawing.Size(51, 21);
+            this.numericUpDown11.TabIndex = 25;
+            this.numericUpDown11.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
             // 
-            // label16
+            // label18
             // 
-            this.label16.AutoSize = true;
-            this.label16.Location = new System.Drawing.Point(8, 82);
-            this.label16.Name = "label16";
-            this.label16.Size = new System.Drawing.Size(41, 12);
-            this.label16.TabIndex = 23;
-            this.label16.Text = "2012年";
+            this.label18.AutoSize = true;
+            this.label18.Location = new System.Drawing.Point(100, 41);
+            this.label18.Name = "label18";
+            this.label18.Size = new System.Drawing.Size(83, 12);
+            this.label18.TabIndex = 24;
+            this.label18.Text = "个帐号， 暂停";
             // 
-            // comboBox5
+            // checkBox2
             // 
-            this.comboBox5.FormattingEnabled = true;
-            this.comboBox5.Items.AddRange(new object[] {
-            "城市"});
-            this.comboBox5.Location = new System.Drawing.Point(167, 22);
-            this.comboBox5.Name = "comboBox5";
-            this.comboBox5.Size = new System.Drawing.Size(185, 20);
-            this.comboBox5.TabIndex = 24;
+            this.checkBox2.AutoSize = true;
+            this.checkBox2.Location = new System.Drawing.Point(10, 39);
+            this.checkBox2.Name = "checkBox2";
+            this.checkBox2.Size = new System.Drawing.Size(36, 16);
+            this.checkBox2.TabIndex = 23;
+            this.checkBox2.Text = "每";
+            this.checkBox2.UseVisualStyleBackColor = true;
+            this.checkBox2.CheckedChanged += new System.EventHandler(this.checkBox2_CheckedChanged);
             // 
-            // comboBox6
+            // numericUpDown12
             // 
-            this.comboBox6.FormattingEnabled = true;
-            this.comboBox6.Items.AddRange(new object[] {
-            "城市"});
-            this.comboBox6.Location = new System.Drawing.Point(167, 51);
-            this.comboBox6.Name = "comboBox6";
-            this.comboBox6.Size = new System.Drawing.Size(185, 20);
-            this.comboBox6.TabIndex = 25;
-            // 
-            // comboBox7
-            // 
-            this.comboBox7.FormattingEnabled = true;
-            this.comboBox7.Items.AddRange(new object[] {
-            "城市"});
-            this.comboBox7.Location = new System.Drawing.Point(167, 78);
-            this.comboBox7.Name = "comboBox7";
-            this.comboBox7.Size = new System.Drawing.Size(185, 20);
-            this.comboBox7.TabIndex = 26;
+            this.numericUpDown12.Enabled = false;
+            this.numericUpDown12.Location = new System.Drawing.Point(52, 37);
+            this.numericUpDown12.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.numericUpDown12.Name = "numericUpDown12";
+            this.numericUpDown12.Size = new System.Drawing.Size(42, 21);
+            this.numericUpDown12.TabIndex = 22;
+            this.numericUpDown12.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
             // 
             // Option
             // 
@@ -868,6 +950,8 @@
             this.panel2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown3)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown11)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown12)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -924,6 +1008,11 @@
         private System.Windows.Forms.Label label16;
         private System.Windows.Forms.Label label15;
         private System.Windows.Forms.Label label14;
+        private System.Windows.Forms.Label label17;
+        private System.Windows.Forms.NumericUpDown numericUpDown11;
+        private System.Windows.Forms.Label label18;
+        private System.Windows.Forms.CheckBox checkBox2;
+        private System.Windows.Forms.NumericUpDown numericUpDown12;
 
     }
 }
