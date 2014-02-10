@@ -536,30 +536,30 @@ namespace ws.hoyland.sszs
                     }
                     break;
                 case 9: // 收邮件 
-                    info("等待" + itv + "秒，接收邮件[确认]");
                     try
                     {
-                        try
+                        if (recgreturn == 3)
                         {
-                            Thread.Sleep(1000 * itv);
+                            info("等待" + itv + "秒，接收邮件[确认]");
+                            try
+                            {
+                                Thread.Sleep(1000 * itv);
+                            }
+                            catch (Exception)
+                            {
+                                sf = true;
+                                Thread.Sleep(1000 * 4); //意外中断，继续等待
+                            }
                         }
-                        catch (Exception)
-                        {
-                            sf = true;
-                            Thread.Sleep(1000 * 4); //意外中断，继续等待
-                        }
-
-                        //init
-                        rc = null;
-                        tcconfirm = 0;
-
+                        
                         url =
                                 "https://w.mail.qq.com/cgi-bin/login";
 
                         content = "uin=" + this.mail + "&aliastype=@qq.com&tmss=1&pwd=" + this.mpwd + "&f=wml&spcache=&plain=&mtk=&delegate_url=";
                         if (recgreturn == 9)
                         {
-                            content += "&verifycode" + result;
+                            content += "&verifycode=" + result;
+                            recgreturn = 3;
                         }
 
                         bs = client.UploadData(url, "POST", Encoding.UTF8.GetBytes(content));
@@ -614,9 +614,7 @@ namespace ws.hoyland.sszs
                                     runx = false;
                                     break;
                             }
-                        }
-
-                        if (line.IndexOf("请稍候...") != -1)
+                        }else if (line.IndexOf("请稍候...") != -1)
                         {
                             url = line;
 
@@ -625,27 +623,27 @@ namespace ws.hoyland.sszs
                             line = reader.ReadToEnd();
 
                             Console.WriteLine(line);
-                        }
 
-                        if (rc == null)
-                        {
-                            tcconfirm++;
-                            idx = 9;
-                            if (tcconfirm == 3)
+                            if (rc == null)
                             {
-                                info("找不到邮件[确认]，退出(" + tcconfirm + ")");
-                                this.runx = false;
+                                tcconfirm++;
+                                idx = 9;
+                                if (tcconfirm == 3)
+                                {
+                                    info("找不到邮件[确认]，退出(" + tcconfirm + ")");
+                                    this.runx = false;
+                                }
+                                else
+                                {
+                                    info("找不到邮件[确认]，继续尝试(" + tcconfirm + ")");
+                                }
+
                             }
                             else
                             {
-                                info("找不到邮件[确认]，继续尝试(" + tcconfirm + ")");
+                                info("找到邮件[确认]");
+                                idx++;
                             }
-
-                        }
-                        else
-                        {
-                            info("找到邮件[确认]");
-                            idx++;
                         }
                     }
                     catch (Exception e)
