@@ -510,6 +510,7 @@ public class Task implements Runnable, Observer {
 				line = EntityUtils.toString(entity);
 				
 				if(line.contains("申诉过于频繁")){
+					info("申诉过于频繁");
 					//通知出现申诉频繁
 					message = new EngineMessage();
 					message.setType(EngineMessageType.IM_FREQ);
