@@ -97,7 +97,7 @@ public class GCServlet extends HttpServlet {
 				// System.out.println("1");
 				String expire = rs.getString("expire");
 				aid = rs.getInt("aid");
-				System.out.println(expire);
+				//System.out.println(expire);
 				long itv = sdf.parse(expire).getTime()
 						- Calendar.getInstance().getTime().getTime();
 //				System.out.println(itv / (24 * 60 * 60 * 1000));
@@ -118,6 +118,7 @@ public class GCServlet extends HttpServlet {
 
 			rs.close();
 			stmt.close();
+			conn.close();
 
 			if(valid){
 				System.out.println("RSA:" + sb.toString().substring(96));

@@ -78,10 +78,10 @@ public class GEServlet extends HttpServlet {
 			if(rs.next()){
 				//System.out.println("1");
 				String expire = rs.getString("expire");
-				System.out.println(expire);
+				//System.out.println(expire);
 				long itv = sdf.parse(expire).getTime()-Calendar.getInstance().getTime().getTime();
-				System.out.println(itv/(24*60*60*1000));
-				System.out.println(itv%(24*60*60*1000));
+				//System.out.println(itv/(24*60*60*1000));
+				//System.out.println(itv%(24*60*60*1000));
 				long day = (itv/(24*60*60*1000))+(((itv%(24*60*60*1000))>0)?1:0);
 				if(itv>0){
 					result = String.valueOf(day);
@@ -90,11 +90,12 @@ public class GEServlet extends HttpServlet {
 				}
 				//System.out.println("2");
 			}
-			//System.out.println("3");
+			System.out.println(lmc+"="+result);
 			//sdf.parse(result)
 			
 			rs.close();
 			stmt.close();
+			conn.close();
 		}catch(Exception e){
 			e.printStackTrace();
 	        //resp.getOutputStream().println("OK");
