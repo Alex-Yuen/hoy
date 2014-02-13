@@ -627,7 +627,7 @@ namespace ws.hoyland.sszs
                 return false;
             }
 
-            if (comboBox10.SelectedIndex == comboBox3.SelectedIndex || comboBox10.SelectedIndex == comboBox8.SelectedIndex || comboBox3.SelectedIndex == comboBox8.SelectedIndex)
+            if (comboBox10.SelectedIndex == comboBox9.SelectedIndex || comboBox10.SelectedIndex == comboBox8.SelectedIndex || comboBox9.SelectedIndex == comboBox8.SelectedIndex)
             {
                 MessageBox.Show("密保问题不能一样");
                 return false;
