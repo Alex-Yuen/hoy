@@ -12,6 +12,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Configuration;
 using System.Net;
+using System.Globalization;
 
 namespace ws.hoyland.sszs
 {
@@ -23,7 +24,11 @@ namespace ws.hoyland.sszs
         private bool runx = false;
         private DataTable table1 = new DataTable();
         private List<String> accounts = null;
-        
+        private String xpath = AppDomain.CurrentDomain.BaseDirectory;
+
+        private StreamWriter[] output = new StreamWriter[2]; //成功，失败，未运行
+        private String[] fns = new String[] { "设置成功", "设置失败"};
+
         public MBForm()
         {
             InitializeComponent();
@@ -122,6 +127,12 @@ namespace ws.hoyland.sszs
             }
         }
 
+        public void log(int type, string info)
+        {
+            output[type].WriteLine(info);
+            output[type].Flush();
+        }
+
         private void MBForm_Load(object sender, EventArgs e)
         {
             table1.Columns.Add("ID", Type.GetType("System.String"));
@@ -138,6 +149,20 @@ namespace ws.hoyland.sszs
 
             if (runx)
             {
+                String tm = DateTime.Now.ToString("yyyy年MM月dd日 hh时mm分ss秒", DateTimeFormatInfo.InvariantInfo);
+
+                try
+                {
+                    for (int i = 0; i < fns.Length; i++)
+                    {
+                        output[i] = File.AppendText(xpath + fns[i] + "-" + tm + ".txt");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    throw ex;
+                }
+
                 button1.Text = "结束";
                 ThreadPool.SetMinThreads(1, 0);
                 ThreadPool.SetMaxThreads(3, 0);
@@ -156,6 +181,15 @@ namespace ws.hoyland.sszs
             {
                 button1.Text = "开始";
                 //shutdown;
+                {
+                    for (int i = 0; i < output.Length; i++)
+                    {
+                        if (output[i] != null)
+                        {
+                            output[i].Close();
+                        }
+                    }
+                }
             }
         }
 
@@ -227,6 +261,7 @@ namespace ws.hoyland.sszs
         private string line;
         private string pwd = null;
         public static Random random = new Random();
+        
 
         public MBTask(MBForm form, String line)
         {
@@ -485,13 +520,14 @@ namespace ws.hoyland.sszs
                     resp = Encoding.UTF8.GetString(bs);
                     if (resp.IndexOf("资料设置成功") != -1)
                     {
+                        form.log(0, account + "----" + pwd + "----" + tqs[0] + "----" + tas[0] + "----" + tqs[1] + "----" + tas[1] + "----" + tqs[2] + "----" + tas[2]);
                         form.info(id, "设置成功");
-                        //form.log(1, original);
                         //form.stat(3);
                         //Console.WriteLine("");
                     }
                     else
-                    {
+                    {                        ;
+                        form.log(1, line.Substring(line.IndexOf("----") + 4));
                         form.info(id, "设置失败");
                     }
                     runx = false;//结束
