@@ -37,8 +37,8 @@
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
             this.panel1 = new System.Windows.Forms.Panel();
-            this.panel2 = new System.Windows.Forms.Panel();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.panel2 = new System.Windows.Forms.Panel();
             this.button1 = new System.Windows.Forms.Button();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
@@ -70,19 +70,19 @@
             // 
             this.导入LToolStripMenuItem.Name = "导入LToolStripMenuItem";
             this.导入LToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F2;
-            this.导入LToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.导入LToolStripMenuItem.Size = new System.Drawing.Size(135, 22);
             this.导入LToolStripMenuItem.Text = "导入(&L)";
             this.导入LToolStripMenuItem.Click += new System.EventHandler(this.导入LToolStripMenuItem_Click);
             // 
             // toolStripMenuItem1
             // 
             this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-            this.toolStripMenuItem1.Size = new System.Drawing.Size(149, 6);
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(132, 6);
             // 
             // 退出XToolStripMenuItem
             // 
             this.退出XToolStripMenuItem.Name = "退出XToolStripMenuItem";
-            this.退出XToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.退出XToolStripMenuItem.Size = new System.Drawing.Size(135, 22);
             this.退出XToolStripMenuItem.Text = "退出(&X)";
             this.退出XToolStripMenuItem.Click += new System.EventHandler(this.退出XToolStripMenuItem_Click);
             // 
@@ -114,15 +114,6 @@
             this.panel1.Size = new System.Drawing.Size(165, 285);
             this.panel1.TabIndex = 3;
             // 
-            // panel2
-            // 
-            this.panel2.Controls.Add(this.button1);
-            this.panel2.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.panel2.Location = new System.Drawing.Point(0, 206);
-            this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(165, 79);
-            this.panel2.TabIndex = 0;
-            // 
             // groupBox1
             // 
             this.groupBox1.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -133,6 +124,15 @@
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "统计";
             // 
+            // panel2
+            // 
+            this.panel2.Controls.Add(this.button1);
+            this.panel2.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.panel2.Location = new System.Drawing.Point(0, 206);
+            this.panel2.Name = "panel2";
+            this.panel2.Size = new System.Drawing.Size(165, 79);
+            this.panel2.TabIndex = 0;
+            // 
             // button1
             // 
             this.button1.Enabled = false;
@@ -142,6 +142,7 @@
             this.button1.TabIndex = 0;
             this.button1.Text = "开始";
             this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // MBForm
             // 

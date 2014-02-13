@@ -68,6 +68,11 @@ namespace ws.hoyland.sszs
         {
             try
             {
+                if (!check())
+                {
+                    return;
+                }
+
                 //MessageBox.Show("1");
                 //MessageBox.Show("2");
                 cfa = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
@@ -126,7 +131,34 @@ namespace ws.hoyland.sszs
                 }
                 cfa.AppSettings.Settings["REC_FLAG_F12"].Value = textBox2.Text;
                 cfa.AppSettings.Settings["REC_FLAG_F13"].Value = textBox3.Text;
-                
+
+
+                cfa.AppSettings.Settings["DNA_Q1"].Value = comboBox10.SelectedIndex.ToString();
+                cfa.AppSettings.Settings["DNA_Q2"].Value = comboBox9.SelectedIndex.ToString();
+                cfa.AppSettings.Settings["DNA_Q3"].Value = comboBox8.SelectedIndex.ToString();
+
+                cfa.AppSettings.Settings["DNA_A1"].Value = textBox4.Text;
+                cfa.AppSettings.Settings["DNA_A2"].Value = textBox5.Text;
+                cfa.AppSettings.Settings["DNA_A3"].Value = textBox6.Text;
+
+                cfa.AppSettings.Settings["DNA_F1"].Value = checkBox8.Checked.ToString();
+                cfa.AppSettings.Settings["DNA_F2"].Value = checkBox9.Checked.ToString();
+                cfa.AppSettings.Settings["DNA_F3"].Value = checkBox10.Checked.ToString();
+
+
+                cfa.AppSettings.Settings["FIX_PWD"].Value = radioButton1.Checked.ToString();
+                //MessageBox.Show("5");
+                cfa.AppSettings.Settings["RND_PWD"].Value = radioButton2.Checked.ToString();
+                //MessageBox.Show("6");
+                cfa.AppSettings.Settings["FIX_PWD_VALUE"].Value = textBox1.Text;
+                //MessageBox.Show("7");
+                cfa.AppSettings.Settings["RND_PWD_LEN"].Value = numericUpDown13.Value.ToString();
+                //MessageBox.Show("8");
+                cfa.AppSettings.Settings["RND_PWD_F1"].Value = checkBox12.Checked.ToString();
+                //MessageBox.Show("9");
+                cfa.AppSettings.Settings["RND_PWD_F2"].Value = checkBox11.Checked.ToString();
+                cfa.AppSettings.Settings["RND_PWD_F3"].Value = checkBox3.Checked.ToString();
+
                 //MessageBox.Show("12");
                 cfa.Save();
                 //MessageBox.Show("13");
@@ -259,6 +291,99 @@ namespace ws.hoyland.sszs
                 numericUpDown7.Value = Decimal.Parse(cfa.AppSettings.Settings["REC_FLAG_F8"].Value);
                 numericUpDown8.Value = Decimal.Parse(cfa.AppSettings.Settings["REC_FLAG_F9"].Value);
                 numericUpDown9.Value = Decimal.Parse(cfa.AppSettings.Settings["REC_FLAG_F10"].Value);
+
+
+                if ("True".Equals(cfa.AppSettings.Settings["DNA_F1"].Value))
+                {
+                    checkBox8.Checked = true;
+                }
+                else
+                {
+                    checkBox8.Checked = false;
+                }
+
+                if ("True".Equals(cfa.AppSettings.Settings["DNA_F2"].Value))
+                {
+                    checkBox9.Checked = true;
+                }
+                else
+                {
+                    checkBox9.Checked = false;
+                }
+
+                if ("True".Equals(cfa.AppSettings.Settings["DNA_F3"].Value))
+                {
+                    checkBox10.Checked = true;
+                }
+                else
+                {
+                    checkBox10.Checked = false;
+                }
+                comboBox10.SelectedIndex = Int32.Parse(cfa.AppSettings.Settings["DNA_Q1"].Value);
+                comboBox9.SelectedIndex = Int32.Parse(cfa.AppSettings.Settings["DNA_Q2"].Value);
+                comboBox8.SelectedIndex = Int32.Parse(cfa.AppSettings.Settings["DNA_Q3"].Value);
+
+                textBox4.Text = cfa.AppSettings.Settings["DNA_A1"].Value;
+                textBox5.Text = cfa.AppSettings.Settings["DNA_A2"].Value;
+                textBox6.Text = cfa.AppSettings.Settings["DNA_A3"].Value;
+
+
+                if ("True".Equals(cfa.AppSettings.Settings["FIX_PWD"].Value))
+                {
+                    radioButton1.Checked = true;
+                    textBox1.Enabled = true;
+                }
+                else
+                {
+                    radioButton1.Checked = false;
+                    textBox1.Enabled = false;
+                }
+
+                textBox1.Text = cfa.AppSettings.Settings["FIX_PWD_VALUE"].Value;
+
+                if ("True".Equals(cfa.AppSettings.Settings["RND_PWD"].Value))
+                {
+                    radioButton2.Checked = true;
+                    checkBox1.Enabled = true;
+                    checkBox2.Enabled = true;
+                    checkBox3.Enabled = true;
+                }
+                else
+                {
+                    radioButton2.Checked = false;
+                    checkBox1.Enabled = false;
+                    checkBox2.Enabled = false;
+                    checkBox3.Enabled = false;
+                }
+
+                numericUpDown13.Value = Decimal.Parse(cfa.AppSettings.Settings["RND_PWD_LEN"].Value);
+
+                if ("True".Equals(cfa.AppSettings.Settings["RND_PWD_F1"].Value))
+                {
+                    checkBox12.Checked = true;
+                }
+                else
+                {
+                    checkBox12.Checked = false;
+                }
+
+                if ("True".Equals(cfa.AppSettings.Settings["RND_PWD_F2"].Value))
+                {
+                    checkBox11.Checked = true;
+                }
+                else
+                {
+                    checkBox11.Checked = false;
+                }
+
+                if ("True".Equals(cfa.AppSettings.Settings["RND_PWD_F3"].Value))
+                {
+                    checkBox3.Checked = true;
+                }
+                else
+                {
+                    checkBox3.Checked = false;
+                }
                 
             }
             catch (Exception ex)
@@ -409,6 +534,113 @@ namespace ws.hoyland.sszs
                 numericUpDown12.Enabled = false;
                 numericUpDown11.Enabled = false;
             }
+        }
+
+        private void checkBox8_CheckedChanged(object sender, EventArgs e)
+        {
+
+            if (checkBox8.Checked)
+            {
+                textBox4.Enabled = true;
+            }
+            else
+            {
+                textBox4.Enabled = false;
+            }
+        }
+
+        private void checkBox9_CheckedChanged(object sender, EventArgs e)
+        {
+
+            if (checkBox9.Checked)
+            {
+                textBox5.Enabled = true;
+            }
+            else
+            {
+                textBox5.Enabled = false;
+            }
+        }
+
+        private void checkBox10_CheckedChanged(object sender, EventArgs e)
+        {
+
+            if (checkBox10.Checked)
+            {
+                textBox6.Enabled = true;
+            }
+            else
+            {
+                textBox6.Enabled = false;
+            }
+        }
+
+        private void radioButton2_CheckedChanged(object sender, EventArgs e)
+        {
+            if (radioButton1.Checked)
+            {
+                numericUpDown13.Enabled = false;
+                checkBox12.Enabled = false;
+                checkBox11.Enabled = false;
+                checkBox3.Enabled = false;
+
+                textBox1.Enabled = true;
+            }
+            else
+            {
+                numericUpDown13.Enabled = true;
+                checkBox12.Enabled = true;
+                checkBox11.Enabled = true;
+                checkBox3.Enabled = true;
+
+                textBox1.Enabled = false;
+            }
+        }
+
+        private void radioButton1_CheckedChanged(object sender, EventArgs e)
+        {
+            if (radioButton1.Checked)
+            {
+                numericUpDown13.Enabled = false;
+                checkBox12.Enabled = false;
+                checkBox11.Enabled = false;
+                checkBox3.Enabled = false;
+
+                textBox1.Enabled = true;
+            }
+            else
+            {
+                numericUpDown13.Enabled = true;
+                checkBox12.Enabled = true;
+                checkBox11.Enabled = true;
+                checkBox3.Enabled = true;
+
+                textBox1.Enabled = false;
+            }
+        }
+
+        private bool check()
+        {
+            if ((checkBox12.Checked && !checkBox11.Checked && !checkBox3.Checked) && numericUpDown13.Value < 9)
+            {
+                MessageBox.Show("密码不能是9位以下纯数字");
+                return false;
+            }
+
+            if (comboBox10.SelectedIndex == comboBox3.SelectedIndex || comboBox10.SelectedIndex == comboBox8.SelectedIndex || comboBox3.SelectedIndex == comboBox8.SelectedIndex)
+            {
+                MessageBox.Show("密保问题不能一样");
+                return false;
+            }
+
+            if (textBox4.Text.Equals(textBox5.Text) || textBox4.Text.Equals(textBox6.Text) || textBox5.Text.Equals(textBox6.Text))
+            {
+                MessageBox.Show("密保答案不能一样");
+                return false;
+            }
+
+            return true;
+
         }
 
         // #endregion
