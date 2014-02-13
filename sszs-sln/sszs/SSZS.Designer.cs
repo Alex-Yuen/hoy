@@ -64,7 +64,6 @@
             this.panel6 = new System.Windows.Forms.Panel();
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.panel5 = new System.Windows.Forms.Panel();
-            this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.panel3 = new System.Windows.Forms.Panel();
             this.button3 = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
@@ -83,23 +82,27 @@
             this.label9 = new System.Windows.Forms.Label();
             this.comboBox2 = new System.Windows.Forms.ComboBox();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
-            this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
-            this.toolStripButton5 = new System.Windows.Forms.ToolStripButton();
-            this.toolStripButton2 = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton3 = new System.Windows.Forms.ToolStripSeparator();
-            this.toolStripButton4 = new System.Windows.Forms.ToolStripButton();
             this.panel7 = new System.Windows.Forms.Panel();
             this.panel9 = new System.Windows.Forms.Panel();
             this.dataGridView2 = new System.Windows.Forms.DataGridView();
+            this.contextMenuStrip2 = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.复制CToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.panel8 = new System.Windows.Forms.Panel();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.只执行选定行LToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.从选定行开始执行ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.复制CToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripSeparator();
-            this.contextMenuStrip2 = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.复制CToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.复制CToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
+            this.toolStripButton5 = new System.Windows.Forms.ToolStripButton();
+            this.toolStripButton2 = new System.Windows.Forms.ToolStripButton();
+            this.toolStripButton4 = new System.Windows.Forms.ToolStripButton();
+            this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            this.上密上保PToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem3 = new System.Windows.Forms.ToolStripSeparator();
+            this.申诉结果RToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.panel2.SuspendLayout();
@@ -108,7 +111,6 @@
             this.panel4.SuspendLayout();
             this.panel6.SuspendLayout();
             this.panel5.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.panel3.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.loginpanel.SuspendLayout();
@@ -116,10 +118,11 @@
             this.panel7.SuspendLayout();
             this.panel9.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView2)).BeginInit();
+            this.contextMenuStrip2.SuspendLayout();
             this.panel8.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.contextMenuStrip1.SuspendLayout();
-            this.contextMenuStrip2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
             // menuStrip1
@@ -201,6 +204,9 @@
             // 工具TToolStripMenuItem
             // 
             this.工具TToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.申诉结果RToolStripMenuItem1,
+            this.上密上保PToolStripMenuItem,
+            this.toolStripMenuItem3,
             this.选项OToolStripMenuItem});
             this.工具TToolStripMenuItem.Name = "工具TToolStripMenuItem";
             this.工具TToolStripMenuItem.Size = new System.Drawing.Size(59, 21);
@@ -210,7 +216,7 @@
             // 
             this.选项OToolStripMenuItem.Name = "选项OToolStripMenuItem";
             this.选项OToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F4;
-            this.选项OToolStripMenuItem.Size = new System.Drawing.Size(139, 22);
+            this.选项OToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.选项OToolStripMenuItem.Text = "选项(&O)";
             this.选项OToolStripMenuItem.Click += new System.EventHandler(this.选项OToolStripMenuItem_Click);
             // 
@@ -443,15 +449,6 @@
             this.panel5.Size = new System.Drawing.Size(194, 87);
             this.panel5.TabIndex = 9;
             // 
-            // pictureBox1
-            // 
-            this.pictureBox1.BackColor = System.Drawing.SystemColors.GrayText;
-            this.pictureBox1.Location = new System.Drawing.Point(42, 17);
-            this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(106, 46);
-            this.pictureBox1.TabIndex = 0;
-            this.pictureBox1.TabStop = false;
-            // 
             // panel3
             // 
             this.panel3.Controls.Add(this.button3);
@@ -643,50 +640,10 @@
             this.toolStrip1.TabIndex = 8;
             this.toolStrip1.Text = "toolStrip1";
             // 
-            // toolStripButton1
-            // 
-            this.toolStripButton1.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.toolStripButton1.Image = global::ws.hoyland.sszs.Properties.Resources.account1;
-            this.toolStripButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripButton1.Name = "toolStripButton1";
-            this.toolStripButton1.Size = new System.Drawing.Size(36, 36);
-            this.toolStripButton1.Text = "导入帐号-常规(F2)";
-            this.toolStripButton1.Click += new System.EventHandler(this.toolStripButton1_Click);
-            // 
-            // toolStripButton5
-            // 
-            this.toolStripButton5.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.toolStripButton5.Image = global::ws.hoyland.sszs.Properties.Resources.accountx;
-            this.toolStripButton5.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripButton5.Name = "toolStripButton5";
-            this.toolStripButton5.Size = new System.Drawing.Size(36, 36);
-            this.toolStripButton5.Text = "导入帐号-历史密码(Shift+F2)";
-            this.toolStripButton5.Click += new System.EventHandler(this.toolStripButton5_Click);
-            // 
-            // toolStripButton2
-            // 
-            this.toolStripButton2.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.toolStripButton2.Image = global::ws.hoyland.sszs.Properties.Resources.mail1;
-            this.toolStripButton2.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripButton2.Name = "toolStripButton2";
-            this.toolStripButton2.Size = new System.Drawing.Size(36, 36);
-            this.toolStripButton2.Text = "导入邮箱(F3)";
-            this.toolStripButton2.ToolTipText = "导入邮箱(F3)";
-            this.toolStripButton2.Click += new System.EventHandler(this.toolStripButton2_Click);
-            // 
             // toolStripButton3
             // 
             this.toolStripButton3.Name = "toolStripButton3";
             this.toolStripButton3.Size = new System.Drawing.Size(6, 39);
-            // 
-            // toolStripButton4
-            // 
-            this.toolStripButton4.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.toolStripButton4.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton4.Image")));
-            this.toolStripButton4.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripButton4.Name = "toolStripButton4";
-            this.toolStripButton4.Size = new System.Drawing.Size(36, 36);
-            this.toolStripButton4.Text = "申诉结果(F5)";
             // 
             // panel7
             // 
@@ -719,6 +676,21 @@
             this.dataGridView2.TabIndex = 1;
             this.dataGridView2.SelectionChanged += new System.EventHandler(this.dataGridView2_SelectionChanged);
             this.dataGridView2.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.dataGridView2_MouseDoubleClick);
+            // 
+            // contextMenuStrip2
+            // 
+            this.contextMenuStrip2.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.复制CToolStripMenuItem1});
+            this.contextMenuStrip2.Name = "contextMenuStrip2";
+            this.contextMenuStrip2.Size = new System.Drawing.Size(117, 26);
+            // 
+            // 复制CToolStripMenuItem1
+            // 
+            this.复制CToolStripMenuItem1.Enabled = false;
+            this.复制CToolStripMenuItem1.Name = "复制CToolStripMenuItem1";
+            this.复制CToolStripMenuItem1.Size = new System.Drawing.Size(116, 22);
+            this.复制CToolStripMenuItem1.Text = "复制(&C)";
+            this.复制CToolStripMenuItem1.Click += new System.EventHandler(this.复制CToolStripMenuItem1_Click);
             // 
             // panel8
             // 
@@ -767,6 +739,11 @@
             this.从选定行开始执行ToolStripMenuItem.Text = "从选定行开始执行(&S)";
             this.从选定行开始执行ToolStripMenuItem.Click += new System.EventHandler(this.从选定行开始执行ToolStripMenuItem_Click);
             // 
+            // toolStripMenuItem2
+            // 
+            this.toolStripMenuItem2.Name = "toolStripMenuItem2";
+            this.toolStripMenuItem2.Size = new System.Drawing.Size(184, 6);
+            // 
             // 复制CToolStripMenuItem
             // 
             this.复制CToolStripMenuItem.Enabled = false;
@@ -775,25 +752,75 @@
             this.复制CToolStripMenuItem.Text = "复制(&C)";
             this.复制CToolStripMenuItem.Click += new System.EventHandler(this.复制CToolStripMenuItem_Click);
             // 
-            // toolStripMenuItem2
+            // toolStripButton1
             // 
-            this.toolStripMenuItem2.Name = "toolStripMenuItem2";
-            this.toolStripMenuItem2.Size = new System.Drawing.Size(184, 6);
+            this.toolStripButton1.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripButton1.Image = global::ws.hoyland.sszs.Properties.Resources.account1;
+            this.toolStripButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton1.Name = "toolStripButton1";
+            this.toolStripButton1.Size = new System.Drawing.Size(36, 36);
+            this.toolStripButton1.Text = "导入帐号-常规(F2)";
+            this.toolStripButton1.Click += new System.EventHandler(this.toolStripButton1_Click);
             // 
-            // contextMenuStrip2
+            // toolStripButton5
             // 
-            this.contextMenuStrip2.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.复制CToolStripMenuItem1});
-            this.contextMenuStrip2.Name = "contextMenuStrip2";
-            this.contextMenuStrip2.Size = new System.Drawing.Size(117, 26);
+            this.toolStripButton5.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripButton5.Image = global::ws.hoyland.sszs.Properties.Resources.accountx;
+            this.toolStripButton5.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton5.Name = "toolStripButton5";
+            this.toolStripButton5.Size = new System.Drawing.Size(36, 36);
+            this.toolStripButton5.Text = "导入帐号-历史密码(Shift+F2)";
+            this.toolStripButton5.Click += new System.EventHandler(this.toolStripButton5_Click);
             // 
-            // 复制CToolStripMenuItem1
+            // toolStripButton2
             // 
-            this.复制CToolStripMenuItem1.Enabled = false;
-            this.复制CToolStripMenuItem1.Name = "复制CToolStripMenuItem1";
-            this.复制CToolStripMenuItem1.Size = new System.Drawing.Size(152, 22);
-            this.复制CToolStripMenuItem1.Text = "复制(&C)";
-            this.复制CToolStripMenuItem1.Click += new System.EventHandler(this.复制CToolStripMenuItem1_Click);
+            this.toolStripButton2.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripButton2.Image = global::ws.hoyland.sszs.Properties.Resources.mail1;
+            this.toolStripButton2.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton2.Name = "toolStripButton2";
+            this.toolStripButton2.Size = new System.Drawing.Size(36, 36);
+            this.toolStripButton2.Text = "导入邮箱(F3)";
+            this.toolStripButton2.ToolTipText = "导入邮箱(F3)";
+            this.toolStripButton2.Click += new System.EventHandler(this.toolStripButton2_Click);
+            // 
+            // toolStripButton4
+            // 
+            this.toolStripButton4.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripButton4.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton4.Image")));
+            this.toolStripButton4.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton4.Name = "toolStripButton4";
+            this.toolStripButton4.Size = new System.Drawing.Size(36, 36);
+            this.toolStripButton4.Text = "申诉结果(F5)";
+            // 
+            // pictureBox1
+            // 
+            this.pictureBox1.BackColor = System.Drawing.SystemColors.GrayText;
+            this.pictureBox1.Location = new System.Drawing.Point(42, 17);
+            this.pictureBox1.Name = "pictureBox1";
+            this.pictureBox1.Size = new System.Drawing.Size(106, 46);
+            this.pictureBox1.TabIndex = 0;
+            this.pictureBox1.TabStop = false;
+            // 
+            // 上密上保PToolStripMenuItem
+            // 
+            this.上密上保PToolStripMenuItem.Name = "上密上保PToolStripMenuItem";
+            this.上密上保PToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.P)));
+            this.上密上保PToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
+            this.上密上保PToolStripMenuItem.Text = "上密上保(&P)";
+            this.上密上保PToolStripMenuItem.Click += new System.EventHandler(this.上密上保PToolStripMenuItem_Click);
+            // 
+            // toolStripMenuItem3
+            // 
+            this.toolStripMenuItem3.Name = "toolStripMenuItem3";
+            this.toolStripMenuItem3.Size = new System.Drawing.Size(149, 6);
+            // 
+            // 申诉结果RToolStripMenuItem1
+            // 
+            this.申诉结果RToolStripMenuItem1.Name = "申诉结果RToolStripMenuItem1";
+            this.申诉结果RToolStripMenuItem1.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.T)));
+            this.申诉结果RToolStripMenuItem1.Size = new System.Drawing.Size(184, 22);
+            this.申诉结果RToolStripMenuItem1.Text = "申诉结果(&R)";
+            this.申诉结果RToolStripMenuItem1.Click += new System.EventHandler(this.申诉结果RToolStripMenuItem1_Click);
             // 
             // SSZS
             // 
@@ -826,7 +853,6 @@
             this.panel6.ResumeLayout(false);
             this.panel6.PerformLayout();
             this.panel5.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.panel3.ResumeLayout(false);
             this.groupBox2.ResumeLayout(false);
             this.loginpanel.ResumeLayout(false);
@@ -836,10 +862,11 @@
             this.panel7.ResumeLayout(false);
             this.panel9.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView2)).EndInit();
+            this.contextMenuStrip2.ResumeLayout(false);
             this.panel8.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
             this.contextMenuStrip1.ResumeLayout(false);
-            this.contextMenuStrip2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -917,6 +944,9 @@
         private System.Windows.Forms.ToolStripSeparator toolStripMenuItem2;
         private System.Windows.Forms.ContextMenuStrip contextMenuStrip2;
         private System.Windows.Forms.ToolStripMenuItem 复制CToolStripMenuItem1;
+        private System.Windows.Forms.ToolStripMenuItem 申诉结果RToolStripMenuItem1;
+        private System.Windows.Forms.ToolStripMenuItem 上密上保PToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripMenuItem3;
     }
 }
 

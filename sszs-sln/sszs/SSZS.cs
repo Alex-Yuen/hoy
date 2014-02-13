@@ -686,5 +686,15 @@ namespace ws.hoyland.sszs
                 复制CToolStripMenuItem1.Enabled = true;
             }
         }
+
+        private void 上密上保PToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            new MBForm().ShowDialog();
+        }
+
+        private void 申诉结果RToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            new RSForm().ShowDialog();
+        }
     }
 }

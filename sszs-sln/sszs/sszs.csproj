@@ -80,6 +80,12 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="MailObject.cs" />
+    <Compile Include="MBForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="MBForm.Designer.cs">
+      <DependentUpon>MBForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Names.cs" />
     <Compile Include="Observable.cs" />
     <Compile Include="Observer.cs" />
@@ -94,6 +100,12 @@
     <Compile Include="PauseXObject.cs" />
     <Compile Include="QQCrypt.cs" />
     <Compile Include="ReconObject.cs" />
+    <Compile Include="RSForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="RSForm.Designer.cs">
+      <DependentUpon>RSForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="SSZS.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -113,8 +125,14 @@
     <EmbeddedResource Include="Expire.resx">
       <DependentUpon>Expire.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="MBForm.resx">
+      <DependentUpon>MBForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Option.resx">
       <DependentUpon>Option.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="RSForm.resx">
+      <DependentUpon>RSForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="SSZS.resx">
       <DependentUpon>SSZS.cs</DependentUpon>
