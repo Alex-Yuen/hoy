@@ -26,8 +26,8 @@ namespace ws.hoyland.sszs
         private List<String> accounts = null;
         private String xpath = AppDomain.CurrentDomain.BaseDirectory;
 
-        private StreamWriter[] output = new StreamWriter[2]; //成功，失败，未运行
-        private String[] fns = new String[] { "设置成功", "设置失败"};
+        private StreamWriter[] output = new StreamWriter[3]; //成功，失败，未运行
+        private String[] fns = new String[] { "设置成功", "设置失败", "凭证过期" };
 
         public MBForm()
         {
@@ -321,6 +321,7 @@ namespace ws.hoyland.sszs
                         line = reader.ReadToEnd();
                         if (line.IndexOf("已过期") != -1)
                         {
+                            form.log(2, line.Substring(line.IndexOf("----") + 4));
                             form.info(id, "凭证过期");
                             runx = false;
                         }
