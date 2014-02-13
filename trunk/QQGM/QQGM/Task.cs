@@ -1304,7 +1304,7 @@ namespace QQGM
 
                             //if(questions[(Int32.Parse(cfa.AppSettings.Settings["DNA_Q"+(m+1)].Value))].IndexOf(tqs[i])!=-1)
                             {
-                                tas[i] = cfa.AppSettings.Settings["DNA_A" + (m + 1)].Value;
+                                tas[i] = tobeuploadans[m];//cfa.AppSettings.Settings["DNA_A" + (m + 1)].Value;
                                 break;
                             }
                         }
@@ -1712,17 +1712,16 @@ namespace QQGM
             StringBuilder sb = new StringBuilder();
             int area, code;//汉字由区位和码位组成(都为0-94,其中区位16-55为一级汉字区,56-87为二级汉字区,1-9为特殊字符区)
             string chara;
-            Random rand = new Random();
             for (int i = 0; i < 3; i++)
             {
-                area = rand.Next(16, 88);
+                area = random.Next(16, 88);
                 if (area == 55)//第55区只有89个字符
                 {
-                    code = rand.Next(1, 90);
+                    code = random.Next(1, 90);
                 }
                 else
                 {
-                    code = rand.Next(1, 94);
+                    code = random.Next(1, 94);
                 }
                 chara = Encoding.GetEncoding("GB2312").GetString(new byte[] { Convert.ToByte(area + 160), Convert.ToByte(code + 160) });
                 sb.Append(chara);
