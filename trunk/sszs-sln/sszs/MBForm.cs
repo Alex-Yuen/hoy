@@ -317,8 +317,17 @@ namespace ws.hoyland.sszs
 
                         data = client.OpenRead(url);
                         // System.err.println(sig);
-
-                        idx++;
+                        reader = new StreamReader(data);
+                        line = reader.ReadToEnd();
+                        if (line.IndexOf("已过期") != -1)
+                        {
+                            form.info(id, "凭证过期");
+                            runx = false;
+                        }
+                        else
+                        {
+                            idx++;
+                        }
                     }
                     catch (Exception e)
                     {
@@ -360,7 +369,8 @@ namespace ws.hoyland.sszs
                         //byte[] bs = Encoding.GetEncoding("GB2312").GetBytes();
                         //resp = Encoding.UTF8.GetString(bs);
 
-
+                        url = "https://aq.qq.com/cn2/appeal/appeal_reset_mb_question";
+                        data = client.OpenRead(url);
                         // System.err.println(sig);
 
                         idx++;
@@ -459,13 +469,21 @@ namespace ws.hoyland.sszs
                     sb = new StringBuilder();
                     for (int i = 0; i < tas.Length; i++)
                     {
-                        sb.Append("a" + (i + 1) + "=" + UrlEncode(tas[i]) + "&");
+                        if (i == tas.Length - 1)
+                        {
+                            sb.Append("a_" + (i + 1) + "=" + UrlEncode(tas[i]));
+                        }
+                        else
+                        {
+                            sb.Append("a_" + (i + 1) + "=" + UrlEncode(tas[i]) + "&");
+                        }
                     }
                     url = "https://aq.qq.com/cn2/appeal/appeal_reset_mbajax?" + sb.ToString();
 
                     data = client.OpenRead(url);
                     //{ret: [0, 0, 0, 0]}
                     data.Close();
+                    idx++;
                     break;
                 case 5:
                     form.info(id, "设置密保手机");
@@ -477,6 +495,7 @@ namespace ws.hoyland.sszs
 
                     data = client.OpenRead(url+sb.ToString());
                     data.Close();
+                    idx++;
                     break;
                 case 6:
                     form.info(id, "跳过，填写密码");
