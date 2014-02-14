@@ -4,8 +4,12 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.security.KeyFactory;
+import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
+import java.security.interfaces.RSAPublicKey;
+import java.security.spec.InvalidKeySpecException;
 import java.security.spec.RSAPrivateKeySpec;
+import java.security.spec.RSAPublicKeySpec;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
@@ -23,6 +27,7 @@ import org.apache.commons.codec.binary.Base64;
 
 import ws.hoyland.util.Converts;
 import ws.hoyland.util.Crypter;
+import ws.hoyland.util.RSAUtil;
 
 public class GCServlet extends HttpServlet {
 
@@ -170,7 +175,27 @@ public class GCServlet extends HttpServlet {
 		
 					resultString = Converts.bytesToHexString(rsx).toUpperCase();
 				}else if(aid==2){//申诉助手
-					resultString = "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF2";
+					String[] cts = content.split("&");
+					String password = cts[0].split("=")[1];
+					String ts = cts[1].split("=")[1];
+										
+					RSAPublicKey pbk = null;
+					KeyFactory keyFac = null;
+					try {
+						keyFac = KeyFactory.getInstance("RSA");
+					} catch (NoSuchAlgorithmException ex) {
+						throw new Exception(ex.getMessage());
+					}
+
+					RSAPublicKeySpec pubKeySpec = new RSAPublicKeySpec(new BigInteger(
+							"10001", 16), new BigInteger("CF87D7B4C864F4842F1D337491A48FFF54B73A17300E8E42FA365420393AC0346AE55D8AFAD975DFA175FAF0106CBA81AF1DDE4ACEC284DAC6ED9A0D8FEB1CC070733C58213EFFED46529C54CEA06D774E3CC7E073346AEBD6C66FC973F299EB74738E400B22B1E7CDC54E71AED059D228DFEB5B29C530FF341502AE56DDCFE9", 16));
+					try {
+						pbk = (RSAPublicKey) keyFac.generatePublic(pubKeySpec);
+					} catch (InvalidKeySpecException ex) {
+						throw new Exception(ex.getMessage());
+					}
+										
+					resultString = Converts.bytesToHexString(RSAUtil.encrypt(pbk, (password+"\n"+ts+"\n").getBytes()));
 				}else if(aid==3){//QQ在线
 					resultString = "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF3";
 				}else{
