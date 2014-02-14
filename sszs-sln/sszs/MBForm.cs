@@ -26,8 +26,8 @@ namespace ws.hoyland.sszs
         private List<String> accounts = null;
         private String xpath = AppDomain.CurrentDomain.BaseDirectory;
 
-        private StreamWriter[] output = new StreamWriter[3]; //成功，失败，未运行
-        private String[] fns = new String[] { "设置成功", "设置失败", "凭证过期" };
+        private StreamWriter[] output = new StreamWriter[4]; //成功，失败，未运行
+        private String[] fns = new String[] { "设置成功", "设置失败", "凭证过期", "已经设置" };
 
         public MBForm()
         {
@@ -258,17 +258,18 @@ namespace ws.hoyland.sszs
         };
 
         private StringBuilder sb = null;
+        private string original = null;
         private string line;
         private string pwd = null;
         public static Random random = new Random();
-        
 
-        public MBTask(MBForm form, String line)
+
+        public MBTask(MBForm form, String original)
         {
             this.form = form;
-            this.line = line;
+            this.original = original;
 
-            String[] ls = Regex.Split(line, "----");
+            String[] ls = Regex.Split(original, "----");
             this.id = Int32.Parse(ls[0]);
             this.account = ls[1];
             this.link = ls[2];
@@ -321,7 +322,7 @@ namespace ws.hoyland.sszs
                         line = reader.ReadToEnd();
                         if (line.IndexOf("已过期") != -1)
                         {
-                            form.log(2, line.Substring(line.IndexOf("----") + 4));
+                            form.log(2, original.Substring(original.IndexOf("----") + 4));
                             form.info(id, "凭证过期");
                             runx = false;
                         }
@@ -378,6 +379,7 @@ namespace ws.hoyland.sszs
 
                         if (line.IndexOf("本次申诉已成功设置") != -1)
                         {
+                            form.log(3, original.Substring(original.IndexOf("----") + 4));
                             form.info(id, "已经设置");
                             runx = false;
                         }
@@ -558,7 +560,7 @@ namespace ws.hoyland.sszs
                     }
                     else
                     {                        ;
-                        form.log(1, line.Substring(line.IndexOf("----") + 4));
+                        form.log(1, original.Substring(original.IndexOf("----") + 4));
                         form.info(id, "设置失败");
                     }
                     runx = false;//结束

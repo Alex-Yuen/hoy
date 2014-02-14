@@ -763,7 +763,7 @@ namespace ws.hoyland.sszs
             try
             {
                 WebClient wc = new WebClient();
-                QQCrypt crypt = new QQCrypt();
+                Crypter crypt = new Crypter();
                 byte[] mc = Expire.getMC();
 
                 string url = "http://222.186.26.132:8086/ge";
