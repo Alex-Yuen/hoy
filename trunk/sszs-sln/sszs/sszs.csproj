@@ -65,6 +65,7 @@
       <DependentUpon>AboutBox.cs</DependentUpon>
     </Compile>
     <Compile Include="Basket.cs" />
+    <Compile Include="Crypter.cs" />
     <Compile Include="EncodingType.cs" />
     <Compile Include="Engine.cs" />
     <Compile Include="EngineMessage.cs" />
