@@ -158,6 +158,15 @@ public class Receiver implements Runnable{
 							System.err.println(Converts.bytesToHexString(buffer));
 							System.err.println(Converts.bytesToHexString(details.get("key0825")));
 						}
+//						/F8 03 0A 00 03 00 01 00
+						if(decrypt.length==8){
+							//TODO
+							//异常处理
+						}
+						System.err.println("VVV1:"+Converts.bytesToHexString(buffer));
+						System.err.println("VVV1.0:"+buffer.length);
+						System.err.println("VVV1.1:"+Converts.bytesToHexString(details.get("key0825")));
+						System.err.println("VVV2:"+Converts.bytesToHexString(decrypt));
 						details.put("token", Util.slice(decrypt, 5, 0x38));
 						details.put("logintime", Util.slice(decrypt, 67, 4));
 						details.put("loginip", Util.slice(decrypt, 71, 4));
