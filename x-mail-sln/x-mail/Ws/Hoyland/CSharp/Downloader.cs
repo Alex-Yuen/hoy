@@ -194,7 +194,7 @@ namespace Ws.Hoyland.CSharp
                         }
                         //SRVersion s = AppDomain.CurrentDomain.GetData("svr") as SRVersion;
                         //assembly.FullName.Split(',')[1].Substring(9);
-
+                        //od.SetData("srv", srv);
                         AppDomain.CurrentDomain.SetData("srv", srv);
                     }
                     catch (Exception ex)

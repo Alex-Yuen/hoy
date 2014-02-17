@@ -3,6 +3,8 @@ Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "x-mail", "x-mail\x-mail.csproj", "{42AA637E-1D3F-48D9-9F50-E8ED301233BB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "x-mail-core", "x-mail-core\x-mail-core.csproj", "{9A7328FA-F049-4F8E-9A63-CEB6A030C585}"
+EndProject
 Global
 	GlobalSection(SubversionScc) = preSolution
 		Svn-Managed = True
@@ -17,6 +19,10 @@ Global
 		{42AA637E-1D3F-48D9-9F50-E8ED301233BB}.Debug|x86.Build.0 = Debug|x86
 		{42AA637E-1D3F-48D9-9F50-E8ED301233BB}.Release|x86.ActiveCfg = Release|x86
 		{42AA637E-1D3F-48D9-9F50-E8ED301233BB}.Release|x86.Build.0 = Release|x86
+		{9A7328FA-F049-4F8E-9A63-CEB6A030C585}.Debug|x86.ActiveCfg = Debug|x86
+		{9A7328FA-F049-4F8E-9A63-CEB6A030C585}.Debug|x86.Build.0 = Debug|x86
+		{9A7328FA-F049-4F8E-9A63-CEB6A030C585}.Release|x86.ActiveCfg = Release|x86
+		{9A7328FA-F049-4F8E-9A63-CEB6A030C585}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
