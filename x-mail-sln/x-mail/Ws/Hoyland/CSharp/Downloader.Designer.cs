@@ -64,6 +64,7 @@
             this.button1.BackColor = System.Drawing.Color.Transparent;
             this.button1.BackgroundImage = global::Ws.Hoyland.XMail.Properties.Resources.close;
             this.button1.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.button1.FlatAppearance.BorderColor = System.Drawing.Color.Gray;
             this.button1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.button1.Location = new System.Drawing.Point(375, 5);
             this.button1.Name = "button1";
@@ -90,7 +91,7 @@
             this.MinimizeBox = false;
             this.Name = "Downloader";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "X-Player";
+            this.Text = "X-Product";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Downloader_FormClosing);
             this.Load += new System.EventHandler(this.Downloader_Load);
             this.ResumeLayout(false);

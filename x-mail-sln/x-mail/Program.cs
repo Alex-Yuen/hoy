@@ -25,6 +25,7 @@ namespace Ws.Hoyland.XMail
             Application.SetCompatibleTextRenderingDefault(false);
 
             Downloader downloader = new Downloader();
+            downloader.Text = "X-Mail";
             downloader.URL = "http://www.hoyland.ws/x-mail";
             downloader.CoreName = "x-mail-core";
             downloader.Namespace = "Ws.Hoyland.XMail";
