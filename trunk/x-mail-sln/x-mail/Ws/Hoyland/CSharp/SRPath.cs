@@ -6,8 +6,9 @@ using System.Text;
 namespace Ws.Hoyland.CSharp
 {
     [Serializable]
-    public class SRVersion
+    public class SRPath
     {
-        public string Version;
+        public string XPath;
+        public string CN;
     }
 }

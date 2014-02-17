@@ -10,8 +10,7 @@ using System.Net;
 using System.IO;
 using System.Reflection;
 using System.Security.Cryptography;
-using Ws.Hoyland.CSharp;
-using Ws.Hoyland.XMail.Ws.Hoyland.CSharp;
+using System.Diagnostics;
 
 namespace Ws.Hoyland.CSharp
 {
@@ -78,8 +77,8 @@ namespace Ws.Hoyland.CSharp
                 res.Close();
                 
                 SetProgress(50);
-
-                if (rv != null && version != null && !rv.Equals(version))
+                //Console.WriteLine(">>>" + String.Compare(rv, version));
+                if (rv != null && version != null && String.Compare(rv, version)>0)
                 {
                     //download
                     u = url + "/update/"+core_name+".dll";
@@ -123,13 +122,93 @@ namespace Ws.Hoyland.CSharp
             CloseOnceTime();
         }
 
+        private void DownloadSplash()
+        {
+            string splash = xpath + "//tmp//" + "splash.png";
+            //File fisplash = new File(splash);
+            bool dl = false;
+            try
+            {
+                if (!File.Exists(splash))
+                {
+                    dl = true;
+                }
+                else
+                {
+                    //DateTime dt = File.GetLastWriteTime(splash);
+                    string rmd = null;
+                    //string curtime = dt.GetDateTimeFormats('s')[0].ToString().Replace("T", " ");
+
+                    //curtime = md5;
+
+                    string u = url+"/logo";
+
+                    WebRequest req = WebRequest.Create(u);
+                    req.Method = "GET";
+                    WebResponse res = req.GetResponse();
+
+                    Encoding resEncoding = Encoding.GetEncoding("utf-8");
+                    StreamReader reader = new StreamReader(res.GetResponseStream(), resEncoding);
+
+                    rmd = reader.ReadLine();
+
+                    reader.Close();
+                    res.Close();
+
+                    if (!md5.Equals(rmd))
+                    {
+                        dl = true;
+                    }
+                    else
+                    {
+                        dl = false;
+                    }
+                }
+
+                if (dl) //need dl
+                {
+                    string splashtmp = xpath + "//tmp//splash.tmp";
+                    if (File.Exists(splashtmp))
+                    {
+                        File.Delete(splashtmp);
+                    }
+
+                    string u = url + "/logo/splash.png";
+                    //string filename = Path.GetDirectoryName(Assembly.GetExecutingAssembly().GetModules()[0].FullyQualifiedName) + "\\splash.tmp";
+                    //Console.WriteLine("...."+filename);
+
+                    //this.label1.Text = "0%";
+                    //this.client = new WebClient();
+                    //client.DownloadProgressChanged += new DownloadProgressChangedEventHandler(ProgressChanged);
+                    this.client.DownloadFileCompleted += new AsyncCompletedEventHandler(SCompleted);
+                    this.client.DownloadFileAsync(new Uri(url), splashtmp);
+                }
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message);
+            }
+        }
+
+        private void SCompleted(object sender, AsyncCompletedEventArgs e)
+        {
+            string splashtmp = xpath + "//splash.tmp";
+            string splashnew = xpath + "//splash.new";
+            if (File.Exists(splashnew))
+            {
+                File.Delete(splashnew);
+            }
+            File.Move(splashtmp, splashnew);
+        }
+
+
         private void Downloader_Load(object sender, EventArgs e)
         {
             try
             {
                 xpath = AppDomain.CurrentDomain.BaseDirectory;
-                string splash = xpath + "//splash.png";
-                string splashnew = xpath + "//tmp//splash.tmp";
+                string splash = xpath + "//tmp//splash.png";
+                string splashnew = xpath + "//tmp//splash.new";
                 if (File.Exists(splashnew))
                 {
                     File.Delete(splash);
@@ -170,7 +249,11 @@ namespace Ws.Hoyland.CSharp
                 this.client = new WebClient();
                 AppDomain od = AppDomain.CreateDomain("TMP-DOMAIN");
                 //od.SetData("srv", srv);
+                SRPath srp = new SRPath();
+                srp.CN = core_name;
+                srp.XPath = xpath;
 
+                od.SetData("srp", srp);
                 //Console.WriteLine(">>> 之前");
                 //CheckAssemblies(AppDomain.CurrentDomain);
                 //CheckAssemblies(od);
@@ -179,22 +262,33 @@ namespace Ws.Hoyland.CSharp
                 {
                     try
                     {
+                        SRPath sx = AppDomain.CurrentDomain.GetData("srp") as SRPath;
                         SRVersion srv = new SRVersion();
-                        if (File.Exists(xpath + "//" + core_name + ".dll"))
+
+                        if (File.Exists(sx.XPath + "//" + sx.CN + ".dll"))
                         {
-                            Assembly assembly = Assembly.Load(core_name);
+                            FileVersionInfo info = FileVersionInfo.GetVersionInfo(sx.XPath + "//" + sx.CN + ".dll");
+                            
+                            //Assembly assembly = Assembly.Load(sx.CN);
+                            //srv.Version = assembly.FullName.Split(',')[1].Substring(9);
+                            srv.Version = info.FileVersion;
+
                             //version = assembly.FullName;
                             //SRVersion s = AppDomain.CurrentDomain.GetData("svr") as SRVersion;
                             //assembly.FullName.Split(',')[1].Substring(9);
-                            srv.version = assembly.FullName.Split(',')[1].Substring(9);
+                            
+                            //Console.WriteLine("V1:" + AppDomain.CurrentDomain.FriendlyName.ToString());
+                            //AppDomain.CurrentDomain.SetData("srv", srv);
                         }
                         else
                         {
-                            srv.version = "0.0.0.0";
+                            srv.Version = "0.0.0.0";
                         }
                         //SRVersion s = AppDomain.CurrentDomain.GetData("svr") as SRVersion;
                         //assembly.FullName.Split(',')[1].Substring(9);
                         //od.SetData("srv", srv);
+                        //Console.WriteLine("V0:" + od.FriendlyName.ToString());
+                        //Console.WriteLine("V1:"+AppDomain.CurrentDomain.FriendlyName.ToString());
                         AppDomain.CurrentDomain.SetData("srv", srv);
                     }
                     catch (Exception ex)
@@ -209,9 +303,10 @@ namespace Ws.Hoyland.CSharp
                 //Console.WriteLine(">>> 之后");
                 //CheckAssemblies(AppDomain.CurrentDomain);
                 //CheckAssemblies(od);
-
+                //Console.WriteLine("V2:" + od.FriendlyName.ToString());
+                //Console.WriteLine("V3:" + AppDomain.CurrentDomain.FriendlyName.ToString());
                 SRVersion s = od.GetData("srv") as SRVersion;
-                version = s.version;
+                version = s.Version;
 
                 //version = od.GetData("version") as string;
                 //od.SetData("srv", srv);
@@ -262,28 +357,39 @@ namespace Ws.Hoyland.CSharp
 
                 foreach (Type DllType in DllTypes)
                 {
-                    Console.WriteLine(">>" + Namespace.Substring(Namespace.LastIndexOf(".")));
-                    if (DllType.Namespace == Namespace && DllType.Name == Namespace.Substring(Namespace.LastIndexOf(".")))
+                    //Console.WriteLine(">>" + Namespace.Substring(Namespace.LastIndexOf(".")));
+                    if (DllType.Namespace == Namespace && DllType.Name == Namespace.Substring(Namespace.LastIndexOf(".")+1))
                     {
-                        form = (Form)(Activator.CreateInstance(DllType, new object[]{this, this.md5}));
+                        form = (Form)(Activator.CreateInstance(DllType, new object[] { this }));
+                        //form = (Form)(Activator.CreateInstance(DllType, new object[]{this, this.md5}));
                         break;
                     }
                 }
 
                 if (form != null)
                 {
-                    form.Show();
-                    this.Hide();
+                    dlg = delegate()
+                    {
+                        form.Show();
+                        this.Hide();
+                    };
+                    this.BeginInvoke(dlg);
+
+                    new Thread(DownloadSplash).Start();
                 }
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message, "Error");
-                if (form != null)
+                dlg = delegate()
                 {
-                    form.Close();
-                }
-                this.Close();
+                    if (form != null)
+                    {
+                        form.Close();
+                    }
+                    //this.Close();
+                };
+                this.BeginInvoke(dlg);
                 Application.Exit();
             }
         }
