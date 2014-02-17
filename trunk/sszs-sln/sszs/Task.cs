@@ -640,14 +640,17 @@ namespace ws.hoyland.sszs
                             Console.WriteLine(vuin);
                             idx++;
                         }
-                        else if(line.IndexOf("today")!=-1)
+                        else if (line.IndexOf("today") != -1)
                         {
                             info("登录成功");
                             line = line.Substring(line.IndexOf("url=https") + 9);
                             line = line.Substring(0, line.IndexOf("\"/>"));
                             url = line;
                             Console.WriteLine(url);
-                            idx = 100;//TODO
+                            idx = 14;//TODO
+                        }
+                        else // 验证码错误，报告验证码错误
+                        {
                         }
                     }
                     catch (Exception e)
@@ -722,8 +725,105 @@ namespace ws.hoyland.sszs
                         throw e;
                     }
                     break;
+                case 13:
+                     info("验证码错误，报告异常");
+                    try
+                    {
+                        //
+                        int reportErrorResult = -1;
+                        if (Engine.getInstance().getCptType() == 0)
+                        {
+                            reportErrorResult = YDMWrapper.YDM_Report(nCaptchaId, false);
+                        }
+                        else
+                        {
+                            reportErrorResult = UUWrapper.uu_reportError(nCaptchaId);
+                        }
 
-                case 10:
+                        //idx = 0; // 重新开始
+                        idx = 9;//重新开始接收邮件
+                    }
+                    catch (Exception e)
+                    {
+                        fb = true;
+                        throw e;
+                    }
+                    break;
+                case 14:
+                    info("获取邮件列表地址");
+                    try
+                    {
+                        data = client.OpenRead(url);
+                        reader = new StreamReader(data);
+                        line = reader.ReadToEnd();
+
+                        line = line.Substring(line.IndexOf("mail_list") - 9);
+                        url = line.Substring(0, line.IndexOf("\">"));
+
+                        idx++;
+                    }
+                    catch (Exception e)
+                    {
+                        fb = true;
+                        throw e;
+                    }
+                    break;
+                case 15:
+                    info("读取邮件列表");
+                    try
+                    {
+                        data = client.OpenRead("http://w.mail.qq.com"+url);
+                        reader = new StreamReader(data);
+                        line = reader.ReadToEnd();
+
+                        int formidx = -1;
+                        int qqidx = -1;
+                        if ((formidx = line.IndexOf("<form")) != -1 && (qqidx = line.IndexOf("QQ号码申诉联系方式确认")) != -1 && line.Substring(formidx, qqidx).IndexOf("mui_font_bold") != -1)
+                        {
+                            line = line.Substring(line.Substring(formidx, qqidx).LastIndexOf("/cgi-bin/readmail?"));
+                            url = line.Substring(0, line.IndexOf("\">"));
+
+                            info(" 读取邮件内容");
+                            data = client.OpenRead("http://w.mail.qq.com" + url);
+                            reader = new StreamReader(data);
+                            line = reader.ReadToEnd();
+
+                            if (line.Contains("[<b>" + account.Substring(0, 1)) && line.Contains(account.Substring(account.Length - 1) + "</b>]"))
+                            {
+                                rc = line.Substring(line.IndexOf("<b class=\"red\">") + 15, 8);
+                            }
+                            //line = line.Substring(line.IndexOf("mail_list") - 9);
+                            //url = line.Substring(0, line.IndexOf("\">"));
+                           
+                        }
+
+                        if(rc==null){
+                            tcconfirm++;
+                            idx = 9;
+                            if (tcconfirm == 3)
+                            {
+                                info("找不到邮件[确认]，退出(" + tcconfirm + ")");
+                                this.runx = false;
+                            }
+                            else
+                            {
+                                info("找不到邮件[确认]，继续尝试(" + tcconfirm + ")");
+                            }
+                        }
+                        else
+                        {
+                            info("找到邮件[确认]");
+                            idx++;
+                        }
+                        //
+                    }
+                    catch (Exception e)
+                    {
+                        fb = true;
+                        throw e;
+                    }
+                    break;
+                case 16:
                     info("使用激活码继续申诉");
                     try
                     {
@@ -775,7 +875,7 @@ namespace ws.hoyland.sszs
                         throw e;
                     }
                     break;
-                case 11:
+                case 17:
                     info("提交原始密码和地区");
                     try
                     {
@@ -895,7 +995,7 @@ namespace ws.hoyland.sszs
                         throw e;
                     }
                     break;
-                case 12:
+                case 18:
                     info("正在转向");
                     try
                     {
@@ -916,7 +1016,7 @@ namespace ws.hoyland.sszs
                         throw e;
                     }
                     break;
-                case 13:
+                case 19:
                     info("进入好友辅助");
                     try
                     {
@@ -957,7 +1057,7 @@ namespace ws.hoyland.sszs
                         throw e;
                     }
                     break;
-                case 14:
+                case 20:
                     info("跳过好友辅助");
                     try
                     {
@@ -996,7 +1096,7 @@ namespace ws.hoyland.sszs
                     }
 
                     break;
-                case 15:
+                case 21:
                     //获取回执编号			
                     info("等待" + itv + "秒，接收邮件[回执]");
                     try

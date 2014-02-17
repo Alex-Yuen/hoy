@@ -204,6 +204,15 @@ namespace ws.hoyland.sszs
             };
             this.BeginInvoke(dlg);
         }
+
+        private void MBForm_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Escape)
+            {
+                this.Close();
+            }
+        }
+
     }
 
 
