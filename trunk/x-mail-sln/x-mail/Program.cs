@@ -7,8 +7,9 @@ using System.Reflection;
 using System.Threading;
 using System.Diagnostics;
 using System.Security.Permissions;
+using Ws.Hoyland.CSharp;
 
-namespace Ws.Hoyland.Xmail
+namespace Ws.Hoyland.XMail
 {
     static class Program
     {
@@ -22,7 +23,12 @@ namespace Ws.Hoyland.Xmail
             AppDomain.CurrentDomain.UnhandledException += new System.UnhandledExceptionEventHandler(ExceptionHandler);
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Downloader());
+
+            Downloader downloader = new Downloader();
+            downloader.URL = "http://www.hoyland.ws/x-mail";
+            downloader.CoreName = "x-mail-core";
+            downloader.Namespace = "Ws.Hoyland.XMail";
+            Application.Run(downloader);
 
         }
 
@@ -36,7 +42,7 @@ namespace Ws.Hoyland.Xmail
 
                 if (!EventLog.SourceExists("ThreadException"))
                 {
-                    EventLog.CreateEventSource("ThreadException", "X-MAIL");
+                    EventLog.CreateEventSource("ThreadException", "X-Mail");
                 }
 
                 EventLog myLog = new EventLog();
