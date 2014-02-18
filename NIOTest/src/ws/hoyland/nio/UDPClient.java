@@ -7,13 +7,18 @@ import java.nio.channels.DatagramChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.charset.Charset;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 
 /**
  * @author 徐辛波(sinpo.xu@hotmail.com) Oct 19, 2008
  */
 public class UDPClient extends Thread {
+	private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	private Selector selector = null;
 	private boolean wakeup = false;
 	
@@ -51,7 +56,7 @@ public class UDPClient extends Thread {
 							datagramChannel.read(byteBuffer);
 							byteBuffer.flip();
 
-							System.out.println("<- "+Charset.defaultCharset()
+							System.out.println("["+sdf.format(new Date())+"]<- "+Charset.defaultCharset()
 									.decode(byteBuffer).toString());
 							byteBuffer.clear();
 //							datagramChannel.write(Charset.defaultCharset()
@@ -65,7 +70,8 @@ public class UDPClient extends Thread {
 		}
 	}
 	
-	public static void main(String[] args) {		
+	public static void main(String[] args) {
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		Selector selector = null;
 		UDPClient client = null;
 
@@ -77,24 +83,48 @@ public class UDPClient extends Thread {
 			e.printStackTrace();
 		}
 
+		Map<Integer, DatagramChannel> map = new HashMap<Integer, DatagramChannel>();
 		DatagramChannel channel = null;
 		
 		try {
 			for(int i=0;i<10;i++){
 				channel = DatagramChannel.open();
 				channel.configureBlocking(false);
-				SocketAddress sa = new InetSocketAddress("127.0.0.1", 8023);//112.124.106.47
+				SocketAddress sa = new InetSocketAddress("112.124.106.47", 8023);//112.124.106.47
 				channel.connect(sa);
 				
 				client.setWakeup(true);
 				channel.register(selector, SelectionKey.OP_READ);
 				client.setWakeup(false);
 				
-				System.out.println("-> "+i);
+				map.put(i, channel);
+				System.out.println("["+sdf.format(new Date())+"]-> "+i);
 				channel.write(Charset.defaultCharset().encode(String.valueOf(i)));
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
+		}
+		
+		while(true){
+			try{
+				Thread.sleep(1000*20);
+			}catch(Exception e){
+				e.printStackTrace();
+			}
+			Iterator<Integer> it = map.keySet().iterator();
+			int key = -1;
+			
+			try{
+				while(it.hasNext()){
+					key = (Integer)it.next();
+					channel = map.get(key);
+					System.out.println("["+sdf.format(new Date())+"]-> "+key);
+					Thread.sleep(100);
+					channel.write(Charset.defaultCharset().encode(String.valueOf(key)));
+				}
+			}catch(Exception e){
+				e.printStackTrace();
+			}
 		}
 	}
 	
