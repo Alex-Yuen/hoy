@@ -10,6 +10,8 @@ import java.nio.channels.DatagramChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.charset.Charset;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.Set;
 
@@ -17,6 +19,7 @@ import java.util.Set;
  * @author 徐辛波(sinpo.xu@hotmail.com) Oct 19, 2008
  */
 public class UDPServer extends Thread {
+	private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	public void run() {
 		Selector selector = null;
 		try {
@@ -52,7 +55,7 @@ public class UDPServer extends Thread {
 							// 测试：通过将收到的ByteBuffer首先通过缺省的编码解码成CharBuffer 再输出
 							CharBuffer charBuffer = Charset.defaultCharset()
 									.decode(byteBuffer);
-							System.err.println("Receive message:"
+							System.err.println("["+sdf.format(new Date())+"]<- "
 									+ charBuffer.toString());
 							byteBuffer.clear();
 
