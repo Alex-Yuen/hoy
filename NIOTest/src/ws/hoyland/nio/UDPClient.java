@@ -87,7 +87,7 @@ public class UDPClient extends Thread {
 		DatagramChannel channel = null;
 		
 		try {
-			for(int i=0;i<10;i++){
+			for(int i=0;i<10000;i++){
 				channel = DatagramChannel.open();
 				channel.configureBlocking(false);
 				SocketAddress sa = new InetSocketAddress("112.124.106.47", 8023);//112.124.106.47
@@ -119,7 +119,7 @@ public class UDPClient extends Thread {
 					key = (Integer)it.next();
 					channel = map.get(key);
 					System.out.println("["+sdf.format(new Date())+"]-> "+key);
-					Thread.sleep(100);
+					///Thread.sleep(10);
 					channel.write(Charset.defaultCharset().encode(String.valueOf(key)));
 				}
 			}catch(Exception e){
