@@ -181,7 +181,7 @@ namespace Ws.Hoyland.CSharp
                     //this.client = new WebClient();
                     //client.DownloadProgressChanged += new DownloadProgressChangedEventHandler(ProgressChanged);
                     this.client.DownloadFileCompleted += new AsyncCompletedEventHandler(SCompleted);
-                    this.client.DownloadFileAsync(new Uri(url), splashtmp);
+                    this.client.DownloadFileAsync(new Uri(u), splashtmp);
                 }
             }
             catch (Exception e)
@@ -192,8 +192,8 @@ namespace Ws.Hoyland.CSharp
 
         private void SCompleted(object sender, AsyncCompletedEventArgs e)
         {
-            string splashtmp = xpath + "//splash.tmp";
-            string splashnew = xpath + "//splash.new";
+            string splashtmp = xpath + "//tmp//splash.tmp";
+            string splashnew = xpath + "//tmp//splash.new";
             if (File.Exists(splashnew))
             {
                 File.Delete(splashnew);
@@ -369,9 +369,14 @@ namespace Ws.Hoyland.CSharp
                 if (form != null)
                 {
                     dlg = delegate()
-                    {
-                        form.Show();
+                    {                        
+                        for (int i = 0; i < 100; i++)
+                        {
+                            this.Opacity -= 0.01;
+                            Thread.Sleep(8);
+                        }
                         this.Hide();
+                        form.Show();
                     };
                     this.BeginInvoke(dlg);
 

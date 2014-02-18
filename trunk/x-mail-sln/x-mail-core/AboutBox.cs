@@ -8,6 +8,7 @@ using System.Windows.Forms;
 using System.Security.Cryptography;
 using System.Text;
 using System.Management;
+using System.Diagnostics;
 
 namespace Ws.Hoyland.CSharp
 {
@@ -18,15 +19,25 @@ namespace Ws.Hoyland.CSharp
             InitializeComponent();
             this.Text = String.Format("关于 {0}", AssemblyTitle);
             this.labelProductName.Text = AssemblyProduct;
-            this.labelVersion.Text = String.Format("版本 {0}", AssemblyVersion);
+            //this.labelVersion.Text = String.Format("版本 {0}", AssemblyVersion);
+            this.labelVersion.Text = String.Format("版本 {0}", FileVersion);
             this.labelCopyright.Text = AssemblyCopyright;
             this.labelCompanyName.Text = AssemblyCompany;
-            //this.textBoxDescription.Text = AssemblyDescription;
+            this.textBoxDescription.Text = AssemblyDescription;
 
             //this.textBoxDescription.Text = Expire.getMCX();
         }
         
         #region 程序集特性访问器
+
+        public string FileVersion
+        {
+            get
+            {
+                FileVersionInfo info = FileVersionInfo.GetVersionInfo(AppDomain.CurrentDomain.BaseDirectory + "//x-mail-core.dll");
+                return info.FileVersion;
+            }
+        }
 
         public string AssemblyTitle
         {

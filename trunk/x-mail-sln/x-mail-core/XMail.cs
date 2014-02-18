@@ -41,7 +41,9 @@ namespace Ws.Hoyland.XMail
             Version ApplicationVersion = new Version(Application.ProductVersion);
             string version = ApplicationVersion.Major.ToString();//获取主版本号  
 
-            this.Text = "X-Mail " + version;// Assembly.GetExecutingAssembly().GetName().Version.ToString();
+            FileVersionInfo info = FileVersionInfo.GetVersionInfo(AppDomain.CurrentDomain.BaseDirectory + "//x-mail-core.dll");
+
+            this.Text = "X-Mail " + info.FileVersion;// Assembly.GetExecutingAssembly().GetName().Version.ToString();
         }
     }
 }
