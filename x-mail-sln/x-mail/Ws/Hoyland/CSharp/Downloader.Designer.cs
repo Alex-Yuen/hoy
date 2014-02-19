@@ -54,9 +54,9 @@
             this.label2.BackColor = System.Drawing.Color.Transparent;
             this.label2.Location = new System.Drawing.Point(12, 221);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(113, 12);
+            this.label2.Size = new System.Drawing.Size(95, 12);
             this.label2.TabIndex = 3;
-            this.label2.Text = "Checking update...";
+            this.label2.Text = "正在检查更新...";
             // 
             // button1
             // 
