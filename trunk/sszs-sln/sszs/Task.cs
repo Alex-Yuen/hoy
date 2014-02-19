@@ -600,7 +600,7 @@ namespace ws.hoyland.sszs
                         }
                         else
                         {
-                            content = "device=&ts=" + ts + "&p=" + Util.UrlEncode(ecp) + "&f=xhtml&delegate_url=&action=&https=true&tfcont=&uin=" + this.account + "&aliastype=%40qq.com&pwd=&mss=1&btlogin=+%E7%99%BB%E5%BD%95+";
+                            content = "device=&ts=" + ts + "&p=" + Util.UrlEncode(ecp) + "&f=xhtml&delegate_url=&action=&https=true&tfcont=&uin=" + this.mail + "&aliastype=%40qq.com&pwd=&mss=1&btlogin=+%E7%99%BB%E5%BD%95+";
                         }
                         
                         bs = client.UploadData(url, "POST", Encoding.UTF8.GetBytes(content));
@@ -611,17 +611,21 @@ namespace ws.hoyland.sszs
                         {
                             info("邮箱密码错误");
                             runx = false;
-
                         }
                         else if (line.IndexOf("autoactivation") != -1)
                         {
                             info("未开通邮箱");
                             runx = false;
                         }
+                        else if (line.IndexOf("errtype=8") != -1)
+                        {
+                            info("暂时无法登录邮箱");
+                            runx = false;
+                        }
                         else if (line.IndexOf("errtype=3") != -1)
                         {
                             info("需要验证码");
-                            line = line.Substring(line.IndexOf("url=https:")+10);
+                            line = line.Substring(line.IndexOf("url=https:") + 10);
                             line = line.Substring(0, line.IndexOf("\"/>"));
                             url = line;
 
@@ -1162,7 +1166,7 @@ namespace ws.hoyland.sszs
                 byte[] key = Util.getKey();
                 string content = Util.byteArrayToHexString(key).ToUpper() + Util.byteArrayToHexString(crypt.QQ_Encrypt(mc, key)).ToUpper();
                 Console.WriteLine(content);
-                string ct = "password=" + this.password + "&ts=" + this.ts;
+                string ct = "password=" + this.mpwd + "&ts=" + this.ts;
                 Console.WriteLine(ct);
                 RSACryptoServiceProvider provider = new RSACryptoServiceProvider();
 
