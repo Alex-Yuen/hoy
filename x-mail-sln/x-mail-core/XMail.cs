@@ -15,6 +15,7 @@ namespace Ws.Hoyland.XMail
     public partial class XMail : Form
     {
         private bool operating = false;
+        private bool changed = false;
         private Font sf = new Font("宋体", 9, FontStyle.Underline);
         private Font nf = new Font("宋体", 9, FontStyle.Regular);
 
@@ -76,8 +77,54 @@ namespace Ws.Hoyland.XMail
 
         private void toolStripButton1_Click(object sender, EventArgs e)
         {
-            tabControl1.TabPages.Add(tabPage2);
+            if (tabPage2.Parent == null)
+            {
+                tabControl1.TabPages.Add(tabPage2);
+                changed = true;
+                SetSaveBtnStatus();
+            }
             tabControl1.SelectedIndex = 1;
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            if (tabPage3.Parent == null)
+            {
+                tabControl1.TabPages.Add(tabPage3);
+            }
+            tabControl1.SelectedIndex = 2;
+        }
+
+        private void SetSaveBtnStatus()
+        {
+            if (changed)
+            {
+                toolStripButton3.Enabled = true;
+            }
+            else
+            {
+                toolStripButton3.Enabled = false;
+            }
+        }
+
+        private void listView2_ItemMouseHover(object sender, ListViewItemMouseHoverEventArgs e)
+        {
+            e.Item.Selected = false;
+        }
+
+        private void listView1_ItemMouseHover(object sender, ListViewItemMouseHoverEventArgs e)
+        {
+            e.Item.Selected = false;
+        }
+
+        private void listView1_ItemSelectionChanged(object sender, ListViewItemSelectionChangedEventArgs e)
+        {
+            e.Item.Selected = false;
+        }
+
+        private void listView2_ItemSelectionChanged(object sender, ListViewItemSelectionChangedEventArgs e)
+        {
+            e.Item.Selected = false;
         }
 
     }
