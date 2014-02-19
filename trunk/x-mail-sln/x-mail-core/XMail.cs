@@ -14,6 +14,7 @@ namespace Ws.Hoyland.XMail
 {
     public partial class XMail : Form
     {
+        private bool operating = false;
         private Font sf = new Font("宋体", 9, FontStyle.Underline);
         private Font nf = new Font("宋体", 9, FontStyle.Regular);
 
@@ -48,6 +49,9 @@ namespace Ws.Hoyland.XMail
             FileVersionInfo info = FileVersionInfo.GetVersionInfo(AppDomain.CurrentDomain.BaseDirectory + "//x-mail-core.dll");
 
             this.Text = "X-Mail " + info.FileVersion;// Assembly.GetExecutingAssembly().GetName().Version.ToString();
+
+            tabPage2.Parent = null;
+            tabPage3.Parent = null;
         }
 
         private void toolStripButton5_Click(object sender, EventArgs e)
@@ -59,6 +63,21 @@ namespace Ws.Hoyland.XMail
         {
             MessageBox.Show("Under Building...");
             //http://www.jb51.net/article/35248.htm
+        }
+
+        private void tabControl1_Selecting(object sender, TabControlCancelEventArgs e)
+        {
+            //e.TabPageIndex
+            //if (!operating)
+            //{
+            //    e.Cancel = true;
+            //}
+        }
+
+        private void toolStripButton1_Click(object sender, EventArgs e)
+        {
+            tabControl1.TabPages.Add(tabPage2);
+            tabControl1.SelectedIndex = 1;
         }
 
     }
