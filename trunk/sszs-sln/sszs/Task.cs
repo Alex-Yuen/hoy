@@ -589,20 +589,19 @@ namespace ws.hoyland.sszs
                     info("登录邮箱");
                     try
                     {
-                        string ecp = Convert.ToBase64String(Util.hexStringToByte(getECP()));
-
-                        url = "https://w.mail.qq.com/cgi-bin/login?sid=";
-
                         if (uploadvcode)
                         {
-                            content = "device=&ts="+ts+"&p=&f=xhtml&delegate_url=&action=&https=true&tfcont=22%2520serialization%3A%3Aarchive%25205%25200%25200%252010%25200%25200%25200%25208%2520authtype%25201%25208%25209%2520clientuin%252010%25202912832312%25209%2520aliastype%25207%2520%40qq.com%25206%2520domain%25206%2520qq.com%25202%2520ts%252010%25201392345223%25201%2520f%25205%2520xhtml%25205%2520https%25204%2520true%25203%2520uin%252010%25202912832312%25203%2520mss%25201%25201%25207%2520btlogin%25206%2520%2520%E7%99%BB%E5%BD%95%2520&verifycode="+result+"&vid="+vid+"&vuin="+vuin+"&vurl="+Util.UrlEncode(vurlx)+"&mss=1&btlogin=+%E7%99%BB%E5%BD%95+";
+                            content = "device=&ts="+ts+"&p=&f=xhtml&delegate_url=&action=&https=true&tfcont=22%2520serialization%3A%3Aarchive%25205%25200%25200%252010%25200%25200%25200%25208%2520authtype%25201%25208%25209%2520clientuin%252010%2520"+this.mail+"%25209%2520aliastype%25207%2520%40qq.com%25206%2520domain%25206%2520qq.com%25202%2520ts%252010%25201392345223%25201%2520f%25205%2520xhtml%25205%2520https%25204%2520true%25203%2520uin%252010%2520"+this.mail+"%25203%2520mss%25201%25201%25207%2520btlogin%25206%2520%2520%E7%99%BB%E5%BD%95%2520&verifycode="+result+"&vid="+vid+"&vuin="+vuin+"&vurl="+Util.UrlEncode(vurlx)+"&mss=1&btlogin=+%E7%99%BB%E5%BD%95+";
                             uploadvcode = false;
                         }
                         else
                         {
+                            string ecp = Convert.ToBase64String(Util.hexStringToByte(getECP()));
                             content = "device=&ts=" + ts + "&p=" + Util.UrlEncode(ecp) + "&f=xhtml&delegate_url=&action=&https=true&tfcont=&uin=" + this.mail + "&aliastype=%40qq.com&pwd=&mss=1&btlogin=+%E7%99%BB%E5%BD%95+";
                         }
-                        
+
+                        url = "https://w.mail.qq.com/cgi-bin/login?sid=";
+
                         bs = client.UploadData(url, "POST", Encoding.UTF8.GetBytes(content));
                         //byte[] bs = Encoding.GetEncoding("GB2312").GetBytes();
                         line = Encoding.UTF8.GetString(bs);
@@ -625,16 +624,16 @@ namespace ws.hoyland.sszs
                         else if (line.IndexOf("errtype=3") != -1)
                         {
                             info("需要验证码");
-                            line = line.Substring(line.IndexOf("url=https:") + 10);
+                            line = line.Substring(line.IndexOf("url=https:") + 4);
                             line = line.Substring(0, line.IndexOf("\"/>"));
                             url = line;
 
                             vurl = line.Substring(line.IndexOf("vurl=") + 5);
-                            vurl = line.Substring(0, line.IndexOf("&vid"));
+                            vurl = vurl.Substring(0, vurl.IndexOf("&vid"));
                             vurlx = vurl;
                             vid = vurl.Substring(20, 32);
                             vuin = url.Substring(url.IndexOf("vuin=") + 5);
-                            vuin = vuin.Substring(0, vuin.IndexOf("&amp;"));
+                            vuin = vuin.Substring(0, vuin.IndexOf("&"));
 
                             vurl = vurl.EndsWith("gif") ? vurl : vurl + ".gif";
 
@@ -647,7 +646,7 @@ namespace ws.hoyland.sszs
                         else if (line.IndexOf("today") != -1)
                         {
                             info("登录成功");
-                            line = line.Substring(line.IndexOf("url=https") + 9);
+                            line = line.Substring(line.IndexOf("url=http") + 9);
                             line = line.Substring(0, line.IndexOf("\"/>"));
                             url = line;
                             Console.WriteLine(url);
