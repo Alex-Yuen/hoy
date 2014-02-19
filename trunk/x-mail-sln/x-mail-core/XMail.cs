@@ -14,7 +14,11 @@ namespace Ws.Hoyland.XMail
 {
     public partial class XMail : Form
     {
+        private Font sf = new Font("宋体", 9, FontStyle.Underline);
+        private Font nf = new Font("宋体", 9, FontStyle.Regular);
+
         private Form pf;
+
         public XMail(Form pf)
         {
             this.pf = pf;
@@ -45,5 +49,16 @@ namespace Ws.Hoyland.XMail
 
             this.Text = "X-Mail " + info.FileVersion;// Assembly.GetExecutingAssembly().GetName().Version.ToString();
         }
+
+        private void toolStripButton5_Click(object sender, EventArgs e)
+        {
+            关于AToolStripMenuItem.PerformClick();
+        }
+        
+        private void 选项OToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show("Under Building...");
+        }
+
     }
 }

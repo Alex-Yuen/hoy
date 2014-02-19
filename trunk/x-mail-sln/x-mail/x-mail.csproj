@@ -96,7 +96,7 @@
     <Content Include="x-product.ico" />
     <None Include="Resources\close.png" />
     <Content Include="tmp\splash.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Resources\splash.png" />
   </ItemGroup>

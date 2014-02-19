@@ -186,7 +186,7 @@ namespace Ws.Hoyland.CSharp
             }
             catch (Exception e)
             {
-                MessageBox.Show(e.Message);
+                //MessageBox.Show(e.Message);
             }
         }
 
@@ -427,14 +427,16 @@ namespace Ws.Hoyland.CSharp
 
         private void button1_MouseEnter(object sender, EventArgs e)
         {
-            //button1.FlatAppearance.BorderSize = 0;
-            button1.FlatStyle = FlatStyle.Popup;
+            button1.FlatAppearance.BorderColor = Color.Beige;
+            //button1.FlatAppearance.BorderSize = 1;
+            //button1.FlatStyle = FlatStyle.Popup;
         }
 
         private void button1_MouseLeave(object sender, EventArgs e)
         {
-            //button1.FlatAppearance.BorderSize = 1;
-            button1.FlatStyle = FlatStyle.Flat;
+            button1.FlatAppearance.BorderColor = Color.Gray;
+            //button1.FlatAppearance.BorderSize = 0;
+            //button1.FlatStyle = FlatStyle.Flat;
         }
     }
 }
