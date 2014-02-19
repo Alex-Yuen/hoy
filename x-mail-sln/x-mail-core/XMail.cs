@@ -58,6 +58,7 @@ namespace Ws.Hoyland.XMail
         private void 选项OToolStripMenuItem_Click(object sender, EventArgs e)
         {
             MessageBox.Show("Under Building...");
+            //http://www.jb51.net/article/35248.htm
         }
 
     }
