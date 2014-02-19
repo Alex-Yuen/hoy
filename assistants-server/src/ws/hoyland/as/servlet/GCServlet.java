@@ -7,7 +7,6 @@ import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.interfaces.RSAPublicKey;
-import java.security.spec.InvalidKeySpecException;
 import java.security.spec.RSAPrivateKeySpec;
 import java.security.spec.RSAPublicKeySpec;
 import java.sql.Connection;
@@ -23,11 +22,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.*;
 import javax.sql.DataSource;
 
-import org.apache.commons.codec.binary.Base64;
-
 import ws.hoyland.util.Converts;
 import ws.hoyland.util.Crypter;
-import ws.hoyland.util.RSAUtil;
 
 public class GCServlet extends HttpServlet {
 
@@ -36,10 +32,15 @@ public class GCServlet extends HttpServlet {
 	 */
 	private static final long serialVersionUID = 7633331277396719497L;
 
-	private String module = "w5pR+xIC918OIPaRyONwvPp80rdf1YjK2sVJrfHwPP2qzLn7pdchnKSj5A+TJBIUdL6FNVzxeODTvQcZ7fhZ1g0kh0sQX6xz7wZ97pYvXRLH25gwObpe4Bg0eZIxdIhqLEWs/VRBwbL8wgg5UgFsZmMYhFJ1hf9Ea7xPdWBu+Hs=";
-//	private String exponentString = "AQAB";
-	private String delement = "cdMGq9zyXvMwrJvvgABiZYY6RwCwwvkEWsR9uLxWeZd/4fzEZOBIzfe864Tosg/XWYxYxhHc7uOeM5zDSQjBdVjkJKJN8H1JISm9qTWqmZATL03xgItf5glVxupsMBqBXr3FdYJe8PjOmIYXpREBSWvkMfqwcpuaU+zRuOu+FSk=";
+	//private String module = "w5pR+xIC918OIPaRyONwvPp80rdf1YjK2sVJrfHwPP2qzLn7pdchnKSj5A+TJBIUdL6FNVzxeODTvQcZ7fhZ1g0kh0sQX6xz7wZ97pYvXRLH25gwObpe4Bg0eZIxdIhqLEWs/VRBwbL8wgg5UgFsZmMYhFJ1hf9Ea7xPdWBu+Hs=";
+	
+//	private String exponentString = "AQAB";, pbkexp
+	
+	//private String delement = "cdMGq9zyXvMwrJvvgABiZYY6RwCwwvkEWsR9uLxWeZd/4fzEZOBIzfe864Tosg/XWYxYxhHc7uOeM5zDSQjBdVjkJKJN8H1JISm9qTWqmZATL03xgItf5glVxupsMBqBXr3FdYJe8PjOmIYXpREBSWvkMfqwcpuaU+zRuOu+FSk=";, prvexp
 
+	private String expBytes = "71D306ABDCF25EF330AC9BEF80006265863A4700B0C2F9045AC47DB8BC5679977FE1FCC464E048CDF7BCEB84E8B20FD7598C58C611DCEEE39E339CC34908C17558E424A24DF07D492129BDA935AA9990132F4DF1808B5FE60955C6EA6C301A815EBDC575825EF0F8CE988617A51101496BE431FAB0729B9A53ECD1B8EBBE1529";
+	private String modBytes = "C39A51FB1202F75F0E20F691C8E370BCFA7CD2B75FD588CADAC549ADF1F03CFDAACCB9FBA5D7219CA4A3E40F9324121474BE85355CF178E0D3BD0719EDF859D60D24874B105FAC73EF067DEE962F5D12C7DB983039BA5EE0183479923174886A2C45ACFD5441C1B2FCC2083952016C66631884527585FF446BBC4F75606EF87B";
+	
 	public GCServlet() {
 	}
 
@@ -57,14 +58,19 @@ public class GCServlet extends HttpServlet {
 
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
+
 		byte[] key = null;
 		Crypter crypter = new Crypter();
-		Base64 base64 = new Base64();
+		//Base64 base64 = new Base64();
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		String result = "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF";
 		int aid = 0;
 		String resultString = "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF";
 		try {
+			KeyFactory factory = KeyFactory.getInstance("RSA");
+			Cipher cipher = Cipher.getInstance("RSA");
+
+			
 			BufferedReader sis = req.getReader();
 			char[] buf = new char[1024];
 			int len = 0;
@@ -129,15 +135,15 @@ public class GCServlet extends HttpServlet {
 				System.out.println("RSA:" + sb.toString().substring(96));
 				byte[] rsa = Converts.hexStringToByte(sb.toString().substring(96));
 	
-				byte[] expBytes = base64.decode(delement);
-				byte[] modBytes = base64.decode(module);
+//				byte[] expBytes = base64.decode(delement);
+//				byte[] modBytes = base64.decode(module);
+//	
+//				BigInteger modules = new BigInteger(1, modBytes);
+//				BigInteger exponent = new BigInteger(1, expBytes);
 	
-				BigInteger modules = new BigInteger(1, modBytes);
-				BigInteger exponent = new BigInteger(1, expBytes);
-	
-				KeyFactory factory = KeyFactory.getInstance("RSA");
-				Cipher cipher = Cipher.getInstance("RSA");
-	
+				BigInteger modules = new BigInteger(modBytes, 16);
+				BigInteger exponent = new BigInteger(expBytes, 16);
+				
 				RSAPrivateKeySpec privSpec = new RSAPrivateKeySpec(modules,
 						exponent);
 				PrivateKey privKey = factory.generatePrivate(privSpec);
@@ -187,15 +193,15 @@ public class GCServlet extends HttpServlet {
 						throw new Exception(ex.getMessage());
 					}
 
-					RSAPublicKeySpec pubKeySpec = new RSAPublicKeySpec(new BigInteger(
-							"10001", 16), new BigInteger("CF87D7B4C864F4842F1D337491A48FFF54B73A17300E8E42FA365420393AC0346AE55D8AFAD975DFA175FAF0106CBA81AF1DDE4ACEC284DAC6ED9A0D8FEB1CC070733C58213EFFED46529C54CEA06D774E3CC7E073346AEBD6C66FC973F299EB74738E400B22B1E7CDC54E71AED059D228DFEB5B29C530FF341502AE56DDCFE9", 16));
-					try {
-						pbk = (RSAPublicKey) keyFac.generatePublic(pubKeySpec);
-					} catch (InvalidKeySpecException ex) {
-						throw new Exception(ex.getMessage());
-					}
-										
-					resultString = Converts.bytesToHexString(RSAUtil.encrypt(pbk, (password+"\n"+ts+"\n").getBytes()));
+					RSAPublicKeySpec pubKeySpec = new RSAPublicKeySpec(
+							new BigInteger("CF87D7B4C864F4842F1D337491A48FFF54B73A17300E8E42FA365420393AC0346AE55D8AFAD975DFA175FAF0106CBA81AF1DDE4ACEC284DAC6ED9A0D8FEB1CC070733C58213EFFED46529C54CEA06D774E3CC7E073346AEBD6C66FC973F299EB74738E400B22B1E7CDC54E71AED059D228DFEB5B29C530FF341502AE56DDCFE9", 16), 
+							new BigInteger("10001", 16));
+					
+					pbk = (RSAPublicKey) keyFac.generatePublic(pubKeySpec);
+					cipher.init(Cipher.ENCRYPT_MODE, pbk);					
+					byte[] ecrypted = cipher.doFinal((password+"\n"+ts+"\n").getBytes());
+					
+					resultString = Converts.bytesToHexString(ecrypted);
 				}else if(aid==3){//QQ在线
 					resultString = "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF3";
 				}else{
