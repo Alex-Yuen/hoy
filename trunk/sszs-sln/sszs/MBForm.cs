@@ -309,7 +309,7 @@ namespace ws.hoyland.sszs
                 }
                 catch (Exception e)
                 {
-                    throw e;
+                    //throw e;
                 }
             }
         }
@@ -343,7 +343,7 @@ namespace ws.hoyland.sszs
                     catch (Exception e)
                     {
                         runx = false;
-                        throw e;
+                        //throw e;
                     }
                     break;
 
@@ -362,7 +362,7 @@ namespace ws.hoyland.sszs
                     catch (Exception e)
                     {
                         runx = false;
-                        throw e;
+                        //throw e;
                     }
                     break;
                 case 2:
@@ -401,7 +401,7 @@ namespace ws.hoyland.sszs
                     catch (Exception e)
                     {
                         runx = false;
-                        throw e;
+                        //throw e;
                     }
                     break;
                 case 3:
@@ -484,7 +484,7 @@ namespace ws.hoyland.sszs
                     catch (Exception e)
                     {
                         runx = false;
-                        throw e;
+                        //throw e;
                     }
                     break;
                 case 4:

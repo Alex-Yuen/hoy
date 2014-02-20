@@ -143,7 +143,7 @@ namespace ws.hoyland.sszs
                     }
                     catch (Exception e)
                     {
-                        throw e;
+                        //throw e;
                     }
                 }
             }
@@ -160,7 +160,7 @@ namespace ws.hoyland.sszs
                     }
                     catch (Exception e)
                     {
-                        throw e;
+                        //throw e;
                     }
                 }
                 info("等待系统暂停结束， 继续执行");
@@ -179,7 +179,7 @@ namespace ws.hoyland.sszs
                     }
                     catch (Exception e)
                     {
-                        throw e;
+                        //throw e;
                     }
                 }
                 info("等待重拨结束， 继续执行");
@@ -215,7 +215,7 @@ namespace ws.hoyland.sszs
                 // try {
                 // obj.getBlock().wait();
                 // } catch (Exception e) {
-                // throw e;
+                // //throw e;
                 // }
                 // }
                 // block = false;
@@ -236,7 +236,7 @@ namespace ws.hoyland.sszs
                 }
                 catch (Exception e)
                 {
-                    throw e;
+                    //throw e;
                 }
             }
 
@@ -294,7 +294,7 @@ namespace ws.hoyland.sszs
                     catch (Exception e)
                     {
                         fb = true;
-                        throw e;
+                        //throw e;
                     }
                     break;
                 case 1:
@@ -323,7 +323,7 @@ namespace ws.hoyland.sszs
                     catch (Exception e)
                     {
                         fb = true;
-                        throw e;
+                        //throw e;
                     }
                     break;
                 case 2:
@@ -359,7 +359,7 @@ namespace ws.hoyland.sszs
                     catch (Exception e)
                     {
                         fb = true;
-                        throw e;
+                        //throw e;
                     }
                     break;
                 case 3:
@@ -379,7 +379,7 @@ namespace ws.hoyland.sszs
                     catch (Exception e)
                     {
                         fb = true;
-                        throw e;
+                        //throw e;
                     }
                     break;
                 case 4:
@@ -400,7 +400,7 @@ namespace ws.hoyland.sszs
                     catch (Exception e)
                     {
                         fb = true;
-                        throw e;
+                        //throw e;
                     }
                     break;
                 case 5:
@@ -437,7 +437,7 @@ namespace ws.hoyland.sszs
                     catch (Exception e)
                     {
                         fb = true;
-                        throw e;
+                        //throw e;
                     }
                     break;
                 case 6:
@@ -461,7 +461,7 @@ namespace ws.hoyland.sszs
                     catch (Exception e)
                     {
                         fb = true;
-                        throw e;
+                        //throw e;
                     }
                     break;
                 case 7:
@@ -499,7 +499,7 @@ namespace ws.hoyland.sszs
                     catch (Exception e)
                     {
                         fb = true;
-                        throw e;
+                        //throw e;
                     }
                     break;
                 case 8:
@@ -510,7 +510,7 @@ namespace ws.hoyland.sszs
                                 "http://aq.qq.com/cn2/appeal/appeal_contact_confirm";
 
                         content = "txtLoginUin=" + this.account + "&txtCtCheckBox=0&txtName=" + Names.getInstance()
-                                .getName() + "&txtAddress=&txtIDCard=&txtContactQQ=&txtContactQQPW=&txtContactQQPW2=&radiobutton=mail&txtContactEmail" + this.mail + "qq.com&txtContactMobile=请填写您的常用手机";
+                                .getName() + "&txtAddress=&txtIDCard=&txtContactQQ=&txtContactQQPW=&txtContactQQPW2=&radiobutton=mail&txtContactEmail=" + this.mail + "@qq.com&txtContactMobile=请填写您的常用手机";
 
 
                         bs = client.UploadData(url, "POST", Encoding.UTF8.GetBytes(content));
@@ -537,7 +537,7 @@ namespace ws.hoyland.sszs
                     catch (Exception e)
                     {
                         fb = true;
-                        throw e;
+                        //throw e;
                     }
                     break;
                 case 9: // 收邮件 
@@ -582,7 +582,7 @@ namespace ws.hoyland.sszs
                     {
                         info("无法打开邮箱，任务结束");
                         fb = true;
-                        throw e;
+                        //throw e;
                     }
                     break;
                 case 10:
@@ -591,7 +591,7 @@ namespace ws.hoyland.sszs
                     {
                         if (uploadvcode)
                         {
-                            content = "device=&ts="+ts+"&p=&f=xhtml&delegate_url=&action=&https=true&tfcont=22%2520serialization%3A%3Aarchive%25205%25200%25200%252010%25200%25200%25200%25208%2520authtype%25201%25208%25209%2520clientuin%252010%2520"+this.mail+"%25209%2520aliastype%25207%2520%40qq.com%25206%2520domain%25206%2520qq.com%25202%2520ts%252010%25201392345223%25201%2520f%25205%2520xhtml%25205%2520https%25204%2520true%25203%2520uin%252010%2520"+this.mail+"%25203%2520mss%25201%25201%25207%2520btlogin%25206%2520%2520%E7%99%BB%E5%BD%95%2520&verifycode="+result+"&vid="+vid+"&vuin="+vuin+"&vurl="+Util.UrlEncode(vurlx)+"&mss=1&btlogin=+%E7%99%BB%E5%BD%95+";
+                            content = "device=&ts=" + ts + "&p=&f=xhtml&delegate_url=&action=&https=true&tfcont=22%2520serialization%3A%3Aarchive%25205%25200%25200%252010%25200%25200%25200%25208%2520authtype%25201%25208%25209%2520clientuin%25209%2520" + this.mail + "%25209%2520aliastype%25207%2520%40qq.com%25206%2520domain%25206%2520qq.com%25202%2520ts%252010%25201392345223%25201%2520f%25205%2520xhtml%25205%2520https%25204%2520true%25203%2520uin%25209%2520" + this.mail + "%25203%2520mss%25201%25201%25207%2520btlogin%25206%2520%2520%E7%99%BB%E5%BD%95%2520&verifycode=" + result + "&vid=" + vid + "&vuin=" + vuin + "&vurl=" + Util.UrlEncode(vurlx).Replace("%2e", ".") + "&mss=1&btlogin=+%E7%99%BB%E5%BD%95+";
                             uploadvcode = false;
                         }
                         else
@@ -643,10 +643,10 @@ namespace ws.hoyland.sszs
                             Console.WriteLine(vuin);
                             idx++;
                         }
-                        else if (line.IndexOf("today") != -1)
+                        else if (line.IndexOf("errtype=") == -1 && (line.IndexOf("today") != -1 || line.IndexOf("mobile") != -1))
                         {
                             info("登录成功");
-                            line = line.Substring(line.IndexOf("url=http") + 9);
+                            line = line.Substring(line.IndexOf("url=http") + 4);
                             line = line.Substring(0, line.IndexOf("\"/>"));
                             url = line;
                             Console.WriteLine(url);
@@ -654,13 +654,15 @@ namespace ws.hoyland.sszs
                         }
                         else // 验证码错误，报告验证码错误
                         {
+                            info("登录邮箱, 未知错误");
+                            runx = false;
                         }
                     }
                     catch (Exception e)
                     {
                         info("无法打开邮箱，任务结束");
                         fb = true;
-                        throw e;
+                        ////throw e;
                     }
                     break;
 
@@ -688,7 +690,7 @@ namespace ws.hoyland.sszs
                     catch (Exception e)
                     {
                         fb = true;
-                        throw e;
+                        //throw e;
                     }
                     break;
                 case 12:
@@ -725,7 +727,7 @@ namespace ws.hoyland.sszs
                     catch (Exception e)
                     {
                         fb = true;
-                        throw e;
+                        //throw e;
                     }
                     break;
                 case 13:
@@ -749,7 +751,7 @@ namespace ws.hoyland.sszs
                     catch (Exception e)
                     {
                         fb = true;
-                        throw e;
+                        //throw e;
                     }
                     break;
                 case 14:
@@ -768,7 +770,7 @@ namespace ws.hoyland.sszs
                     catch (Exception e)
                     {
                         fb = true;
-                        throw e;
+                        //throw e;
                     }
                     break;
                 case 15:
@@ -823,7 +825,7 @@ namespace ws.hoyland.sszs
                     catch (Exception e)
                     {
                         fb = true;
-                        throw e;
+                        //throw e;
                     }
                     break;
                 case 16:
@@ -875,7 +877,7 @@ namespace ws.hoyland.sszs
                     catch (Exception e)
                     {
                         fb = true;
-                        throw e;
+                        //throw e;
                     }
                     break;
                 case 17:
@@ -995,7 +997,7 @@ namespace ws.hoyland.sszs
                     catch (Exception e)
                     {
                         fb = true;
-                        throw e;
+                        //throw e;
                     }
                     break;
                 case 18:
@@ -1016,7 +1018,7 @@ namespace ws.hoyland.sszs
                     catch (Exception e)
                     {
                         fb = true;
-                        throw e;
+                        //throw e;
                     }
                     break;
                 case 19:
@@ -1057,7 +1059,7 @@ namespace ws.hoyland.sszs
                     catch (Exception e)
                     {
                         fb = true;
-                        throw e;
+                        //throw e;
                     }
                     break;
                 case 20:
@@ -1095,7 +1097,7 @@ namespace ws.hoyland.sszs
                     catch (Exception e)
                     {
                         fb = true;
-                        throw e;
+                        //throw e;
                     }
 
                     break;
@@ -1142,7 +1144,7 @@ namespace ws.hoyland.sszs
                     {
                         info("连接邮箱失败");
                         fb = true;
-                        throw e;
+                        //throw e;
                     }
 
                     break;
