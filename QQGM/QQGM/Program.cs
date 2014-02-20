@@ -82,17 +82,17 @@ namespace QQGM
                 MessageBox.Show(ex.Message);
             }
             
-            if (expire <= 0)
-            {
-                new Expire().ShowDialog();//Show("此机器授权已经过期:" + byteArrayToHexString(mc).ToUpper());
-                Application.Exit();
-            }
-            else
-            {
+            //if (expire <= 0)
+            //{
+            //    new Expire().ShowDialog();//Show("此机器授权已经过期:" + byteArrayToHexString(mc).ToUpper());
+            //    Application.Exit();
+            //}
+            //else
+            //{
                 Application.Run(new Declare(expire));
                 //Application.Run(new Form1("    [到期时间: " + DateTime.Now.AddDays(expire).ToString("yyyy-MM-dd", DateTimeFormatInfo.InvariantInfo) + "]"));
                 //Console.WriteLine(byteArrayToHexString(mc).ToUpper());
-            }
+            //}
             //byteArrayToHexString(bs)
         }
         

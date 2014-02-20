@@ -77,8 +77,17 @@ namespace QQGM
 
         private void button1_Click(object sender, EventArgs e)
         {
-            new Form1(this, "    [到期时间: " + DateTime.Now.AddDays(expire).ToString("yyyy-MM-dd", DateTimeFormatInfo.InvariantInfo) + "]").Show();
-            this.Visible = false;
+            if (expire <= 0)
+            {
+                this.Visible = false;
+                new Expire().ShowDialog();
+                Application.Exit();
+            }
+            else
+            {
+                new Form1(this, "    [到期时间: " + DateTime.Now.AddDays(expire).ToString("yyyy-MM-dd", DateTimeFormatInfo.InvariantInfo) + "]").Show();
+                this.Visible = false;
+            }
         }
     }
 }
