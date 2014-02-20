@@ -718,9 +718,9 @@
             // 
             this.panel9.Controls.Add(this.dataGridView2);
             this.panel9.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel9.Location = new System.Drawing.Point(406, 0);
+            this.panel9.Location = new System.Drawing.Point(397, 0);
             this.panel9.Name = "panel9";
-            this.panel9.Size = new System.Drawing.Size(388, 277);
+            this.panel9.Size = new System.Drawing.Size(397, 277);
             this.panel9.TabIndex = 1;
             // 
             // dataGridView2
@@ -730,8 +730,9 @@
             this.dataGridView2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dataGridView2.Location = new System.Drawing.Point(0, 0);
             this.dataGridView2.Name = "dataGridView2";
+            this.dataGridView2.RowHeadersVisible = false;
             this.dataGridView2.RowTemplate.Height = 23;
-            this.dataGridView2.Size = new System.Drawing.Size(388, 277);
+            this.dataGridView2.Size = new System.Drawing.Size(397, 277);
             this.dataGridView2.TabIndex = 1;
             this.dataGridView2.SelectionChanged += new System.EventHandler(this.dataGridView2_SelectionChanged);
             this.dataGridView2.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.dataGridView2_MouseDoubleClick);
@@ -757,7 +758,7 @@
             this.panel8.Dock = System.Windows.Forms.DockStyle.Left;
             this.panel8.Location = new System.Drawing.Point(0, 0);
             this.panel8.Name = "panel8";
-            this.panel8.Size = new System.Drawing.Size(406, 277);
+            this.panel8.Size = new System.Drawing.Size(397, 277);
             this.panel8.TabIndex = 0;
             // 
             // dataGridView1
@@ -767,8 +768,9 @@
             this.dataGridView1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dataGridView1.Location = new System.Drawing.Point(0, 0);
             this.dataGridView1.Name = "dataGridView1";
+            this.dataGridView1.RowHeadersVisible = false;
             this.dataGridView1.RowTemplate.Height = 23;
-            this.dataGridView1.Size = new System.Drawing.Size(406, 277);
+            this.dataGridView1.Size = new System.Drawing.Size(397, 277);
             this.dataGridView1.TabIndex = 0;
             this.dataGridView1.SelectionChanged += new System.EventHandler(this.dataGridView1_SelectionChanged);
             // 
@@ -829,6 +831,7 @@
             this.Name = "SSZS";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "申诉助手";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.SSZS_FormClosing);
             this.Load += new System.EventHandler(this.SSZS_Load);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
