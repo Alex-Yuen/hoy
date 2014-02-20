@@ -75,6 +75,8 @@ namespace ws.hoyland.sszs
 
         private void SSZS_Load(object sender, EventArgs e)
         {
+            this.Text += this.p;
+
             Engine.getInstance().addObserver(this);
 
             cfa = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);

@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using System.Globalization;
+using ws.hoyland.util;
 
 namespace ws.hoyland.sszs
 {
@@ -77,8 +78,17 @@ namespace ws.hoyland.sszs
 
         private void button1_Click(object sender, EventArgs e)
         {
-            new SSZS(this, "    [到期时间: " + DateTime.Now.AddDays(expire).ToString("yyyy-MM-dd", DateTimeFormatInfo.InvariantInfo) + "]").Show();
-            this.Visible = false;
+            if (expire <= 0)
+            {
+                this.Visible = false;
+                new Expire().ShowDialog();
+                Application.Exit();
+            }
+            else
+            {
+                new SSZS(this, "    [到期时间: " + DateTime.Now.AddDays(expire).ToString("yyyy-MM-dd", DateTimeFormatInfo.InvariantInfo) + "]").Show();
+                this.Visible = false;
+            }
         }
     }
 }

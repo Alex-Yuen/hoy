@@ -50,16 +50,16 @@ namespace ws.hoyland.sszs
                 case EngineMessageType.OM_CHECKEXP:
 
                     int expire = (Int32)msg.getData();
-                    if (expire <= 0)
-                    {
-                        new Expire().ShowDialog();//Show("此机器授权已经过期:" + byteArrayToHexString(mc).ToUpper());
-                        Application.Exit();
-                    }
-                    else
-                    {
+                    //if (expire <= 0)
+                    //{
+                    //    new Expire().ShowDialog();//Show("此机器授权已经过期:" + byteArrayToHexString(mc).ToUpper());
+                    //    Application.Exit();
+                    //}
+                    //else
+                    //{
                         //Console.WriteLine(byteArrayToHexString(mc).ToUpper());
                         Application.Run(new Declare(expire));
-                    }
+                    //}
                     break;
                 default:
                     break;
