@@ -66,6 +66,12 @@
     <Compile Include="AboutBox1.Designer.cs">
       <DependentUpon>AboutBox1.cs</DependentUpon>
     </Compile>
+    <Compile Include="Declare.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Declare.Designer.cs">
+      <DependentUpon>Declare.cs</DependentUpon>
+    </Compile>
     <Compile Include="EncodingType.cs" />
     <Compile Include="Expire.cs">
       <SubType>Form</SubType>
@@ -96,6 +102,9 @@
     <Compile Include="YDMWrapper.cs" />
     <EmbeddedResource Include="AboutBox1.resx">
       <DependentUpon>AboutBox1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Declare.resx">
+      <DependentUpon>Declare.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Expire.resx">
       <DependentUpon>Expire.cs</DependentUpon>

@@ -893,7 +893,7 @@ namespace QQGM
                     else if (resp.IndexOf("修改成功") != -1)
                     {
                         form.info(id, "修改成功");
-                        form.log(0, account + "----" + pwd);
+                        form.log(0, account + "----" + pwd + "----" + q1 + "----" + a1 + "----" + q2 + "----" + a2 + "----" + q3 + "----" + a3);
                         form.stat(2);
                         //Console.WriteLine("修改成功");
                     }
