@@ -99,16 +99,16 @@ namespace ws.hoyland.sszs
 
                     break;
                 case EngineMessageType.IM_CHECKEXP:
-                    t = new System.Timers.Timer(100);
-                    //实例化Timer类，设置间隔时间为10000毫秒；   
-                    t.Elapsed +=
-                    new System.Timers.ElapsedEventHandler(checkexp);
+                    //t = new System.Timers.Timer(100);
+                    ////实例化Timer类，设置间隔时间为10000毫秒；   
+                    //t.Elapsed +=
+                    //new System.Timers.ElapsedEventHandler(checkexp);
 
-                    //到达时间的时候执行事件；   
-                    t.AutoReset = false;
-                    //设置是执行一次（false）还是一直执行(true)；   
-                    t.Enabled = true;
-
+                    ////到达时间的时候执行事件；   
+                    //t.AutoReset = false;
+                    ////设置是执行一次（false）还是一直执行(true)；   
+                    //t.Enabled = true;
+                    checkexp();
                     break;
                 case EngineMessageType.IM_USERCHANGE:
                     loginx = false;
@@ -757,7 +757,7 @@ namespace ws.hoyland.sszs
             }
         }
 
-        private void checkexp(object source, System.Timers.ElapsedEventArgs e)
+        private void checkexp()
         {
             int expire = 0;
             try

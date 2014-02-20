@@ -27,9 +27,32 @@ namespace ws.hoyland.sszs
         private int first = -1;
         private int last = -1;
         private int mfirst = -1;
-
-        public SSZS()
+        private Declare declare;
+        private string p;
+                
+        private SSZS()
         {
+            InitializeComponent();
+            table1.Columns.Add("ID", Type.GetType("System.String"));
+            table1.Columns.Add("帐号", Type.GetType("System.String"));
+            table1.Columns.Add("密码", Type.GetType("System.String"));
+            table1.Columns.Add("状态", Type.GetType("System.String"));
+            dataGridView1.DataSource = table1;
+
+
+            table2.Columns.Add("ID", Type.GetType("System.String"));
+            table2.Columns.Add("帐号", Type.GetType("System.String"));
+            table2.Columns.Add("密码", Type.GetType("System.String"));
+            table2.Columns.Add("次数", Type.GetType("System.String"));
+            dataGridView2.DataSource = table2;
+        }
+
+        public SSZS(Declare declare, string p)
+        {
+            // TODO: Complete member initialization
+            this.declare = declare;
+            this.p = p;
+            
             InitializeComponent();
             table1.Columns.Add("ID", Type.GetType("System.String"));
             table1.Columns.Add("帐号", Type.GetType("System.String"));
@@ -86,12 +109,6 @@ namespace ws.hoyland.sszs
                 {
                     button1.PerformClick();
                 }
-
-                EngineMessage message = new EngineMessage();
-                message.setType(EngineMessageType.IM_CHECKEXP);
-                message.setData(null);
-
-                Engine.getInstance().fire(message);
             }
             catch (Exception ex)
             {
@@ -358,23 +375,6 @@ namespace ws.hoyland.sszs
                                {
                                    button2.Enabled = false;
                                };
-                    this.BeginInvoke(dlg);
-                    break;
-                case EngineMessageType.OM_CHECKEXP:
-                    dlg = delegate()
-                    {
-                        int expire = (Int32)msg.getData();
-                        if (expire <= 0)
-                        {
-                            new Expire().ShowDialog();//Show("此机器授权已经过期:" + byteArrayToHexString(mc).ToUpper());
-                            Application.Exit();
-                        }
-                        else
-                        {
-                            //Console.WriteLine(byteArrayToHexString(mc).ToUpper());
-                            this.Text += "        [到期时间: " + DateTime.Now.AddDays(expire).ToString("yyyy-MM-dd", DateTimeFormatInfo.InvariantInfo) + "]";
-                        }
-                    };
                     this.BeginInvoke(dlg);
                     break;
                 case EngineMessageType.OM_RUNNING:
@@ -695,6 +695,11 @@ namespace ws.hoyland.sszs
         private void 申诉结果RToolStripMenuItem1_Click(object sender, EventArgs e)
         {
             new RSForm().ShowDialog();
+        }
+
+        private void SSZS_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            this.declare.Close();
         }
     }
 }
