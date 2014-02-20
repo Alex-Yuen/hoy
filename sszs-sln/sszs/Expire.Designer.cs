@@ -74,7 +74,7 @@
             this.Name = "Expire";
             this.ShowIcon = false;
             this.ShowInTaskbar = false;
-            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "信息";
             this.Load += new System.EventHandler(this.Expire_Load);
             this.ResumeLayout(false);
