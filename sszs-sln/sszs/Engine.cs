@@ -360,7 +360,7 @@ namespace ws.hoyland.sszs
                             }
                             catch (Exception e)
                             {
-                                throw e;
+                                //throw e;
                                 //System.out.println(i + ":" + accounts.get(i));
                             }
                         }
@@ -475,7 +475,7 @@ namespace ws.hoyland.sszs
                         }
                         catch (Exception e)
                         {
-                            throw e;
+                            //throw e;
                         };
                     }
                     else
@@ -487,7 +487,7 @@ namespace ws.hoyland.sszs
                         }
                         catch (Exception e)
                         {
-                            throw e;
+                            //throw e;
                         };
                     }
 
@@ -541,7 +541,7 @@ namespace ws.hoyland.sszs
                                 }
                                 catch (Exception e)
                                 {
-                                    throw e;
+                                    //throw e;
                                 }
                             }
 
@@ -549,7 +549,7 @@ namespace ws.hoyland.sszs
                         }
                         catch (Exception e)
                         {
-                            throw e;
+                            //throw e;
                         }
                     }
 
@@ -592,7 +592,7 @@ namespace ws.hoyland.sszs
                         }
                         catch (Exception e)
                         {
-                            throw e;
+                            //throw e;
                         }
 
                     }
@@ -671,7 +671,7 @@ namespace ws.hoyland.sszs
                         }
                         catch (Exception e)
                         {
-                            throw e;
+                            //throw e;
                         }
                     }
                     break;
@@ -700,7 +700,7 @@ namespace ws.hoyland.sszs
             }
             catch (Exception e)
             {
-                throw e;
+                //throw e;
             };
             //写入已使用邮箱日志
             try
@@ -718,7 +718,7 @@ namespace ws.hoyland.sszs
             }
             catch (Exception e)
             {
-                throw e;
+                //throw e;
             };
             //未使用
             try
@@ -736,7 +736,7 @@ namespace ws.hoyland.sszs
             }
             catch (Exception e)
             {
-                throw e;
+                //throw e;
             };
             //}
 

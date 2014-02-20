@@ -24,7 +24,7 @@ namespace ws.hoyland.util
                 }
                 catch (Exception e)
                 {
-                    throw e;
+                    //throw e;
                 }
                 count = 1;
             }
@@ -44,7 +44,7 @@ namespace ws.hoyland.util
                 }
                 catch (Exception e)
                 {
-                    throw e;
+                    //throw e;
                 }
                 count = 0;
             }
