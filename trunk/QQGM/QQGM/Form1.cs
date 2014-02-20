@@ -26,6 +26,7 @@ namespace QQGM
 {
     public partial class Form1 : Form
     {
+        private Form pf;
         private delegate void Delegate();
         private Delegate dlg;
 
@@ -42,8 +43,30 @@ namespace QQGM
         private HashSet<Task> tasks = new HashSet<Task>();
         private Hashtable ips = new Hashtable();
         //System.Collections.Hashtable
-        public Form1()
+        private Form1()
         {
+            InitializeComponent();
+
+            table.Columns.Add("ID", Type.GetType("System.String"));
+            table.Columns.Add("帐号", Type.GetType("System.String"));
+            table.Columns.Add("密码", Type.GetType("System.String"));
+            table.Columns.Add("状态", Type.GetType("System.String"));
+            table.Columns.Add("问题1", Type.GetType("System.String"));
+            table.Columns.Add("答案1", Type.GetType("System.String"));
+            table.Columns.Add("问题2", Type.GetType("System.String"));
+            table.Columns.Add("答案2", Type.GetType("System.String"));
+            table.Columns.Add("问题3", Type.GetType("System.String"));
+            table.Columns.Add("答案3", Type.GetType("System.String"));
+
+            dataGridView1.DataSource = table;
+        }
+
+        public Form1(Form pf, string p)
+        {
+            // TODO: Complete member initialization
+            this.pf = pf;
+            this.p = p;
+
             InitializeComponent();
 
             table.Columns.Add("ID", Type.GetType("System.String"));
@@ -62,6 +85,7 @@ namespace QQGM
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            this.Text += this.p;
             cfa = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
 
             if (cfa == null)
@@ -107,16 +131,6 @@ namespace QQGM
                     t.Enabled = true;
                     //是否执行System.Timers.Timer.Elapsed事件；  
                 }
-
-
-                System.Timers.Timer tx = new System.Timers.Timer(1);
-                //实例化Timer类，设置间隔时间为10000毫秒；   
-                tx.Elapsed +=
-                new System.Timers.ElapsedEventHandler(ge);
-                //到达时间的时候执行事件；   
-                tx.AutoReset = false;
-                //设置是执行一次（false）还是一直执行(true)；   
-                tx.Enabled = true;
             }
             catch (Exception ex)
             {
@@ -246,62 +260,8 @@ namespace QQGM
         }
         private static string[] hexDigits = {"0", "1", "2", "3", "4",  
 	        "5", "6", "7", "8", "9", "a", "b", "c", "d", "e", "f"};
-
-        private void ge(object source, System.Timers.ElapsedEventArgs e)
-        {
-            int expire = 0;
-            try
-            {
-                WebClient wc = new WebClient();
-                QQCrypt crypt = new QQCrypt();
-                ManagementObject disk = new ManagementObject("win32_logicaldisk.deviceid=\"c:\"");
-                disk.Get();
-                byte[] mc = UMD5(disk.GetPropertyValue("VolumeSerialNumber").ToString()+"MBZS");
-
-                string url = "http://222.186.26.132:8086/ge";
-                byte[] key = getKey();
-                string content = byteArrayToHexString(key).ToUpper() + byteArrayToHexString(crypt.QQ_Encrypt(mc, key)).ToUpper();
-                //Console.WriteLine(byteArrayToHexString(key).ToUpper());
-                //Console.WriteLine(content);
-                //client.UploadString(url, content);
-                //client.UploadString(url, 
-                //client.Encoding = Encoding.UTF8;
-                wc.Headers[HttpRequestHeader.ContentType] = "text/plain; charset=UTF-8";
-
-                //client.UploadData(url, "POST", Encoding.UTF8.GetBytes(content));
-                byte[] bs = null;
-                bs = wc.UploadData(url, "POST", Encoding.UTF8.GetBytes(content));
-                //byte[] bs = Encoding.GetEncoding("GB2312").GetBytes();
-
-                //bs = crypt.QQ_Decrypt(bs, key);
-                string resp = Encoding.UTF8.GetString(bs);
-                //Console.WriteLine("1:"+resp);
-                bs = crypt.QQ_Decrypt(hexStringToByte(resp), key);
-                expire = Int32.Parse(Encoding.UTF8.GetString(bs));
-                Console.WriteLine("R:" + expire);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
-
-            dlg = delegate()
-            {
-                if (expire <= 0)
-                {
-                    new Expire().ShowDialog();//Show("此机器授权已经过期:" + byteArrayToHexString(mc).ToUpper());
-                    Application.Exit();
-                }
-                else
-                {
-                    //Console.WriteLine(byteArrayToHexString(mc).ToUpper());
-                    this.Text += "    [到期时间: " + DateTime.Now.AddDays(expire).ToString("yyyy-MM-dd", DateTimeFormatInfo.InvariantInfo) + "]";
-                }
-            };
-            this.BeginInvoke(dlg);
-            //byteArrayToHexString(bs)
-        }
-
+        private string p;
+        
         private void login(object source, System.Timers.ElapsedEventArgs e)
         {
             string username = null;
@@ -803,6 +763,7 @@ namespace QQGM
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
+            this.pf.Close();
             shutdown();
         }
 
