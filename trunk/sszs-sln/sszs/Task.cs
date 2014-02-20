@@ -113,7 +113,7 @@ namespace ws.hoyland.sszs
             this.runx = true;
 
             client = new HttpClient();
-            client.Headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:25.0) Gecko/20100101 Firefox/25.0");
+            //client.Headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:25.0) Gecko/20100101 Firefox/25.0");
 
             cfa = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
         }
@@ -273,6 +273,7 @@ namespace ws.hoyland.sszs
         private void process(int index)
         {
             int itv = Int32.Parse(cfa.AppSettings.Settings["MAIL_ITV"].Value);
+            client.Headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:25.0) Gecko/20100101 Firefox/25.0");
             switch (index)
             {
                 case 0:
@@ -643,7 +644,7 @@ namespace ws.hoyland.sszs
                             Console.WriteLine(vuin);
                             idx++;
                         }
-                        else if (line.IndexOf("errtype=") == -1 && (line.IndexOf("today") != -1 || line.IndexOf("mobile") != -1))
+                        else if (line.IndexOf("errtype=") == -1 && (line.IndexOf("today") != -1))//|| line.IndexOf("mobile") != -1
                         {
                             info("登录成功");
                             line = line.Substring(line.IndexOf("url=http") + 4);
@@ -785,10 +786,13 @@ namespace ws.hoyland.sszs
                         int qqidx = -1;
                         if ((formidx = line.IndexOf("<form")) != -1 && (qqidx = line.IndexOf("QQ号码申诉联系方式确认")) != -1 && line.Substring(formidx, qqidx).IndexOf("mui_font_bold") != -1)
                         {
-                            line = line.Substring(line.Substring(formidx, qqidx).LastIndexOf("/cgi-bin/readmail?"));
+                            //Console.WriteLine(line.Substring(formidx, qqidx - formidx));
+                            line = line.Substring(formidx, qqidx-formidx);
+                            line = line.Substring(line.LastIndexOf("/cgi-bin/readmail?"));
                             url = line.Substring(0, line.IndexOf("\">"));
 
                             info(" 读取邮件内容");
+                            client.Headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:25.0) Gecko/20100101 Firefox/25.0");
                             data = client.OpenRead("http://w.mail.qq.com" + url);
                             reader = new StreamReader(data);
                             line = reader.ReadToEnd();
