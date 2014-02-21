@@ -22,7 +22,7 @@ namespace ws.hoyland.util
                     }
                     Monitor.PulseAll(this);
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
                     //throw e;
                 }
@@ -42,7 +42,7 @@ namespace ws.hoyland.util
                     }
                     Monitor.PulseAll(this);
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
                     //throw e;
                 }

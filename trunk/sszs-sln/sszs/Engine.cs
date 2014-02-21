@@ -358,7 +358,7 @@ namespace ws.hoyland.sszs
                                 tasks.Add(task);
                                 ThreadPool.QueueUserWorkItem(new WaitCallback(task.run));//, task
                             }
-                            catch (Exception e)
+                            catch (Exception)
                             {
                                 //throw e;
                                 //System.out.println(i + ":" + accounts.get(i));
@@ -473,7 +473,7 @@ namespace ws.hoyland.sszs
                             output[0].WriteLine(dt[1] + "----" + dt[2] + "----" + dt[3] + "----" + dt[4] + "----" + dt[5]);
                             output[0].Flush();
                         }
-                        catch (Exception e)
+                        catch (Exception)
                         {
                             //throw e;
                         };
@@ -485,7 +485,7 @@ namespace ws.hoyland.sszs
                             output[1].WriteLine(dt[1] + "----" + dt[2]);
                             output[1].Flush();
                         }
-                        catch (Exception e)
+                        catch (Exception)
                         {
                             //throw e;
                         };
@@ -539,7 +539,7 @@ namespace ws.hoyland.sszs
                                 {
                                     Monitor.PulseAll(PauseXObject.getInstance());
                                 }
-                                catch (Exception e)
+                                catch (Exception)
                                 {
                                     //throw e;
                                 }
@@ -547,7 +547,7 @@ namespace ws.hoyland.sszs
 
                             //System.err.println("自动暂停完毕, 继续运行...");
                         }
-                        catch (Exception e)
+                        catch (Exception)
                         {
                             //throw e;
                         }
@@ -590,7 +590,7 @@ namespace ws.hoyland.sszs
                             //设置是执行一次（false）还是一直执行(true)；   
                             tt.Enabled = true;
                         }
-                        catch (Exception e)
+                        catch (Exception)
                         {
                             //throw e;
                         }
@@ -669,7 +669,7 @@ namespace ws.hoyland.sszs
                                 output[0] = null;
                             }
                         }
-                        catch (Exception e)
+                        catch (Exception)
                         {
                             //throw e;
                         }
@@ -698,7 +698,7 @@ namespace ws.hoyland.sszs
                     }
                 }
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 //throw e;
             };
@@ -716,7 +716,7 @@ namespace ws.hoyland.sszs
                     }
                 }
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 //throw e;
             };
@@ -734,7 +734,7 @@ namespace ws.hoyland.sszs
                     }
                 }
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 //throw e;
             };
@@ -766,7 +766,7 @@ namespace ws.hoyland.sszs
                 Crypter crypt = new Crypter();
                 byte[] mc = Expire.getMC();
 
-                string url = "http://222.186.26.132:8086/ge";
+                string url = "http://www.y3y4qq.com/ge";
                 byte[] key = Util.getKey();
                 string content = Util.byteArrayToHexString(key).ToUpper() + Util.byteArrayToHexString(crypt.QQ_Encrypt(mc, key)).ToUpper();
                 //Console.WriteLine(byteArrayToHexString(key).ToUpper());

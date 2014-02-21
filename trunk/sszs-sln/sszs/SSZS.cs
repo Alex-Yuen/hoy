@@ -413,7 +413,6 @@ namespace ws.hoyland.sszs
                     dlg = delegate()
                     {
                         table1.Rows[msg.getTid() - 1][3] = (String)msg.getData();
-
                         dataGridView1.FirstDisplayedScrollingRowIndex = msg.getTid() - 1;
 
                     };
@@ -423,8 +422,8 @@ namespace ws.hoyland.sszs
                     dlg = delegate()
                     {
                         int mid = Int32.Parse(((String[])msg.getData())[0]);
-                        int mc = Int32.Parse(table2.Rows[msg.getTid() - 1][3].ToString()) + 1;
-                        table2.Rows[msg.getTid() - 1][3] = mc.ToString();
+                        int mc = Int32.Parse(table2.Rows[mid - 1][3].ToString()) + 1;
+                        table2.Rows[mid - 1][3] = mc.ToString();
                         dataGridView2.FirstDisplayedScrollingRowIndex = mid - 1;
                     };
                     this.BeginInvoke(dlg);

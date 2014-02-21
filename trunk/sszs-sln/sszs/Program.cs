@@ -57,6 +57,7 @@ namespace ws.hoyland.sszs
                     //}
                     //else
                     //{
+                    Engine.getInstance().removeObserver(this);
                         //Console.WriteLine(byteArrayToHexString(mc).ToUpper());
                         Application.Run(new Declare(expire));
                     //}
