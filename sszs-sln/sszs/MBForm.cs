@@ -29,6 +29,9 @@ namespace ws.hoyland.sszs
         private StreamWriter[] output = new StreamWriter[4]; //成功，失败，未运行
         private String[] fns = new String[] { "设置成功", "设置失败", "凭证过期", "已经设置" };
 
+        private int suc = 0;
+        private int total = 0;
+
         public MBForm()
         {
             InitializeComponent();
@@ -112,6 +115,8 @@ namespace ws.hoyland.sszs
                     {
                         //List<String> ls = (List<String>)msg.getData();
                         //label4.Text = ls[0];
+                        total = accounts.Count;
+                        Stat();
                         dataGridView1.FirstDisplayedScrollingRowIndex = 0;
                     }
 
@@ -213,6 +218,31 @@ namespace ws.hoyland.sszs
             }
         }
 
+        public void SetColor(int id, Color color)
+        {
+            dlg = delegate()
+            {
+                dataGridView1.Rows[id].DefaultCellStyle.BackColor = color;
+            };
+            this.BeginInvoke(dlg);
+        }
+
+        public void inc()
+        {
+            lock (this)
+            {
+                suc++;
+            }
+        }
+
+        public void Stat()
+        {
+            dlg = delegate()
+            {
+                label1.Text = suc + " / " + total + " = " + ((double)(100 * suc) / (double)total).ToString("F2") + "%";
+            };
+            this.BeginInvoke(dlg);
+        }
     }
 
 
@@ -291,25 +321,36 @@ namespace ws.hoyland.sszs
         public void run(Object stateInfo)
         {
             ConfigurationManager.RefreshSection("appSettings");
-            while (runx)
+            try
             {
-                process(idx);
+                form.SetColor(id, Color.Blue);
+                while (runx)
+                {
+                    process(idx);
 
-                try
-                {
-                    if (data != null)
+                    try
                     {
-                        data.Close();
+                        if (data != null)
+                        {
+                            data.Close();
+                        }
+                        if (reader != null)
+                        {
+                            reader.Close();
+                        }
                     }
-                    if (reader != null)
+                    catch (Exception)
                     {
-                        reader.Close();
+                        //throw e;
                     }
                 }
-                catch (Exception)
-                {
-                    //throw e;
-                }
+
+                form.Stat();
+                form.SetColor(id, Color.Black);
+            }
+            catch (Exception)
+            {
+                form.SetColor(id, Color.Red);
             }
         }
         
@@ -564,6 +605,10 @@ namespace ws.hoyland.sszs
                     {
                         form.log(0, account + "----" + pwd + "----" + tqs[0] + "----" + tas[0] + "----" + tqs[1] + "----" + tas[1] + "----" + tqs[2] + "----" + tas[2]);
                         form.info(id, "设置成功");
+
+                        form.inc();
+                        //没有显示成功和失败数量
+
                         //form.stat(3);
                         //Console.WriteLine("");
                     }
