@@ -53,6 +53,9 @@ namespace ws.hoyland.sszs
         private Object data = null;
         private System.Timers.Timer t = null;
 
+        private int succ = 0;
+        private int fail = 0;
+
         private Engine()
         {
             cfa = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
@@ -467,6 +470,15 @@ namespace ws.hoyland.sszs
 
                     if ("1".Equals(dt[0]))
                     {//成功
+                        succ++;
+
+                        msg = new EngineMessage();
+                        msg.setTid(-1); //所有task
+                        msg.setType(EngineMessageType.OM_SUCC);
+                        msg.setData(succ.ToString());
+                        
+                        this.notifyObservers(msg);
+
                         try
                         {
                             //output[0].write(dt[1]+"----"+dt[2]+"----"+dt[3]+"----"+dt[4]+"----"+dt[5]+"----"+cip + "\r\n");
@@ -480,6 +492,15 @@ namespace ws.hoyland.sszs
                     }
                     else
                     {//失败
+                        fail++;
+
+                        msg = new EngineMessage();
+                        msg.setTid(-1); //所有task
+                        msg.setType(EngineMessageType.OM_FAIL);
+                        msg.setData(fail.ToString());
+
+                        this.notifyObservers(msg);
+
                         try
                         {
                             output[1].WriteLine(dt[1] + "----" + dt[2]);

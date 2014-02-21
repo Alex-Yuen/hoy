@@ -379,9 +379,9 @@
             this.label6.AutoSize = true;
             this.label6.Location = new System.Drawing.Point(301, 56);
             this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(59, 12);
+            this.label6.Size = new System.Drawing.Size(17, 12);
             this.label6.TabIndex = 6;
-            this.label6.Text = "改保失败:";
+            this.label6.Text = "/:";
             // 
             // label7
             // 
@@ -390,7 +390,7 @@
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(59, 12);
             this.label7.TabIndex = 5;
-            this.label7.Text = "改密失败:";
+            this.label7.Text = "申诉失败:";
             // 
             // label8
             // 
@@ -406,9 +406,9 @@
             this.label3.AutoSize = true;
             this.label3.Location = new System.Drawing.Point(301, 25);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(59, 12);
+            this.label3.Size = new System.Drawing.Size(17, 12);
             this.label3.TabIndex = 2;
-            this.label3.Text = "改保成功:";
+            this.label3.Text = "/:";
             // 
             // label2
             // 
@@ -417,7 +417,7 @@
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(59, 12);
             this.label2.TabIndex = 1;
-            this.label2.Text = "改密成功:";
+            this.label2.Text = "申诉成功:";
             // 
             // label1
             // 

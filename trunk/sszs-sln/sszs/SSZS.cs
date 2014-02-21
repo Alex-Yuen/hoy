@@ -356,6 +356,26 @@ namespace ws.hoyland.sszs
                     this.BeginInvoke(dlg);
 
                     break;
+                case EngineMessageType.OM_SUCC:
+                    dlg = delegate
+                    {
+                        string succ = (string)msg.getData();
+                        label11.Text = succ;
+                    };
+
+                    this.BeginInvoke(dlg);
+
+                    break;
+                case EngineMessageType.OM_FAIL:
+                    dlg = delegate
+                    {
+                        string fail = (string)msg.getData();
+                        label12.Text = fail;
+                    };
+
+                    this.BeginInvoke(dlg);
+
+                    break;
                 case EngineMessageType.OM_MAIL_LOADED:
                     dlg = delegate
                             {
