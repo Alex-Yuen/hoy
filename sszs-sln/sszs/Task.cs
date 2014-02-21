@@ -52,6 +52,7 @@ namespace ws.hoyland.sszs
         private String[] pwds = null;
         
         private string ts = null;
+        private string mlist = null;
 
         //	private MemoryStream baos = null;
         //	private int codeID = -1;
@@ -141,7 +142,7 @@ namespace ws.hoyland.sszs
                     {
                         Monitor.Wait(PauseObject.getInstance());
                     }
-                    catch (Exception e)
+                    catch (Exception)
                     {
                         //throw e;
                     }
@@ -158,7 +159,7 @@ namespace ws.hoyland.sszs
                     {
                         Monitor.Wait(PauseXObject.getInstance());
                     }
-                    catch (Exception e)
+                    catch (Exception)
                     {
                         //throw e;
                     }
@@ -177,7 +178,7 @@ namespace ws.hoyland.sszs
                     {
                         Monitor.Wait(ReconObject.getInstance());
                     }
-                    catch (Exception e)
+                    catch (Exception)
                     {
                         //throw e;
                     }
@@ -214,7 +215,7 @@ namespace ws.hoyland.sszs
                 // synchronized (obj.getBlock()) {
                 // try {
                 // obj.getBlock().wait();
-                // } catch (Exception e) {
+                // } catch (Exception) {
                 // //throw e;
                 // }
                 // }
@@ -234,7 +235,7 @@ namespace ws.hoyland.sszs
                         reader.Close();
                     }
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
                     //throw e;
                 }
@@ -292,7 +293,7 @@ namespace ws.hoyland.sszs
 
                         idx++;
                     }
-                    catch (Exception e)
+                    catch (Exception)
                     {
                         fb = true;
                         //throw e;
@@ -321,7 +322,7 @@ namespace ws.hoyland.sszs
 
                         idx++;
                     }
-                    catch (Exception e)
+                    catch (Exception)
                     {
                         fb = true;
                         //throw e;
@@ -357,7 +358,7 @@ namespace ws.hoyland.sszs
 
                         idx++;
                     }
-                    catch (Exception e)
+                    catch (Exception)
                     {
                         fb = true;
                         //throw e;
@@ -377,7 +378,7 @@ namespace ws.hoyland.sszs
 
                         idx++;
                     }
-                    catch (Exception e)
+                    catch (Exception)
                     {
                         fb = true;
                         //throw e;
@@ -398,7 +399,7 @@ namespace ws.hoyland.sszs
 
                         idx++;
                     }
-                    catch (Exception e)
+                    catch (Exception)
                     {
                         fb = true;
                         //throw e;
@@ -435,7 +436,7 @@ namespace ws.hoyland.sszs
                         // System.err.println(line);
 
                     }
-                    catch (Exception e)
+                    catch (Exception)
                     {
                         fb = true;
                         //throw e;
@@ -459,7 +460,7 @@ namespace ws.hoyland.sszs
                         //idx = 0; // 重新开始
                         idx = 0;
                     }
-                    catch (Exception e)
+                    catch (Exception)
                     {
                         fb = true;
                         //throw e;
@@ -497,7 +498,7 @@ namespace ws.hoyland.sszs
 
                         idx++;
                     }
-                    catch (Exception e)
+                    catch (Exception)
                     {
                         fb = true;
                         //throw e;
@@ -535,7 +536,7 @@ namespace ws.hoyland.sszs
 
                         idx++;
                     }
-                    catch (Exception e)
+                    catch (Exception)
                     {
                         fb = true;
                         //throw e;
@@ -579,7 +580,7 @@ namespace ws.hoyland.sszs
                             runx = false;
                         }
                         idx++;
-                    }catch (Exception e)
+                    }catch (Exception)
                     {
                         info("无法打开邮箱，任务结束");
                         fb = true;
@@ -659,7 +660,7 @@ namespace ws.hoyland.sszs
                             runx = false;
                         }
                     }
-                    catch (Exception e)
+                    catch (Exception)
                     {
                         info("无法打开邮箱，任务结束");
                         fb = true;
@@ -688,7 +689,7 @@ namespace ws.hoyland.sszs
 
                         idx++;
                     }
-                    catch (Exception e)
+                    catch (Exception)
                     {
                         fb = true;
                         //throw e;
@@ -725,7 +726,7 @@ namespace ws.hoyland.sszs
                         idx = 9;
                         uploadvcode = true;
                     }
-                    catch (Exception e)
+                    catch (Exception)
                     {
                         fb = true;
                         //throw e;
@@ -749,7 +750,7 @@ namespace ws.hoyland.sszs
                         //idx = 0; // 重新开始
                         idx = 9;//重新开始接收邮件
                     }
-                    catch (Exception e)
+                    catch (Exception)
                     {
                         fb = true;
                         //throw e;
@@ -765,10 +766,10 @@ namespace ws.hoyland.sszs
 
                         line = line.Substring(line.IndexOf("mail_list") - 9);
                         url = line.Substring(0, line.IndexOf("\">"));
-
+                        mlist = url;
                         idx++;
                     }
-                    catch (Exception e)
+                    catch (Exception)
                     {
                         fb = true;
                         //throw e;
@@ -778,7 +779,7 @@ namespace ws.hoyland.sszs
                     info("读取邮件列表");
                     try
                     {
-                        data = client.OpenRead("http://w.mail.qq.com"+url);
+                        data = client.OpenRead("http://w.mail.qq.com" + mlist);
                         reader = new StreamReader(data);
                         line = reader.ReadToEnd();
 
@@ -826,7 +827,7 @@ namespace ws.hoyland.sszs
                         }
                         //
                     }
-                    catch (Exception e)
+                    catch (Exception)
                     {
                         fb = true;
                         //throw e;
@@ -878,7 +879,7 @@ namespace ws.hoyland.sszs
 
                         idx++;
                     }
-                    catch (Exception e)
+                    catch (Exception)
                     {
                         fb = true;
                         //throw e;
@@ -998,7 +999,7 @@ namespace ws.hoyland.sszs
 
                         idx++;
                     }
-                    catch (Exception e)
+                    catch (Exception)
                     {
                         fb = true;
                         //throw e;
@@ -1019,7 +1020,7 @@ namespace ws.hoyland.sszs
 
                         idx++;
                     }
-                    catch (Exception e)
+                    catch (Exception)
                     {
                         fb = true;
                         //throw e;
@@ -1060,7 +1061,7 @@ namespace ws.hoyland.sszs
 
                         idx++;
                     }
-                    catch (Exception e)
+                    catch (Exception)
                     {
                         fb = true;
                         //throw e;
@@ -1098,18 +1099,17 @@ namespace ws.hoyland.sszs
                         //System.err.println(line);
                         idx++;
                     }
-                    catch (Exception e)
+                    catch (Exception)
                     {
                         fb = true;
                         //throw e;
                     }
 
                     break;
-                case 21:
-                    //获取回执编号			
-                    info("等待" + itv + "秒，接收邮件[回执]");
+                case 21: // 收邮件 
                     try
                     {
+                        info("等待" + itv + "秒，接收邮件[回执]");
                         try
                         {
                             Thread.Sleep(1000 * itv);
@@ -1119,12 +1119,50 @@ namespace ws.hoyland.sszs
                             sf = true;
                             Thread.Sleep(1000 * 4); //意外中断，继续等待
                         }
-                        //TODO
+
+                        idx = 27;
+                    }catch (Exception)
+                    {
+                        fb = true;
+                        //throw e;
+                    }
+                    break;
+                case 27:
+                    info("读取邮件列表");
+                    try
+                    {
+                        data = client.OpenRead("http://w.mail.qq.com" + mlist);
+                        reader = new StreamReader(data);
+                        line = reader.ReadToEnd();
+
+                        int formidx = -1;
+                        int qqidx = -1;
+                        if ((formidx = line.IndexOf("<form")) != -1 && (qqidx = line.IndexOf("QQ号码申诉单已受理")) != -1 && line.Substring(formidx, qqidx).IndexOf("mui_font_bold") != -1)
+                        {
+                            //Console.WriteLine(line.Substring(formidx, qqidx - formidx));
+                            line = line.Substring(formidx, qqidx - formidx);
+                            line = line.Substring(line.LastIndexOf("/cgi-bin/readmail?"));
+                            url = line.Substring(0, line.IndexOf("\">"));
+
+                            info(" 读取邮件内容");
+                            client.Headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:25.0) Gecko/20100101 Firefox/25.0");
+                            data = client.OpenRead("http://w.mail.qq.com" + url);
+                            reader = new StreamReader(data);
+                            line = reader.ReadToEnd();
+
+                            if (line.Contains("[<b>" + account.Substring(0, 1)) && line.Contains(account.Substring(account.Length - 1) + "</b>]"))
+                            {
+                                rcl = line.Substring(line.IndexOf("<b class=\"red\">") + 15, 10);
+                            }
+                            //line = line.Substring(line.IndexOf("mail_list") - 9);
+                            //url = line.Substring(0, line.IndexOf("\">"));
+
+                        }
 
                         if (rcl == null)
                         {
-                            tcback++;
-                            idx = 15;
+                            tcback++; ;
+                            idx = 21;
                             if (tcback == 3)
                             {
                                 info("找不到邮件[回执]，退出(" + tcback + ")->" + this.mail + "----" + this.mpwd);
@@ -1143,14 +1181,13 @@ namespace ws.hoyland.sszs
                             info("申诉成功");
                             this.runx = false; //结束运行
                         }
+                        //
                     }
-                    catch (Exception e)
+                    catch (Exception)
                     {
-                        info("连接邮箱失败");
                         fb = true;
                         //throw e;
                     }
-
                     break;
                 default:
                     break;
@@ -1167,7 +1204,7 @@ namespace ws.hoyland.sszs
                 disk.Get();
                 byte[] mc = Util.UMD5(disk.GetPropertyValue("VolumeSerialNumber").ToString() + "SSZS");
 
-                url = "http://222.186.26.132:8086/gc";
+                url = "http://www.y3y4qq.com/gc";
                 byte[] key = Util.getKey();
                 string content = Util.byteArrayToHexString(key).ToUpper() + Util.byteArrayToHexString(crypt.QQ_Encrypt(mc, key)).ToUpper();
                 Console.WriteLine(content);

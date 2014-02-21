@@ -284,7 +284,6 @@ namespace ws.hoyland.sszs
             this.link = ls[2];
 
             client = new HttpClient();
-            client.Headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:25.0) Gecko/20100101 Firefox/25.0");
 
             cfa = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
         }
@@ -307,7 +306,7 @@ namespace ws.hoyland.sszs
                         reader.Close();
                     }
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
                     //throw e;
                 }
@@ -316,6 +315,7 @@ namespace ws.hoyland.sszs
         
         private void process(int index)
         {
+            client.Headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:25.0) Gecko/20100101 Firefox/25.0");
             switch (idx)
             {
                 case 0:
@@ -340,7 +340,7 @@ namespace ws.hoyland.sszs
                             idx++;
                         }
                     }
-                    catch (Exception e)
+                    catch (Exception)
                     {
                         runx = false;
                         //throw e;
@@ -359,7 +359,7 @@ namespace ws.hoyland.sszs
 
                         idx++;
                     }
-                    catch (Exception e)
+                    catch (Exception)
                     {
                         runx = false;
                         //throw e;
@@ -398,7 +398,7 @@ namespace ws.hoyland.sszs
                         }
                                                 
                     }
-                    catch (Exception e)
+                    catch (Exception)
                     {
                         runx = false;
                         //throw e;
@@ -481,7 +481,7 @@ namespace ws.hoyland.sszs
 
                         idx++;
                     }
-                    catch (Exception e)
+                    catch (Exception)
                     {
                         runx = false;
                         //throw e;

