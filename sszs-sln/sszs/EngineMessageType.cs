@@ -59,5 +59,7 @@ namespace ws.hoyland.sszs
 
         public const int OM_USERCHANGE = 0x2028;
         public const int OM_CHECKEXP = 0x2029;
+        public const int OM_SUCC = 0x2030;
+        public const int OM_FAIL = 0x2031;        
     }
 }
