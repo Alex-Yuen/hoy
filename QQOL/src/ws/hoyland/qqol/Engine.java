@@ -219,45 +219,49 @@ public class Engine extends Observable {
 							accounts.put(nlns[1], details);
 							**/
 //							new Thread(new CookieLoader(nlns[0], nlns[1], nlns[2])).start();
-							details = new HashMap<String, byte[]>();
-							details.put("id", nlns[0].getBytes());
-							//System.out.println(i);
-							details.put("password", nlns[2].getBytes());
-							accounts.put(nlns[1], details);
-							
-							List<String> lns = new ArrayList<String>();
-							lns.add(nlns[0]);
-							lns.add(nlns[1]);
-							lns.add(nlns[2]);
-							//lns.addAll(Arrays.asList(line.split("----")));
-							lns.add("");
-							lns.add("");
-							lns.add("");
-							lns.add("初始化");
-//							if (lns.size() == 3) {
-//								lns.add("0");
-//								lns.add("初始化");
-//								//line += "----0----初始化";
-//							} else {
-//								//line += "----初始化";
-//								lns.add("初始化");
-//							}
-							
-							String[] items = new String[lns.size()];
-					        lns.toArray(items);
-					        					        
-					        msg = new EngineMessage();
-					        msg.setType(EngineMessageType.OM_ADD_ACC_TBIT);
-					        msg.setData(items);
-					        
-					        this.setChanged();
-							this.notifyObservers(msg);							
+							if(!accounts.containsKey(nlns[1])){
+								details = new HashMap<String, byte[]>();
+								details.put("id", nlns[0].getBytes());
+								//System.out.println(i);
+								details.put("password", nlns[2].getBytes());
+								accounts.put(nlns[1], details);
+								
+								List<String> lns = new ArrayList<String>();
+								lns.add(nlns[0]);
+								lns.add(nlns[1]);
+								lns.add(nlns[2]);
+								//lns.addAll(Arrays.asList(line.split("----")));
+								lns.add("");
+								lns.add("");
+								lns.add("");
+								lns.add("初始化");
+	//							if (lns.size() == 3) {
+	//								lns.add("0");
+	//								lns.add("初始化");
+	//								//line += "----0----初始化";
+	//							} else {
+	//								//line += "----初始化";
+	//								lns.add("初始化");
+	//							}
+								
+								String[] items = new String[lns.size()];
+						        lns.toArray(items);
+						        					        
+						        msg = new EngineMessage();
+						        msg.setType(EngineMessageType.OM_ADD_ACC_TBIT);
+						        msg.setData(items);
+						        
+						        this.setChanged();
+								this.notifyObservers(msg);
+								
+								i++;
+							}
 							
 							//System.out.println("accounts size:"+accounts.size()+":"+i);
 						}else{
 							//System.out.println(i+" is nullx");
 						}
-						i++;
+						//i++;
 					}
 					//System.out.println("accounts size:"+accounts.size()+":"+i);
 					reader.close();
