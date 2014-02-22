@@ -59,6 +59,8 @@ namespace QQGM
             table.Columns.Add("答案3", Type.GetType("System.String"));
 
             dataGridView1.DataSource = table;
+
+            dataGridView1.Columns[0].Width = 50;
         }
 
         public Form1(Form pf, string p)
@@ -81,6 +83,8 @@ namespace QQGM
             table.Columns.Add("答案3", Type.GetType("System.String"));
 
             dataGridView1.DataSource = table;
+            
+            dataGridView1.Columns[0].Width = 50;
         }
 
         private void Form1_Load(object sender, EventArgs e)
