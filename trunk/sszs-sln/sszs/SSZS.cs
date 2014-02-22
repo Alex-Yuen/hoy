@@ -29,22 +29,25 @@ namespace ws.hoyland.sszs
         private int mfirst = -1;
         private Declare declare;
         private string p;
-                
+
         private SSZS()
         {
             InitializeComponent();
-            table1.Columns.Add("ID", Type.GetType("System.String"));
+            table1.Columns.Add("ID", Type.GetType("System.String"));            
             table1.Columns.Add("帐号", Type.GetType("System.String"));
             table1.Columns.Add("密码", Type.GetType("System.String"));
             table1.Columns.Add("状态", Type.GetType("System.String"));
             dataGridView1.DataSource = table1;
-
+            dataGridView1.Columns[0].Width = 50;
+            dataGridView1.Columns[3].Width = 140;
 
             table2.Columns.Add("ID", Type.GetType("System.String"));
             table2.Columns.Add("帐号", Type.GetType("System.String"));
             table2.Columns.Add("密码", Type.GetType("System.String"));
             table2.Columns.Add("次数", Type.GetType("System.String"));
             dataGridView2.DataSource = table2;
+            dataGridView2.Columns[0].Width = 50;
+            dataGridView2.Columns[3].Width = 140;
         }
 
         public SSZS(Declare declare, string p)
@@ -61,11 +64,18 @@ namespace ws.hoyland.sszs
             dataGridView1.DataSource = table1;
 
 
+            dataGridView1.Columns[0].Width = 50;
+            dataGridView1.Columns[3].Width = 140;
+
             table2.Columns.Add("ID", Type.GetType("System.String"));
             table2.Columns.Add("帐号", Type.GetType("System.String"));
             table2.Columns.Add("密码", Type.GetType("System.String"));
             table2.Columns.Add("次数", Type.GetType("System.String"));
             dataGridView2.DataSource = table2;
+
+
+            dataGridView2.Columns[0].Width = 50;
+            dataGridView2.Columns[3].Width = 140;
         }
 
         private void 退出XToolStripMenuItem_Click(object sender, EventArgs e)
@@ -430,6 +440,7 @@ namespace ws.hoyland.sszs
                     this.BeginInvoke(dlg);
                     break;
                 case EngineMessageType.OM_INFO:
+                    //Console.WriteLine("tid:" + msg.getTid());
                     dlg = delegate()
                     {
                         table1.Rows[msg.getTid() - 1][3] = (String)msg.getData();
