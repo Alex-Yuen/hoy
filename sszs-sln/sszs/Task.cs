@@ -626,9 +626,22 @@ namespace ws.hoyland.sszs
                         else if (line.IndexOf("errtype=3") != -1)
                         {
                             info("需要验证码");
-                            line = line.Substring(line.IndexOf("url=https:") + 4);
+                            if (line.IndexOf("url=https:") != -1)
+                            {
+                                line = line.Substring(line.IndexOf("url=https:") + 12);
+                            }
+                            else
+                            {
+                                line = line.Substring(line.IndexOf("url=http:") + 11);
+                            }
+                            //int urlidx = line.IndexOf("url=https:");
+                            //if (urlidx == -1)
+                            //{
+                            //    urlidx = line.IndexOf("url=http:");
+                            //}
+                            //line = line.Substring(urlidx + 4);
                             line = line.Substring(0, line.IndexOf("\"/>"));
-                            url = line;
+                            url = "https://"+line.Replace("f=xhtmlmp", "f=xhtml");
 
                             vurl = line.Substring(line.IndexOf("vurl=") + 5);
                             vurl = vurl.Substring(0, vurl.IndexOf("&vid"));
@@ -809,7 +822,7 @@ namespace ws.hoyland.sszs
 
                         if(rc==null){
                             tcconfirm++;
-                            idx = 9;
+                            idx = 15;
                             if (tcconfirm == 3)
                             {
                                 info("找不到邮件[确认]，退出(" + tcconfirm + ")");
@@ -1162,7 +1175,7 @@ namespace ws.hoyland.sszs
                         if (rcl == null)
                         {
                             tcback++; ;
-                            idx = 21;
+                            idx = 27;
                             if (tcback == 3)
                             {
                                 info("找不到邮件[回执]，退出(" + tcback + ")->" + this.mail + "----" + this.mpwd);
