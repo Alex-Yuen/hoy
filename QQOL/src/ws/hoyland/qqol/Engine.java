@@ -221,6 +221,7 @@ public class Engine extends Observable {
 //							new Thread(new CookieLoader(nlns[0], nlns[1], nlns[2])).start();
 							details = new HashMap<String, byte[]>();
 							details.put("id", nlns[0].getBytes());
+							//System.out.println(i);
 							details.put("password", nlns[2].getBytes());
 							accounts.put(nlns[1], details);
 							
@@ -251,10 +252,14 @@ public class Engine extends Observable {
 					        
 					        this.setChanged();
 							this.notifyObservers(msg);							
+							
+							//System.out.println("accounts size:"+accounts.size()+":"+i);
+						}else{
+							//System.out.println(i+" is nullx");
 						}
 						i++;
 					}
-
+					//System.out.println("accounts size:"+accounts.size()+":"+i);
 					reader.close();
 					isr.close();
 					is.close();
@@ -446,7 +451,7 @@ public class Engine extends Observable {
 				//添加任务
 				if(running){
 					accs = accounts.keySet().toArray();
-					for (int i = flidx[0]; i <= flidx[1]; i++) {
+					for (int i = flidx[0]; i <= flidx[1]&&i<accs.length; i++) {
 						queue.add((String)accs[i]);
 					}
 					
