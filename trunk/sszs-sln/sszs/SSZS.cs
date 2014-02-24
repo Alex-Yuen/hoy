@@ -39,7 +39,8 @@ namespace ws.hoyland.sszs
             table1.Columns.Add("状态", Type.GetType("System.String"));
             dataGridView1.DataSource = table1;
             dataGridView1.Columns[0].Width = 50;
-            dataGridView1.Columns[3].Width = 140;
+            dataGridView1.Columns[1].Width = 65;
+            dataGridView1.Columns[3].Width = 160;
 
             table2.Columns.Add("ID", Type.GetType("System.String"));
             table2.Columns.Add("帐号", Type.GetType("System.String"));
@@ -47,7 +48,8 @@ namespace ws.hoyland.sszs
             table2.Columns.Add("次数", Type.GetType("System.String"));
             dataGridView2.DataSource = table2;
             dataGridView2.Columns[0].Width = 50;
-            dataGridView2.Columns[3].Width = 140;
+            dataGridView2.Columns[1].Width = 65;
+            dataGridView2.Columns[3].Width = 160;
         }
 
         public SSZS(Declare declare, string p)
@@ -65,7 +67,8 @@ namespace ws.hoyland.sszs
 
 
             dataGridView1.Columns[0].Width = 50;
-            dataGridView1.Columns[3].Width = 140;
+            dataGridView1.Columns[1].Width = 65;
+            dataGridView1.Columns[3].Width = 160;
 
             table2.Columns.Add("ID", Type.GetType("System.String"));
             table2.Columns.Add("帐号", Type.GetType("System.String"));
@@ -75,7 +78,8 @@ namespace ws.hoyland.sszs
 
 
             dataGridView2.Columns[0].Width = 50;
-            dataGridView2.Columns[3].Width = 140;
+            dataGridView2.Columns[1].Width = 65;
+            dataGridView2.Columns[3].Width = 160;
         }
 
         private void 退出XToolStripMenuItem_Click(object sender, EventArgs e)

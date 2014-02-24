@@ -285,6 +285,19 @@ namespace ws.hoyland.sszs
                     checkBox1.Checked = false;
                 }
 
+                if (checkBox5.Checked&&checkBox1.Checked)
+                {
+                    numericUpDown7.Enabled = true;
+                    numericUpDown8.Enabled = true;
+                    numericUpDown9.Enabled = true;
+                }
+                else
+                {
+                    numericUpDown7.Enabled = false;
+                    numericUpDown8.Enabled = false;
+                    numericUpDown9.Enabled = false;
+                }
+
                 numericUpDown5.Value = Decimal.Parse(cfa.AppSettings.Settings["REC_FLAG_F1"].Value);
                 numericUpDown6.Value = Decimal.Parse(cfa.AppSettings.Settings["REC_FLAG_F2"].Value);
                 numericUpDown10.Value = Decimal.Parse(cfa.AppSettings.Settings["REC_FLAG_F6"].Value);
@@ -344,15 +357,15 @@ namespace ws.hoyland.sszs
                 if ("True".Equals(cfa.AppSettings.Settings["RND_PWD"].Value))
                 {
                     radioButton2.Checked = true;
-                    checkBox1.Enabled = true;
-                    checkBox2.Enabled = true;
+                    checkBox12.Enabled = true;
+                    checkBox11.Enabled = true;
                     checkBox3.Enabled = true;
                 }
                 else
                 {
                     radioButton2.Checked = false;
-                    checkBox1.Enabled = false;
-                    checkBox2.Enabled = false;
+                    checkBox12.Enabled = false;
+                    checkBox11.Enabled = false;
                     checkBox3.Enabled = false;
                 }
 
@@ -445,7 +458,7 @@ namespace ws.hoyland.sszs
                     numericUpDown9.Enabled = false;
                 }
 
-                if (checkBox7.Checked)
+                if (checkBox5.Checked&&checkBox7.Checked)
                 {
                     numericUpDown10.Enabled = true;
                 }
