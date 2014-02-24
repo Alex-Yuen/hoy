@@ -777,10 +777,19 @@ namespace ws.hoyland.sszs
                         reader = new StreamReader(data);
                         line = reader.ReadToEnd();
 
-                        line = line.Substring(line.IndexOf("mail_list") - 9);
-                        url = line.Substring(0, line.IndexOf("\">"));
-                        mlist = url;
-                        idx++;
+                        if (line.IndexOf("mail_list") == -1)
+                        {
+                            line = line.Substring(line.IndexOf("url=http:") + 4);
+                            url = line.Substring(0, line.IndexOf("\">"));
+                            //idx不变
+                        }
+                        else
+                        {
+                            line = line.Substring(line.IndexOf("mail_list") - 9);
+                            url = line.Substring(0, line.IndexOf("\">"));
+                            mlist = url;
+                            idx++;
+                        }
                     }
                     catch (Exception)
                     {
@@ -805,7 +814,7 @@ namespace ws.hoyland.sszs
                             line = line.Substring(line.LastIndexOf("/cgi-bin/readmail?"));
                             url = line.Substring(0, line.IndexOf("\">"));
 
-                            info(" 读取邮件内容");
+                            info("读取邮件内容");
                             client.Headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:25.0) Gecko/20100101 Firefox/25.0");
                             data = client.OpenRead("http://w.mail.qq.com" + url);
                             reader = new StreamReader(data);
