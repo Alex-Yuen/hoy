@@ -43,12 +43,23 @@ public class PacketSender implements Runnable {
 		while(run){
 			try{
 				packet = queue.take();
-				packet.getDc().write(packet.getBuffer());
+
 				byte[] bs = packet.getBuffer().array();
 				account = String.valueOf(Long.parseLong(Converts.bytesToHexString(Util.slice(bs, 7, 4)), 16));
 				type = Converts.bytesToHexString(Util.slice(bs, 3, 2));
 				seq = Converts.bytesToHexString(Util.slice(bs, 5, 2));
 				retry = Integer.parseInt(Converts.bytesToHexString(Util.slice(bs, 13, 1)), 16);
+				
+				try{
+					packet.getDc().write(packet.getBuffer());
+				}catch(Exception ex){//连接可能被0017所关闭
+					//新建任务
+					Engine.getInstance().getAcccounts().get(account).remove("login");
+					Engine.getInstance().getAcccounts().get(account).remove("0058DOING");
+					Task task = new Task(Task.TYPE_0825, account);
+					//Engine.getInstance().addTask(task);
+					Engine.getInstance().addSleeper(new Sleeper(task));
+				}
 				System.err.println("->["+account+"]("+Util.format(new Date())+")"+type+"["+retry+"]");
 				
 //				this.account = String.valueOf(Long.parseLong(Converts.bytesToHexString(Util.slice(buffer, 7, 4)), 16));
@@ -58,6 +69,7 @@ public class PacketSender implements Runnable {
 					synchronized(Engine.getInstance().getChannels()) {
 						try {
 							Engine.getInstance().getChannels().get(account).close();
+							//info("连接关闭");
 						} catch (Exception e) {
 							e.printStackTrace();
 						}
