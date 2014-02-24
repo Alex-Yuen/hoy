@@ -107,25 +107,40 @@ namespace Ws.Hoyland.XMail
             }
         }
 
-        private void listView2_ItemMouseHover(object sender, ListViewItemMouseHoverEventArgs e)
-        {
-            e.Item.Selected = false;
-        }
-
-        private void listView1_ItemMouseHover(object sender, ListViewItemMouseHoverEventArgs e)
-        {
-            e.Item.Selected = false;
-        }
-
         private void listView1_ItemSelectionChanged(object sender, ListViewItemSelectionChangedEventArgs e)
         {
-            e.Item.Selected = false;
+            if (e.IsSelected)
+            {
+                e.Item.Selected = false;
+            }
         }
 
         private void listView2_ItemSelectionChanged(object sender, ListViewItemSelectionChangedEventArgs e)
         {
-            e.Item.Selected = false;
+            if (e.IsSelected)
+            {
+                foreach (ListViewItem it in listView2.Items)
+                {
+                    if (it != e.Item)
+                    {
+                        it.BackColor = Color.White;
+                    }
+                }
+                e.Item.BackColor = Color.Gray;
+                e.Item.Selected = false;
+            }
         }
+
+        private void listView1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (tabPage2.Parent == null)
+            {
+                tabPage2.Parent = tabControl1;
+            }
+            tabControl1.SelectedIndex = 1;
+            //tabPage2.Select();
+        }
+
 
     }
 }
