@@ -57,9 +57,9 @@ public class Task implements Runnable {
 //	private static String FHD = "#0825#0836#00BA#0828#00EC#005C#00CD#0058#";//00CE, 0017不要
 
 	private byte type;
-	private String ip = "183.60.19.100";// 默认IP
-	private byte[] ips = new byte[] { (byte) 183, (byte) 60, (byte) 19,
-			(byte) 100 };
+	private String ip = "112.95.240.120";// 默认IP//112.95.240.120 //183.60.19.100
+	private byte[] ips = new byte[] { (byte) 112, (byte) 95, (byte) 240,
+			(byte) 120 };
 
 	//private byte[] buffer;
 
@@ -138,7 +138,7 @@ public class Task implements Runnable {
 		// 发送UDP数据
 		switch (type) {
 		case TYPE_0825:
-			if(details.get("landt")==null&&details.get("looded")==null){
+			if(details.get("landt")==null&&details.get("loaded")==null){
 				try{
 					boolean loadcookie = false;
 					Map<String, byte[]> map = Cookie.getInstance().get(account);
