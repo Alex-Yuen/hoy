@@ -528,9 +528,11 @@ public class Receiver implements Runnable{
 							//}
 							
 							//info("重新登录");
+							/**
 							task = new Task(Task.TYPE_0825, account);
 							Engine.getInstance().addSleeper(new Sleeper(task));
-						}					
+							**/
+						}
 					}
 				}
 			}else if(header[0]==(byte)0x00&&header[1]==(byte)0x58){

@@ -53,12 +53,15 @@ public class PacketSender implements Runnable {
 				try{
 					packet.getDc().write(packet.getBuffer());
 				}catch(Exception ex){//连接可能被0017所关闭
+					//因为0017已经有开始新的登录线程，此时不做任何处理
+					
+					continue;
 					//新建任务
-					Engine.getInstance().getAcccounts().get(account).remove("login");
-					Engine.getInstance().getAcccounts().get(account).remove("0058DOING");
-					Task task = new Task(Task.TYPE_0825, account);
-					//Engine.getInstance().addTask(task);
-					Engine.getInstance().addSleeper(new Sleeper(task));
+//					Engine.getInstance().getAcccounts().get(account).remove("login");
+//					Engine.getInstance().getAcccounts().get(account).remove("0058DOING");
+//					Task task = new Task(Task.TYPE_0825, account);
+//					//Engine.getInstance().addTask(task);
+//					Engine.getInstance().addSleeper(new Sleeper(task));
 				}
 				System.err.println("->["+account+"]("+Util.format(new Date())+")"+type+"["+retry+"]");
 				
@@ -74,6 +77,10 @@ public class PacketSender implements Runnable {
 							e.printStackTrace();
 						}
 						Engine.getInstance().getChannels().remove(account);
+						
+						//重新登录
+						Task task = new Task(Task.TYPE_0825, account);
+						Engine.getInstance().addSleeper(new Sleeper(task));
 					}
 				}else{
 					//启动检测线程
