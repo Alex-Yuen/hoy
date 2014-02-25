@@ -372,6 +372,19 @@ public class Receiver implements Runnable{
 					//可能是被挤线，然后这边重新登录，对方又按了重新登录，此时，0825然后0828无效，需要重新执行任务。
 					info("获取失败");
 					Cookie.getInstance().remove(account);//删除缓存
+					details.remove("savetime");
+					/**
+					 * need?
+					synchronized(Engine.getInstance().getChannels()) {
+						try {
+							Engine.getInstance().getChannels().get(account).close();
+						} catch (IOException e) {
+							System.err.println("t2:"+Engine.getInstance().getChannels().get(account));
+							e.printStackTrace();
+						}
+						Engine.getInstance().getChannels().remove(account);
+					}**/
+					
 					task = new Task(Task.TYPE_0825, account);
 					Engine.getInstance().addSleeper(new Sleeper(task));
 					//Engine.getInstance().addTask(task);
@@ -386,21 +399,29 @@ public class Receiver implements Runnable{
 					decrypt = crypter.decrypt(content, details.get("key0828recv"));
 					//System.out.println(decrypt.length);
 					//System.out.println(Converts.bytesToHexString(decrypt));
-					if(decrypt==null){//223?
+					if(decrypt==null){//223? 159?
 						System.err.println(account);
 						System.err.println("decrypt is null:"+buffer.length);
 						System.err.println(Converts.bytesToHexString(buffer));
 						System.err.println(Converts.bytesToHexString(details.get("key0828recv")));
 						System.err.println(Converts.bytesToHexString(details.get("key0836x")));
+						
+						Cookie.getInstance().remove(account);
+						details.remove("loaded");
+						details.remove("savetime");
+						//details.clear();
+						task = new Task(Task.TYPE_0825, account); //重新登录															
+						Engine.getInstance().addTask(task);
+					}else{
+						//details.clear();//清空
+						details.put("loginresult", "0".getBytes());//密码正确
+						details.put("sessionkey", Util.slice(decrypt, 63, 0x10));
+						//idx++;
+						//执行00EC
+						info("正在上线");
+						task = new Task(Task.TYPE_00EC, account); //上线包															
+						Engine.getInstance().addTask(task);
 					}
-					//details.clear();//清空
-					details.put("loginresult", "0".getBytes());//密码正确
-					details.put("sessionkey", Util.slice(decrypt, 63, 0x10));
-					//idx++;
-					//执行00EC
-					info("正在上线");
-					task = new Task(Task.TYPE_00EC, account); //上线包															
-					Engine.getInstance().addTask(task);
 				}
 			}else if(header[0]==(byte)0x00&&header[1]==(byte)0xEC){ //上线包	之后发送更新资料请求
 				info("更新资料");
@@ -514,6 +535,7 @@ public class Receiver implements Runnable{
 							}**/
 						
 							//details.clear();
+							details.put("boot", "T".getBytes());
 							details.remove("login");
 							//details.remove("0017L");
 							//details.put("nw", "T".getBytes());//need wait
