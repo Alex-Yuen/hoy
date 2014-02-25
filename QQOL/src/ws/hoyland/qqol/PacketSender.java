@@ -50,6 +50,13 @@ public class PacketSender implements Runnable {
 				seq = Converts.bytesToHexString(Util.slice(bs, 5, 2));
 				retry = Integer.parseInt(Converts.bytesToHexString(Util.slice(bs, 13, 1)), 16);
 				
+				synchronized(Engine.getInstance().getAcccounts().get(account)){
+					if("0058".equals(type)&&Engine.getInstance().getAcccounts().get(account).get("boot")!=null){//0058发送之前，已经被boot
+						Engine.getInstance().getAcccounts().get(account).remove("0058DOING");
+						continue;
+					}
+				}
+				
 				try{
 					packet.getDc().write(packet.getBuffer());
 				}catch(Exception ex){//连接可能被0017所关闭
