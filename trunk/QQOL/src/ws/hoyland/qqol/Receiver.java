@@ -371,8 +371,11 @@ public class Receiver implements Runnable{
 					info(new String(Util.slice(ts, 15, ts.length-15), "utf-8"));
 					//可能是被挤线，然后这边重新登录，对方又按了重新登录，此时，0825然后0828无效，需要重新执行任务。
 					info("获取失败");
+					System.err.println(account+" %1");
 					Cookie.getInstance().remove(account);//删除缓存
+					System.err.println(account+" %2");
 					details.remove("savetime");
+					System.err.println(account+" %3");
 					/**
 					 * need?
 					synchronized(Engine.getInstance().getChannels()) {
@@ -384,10 +387,11 @@ public class Receiver implements Runnable{
 						}
 						Engine.getInstance().getChannels().remove(account);
 					}**/
-					
+					System.err.println(account+" %4");
 					task = new Task(Task.TYPE_0825, account);
 					//Engine.getInstance().addSleeper(new Sleeper(task));
 					Engine.getInstance().addTask(task);
+					System.err.println(account+" %5");
 				}else{
 					//System.out.println("OK");
 					info("获取成功");
