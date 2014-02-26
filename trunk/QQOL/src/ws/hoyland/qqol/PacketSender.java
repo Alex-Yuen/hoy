@@ -77,6 +77,7 @@ public class PacketSender implements Runnable {
 //				this.seq = Converts.bytesToHexString(Util.slice(buffer, 5, 2));
 				if("0017".equals(type)&&Engine.getInstance().getAcccounts().get(account).get("boot")!=null){ //0017发送后关闭连接?
 					//被踢之后，需要这么处理
+					System.err.println("->["+account+"] $0");
 					synchronized(Engine.getInstance().getChannels()) {
 						try {
 							Engine.getInstance().getChannels().get(account).close();
@@ -93,7 +94,9 @@ public class PacketSender implements Runnable {
 					}
 				}else{
 					//启动检测线程
+					System.err.println("->["+account+"] $1");
 					if(FHD.contains("#"+type+"#")&&retry<Checker.RT){
+						System.err.println("->["+account+"] $2");
 						Checker checker = new Checker(account, type, seq, retry);
 						Engine.getInstance().addChecker(checker);
 					}
