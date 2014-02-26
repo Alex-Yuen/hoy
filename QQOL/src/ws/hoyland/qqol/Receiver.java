@@ -386,8 +386,8 @@ public class Receiver implements Runnable{
 					}**/
 					
 					task = new Task(Task.TYPE_0825, account);
-					Engine.getInstance().addSleeper(new Sleeper(task));
-					//Engine.getInstance().addTask(task);
+					//Engine.getInstance().addSleeper(new Sleeper(task));
+					Engine.getInstance().addTask(task);
 				}else{
 					//System.out.println("OK");
 					info("获取成功");
