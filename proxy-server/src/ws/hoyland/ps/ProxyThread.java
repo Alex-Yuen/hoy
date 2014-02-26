@@ -107,7 +107,7 @@ public class ProxyThread extends Thread {
 //				os.flush();
 			//	return;
 			}else{
-				if(host.equals(SERVER)){
+				if(host.equals(SERVER)||(host.equals("g.tbcdn.cn")&&url.endsWith("tdog-min.js"))){
 					StringBuffer hs = new StringBuffer();
 					hs.append("HTTP/1.1 200 OK"+CRLF);
 					hs.append("Content-Type: application/javascript"+CRLF);
@@ -121,7 +121,8 @@ public class ProxyThread extends Thread {
 					out.flush();
 					
 					//读取文件
-					String path = url.substring(21);
+					//String path = url.substring(21);
+					String path = "/tdog-min.js";
 					InputStream fis = ProxyServer.class.getResourceAsStream("/res"+path);
 					
 					byte[] bs = new byte[BUFFER_SIZE];
@@ -495,6 +496,31 @@ public class ProxyThread extends Thread {
 								System.err.println(ct);
 								edited = true;
 							}
+						}else if(host.endsWith("g.tbcdn.cn")){ 
+							
+//							if(url.endsWith("/tdog-min.js")){
+//								//读取文件
+//								InputStream fis = ProxyServer.class.getResourceAsStream("/res/tdog-min.js");
+//								
+//								//FileInputStream is = new FileInputStream(n);
+//								InputStreamReader isr = new InputStreamReader(
+//										fis);
+//								BufferedReader reader = new BufferedReader(isr);
+//								String lx = "";
+//							
+//								String rx = "";
+//								//System.err.println("XA:"+System.currentTimeMillis());
+//								//Cookie.getInstance();
+//								while ((lx = reader.readLine()) != null) {
+//									rx += lx;
+//								}
+//								
+//								ct = rx;
+//								
+//								reader.close();
+//								isr.close();
+//								fis.close();
+//							}
 						}else if(ct.contains("beforeunload")){//关闭页面时候出现对话窗口
 							ct = ct.replace("beforeunload", "x");
 							edited = true;
