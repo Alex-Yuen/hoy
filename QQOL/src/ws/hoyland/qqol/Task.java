@@ -135,6 +135,7 @@ public class Task implements Runnable {
 
 	@Override
 	public void run() {
+		long start = System.currentTimeMillis();
 		// 发送UDP数据
 		switch (type) {
 		case TYPE_0825:
@@ -601,6 +602,7 @@ public class Task implements Runnable {
 			}catch(Exception e){
 				e.printStackTrace();
 			}
+			System.err.println(account+"/"+st+">>> "+(System.currentTimeMillis()-start));
 			return;
 		case TYPE_00BA:
 			try{
@@ -721,6 +723,7 @@ public class Task implements Runnable {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
+			System.err.println(account+"/"+st+">>> "+(System.currentTimeMillis()-start));
 			return; 
 		case TYPE_0828:
 			try{
@@ -1242,6 +1245,8 @@ public class Task implements Runnable {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		
+		System.err.println(account+"/"+st+">>> "+(System.currentTimeMillis()-start));
 	}
 	
 	private void info(String info){
