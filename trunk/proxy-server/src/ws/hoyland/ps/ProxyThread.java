@@ -78,7 +78,7 @@ public class ProxyThread extends Thread {
 			
 			// in.close();
 
-			if (!url.startsWith("http://")) {
+			if (!url.startsWith("http://")&&!url.startsWith("https://")) {
 				return;
 			}
 
