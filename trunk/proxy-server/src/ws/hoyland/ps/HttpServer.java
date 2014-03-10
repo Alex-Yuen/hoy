@@ -2,6 +2,7 @@ package ws.hoyland.ps;
 
 import java.io.IOException;
 import java.net.ServerSocket;
+import java.net.Socket;
 
 public class HttpServer implements Runnable {
 
@@ -22,7 +23,9 @@ public class HttpServer implements Runnable {
 	        }
 	
 	        while (listening) {
-	            new ProxyThread(serverSocket.accept()).start();
+	        	Socket socket = serverSocket.accept();
+	        	//System.out.println(socket.getClass().getName());
+	            new ProxyThread(socket).start();
 	        }
 	        serverSocket.close();
 		}catch(Exception e){

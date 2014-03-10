@@ -6,6 +6,8 @@ import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 import java.io.*;
 
+import javax.net.ssl.SSLSocket;
+
 public class ProxyThread extends Thread {
 	private Socket socket = null;
 	private static final int BUFFER_SIZE = 32768;
@@ -30,6 +32,10 @@ public class ProxyThread extends Thread {
 			in = new BufferedReader(new InputStreamReader(
 					socket.getInputStream()));
 
+			SSLSocket ss = (SSLSocket) socket;
+			in = new BufferedReader(new InputStreamReader(
+					ss.getInputStream()));
+			
 			String line;
 			boolean hf = true; // header flag
 //			boolean cf = false; //content flag
@@ -37,6 +43,11 @@ public class ProxyThread extends Thread {
 
 			String[] tokens = null;
 			StringBuffer content = new StringBuffer();
+			
+			    byte[] buf = new byte[1024];  
+			    int len = socket.getInputStream().read(buf);  
+			    
+//			System.out.println("received: " + new String(buf, 0, len));  
 
 			// 分析请求
 			while ((line = in.readLine()) != null) {
