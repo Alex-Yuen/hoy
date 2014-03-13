@@ -6,8 +6,6 @@ import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 import java.io.*;
 
-import javax.net.ssl.SSLSocket;
-
 public class ProxyThread extends Thread {
 	private Socket socket = null;
 	private static final int BUFFER_SIZE = 32768;
