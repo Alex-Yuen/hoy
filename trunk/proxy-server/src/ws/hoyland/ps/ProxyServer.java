@@ -7,6 +7,6 @@ public class ProxyServer {
 	
     public static void main(String[] args) throws IOException {
     	new Thread(new HttpServer()).start();
-    	new Thread(new HttpsServer()).start();
+    	//new Thread(new HttpsServer()).start();
     }
 }
