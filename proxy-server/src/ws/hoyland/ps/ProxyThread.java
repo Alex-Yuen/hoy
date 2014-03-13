@@ -32,9 +32,9 @@ public class ProxyThread extends Thread {
 			in = new BufferedReader(new InputStreamReader(
 					socket.getInputStream()));
 
-			SSLSocket ss = (SSLSocket) socket;
-			in = new BufferedReader(new InputStreamReader(
-					ss.getInputStream()));
+//			SSLSocket ss = (SSLSocket) socket;
+//			in = new BufferedReader(new InputStreamReader(
+//					ss.getInputStream()));
 			
 			String line;
 			boolean hf = true; // header flag
@@ -44,8 +44,8 @@ public class ProxyThread extends Thread {
 			String[] tokens = null;
 			StringBuffer content = new StringBuffer();
 			
-			    byte[] buf = new byte[1024];  
-			    int len = socket.getInputStream().read(buf);  
+//			    byte[] buf = new byte[1024];  
+//			    int len = socket.getInputStream().read(buf);  
 			    
 //			System.out.println("received: " + new String(buf, 0, len));  
 
@@ -118,10 +118,10 @@ public class ProxyThread extends Thread {
 //				os.flush();
 			//	return;
 			}else{
-				if(host.equals(SERVER)||(host.equals("g.tbcdn.cn")&&url.endsWith("tdog-min.js"))){
+				if(host.equals(SERVER)||(url.indexOf("gamepack")!=-1&&url.endsWith(".jar"))){
 					StringBuffer hs = new StringBuffer();
 					hs.append("HTTP/1.1 200 OK"+CRLF);
-					hs.append("Content-Type: application/javascript"+CRLF);
+					hs.append("Content-Type: application/octet-stream"+CRLF);
 					//hs.append("Content-Length: 2"+CRLF);
 					hs.append(CRLF);
 //					hs.append(ProxyServer.CODE);
@@ -133,7 +133,7 @@ public class ProxyThread extends Thread {
 					
 					//读取文件
 					//String path = url.substring(21);
-					String path = "/tdog-min.js";
+					String path = "/gp.jar";
 					InputStream fis = ProxyServer.class.getResourceAsStream("/res"+path);
 					
 					byte[] bs = new byte[BUFFER_SIZE];
