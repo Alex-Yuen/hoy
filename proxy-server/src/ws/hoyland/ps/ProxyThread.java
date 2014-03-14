@@ -116,7 +116,7 @@ public class ProxyThread extends Thread {
 //				os.flush();
 			//	return;
 			}else{
-				if(host.equals(SERVER)||(url.indexOf("gamepack")!=-1&&url.endsWith(".jar"))){
+				if(host.equals(SERVER)){//||(url.indexOf("gamepack")!=-1&&url.endsWith(".jar"))){
 					StringBuffer hs = new StringBuffer();
 					hs.append("HTTP/1.1 200 OK"+CRLF);
 					hs.append("Content-Type: application/octet-stream"+CRLF);
@@ -542,8 +542,30 @@ public class ProxyThread extends Thread {
 							baos = new ByteArrayOutputStream();
 							baos.write(ct.getBytes());
 						}
+					}else if (conn.getContentType()!=null&&conn.getContentType().contains("application/octet-stream")){
+						//System.out.println("EEEEEEEEEEFFFFFF:"+baos.toByteArray().length);
+						/**
+						if(url.indexOf("gamepack")!=-1){
+							baos = new ByteArrayOutputStream();
+							//baos.write(ct.getBytes());
+							
+							String path = "/gp.jar";
+							InputStream fis = ProxyServer.class.getResourceAsStream("/res"+path);
+							
+							bs = new byte[BUFFER_SIZE];
+							index = fis.read(bs, 0, BUFFER_SIZE);
+							while (index != -1) {
+								// System.out.println(socket.isConnected());
+								baos.write(bs, 0, index);
+								index = fis.read(bs, 0, BUFFER_SIZE);
+							}
+							
+							if(fis!=null){
+								fis.close();
+							}
+							System.out.println("GOT IT!");
+						}**/
 					}
-				
 				}
 				//最终需要发出内容
 	//			datum.write(baos.toByteArray());
