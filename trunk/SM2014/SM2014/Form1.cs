@@ -12,6 +12,7 @@ using ws.hoyland.util;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Configuration;
+using System.Globalization;
 
 namespace SM2014
 {
@@ -20,7 +21,7 @@ namespace SM2014
         private delegate void Delegate();
         private Delegate dlg;
 
-        private StreamWriter[] output = new StreamWriter[5]; //成功，失败，未运行
+        private StreamWriter[] output = new StreamWriter[4]; //成功，失败，未运行
         private String[] fns = new String[] { "密码正确", "密码错误", "帐号冻结", "未识别" };
         private String xpath = AppDomain.CurrentDomain.BaseDirectory;
         private List<String> accounts;
@@ -232,6 +233,19 @@ namespace SM2014
             {
                 if (button1.Text.Equals("开始"))
                 {
+                    String tm = DateTime.Now.ToString("yyyy年MM月dd日 hh时mm分ss秒", DateTimeFormatInfo.InvariantInfo);
+                    for (int i = 0; i < output.Length; i++)
+                    {
+                        try
+                        {
+                            output[i] = File.AppendText(xpath + fns[i] + "-" + tm + ".txt");
+                        }
+                        catch (Exception ex)
+                        {
+                            throw ex;
+                        }
+                    }
+
                     cfa = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
 
                     if (cfa == null)
@@ -264,18 +278,38 @@ namespace SM2014
                         ThreadPool.QueueUserWorkItem(new WaitCallback(task.Run));
                     }
 
-                    button1.Text = "暂停";
+                    button1.Text = "停止";
                 }
                 else
                 {
                     //暂停处理代码
                     toolStripStatusLabel1.Text = "未运行";
                     button1.Text = "开始";
+
+                    shutdown();
                 }
             };
             this.BeginInvoke(dlg);
         }
 
+        private void shutdown()
+        {
+            for (int i = 0; i < output.Length; i++)
+            {
+                try
+                {
+                    if (output[i] != null)
+                    {
+                        output[i].Close();
+                        output[i] = null;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    throw ex;
+                }
+            }
+        }
 
         public String GetProxy()
         {
@@ -307,6 +341,7 @@ namespace SM2014
 
         public void Finish()
         {
+            //GC.Collect();
             lock (this)
             {
                 int tc = Int32.Parse(cfa.AppSettings.Settings["THREAD_COUNT"].Value);
@@ -315,12 +350,13 @@ namespace SM2014
                 int completionPortThreads = 0;
                 ThreadPool.GetAvailableThreads(out workerThreads, out completionPortThreads);
 
-                if (workerThreads > tc / 2) //到达一半时候，自动添加任务
+                if (workerThreads > tc * 0.2) //到达一半时候，自动添加任务 , 90%时候自动增加
                 {
                     for (int i=0; idx < accounts.Count && i < tc; idx++, i++)
                     {
                         //N 个任务
                         Task task = new Task(this, accounts[idx]);
+                        //new WaitCallback(task.Run).
                         ThreadPool.QueueUserWorkItem(new WaitCallback(task.Run));
                     }
                 }
@@ -359,6 +395,16 @@ namespace SM2014
                 //TODO, 加入日志文件
                 this.textBox1.AppendText(DateTime.Now.ToString("[yyyy/MM/dd HH:mm:ss] "));
                 this.textBox1.AppendText("DETECTED: " + line + "=" + type.ToString() + "\r\n");
+                
+                try
+                {
+                    output[type].WriteLine(line);
+                    output[type].Flush();
+                }
+                catch (Exception)
+                {
+                    //throw e;
+                };
             };
             this.BeginInvoke(dlg);
         }
@@ -366,6 +412,11 @@ namespace SM2014
         private void 选项OToolStripMenuItem_Click(object sender, EventArgs e)
         {
             new Option().ShowDialog();
+        }
+
+        private void Form1_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            Application.Exit();
         }
 
     }
