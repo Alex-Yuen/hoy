@@ -7,6 +7,8 @@ using ws.hoyland.util;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Net;
+using System.Configuration;
+using System.Windows.Forms;
 
 namespace SM2014
 {
@@ -22,6 +24,7 @@ namespace SM2014
         private Stream stream = null;
         private StreamReader reader = null;
         private String resp = null;
+        private Configuration cfa = null;
 
         private bool flag = true;
         private int times = 0;
@@ -35,6 +38,12 @@ namespace SM2014
             this.details = Regex.Split(line, "----");
             this.url = "http://pt.3g.qq.com/login?act=json&format=2&bid_code=house_touch&r=#" + "&qq=" + details[1] + "&pmd5=" + Util.UMD5X(details[2]) + "&go_url=http%3A%2F%2Fhouse60.3g.qq.com%2Ftouch%2Findex.jsp%3Fsid%3DAd_JZ1k2ZviFLkV2nvFt7005%26g_ut%3D3%26g_f%3D15124";
 
+            cfa = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
+            
+            if (cfa == null)
+            {
+                MessageBox.Show("加载配置文件失败!");
+            }
         }
 
         public void Run(Object stateInfo)
@@ -44,10 +53,21 @@ namespace SM2014
             //http请求
             HttpClient client = new HttpClient();
 
-            while (flag&&times<10)
+            while (flag && times < Int32.Parse(cfa.AppSettings.Settings["TASK_TIMES"].Value))
             {
+                //Console.WriteLine("DDDDDDDDD");
+                ConfigurationManager.RefreshSection("appSettings");
+
+                resp = null;
                 client.Headers.Add("User-Agent", Task.UAG);
                 proxy = form.GetProxy();
+                if (proxy == null)
+                {
+                    flag = false;
+                    continue;
+                }
+
+                form.info(details[1] + " -> " + proxy);
                 wp = new WebProxy(proxy);
                 client.Proxy = wp;
                 client.Encoding = Encoding.Default;
@@ -67,24 +87,25 @@ namespace SM2014
                     else
                     {
                         //bool ok = false;
-                        if (resp.IndexOf(",0,") != -1)
+                        if (resp.IndexOf("," + details[1] + ",0,") != -1)
                         {
-                            form.log(0, Int32.Parse(details[1]));
+                            form.log(0, details[1] + " / " + proxy);
                             flag = false;
                         }
-                        else if (resp.IndexOf(",40010,") != -1)
+                        else if (resp.IndexOf(",0,40010,") != -1)
                         {
-                            form.log(1, Int32.Parse(details[1]));
+                            form.log(1, details[1] + " / " + proxy);
                             flag = false;
                         }
-                        else if (resp.IndexOf(",40026,") != -1)
+                        else if (resp.IndexOf(",0,40026,") != -1)
                         {
-                            form.log(2, Int32.Parse(details[1]));
+                            form.log(2, details[1] + " / " + proxy);
                             flag = false;
                         }
-                        else if (resp.IndexOf("40001") != -1)//验证码
+                        else if (resp.IndexOf("," + details[1] + ",0,") != -1)//验证码
                         {
                             //不离开当前任务
+                            //Thread.Sleep(1000 * Int32.Parse(cfa.AppSettings.Settings["P_ITV"].Value));//N秒后继续
                         }
                         else //代理异常
                         {
@@ -110,6 +131,8 @@ namespace SM2014
 
                 times++;
             }
+
+            form.Finish();
         }
     }
 }

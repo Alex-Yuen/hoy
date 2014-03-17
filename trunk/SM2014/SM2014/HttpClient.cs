@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Net;
+using System.Configuration;
+using System.Windows.Forms;
 
 namespace ws.hoyland.util
 {
@@ -14,6 +16,7 @@ namespace ws.hoyland.util
     {
         // Cookie 容器
         private CookieContainer cookieContainer;
+        private Configuration cfa = null;
 
         /**/
         /// <summary>
@@ -22,6 +25,12 @@ namespace ws.hoyland.util
         public HttpClient()
         {
             this.cookieContainer = new CookieContainer();
+            
+            cfa = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
+            if (cfa == null)
+            {
+                MessageBox.Show("加载配置文件失败!");
+            }
         }
 
         /**/
@@ -57,6 +66,14 @@ namespace ws.hoyland.util
             {
                 HttpWebRequest httpRequest = request as HttpWebRequest;
                 httpRequest.CookieContainer = cookieContainer;
+
+                ConfigurationManager.RefreshSection("appSettings");
+
+                //httpRequest.Timeout = 1000 * 2;
+                //httpRequest.ReadWriteTimeout = 1000 * 2;
+
+                httpRequest.Timeout = 1000 * Int32.Parse(cfa.AppSettings.Settings["TIMEOUT"].Value);
+                httpRequest.ReadWriteTimeout = 1000 * Int32.Parse(cfa.AppSettings.Settings["TIMEOUT"].Value);
             }
             return request;
         }
