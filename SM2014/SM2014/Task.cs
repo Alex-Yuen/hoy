@@ -10,16 +10,27 @@ using System.Net;
 
 namespace SM2014
 {
-    class Task
+    public class Task
     {
         private Form1 form;
         private int idx;
 
-        private bool finish = false;
-        private static String UAG = "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1; QQDownload 734; Maxthon; .NET CLR 2.0.50727; .NET4.0C; .NET4.0E)";
-        private static Random random = new Random();
+        public static String UAG = "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1; QQDownload 734; Maxthon; .NET CLR 2.0.50727; .NET4.0C; .NET4.0E)";
+        public static Random random = new Random();
         private int total = 0;
+
+        public int Total
+        {
+            get { return total; }
+            set { total = value; }
+        }
         private int visited = 0;
+
+        public int Visited
+        {
+            get { return visited; }
+            set { visited = value; }
+        }
 
         private String[] details = null;
 
@@ -41,11 +52,32 @@ namespace SM2014
             total = form.Proxies.Count;
             for(int i=0;i<form.Proxies.Count;i++)
             {
-                ThreadPool.QueueUserWorkItem(new WaitCallback(Test), i);
+                MiniTask mt = new MiniTask(form, idx, this, details, url);
+                ThreadPool.QueueUserWorkItem(new WaitCallback(mt.Run), i);
             }
         }
-        
-        private void Test(Object stateInfo)
+    }
+
+    class MiniTask
+    {
+        private Form1 form;
+        private int idx;
+        private String[] details = null;
+        private String url = null;
+        private Task task;
+
+        private bool finish = false;
+
+        public MiniTask(Form1 form, int idx, Task task, string[] details, string url)
+        {
+            this.form = form;
+            this.idx = idx;
+            this.task = task;
+            this.details = details;
+            this.url = url;
+        }
+
+        public void Run(Object stateInfo)
         {
             if (finish)
             {
@@ -54,10 +86,10 @@ namespace SM2014
 
             //http请求
             HttpClient client = new HttpClient();
-            client.Headers.Add("User-Agent", UAG);
-            
+            client.Headers.Add("User-Agent", Task.UAG);
+
             //取proxy
-            String proxy = form.getProxy();            
+            String proxy = form.getProxy();
 
             WebProxy wp = new WebProxy(proxy);
             client.Proxy = wp;
@@ -65,7 +97,7 @@ namespace SM2014
 
             try
             {
-                url = url.Replace("#", random.NextDouble().ToString());
+                url = url.Replace("#", Task.random.NextDouble().ToString());
 
                 Stream data = client.OpenRead(url);
                 StreamReader reader = new StreamReader(data);
@@ -99,11 +131,14 @@ namespace SM2014
                         ok = false;
                     }
 
-                    if (ok&&!this.finish)
+                    if (ok && !this.finish)
                     {
                         this.finish = true;
-                        Task task = new Task(form, this.idx + 1);//查询下一个帐号
-                        task.Start();
+                        if (this.idx < form.Accounts.Count - 1)
+                        {
+                            Task taskx = new Task(form, this.idx + 1);//查询下一个帐号
+                            taskx.Start();
+                        }
                         return;
                     }
                 }
@@ -113,14 +148,18 @@ namespace SM2014
                 //
             }
 
-            lock (this)
+            lock (this.task)
             {
-                form.info(details[1]+" -> "+proxy);
-                visited++;
-                if (visited == total) //已经完成所有线程，开启下一任务
+                form.info(details[1] + " -> " + proxy);
+                task.Visited++;
+                //Console.WriteLine(task.Total + "->" + task.Visited);
+                if (task.Visited == task.Total) //已经完成所有线程，开启下一任务
                 {
-                    Task task = new Task(form, this.idx + 1);//查询下一个帐号
-                    task.Start();
+                    if (this.idx < form.Accounts.Count - 1)
+                    {
+                        Task taskx = new Task(form, this.idx + 1);//查询下一个帐号
+                        taskx.Start();
+                    }
                 }
             }
         }

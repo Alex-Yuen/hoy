@@ -261,16 +261,21 @@ namespace SM2014
             String proxy = null;
             lock (this)
             {
-                proxy = this.Proxies[pidx++];
+                proxy = this.Proxies[pidx];
+
+                //Console.WriteLine(pidx + "=" + proxy);
+
                 if (pidx == this.Proxies.Count - 1)
                 {
                     pidx = 0;
+                }
+                else
+                {
+                   pidx++;
                 }
             }
 
             return proxy;
         }
     }
-
-
 }
