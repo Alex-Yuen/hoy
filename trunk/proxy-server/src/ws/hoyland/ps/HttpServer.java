@@ -7,7 +7,7 @@ import java.net.Socket;
 public class HttpServer implements Runnable {
 
 	@Override
-	public void run() {
+	public void run() { 
 		try{
 	        ServerSocket serverSocket = null;
 	        boolean listening = true;
