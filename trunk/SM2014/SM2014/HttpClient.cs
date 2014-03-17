@@ -69,8 +69,9 @@ namespace ws.hoyland.util
             {
                 r = base.GetWebResponse(request);
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                Console.WriteLine(e.Message);
                 //throw new Exception("XXX");
             }
 

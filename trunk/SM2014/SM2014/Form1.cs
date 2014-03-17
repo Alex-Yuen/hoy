@@ -23,6 +23,7 @@ namespace SM2014
         private String[] fns = new String[] { "密码正确", "密码错误", "帐号冻结", "未识别" };
         private String xpath = AppDomain.CurrentDomain.BaseDirectory;
         private List<String> accounts;
+        private int visited = 0;
 
         public List<String> Accounts
         {
@@ -37,7 +38,9 @@ namespace SM2014
             set { proxies = value; }
         }
 
-        private int pidx = 0; //当前代理索引
+        //private int pidx = 0; //当前代理索引
+
+        public static Random RANDOM = new Random();
 
         public Form1()
         {
@@ -113,6 +116,7 @@ namespace SM2014
                             fs.Dispose();
 
                             label1.Text = "帐号: " + accounts.Count;
+                            label3.Text = "0 / " + accounts.Count + " = 0%";
                             ready();
                         }
                         catch (Exception ex)
@@ -216,22 +220,57 @@ namespace SM2014
         {
             dlg = delegate()
             {
-                ThreadPool.SetMinThreads(1, 0);
-                ThreadPool.SetMaxThreads(20, 0);
+                if (button1.Text.Equals("开始"))
+                {
+                    toolStripStatusLabel1.Text = "正在运行";
 
-                //Task task = new Task(accounts[i]);
-                //tasks.Add(task);
-                //ThreadPool.QueueUserWorkItem(new WaitCallback(task.run));//, task
+                    ThreadPool.SetMinThreads(1, 0);
+                    ThreadPool.SetMaxThreads(20, 0);
 
-                Task task = new Task(this, 0);
-                task.Start();
+                    //Task task = new Task(accounts[i]);
+                    //tasks.Add(task);
+                    //ThreadPool.QueueUserWorkItem(new WaitCallback(task.run));//, task
 
-                //for (int i = 0; i < accounts.Count; i++)
-                //{
-                //    //1000 个任务
-                //    Task task = new Task(accounts[i]);
-                //    ThreadPool.QueueUserWorkItem(new WaitCallback(task.run));
-                //}
+                    //Task task = new Task(this, 0);
+                    //task.Start();
+
+                    for (int i = 0; i < accounts.Count; i++)
+                    {
+                        //N 个任务
+                        Task task = new Task(this, accounts[i]);
+                        ThreadPool.QueueUserWorkItem(new WaitCallback(task.Run));
+                    }
+
+                    button1.Text = "暂停";
+                }
+                else
+                {
+                    //暂停处理代码
+                    toolStripStatusLabel1.Text = "未运行";
+                    button1.Text = "开始";
+                }
+            };
+            this.BeginInvoke(dlg);
+        }
+
+
+        public String GetProxy()
+        {
+            lock (this)
+            {
+                return proxies[RANDOM.Next(proxies.Count)];
+            }
+        }
+
+        public void RemoveProxy(String proxy)
+        {
+            lock (this)
+            {
+                proxies.Remove(proxy);
+            }
+
+            dlg = delegate(){
+                label2.Text = "代理: " + proxies.Count;
             };
             this.BeginInvoke(dlg);
         }
@@ -250,32 +289,14 @@ namespace SM2014
         {
             dlg = delegate()
             {
+                visited++;
+                label3.Text = visited+" / " + accounts.Count + " = "+(100*visited/accounts.Count).ToString("0.00")+"%";
+
+                //TODO, 加入日志文件
                 this.textBox1.AppendText(DateTime.Now.ToString("[yyyy/MM/dd HH:mm:ss] "));
-                this.textBox1.AppendText("LOG: "+type.ToString()+"="+id.ToString() + "\r\n");
+                this.textBox1.AppendText("DETECTED: " + id.ToString() + "=" + type.ToString() + "\r\n");
             };
             this.BeginInvoke(dlg);
-        }
-
-        public string getProxy()
-        {
-            String proxy = null;
-            lock (this)
-            {
-                proxy = this.Proxies[pidx];
-
-                //Console.WriteLine(pidx + "=" + proxy);
-
-                if (pidx == this.Proxies.Count - 1)
-                {
-                    pidx = 0;
-                }
-                else
-                {
-                   pidx++;
-                }
-            }
-
-            return proxy;
         }
     }
 }
