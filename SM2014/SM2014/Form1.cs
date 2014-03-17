@@ -27,6 +27,13 @@ namespace SM2014
         private int visited = 0;
         private int finish = 0;
         private Configuration cfa = null;
+        private int idx = 0;
+
+        public int Idx
+        {
+            get { return idx; }
+            set { idx = value; }
+        }
 
         public List<String> Accounts
         {
@@ -225,6 +232,13 @@ namespace SM2014
             {
                 if (button1.Text.Equals("开始"))
                 {
+                    cfa = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
+
+                    if (cfa == null)
+                    {
+                        MessageBox.Show("加载配置文件失败!");
+                    }
+
                     ConfigurationManager.RefreshSection("appSettings");
 
                     finish = 0;
@@ -232,8 +246,9 @@ namespace SM2014
 
                     toolStripStatusLabel1.Text = "正在运行";
 
+                    int tc = Int32.Parse(cfa.AppSettings.Settings["THREAD_COUNT"].Value);
                     ThreadPool.SetMinThreads(1, 0);
-                    ThreadPool.SetMaxThreads(Int32.Parse(cfa.AppSettings.Settings["THREAD_COUNT"].Value), 0);
+                    ThreadPool.SetMaxThreads(tc, 0);
 
                     //Task task = new Task(accounts[i]);
                     //tasks.Add(task);
@@ -242,10 +257,10 @@ namespace SM2014
                     //Task task = new Task(this, 0);
                     //task.Start();
 
-                    for (int i = 0; i < accounts.Count; i++)
+                    for (int i=0; idx < accounts.Count && i < tc*2; idx++, i++)
                     {
                         //N 个任务
-                        Task task = new Task(this, accounts[i]);
+                        Task task = new Task(this, accounts[idx]);
                         ThreadPool.QueueUserWorkItem(new WaitCallback(task.Run));
                     }
 
@@ -294,6 +309,22 @@ namespace SM2014
         {
             lock (this)
             {
+                int tc = Int32.Parse(cfa.AppSettings.Settings["THREAD_COUNT"].Value);
+
+                int workerThreads = 0;
+                int completionPortThreads = 0;
+                ThreadPool.GetAvailableThreads(out workerThreads, out completionPortThreads);
+
+                if (workerThreads > tc / 2) //到达一半时候，自动添加任务
+                {
+                    for (int i=0; idx < accounts.Count && i < tc; idx++, i++)
+                    {
+                        //N 个任务
+                        Task task = new Task(this, accounts[idx]);
+                        ThreadPool.QueueUserWorkItem(new WaitCallback(task.Run));
+                    }
+                }
+
                 finish++;
 
                 if (finish == Accounts.Count)
@@ -337,14 +368,5 @@ namespace SM2014
             new Option().ShowDialog();
         }
 
-        private void Form1_Load(object sender, EventArgs e)
-        {
-            cfa = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
-
-            if (cfa == null)
-            {
-                MessageBox.Show("加载配置文件失败!");
-            }
-        }
     }
 }
