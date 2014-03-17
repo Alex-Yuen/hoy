@@ -53,7 +53,8 @@ namespace SM2014
             //http请求
             HttpClient client = new HttpClient();
 
-            while (flag && times < Int32.Parse(cfa.AppSettings.Settings["TASK_TIMES"].Value))
+            int ts = Int32.Parse(cfa.AppSettings.Settings["TASK_TIMES"].Value);
+            while (flag && times < ts)
             {
                 //Console.WriteLine("DDDDDDDDD");
                 ConfigurationManager.RefreshSection("appSettings");
@@ -89,17 +90,17 @@ namespace SM2014
                         //bool ok = false;
                         if (resp.IndexOf("," + details[1] + ",0,") != -1)
                         {
-                            form.log(0, details[1] + " / " + proxy);
+                            form.log(0, details[1]+"----"+details[2]);//details[1] + " / " + proxy
                             flag = false;
                         }
                         else if (resp.IndexOf(",0,40010,") != -1)
                         {
-                            form.log(1, details[1] + " / " + proxy);
+                            form.log(1, details[1] + "----" + details[2]);
                             flag = false;
                         }
                         else if (resp.IndexOf(",0,40026,") != -1)
                         {
-                            form.log(2, details[1] + " / " + proxy);
+                            form.log(2, details[1] + "----" + details[2]);
                             flag = false;
                         }
                         else if (resp.IndexOf("," + details[1] + ",0,") != -1)//验证码
@@ -132,7 +133,11 @@ namespace SM2014
                 times++;
             }
 
+            client.Dispose();
+
             form.Finish();
+
+            Thread.CurrentThread.Abort();
         }
     }
 }
