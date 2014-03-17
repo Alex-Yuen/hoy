@@ -11,6 +11,7 @@ using System.IO;
 using ws.hoyland.util;
 using System.Text.RegularExpressions;
 using System.Threading;
+using System.Configuration;
 
 namespace SM2014
 {
@@ -24,6 +25,8 @@ namespace SM2014
         private String xpath = AppDomain.CurrentDomain.BaseDirectory;
         private List<String> accounts;
         private int visited = 0;
+        private int finish = 0;
+        private Configuration cfa = null;
 
         public List<String> Accounts
         {
@@ -222,10 +225,15 @@ namespace SM2014
             {
                 if (button1.Text.Equals("开始"))
                 {
+                    ConfigurationManager.RefreshSection("appSettings");
+
+                    finish = 0;
+                    visited = 0;
+
                     toolStripStatusLabel1.Text = "正在运行";
 
                     ThreadPool.SetMinThreads(1, 0);
-                    ThreadPool.SetMaxThreads(20, 0);
+                    ThreadPool.SetMaxThreads(Int32.Parse(cfa.AppSettings.Settings["THREAD_COUNT"].Value), 0);
 
                     //Task task = new Task(accounts[i]);
                     //tasks.Add(task);
@@ -258,7 +266,14 @@ namespace SM2014
         {
             lock (this)
             {
-                return proxies[RANDOM.Next(proxies.Count)];
+                if (proxies.Count == 0)
+                {
+                    return null;
+                }
+                else
+                {
+                    return proxies[RANDOM.Next(proxies.Count)];
+                }
             }
         }
 
@@ -275,6 +290,24 @@ namespace SM2014
             this.BeginInvoke(dlg);
         }
 
+        public void Finish()
+        {
+            lock (this)
+            {
+                finish++;
+
+                if (finish == Accounts.Count)
+                {
+                     dlg = delegate(){
+                        toolStripStatusLabel1.Text = "运行结束";
+                        button1.Text = "开始";
+                     };
+                     this.BeginInvoke(dlg);
+                }
+            }
+
+        }
+
         public void info(String message)
         {
             dlg = delegate()
@@ -285,7 +318,7 @@ namespace SM2014
             this.BeginInvoke(dlg);
         }
 
-        public void log(int type, int id)
+        public void log(int type, String line)
         {
             dlg = delegate()
             {
@@ -294,9 +327,24 @@ namespace SM2014
 
                 //TODO, 加入日志文件
                 this.textBox1.AppendText(DateTime.Now.ToString("[yyyy/MM/dd HH:mm:ss] "));
-                this.textBox1.AppendText("DETECTED: " + id.ToString() + "=" + type.ToString() + "\r\n");
+                this.textBox1.AppendText("DETECTED: " + line + "=" + type.ToString() + "\r\n");
             };
             this.BeginInvoke(dlg);
+        }
+
+        private void 选项OToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            new Option().ShowDialog();
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            cfa = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
+
+            if (cfa == null)
+            {
+                MessageBox.Show("加载配置文件失败!");
+            }
         }
     }
 }
