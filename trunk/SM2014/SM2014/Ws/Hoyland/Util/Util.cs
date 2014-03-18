@@ -5,7 +5,7 @@ using System.Text;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 
-namespace ws.hoyland.util
+namespace Ws.Hoyland.Util
 {
     class Util
     {
