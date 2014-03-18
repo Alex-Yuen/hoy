@@ -54,6 +54,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="TTask.cs" />
     <Compile Include="Ws\Hoyland\Util\EncodingType.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
