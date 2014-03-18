@@ -8,16 +8,18 @@ using System.Text;
 using System.Windows.Forms;
 using Ws.Hoyland.CSharp;
 using System.IO;
-using ws.hoyland.util;
+using Ws.Hoyland.Util;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Configuration;
 using System.Globalization;
+using Ws.Hoyland.CSharp.XThread;
 
 namespace SM2014
 {
     public partial class Form1 : Form
     {
+        private ThreadManager manager = null;
         private delegate void Delegate();
         private Delegate dlg;
 
@@ -29,6 +31,9 @@ namespace SM2014
         private int finish = 0;
         private Configuration cfa = null;
         private int idx = 0;
+        private bool run = false;
+        private Object obj = new Object();
+        private Object pobj = new Object();
 
         public int Idx
         {
@@ -233,7 +238,11 @@ namespace SM2014
             {
                 if (button1.Text.Equals("开始"))
                 {
-                    String tm = DateTime.Now.ToString("yyyy年MM月dd日 hh时mm分ss秒", DateTimeFormatInfo.InvariantInfo);
+                    Info("");
+                    Info("开始运行");
+                    Info("==================");
+                    Info("");
+                    String tm = DateTime.Now.ToString("yyyy年MM月dd日 HH时mm分ss秒", DateTimeFormatInfo.InvariantInfo);
                     for (int i = 0; i < output.Length; i++)
                     {
                         try
@@ -261,39 +270,64 @@ namespace SM2014
                     toolStripStatusLabel1.Text = "正在运行";
 
                     int tc = Int32.Parse(cfa.AppSettings.Settings["THREAD_COUNT"].Value);
-                    ThreadPool.SetMinThreads(1, 0);
-                    ThreadPool.SetMaxThreads(tc, 0);
 
-                    //Task task = new Task(accounts[i]);
-                    //tasks.Add(task);
-                    //ThreadPool.QueueUserWorkItem(new WaitCallback(task.run));//, task
+                    manager = new ThreadManager(tc);
 
-                    //Task task = new Task(this, 0);
-                    //task.Start();
-
-                    for (int i=0; idx < accounts.Count && i < tc*2; idx++, i++)
+                    //ThreadPool.SetMinThreads(1, 0);
+                    //ThreadPool.SetMaxThreads(tc, 0);
+                    
+                    for (int i=0; i < accounts.Count; i++)
                     {
                         //N 个任务
-                        Task task = new Task(this, accounts[idx]);
-                        ThreadPool.QueueUserWorkItem(new WaitCallback(task.Run));
+                        //Task task = new Task(this, accounts[i]);
+                        //ThreadPool.QueueUserWorkItem(new WaitCallback(task.Run));
+                        manager.Queue(new Task(this, accounts[i]));
                     }
 
                     button1.Text = "停止";
+
+                    run = true;
+                    manager.Execute();
                 }
                 else
                 {
-                    //暂停处理代码
-                    toolStripStatusLabel1.Text = "未运行";
-                    button1.Text = "开始";
-
-                    shutdown();
+                    Shutdown();
+                    Info("");
+                    Info("==================");
+                    Info("运行结束");
+                    Info("");
                 }
             };
             this.BeginInvoke(dlg);
         }
 
-        private void shutdown()
+        public void Queue(String line)
         {
+            if (run)
+            {
+                //not need to add
+                //lock (accounts)
+                //{
+                //    accounts.Add(line);
+                //}
+
+                manager.Queue(new Task(this, line));
+            }
+        }
+
+        private void Shutdown()
+        {
+            //暂停处理代码
+            toolStripStatusLabel1.Text = "未运行";
+            button1.Text = "开始";
+
+            run = false;
+
+            if (manager != null)
+            {
+                this.manager.Shutdown();
+            }
+
             for (int i = 0; i < output.Length; i++)
             {
                 try
@@ -313,7 +347,7 @@ namespace SM2014
 
         public String GetProxy()
         {
-            lock (this)
+            lock (pobj)
             {
                 if (proxies.Count == 0)
                 {
@@ -328,7 +362,7 @@ namespace SM2014
 
         public void RemoveProxy(String proxy)
         {
-            lock (this)
+            lock (pobj)
             {
                 proxies.Remove(proxy);
             }
@@ -336,14 +370,19 @@ namespace SM2014
             dlg = delegate(){
                 label2.Text = "代理: " + proxies.Count;
             };
-            this.BeginInvoke(dlg);
+
+            if (!this.IsDisposed)
+            {
+                this.BeginInvoke(dlg);
+            }
         }
 
         public void Finish()
         {
             //GC.Collect();
-            lock (this)
+            lock (obj)
             {
+                /**
                 int tc = Int32.Parse(cfa.AppSettings.Settings["THREAD_COUNT"].Value);
 
                 int workerThreads = 0;
@@ -360,7 +399,7 @@ namespace SM2014
                         ThreadPool.QueueUserWorkItem(new WaitCallback(task.Run));
                     }
                 }
-
+                **/
                 finish++;
 
                 if (finish == Accounts.Count)
@@ -369,23 +408,28 @@ namespace SM2014
                         toolStripStatusLabel1.Text = "运行结束";
                         button1.Text = "开始";
                      };
-                     this.BeginInvoke(dlg);
+                     if (!this.IsDisposed)
+                     {
+                         this.BeginInvoke(dlg);
+                     }
                 }
             }
 
         }
 
-        public void info(String message)
+        public void Info(String message)
         {
+            /**
             dlg = delegate()
             {
                 this.textBox1.AppendText(DateTime.Now.ToString("[yyyy/MM/dd HH:mm:ss] "));
                 this.textBox1.AppendText(message + "\r\n");
             };
             this.BeginInvoke(dlg);
+             * **/
         }
 
-        public void log(int type, String line)
+        public void Log(int type, String line)
         {
             dlg = delegate()
             {
@@ -414,10 +458,9 @@ namespace SM2014
             new Option().ShowDialog();
         }
 
-        private void Form1_FormClosed(object sender, FormClosedEventArgs e)
+        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
-            Application.Exit();
+            Shutdown();
         }
-
     }
 }

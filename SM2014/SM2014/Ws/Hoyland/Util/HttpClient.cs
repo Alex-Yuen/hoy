@@ -6,7 +6,7 @@ using System.Net;
 using System.Configuration;
 using System.Windows.Forms;
 
-namespace ws.hoyland.util
+namespace Ws.Hoyland.Util
 {
     /**/
     /// <summary>
