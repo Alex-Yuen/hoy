@@ -10,7 +10,7 @@ namespace Ws.Hoyland.CSharp.XThread
 {
     public class ThreadManager
     {
-        private int core = 2;        
+        private int core = 2;
         private ArrayList list = new ArrayList(); //线程列表
         private Queue<Runnable> queue = new Queue<Runnable>();
         private Thread checker = null;
@@ -27,7 +27,7 @@ namespace Ws.Hoyland.CSharp.XThread
             this.core = core;
             Init();
         }
-        
+
         private void Init()
         {
             for (int i = 0; i < core; i++)
@@ -62,15 +62,14 @@ namespace Ws.Hoyland.CSharp.XThread
             //填充
             foreach (MThread xt in list)
             {
-                lock (queue)
+                if (xt.T == null)
                 {
-                    if (queue.Count > 0)
+                    lock (queue)
                     {
-                        xt.Task = queue.Dequeue();
-                    }
-                    else
-                    {
-                        break;
+                        if (queue.Count > 0)
+                        {
+                            xt.Task = queue.Dequeue();
+                        }
                     }
                 }
             }
@@ -83,11 +82,11 @@ namespace Ws.Hoyland.CSharp.XThread
                 foreach (MThread xt in list)
                 {
                     //if (xt.T != null &&xt.W != null)
-                    if(xt.T==null || xt.T.ThreadState == ThreadState.WaitSleepJoin)
+                    //if(xt.T==null || xt.T.ThreadState == ThreadState.WaitSleepJoin)
                     {
                         //if (Form1.RANDOM.Next(100) < 10)
                         //{
-                            xt.Execute();
+                        xt.Execute();
                         //}
                     }
                 }

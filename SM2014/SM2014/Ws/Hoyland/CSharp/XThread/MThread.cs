@@ -52,32 +52,33 @@ namespace Ws.Hoyland.CSharp.XThread
 
         public void Execute()
         {
-            flag = true;
-
-            if (task != null)
+            if (task == null)
+            {
+                lock (queue)
+                {
+                    if (queue.Count > 0)
+                    {
+                        task = queue.Dequeue();
+                    }
+                }
+            }
+            
+            if(task!=null)
             {
                 if (t == null)
                 {
+                    flag = true;
                     t = new Thread(new ThreadStart(this.ThreadProc));
                     t.Start();
                 }
                 else
                 {
-                    //Console.WriteLine(t.ThreadState);
-                    /**
-                    lock (queue)
+                    if (t.ThreadState == ThreadState.WaitSleepJoin)
                     {
-                        if (queue.Count > 0)
+                        lock (this)
                         {
-                            task = null;
-                            GC.Collect();
-                            task = queue.Dequeue();
+                            Monitor.PulseAll(this);
                         }
-                    }**/
-
-                    lock (this)
-                    {
-                        Monitor.PulseAll(this);
                     }
                 }
             }
@@ -88,7 +89,8 @@ namespace Ws.Hoyland.CSharp.XThread
             while (flag)
             {
                 task.Run();
-                //Thread.Sleep(500);
+                task = null;
+
                 if (flag)
                 {
                     lock (this)

@@ -6,10 +6,10 @@ using Ws.Hoyland.CSharp.XThread;
 
 namespace SM2014
 {
-    public class TTask :Runnable
+    public class XTask :Runnable
     {
         private String line;
-        public TTask(String line)
+        public XTask(String line)
         {
             this.line = line;
         }
