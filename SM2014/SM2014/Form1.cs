@@ -34,6 +34,7 @@ namespace SM2014
         private bool run = false;
         private Object obj = new Object();
         private Object pobj = new Object();
+        private int[] stat = new int[3];
 
         public int Idx
         {
@@ -57,10 +58,17 @@ namespace SM2014
         //private int pidx = 0; //当前代理索引
 
         public static Random RANDOM = new Random();
+        private static Form1 FORM;
+
+        public static Form1 GetInstance()
+        {
+            return FORM;
+        }
 
         public Form1()
         {
             InitializeComponent();
+            FORM = this;
         }
         
         private void 退出XToolStripMenuItem_Click(object sender, EventArgs e)
@@ -267,6 +275,11 @@ namespace SM2014
                     finish = 0;
                     visited = 0;
 
+                    for (int i = 0; i < stat.Length; i++)
+                    {
+                        stat[i] = 0;
+                    }
+
                     toolStripStatusLabel1.Text = "正在运行";
 
                     int tc = Int32.Parse(cfa.AppSettings.Settings["THREAD_COUNT"].Value);
@@ -281,7 +294,7 @@ namespace SM2014
                         //N 个任务
                         //Task task = new Task(this, accounts[i]);
                         //ThreadPool.QueueUserWorkItem(new WaitCallback(task.Run));
-                        manager.Queue(new Task(this, accounts[i]));
+                        manager.Queue(new Task(accounts[i]));
                     }
 
                     button1.Text = "停止";
@@ -312,7 +325,7 @@ namespace SM2014
                 //    accounts.Add(line);
                 //}
 
-                manager.Queue(new Task(this, line));
+                manager.Queue(new Task(line));
             }
         }
 
@@ -407,6 +420,18 @@ namespace SM2014
                 **/
                 finish++;
 
+                if (finish % 100 == 0)
+                {
+                    dlg = delegate()
+                    {
+                        this.textBox1.ResetText();
+                    };
+                    if (!this.IsDisposed)
+                    {
+                        this.BeginInvoke(dlg);
+                    }
+                }
+
                 if (finish == Accounts.Count)
                 {
                      dlg = delegate(){
@@ -439,7 +464,10 @@ namespace SM2014
             dlg = delegate()
             {
                 visited++;
+                stat[type]++;
+
                 label3.Text = visited+" / " + accounts.Count + " = "+(100*visited/accounts.Count).ToString("0.00")+"%";
+                label4.Text = stat[0] + " / " + stat[1] + " / " + stat[2];
 
                 //TODO, 加入日志文件
                 this.textBox1.AppendText(DateTime.Now.ToString("[yyyy/MM/dd HH:mm:ss] "));

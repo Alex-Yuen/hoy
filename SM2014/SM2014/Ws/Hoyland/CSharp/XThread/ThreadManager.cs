@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Collections;
 using System.Threading;
+using SM2014;
 
 namespace Ws.Hoyland.CSharp.XThread
 {
@@ -84,7 +85,10 @@ namespace Ws.Hoyland.CSharp.XThread
                     //if (xt.T != null &&xt.W != null)
                     if(xt.T==null || xt.T.ThreadState == ThreadState.WaitSleepJoin)
                     {
-                        xt.Execute();
+                        //if (Form1.RANDOM.Next(100) < 10)
+                        //{
+                            xt.Execute();
+                        //}
                     }
                 }
             }

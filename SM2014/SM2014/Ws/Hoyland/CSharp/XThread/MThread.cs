@@ -64,13 +64,16 @@ namespace Ws.Hoyland.CSharp.XThread
                 else
                 {
                     //Console.WriteLine(t.ThreadState);
+                    /**
                     lock (queue)
                     {
                         if (queue.Count > 0)
                         {
+                            task = null;
+                            GC.Collect();
                             task = queue.Dequeue();
                         }
-                    }
+                    }**/
 
                     lock (this)
                     {
@@ -85,7 +88,7 @@ namespace Ws.Hoyland.CSharp.XThread
             while (flag)
             {
                 task.Run();
-
+                //Thread.Sleep(500);
                 if (flag)
                 {
                     lock (this)
