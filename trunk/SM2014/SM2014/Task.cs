@@ -17,11 +17,13 @@ namespace SM2014
     {
  //       private Form1 form;
         private String line;
+        private bool flag = true;
         //private HttpClient client = null;
 
-        private static String UAG = "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1; QQDownload 734; Maxthon; .NET CLR 2.0.50727; .NET4.0C; .NET4.0E)";
+//        private static String UAG = "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1; QQDownload 734; Maxthon; .NET CLR 2.0.50727; .NET4.0C; .NET4.0E)";
         private static Configuration cfa = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
-        
+//        private static HttpClient client = new HttpClient();
+
         public Task(String line)
         {
             this.line = line;
@@ -36,6 +38,7 @@ namespace SM2014
         public void Abort()
         {
             //
+            this.flag = false;
         }
 
         public void Run()
@@ -48,27 +51,31 @@ namespace SM2014
             //Form1.GetInstance().Info("开始查询帐号:" + details[1]);
 
             WebProxy wp = null;
+
+            HttpWebRequest request = null;
+            HttpWebResponse response = null;
+
             Stream stream = null;
             StreamReader reader = null;
+
             String resp = null;
 
-            bool flag = true;
             int times = 0;
 
             //http请求
-            HttpClient client = new HttpClient();
 
-            //int ts = Int32.Parse(cfa.AppSettings.Settings["TASK_TIMES"].Value);
-            int ts = 1;
+            int ts = Int32.Parse(cfa.AppSettings.Settings["TASK_TIMES"].Value);
+            int timeout = Int32.Parse(cfa.AppSettings.Settings["TIMEOUT"].Value);
+
             while (flag && times < ts)
             {
                 //Console.WriteLine("DDDDDDDDD");
                 //ConfigurationManager.RefreshSection("appSettings");
 
                 resp = null;
-                client.Headers.Add("User-Agent", Task.UAG);
-                //String proxy = Form1.GetInstance().GetProxy();
-                String proxy = "127.0.0.1:8888";
+                //client.Headers.Add("User-Agent", Task.UAG);
+                String proxy = Form1.GetInstance().GetProxy();
+                //String proxy = "127.0.0.1:8888";
                 if (proxy == null)
                 {
                     flag = false;
@@ -77,17 +84,41 @@ namespace SM2014
 
                 //Form1.GetInstance().Info(details[1] + " -> " + proxy);
                 wp = new WebProxy(proxy);
-                client.Proxy = wp;
-                client.Encoding = Encoding.Default;
+                //client.Proxy = wp;
+                //client.Encoding = Encoding.Default;
 
                 try
                 {
-                    //url = url.Replace("#", Form1.RANDOM.NextDouble().ToString());
+                    url = url.Replace("#", Form1.RANDOM.NextDouble().ToString());
+
+                    request = (HttpWebRequest)WebRequest.Create(url);
+                    request.Timeout = 1000 * timeout;
+                    request.ReadWriteTimeout = 1000 * timeout;
+                    request.Proxy = wp;
+
+                    //Thread.Sleep(2000);
+
+                    response = (HttpWebResponse)request.GetResponse();
+                    //stream = response.GetResponseStream();
+                    
+                    //if (stream != null)
+                    //{
+                    //    reader = new StreamReader(stream, System.Text.Encoding.UTF8);
+                    //    resp = reader.ReadToEnd();
+                    //}
+                    //else
+                    //{
+                    //    throw new Exception();
+                    //}
+
+                    wp = null;
+
+                    resp = "123";
 
                     //stream = client.OpenRead(url);
                     //reader = new StreamReader(stream);
                     //resp = reader.ReadToEnd();
-                    resp = "123";
+                    //resp = "123";
 
                     if (resp.IndexOf("pt.handleLoginResult") == -1)//代理异常
                     {
@@ -126,18 +157,29 @@ namespace SM2014
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine(e.Message);
+                    //Console.WriteLine(e.Message);
+
                     //代理异常
                     //Form1.GetInstance().RemoveProxy(proxy);
                 }
+                finally
+                {
+                    if (reader != null)
+                    {
+                        reader.Close();
+                        reader.Dispose();
+                    }
 
-                if (reader != null)
-                {
-                    reader.Close();
-                }
-                if (stream != null)
-                {
-                    stream.Close();
+                    if (stream != null)
+                    {
+                        stream.Close(); 
+                        stream.Dispose();
+                    }
+
+                    if (response != null)
+                    {
+                        response.Close();
+                    }
                 }
 
                 times++;
@@ -146,7 +188,7 @@ namespace SM2014
             //Console.WriteLine(Thread.CurrentThread.GetHashCode() + ">>>>:" + (DateTime.Now.Ticks - start));
             //client.Dispose();
 
-            //Form1.GetInstance().Finish();
+            Form1.GetInstance().Finish();
 
             //Thread.CurrentThread.Abort();
         }

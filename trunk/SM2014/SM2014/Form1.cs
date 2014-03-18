@@ -69,6 +69,7 @@ namespace SM2014
         {
             InitializeComponent();
             FORM = this;
+            System.Net.ServicePointManager.DefaultConnectionLimit = 512;
         }
         
         private void 退出XToolStripMenuItem_Click(object sender, EventArgs e)
@@ -300,7 +301,6 @@ namespace SM2014
                     button1.Text = "停止";
 
                     run = true;
-                    System.Net.ServicePointManager.DefaultConnectionLimit = 255;
                     manager.Execute();
                 }
                 else
@@ -424,7 +424,9 @@ namespace SM2014
                 {
                     dlg = delegate()
                     {
-                        this.textBox1.ResetText();
+                        if (this.textBox1.TextLength > 10000){
+                            this.textBox1.ResetText();
+                        }
                     };
                     if (!this.IsDisposed)
                     {
@@ -448,15 +450,13 @@ namespace SM2014
         }
 
         public void Info(String message)
-        {
-            
+        {            
             dlg = delegate()
             {
                 this.textBox1.AppendText(DateTime.Now.ToString("[yyyy/MM/dd HH:mm:ss] "));
                 this.textBox1.AppendText(message + "\r\n");
             };
-            this.BeginInvoke(dlg);
-            
+            this.BeginInvoke(dlg);            
         }
 
         public void Log(int type, String line)
