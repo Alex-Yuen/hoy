@@ -287,6 +287,7 @@ namespace SM2014
                     button1.Text = "停止";
 
                     run = true;
+                    System.Net.ServicePointManager.DefaultConnectionLimit = 255;
                     manager.Execute();
                 }
                 else
@@ -347,7 +348,7 @@ namespace SM2014
 
         public String GetProxy()
         {
-            lock (pobj)
+            lock (proxies)
             {
                 if (proxies.Count == 0)
                 {
@@ -362,13 +363,17 @@ namespace SM2014
 
         public void RemoveProxy(String proxy)
         {
-            lock (pobj)
+            lock (proxies)
             {
                 proxies.Remove(proxy);
             }
 
-            dlg = delegate(){
-                label2.Text = "代理: " + proxies.Count;
+            dlg = delegate()
+            {
+                //lock (pobj)
+                //{
+                    label2.Text = "代理: " + proxies.Count;
+                //}
             };
 
             if (!this.IsDisposed)
@@ -419,14 +424,14 @@ namespace SM2014
 
         public void Info(String message)
         {
-            /**
+            
             dlg = delegate()
             {
                 this.textBox1.AppendText(DateTime.Now.ToString("[yyyy/MM/dd HH:mm:ss] "));
                 this.textBox1.AppendText(message + "\r\n");
             };
             this.BeginInvoke(dlg);
-             * **/
+            
         }
 
         public void Log(int type, String line)
