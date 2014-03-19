@@ -103,16 +103,16 @@ namespace Ws.Hoyland.CSharp.XThread
                 }
                 catch (Exception)
                 {
-                    Console.WriteLine(">>>>>>>>>>>>>>>>>>>>>>>>>1");
+                    //Console.WriteLine(">>>>>>>>>>>>>>>>>>>>>>>>>1");
                 }
                 //}
                     try
                     {
-                        Thread.Sleep(500);
+                        Thread.Sleep(50);
                     }
                     catch (Exception)
                     {
-                        Console.WriteLine(">>>>>>>>>>>>>>>>>>>>>>>>>2");
+                        //Console.WriteLine(">>>>>>>>>>>>>>>>>>>>>>>>>2");
                     }
                 /**
                 if (flag)
