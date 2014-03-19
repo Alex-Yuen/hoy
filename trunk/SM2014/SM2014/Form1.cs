@@ -71,7 +71,7 @@ namespace SM2014
             FORM = this;
             System.Net.ServicePointManager.DefaultConnectionLimit = 512;
         }
-        
+
         private void 退出XToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Application.Exit();
@@ -289,8 +289,8 @@ namespace SM2014
 
                     //ThreadPool.SetMinThreads(1, 0);
                     //ThreadPool.SetMaxThreads(tc, 0);
-                    
-                    for (int i=0; i < accounts.Count; i++)
+
+                    for (int i = 0; i < accounts.Count; i++)
                     {
                         //N 个任务
                         //Task task = new Task(this, accounts[i]);
@@ -383,10 +383,10 @@ namespace SM2014
 
             dlg = delegate()
             {
-                //lock (pobj)
-                //{
+                lock (pobj)
+                {
                     label2.Text = "代理: " + proxies.Count;
-                //}
+                }
             };
 
             if (!this.IsDisposed)
@@ -424,8 +424,12 @@ namespace SM2014
                 {
                     dlg = delegate()
                     {
-                        if (this.textBox1.TextLength > 10000){
-                            this.textBox1.ResetText();
+                        lock (this.textBox1)
+                        {
+                            if (this.textBox1.TextLength > 10000)
+                            {
+                                this.textBox1.ResetText();
+                            }
                         }
                     };
                     if (!this.IsDisposed)
@@ -434,29 +438,34 @@ namespace SM2014
                     }
                 }
 
-                if (finish == Accounts.Count)
+                /**
+                if (finish == Accounts.Count) //自动产生的，目前不太可能执行到
                 {
-                     dlg = delegate(){
+                    dlg = delegate()
+                    {
                         toolStripStatusLabel1.Text = "运行结束";
                         button1.Text = "开始";
-                     };
-                     if (!this.IsDisposed)
-                     {
-                         this.BeginInvoke(dlg);
-                     }
-                }
+                    };
+                    if (!this.IsDisposed)
+                    {
+                        this.BeginInvoke(dlg);
+                    }
+                }**/
             }
 
         }
 
         public void Info(String message)
-        {            
+        {
             dlg = delegate()
-            {
-                this.textBox1.AppendText(DateTime.Now.ToString("[yyyy/MM/dd HH:mm:ss] "));
-                this.textBox1.AppendText(message + "\r\n");
-            };
-            this.BeginInvoke(dlg);            
+             {
+                 lock (this.textBox1)
+                 {
+                     this.textBox1.AppendText(DateTime.Now.ToString("[yyyy/MM/dd HH:mm:ss] "));
+                     this.textBox1.AppendText(message + "\r\n");
+                 }
+             };
+            this.BeginInvoke(dlg);
         }
 
         public void Log(int type, String line)
@@ -466,13 +475,13 @@ namespace SM2014
                 visited++;
                 stat[type]++;
 
-                label3.Text = visited+" / " + accounts.Count + " = "+(100*visited/accounts.Count).ToString("0.00")+"%";
+                label3.Text = visited + " / " + accounts.Count + " = " + (100 * visited / accounts.Count).ToString("0.00") + "%";
                 label4.Text = stat[0] + " / " + stat[1] + " / " + stat[2];
 
                 //TODO, 加入日志文件
                 this.textBox1.AppendText(DateTime.Now.ToString("[yyyy/MM/dd HH:mm:ss] "));
                 this.textBox1.AppendText("DETECTED: " + line + "=" + type.ToString() + "\r\n");
-                
+
                 try
                 {
                     output[type].WriteLine(line);
