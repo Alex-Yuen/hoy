@@ -67,40 +67,40 @@ namespace Ws.Hoyland.CSharp.XThread
             starter.Start();
 
             //开启检测线程
-            checker = new Thread(new ThreadStart(() =>
-            {
-                while (flag)
-                {
-                    foreach (MThread xt in list)
-                    {
-                        if (flag)
-                        {
-                            //lock (xt)
-                            //{
-                                if (xt.Task == null)
-                                {
-                                    lock (queue)
-                                    {
-                                        if (queue.Count > 0)
-                                        {
-                                            xt.Task = queue.Dequeue();
-                                        }
-                                    }
-                                }
-                            //}
-                        }
-                        else
-                        {
-                            break;
-                        }
-                        Thread.Sleep(50);
-                    }
+            //checker = new Thread(new ThreadStart(() =>
+            //{
+            //    while (flag)
+            //    {
+            //        foreach (MThread xt in list)
+            //        {
+            //            if (flag)
+            //            {
+            //                //lock (xt)
+            //                //{
+            //                    if (xt.Task == null)
+            //                    {
+            //                        lock (queue)
+            //                        {
+            //                            if (queue.Count > 0)
+            //                            {
+            //                                xt.Task = queue.Dequeue();
+            //                            }
+            //                        }
+            //                    }
+            //                //}
+            //            }
+            //            else
+            //            {
+            //                break;
+            //            }
+            //            Thread.Sleep(50);
+            //        }
 
-                    //Thread.Sleep(500);
-                }
-            }));
-            checker.Name = "Checker";
-            checker.Start();
+            //        //Thread.Sleep(500);
+            //    }
+            //}));
+            //checker.Name = "Checker";
+            //checker.Start();
         }
 
         public void Shutdown()
