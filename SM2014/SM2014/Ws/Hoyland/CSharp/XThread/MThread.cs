@@ -34,10 +34,13 @@ namespace Ws.Hoyland.CSharp.XThread
         public void Abort()
         {
             flag = false;
-            lock (this)
-            {
-                Monitor.PulseAll(this);
-            }
+            //if (t.ThreadState == ThreadState.WaitSleepJoin)
+            //{
+            //    lock (this)
+            //    {
+            //        Monitor.PulseAll(this);
+            //    }
+            //}
 
             if (task != null)
             {
@@ -71,6 +74,7 @@ namespace Ws.Hoyland.CSharp.XThread
                     t = new Thread(new ThreadStart(this.ThreadProc));
                     t.Start();
                 }
+                    /**
                 else
                 {
                     if (t.ThreadState == ThreadState.WaitSleepJoin)
@@ -80,7 +84,7 @@ namespace Ws.Hoyland.CSharp.XThread
                             Monitor.PulseAll(this);
                         }
                     }
-                }
+                }**/
             }
         }
 
@@ -88,16 +92,29 @@ namespace Ws.Hoyland.CSharp.XThread
         {
             while (flag)
             {
-                task.Run();
-                task = null;
+                //wc = null;
+                //wc = new WaitCallback(task.RunX);
+                //wc(null);
+                Thread.Sleep(500);
+                if (!flag)
+                {
+                    continue;
+                }
 
+                if (task != null)
+                {
+                    task.Run();
+                    task = null;
+                }
+
+                /**
                 if (flag)
                 {
                     lock (this)
                     {
                         Monitor.Wait(this);
                     }
-                }
+                }**/
             }
         }
     }

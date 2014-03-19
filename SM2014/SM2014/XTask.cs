@@ -14,6 +14,11 @@ namespace SM2014
             this.line = line;
         }
 
+        //public void RunX(Object info)
+        //{
+        //    Run();
+        //}
+
         public void Run()
         {
             Console.WriteLine("EFFFFFFFFFFFFFFFF");

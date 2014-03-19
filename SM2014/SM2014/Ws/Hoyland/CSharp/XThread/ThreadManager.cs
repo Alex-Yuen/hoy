@@ -76,9 +76,7 @@ namespace Ws.Hoyland.CSharp.XThread
 
             while (flag)
             {
-                Thread.Sleep(500);
-
-                //填充队列
+                //执行任务
                 foreach (MThread xt in list)
                 {
                     //if (xt.T != null &&xt.W != null)
@@ -86,10 +84,20 @@ namespace Ws.Hoyland.CSharp.XThread
                     {
                         //if (Form1.RANDOM.Next(100) < 10)
                         //{
-                        xt.Execute();
+                        if (flag)
+                        {
+                            xt.Execute();
+                        }
+                        else
+                        {
+                            break;
+                        }
+                        Thread.Sleep(200);
                         //}
                     }
                 }
+
+                Thread.Sleep(2000);
             }
 
             lock (queue)
