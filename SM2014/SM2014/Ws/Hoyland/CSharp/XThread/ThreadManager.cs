@@ -13,9 +13,7 @@ namespace Ws.Hoyland.CSharp.XThread
         private int core = 2;
         private ArrayList list = new ArrayList(); //线程列表
         private Queue<Runnable> queue = new Queue<Runnable>();
-        private Thread checker = null;
         private Thread starter = null;
-        private bool flag = false;
 
         //不允许创建实例
         public ThreadManager()
@@ -48,7 +46,7 @@ namespace Ws.Hoyland.CSharp.XThread
 
         public void Execute()
         {
-            flag = true;
+            //flag = true;
 
             //开启初始化线程
             starter = new Thread(new ThreadStart(() =>
@@ -60,7 +58,7 @@ namespace Ws.Hoyland.CSharp.XThread
                     //{
                         xt.Start();
                     //}
-                    Thread.Sleep(5);
+                    Thread.Sleep(50);
                 }
             }));
             starter.Name = "Starter";
@@ -105,7 +103,7 @@ namespace Ws.Hoyland.CSharp.XThread
 
         public void Shutdown()
         {
-            flag = false;
+            //flag = false;
 
             lock (queue)
             {

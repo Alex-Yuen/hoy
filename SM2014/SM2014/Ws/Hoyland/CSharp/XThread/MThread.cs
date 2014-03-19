@@ -62,7 +62,7 @@ namespace Ws.Hoyland.CSharp.XThread
             flag = true;
             t = new Thread(new ThreadStart(this.ThreadProc));
             t.IsBackground = true;
-            t.Name = "MThread's T";
+            t.Name = "MThread's Thread";
             t.Start();
             //    }
             /**
@@ -98,24 +98,31 @@ namespace Ws.Hoyland.CSharp.XThread
                 //lock (this)
                 //{
 
-                try
+                if (task != null)
                 {
-                    if (task != null)
+                    try
                     {
                         task.Run();
                         task = null;
                         //run = true;
                     }
-                }
-                catch (Exception)
-                {
-                    //
-                }
-                //}
+                    catch (Exception)
+                    {
+                        //
+                    }
 
-                try
+                    try
+                    {
+                        Thread.Sleep(2000);
+                    }
+                    catch (Exception)
+                    {
+                        //
+                    }
+                }
+                else
                 {
-                    if (task == null)
+                    try
                     {
                         lock (queue)
                         {
@@ -125,24 +132,54 @@ namespace Ws.Hoyland.CSharp.XThread
                             }
                         }
                     }
-                }
-                catch (Exception)
-                {
-                    //Console.WriteLine(">>>>>>>>>>>>>>>>>>>>>>>>>1");
+                    catch (Exception)
+                    {
+                        //
+                    }
+
+                    try
+                    {
+                        Thread.Sleep(500);
+                    }
+                    catch (Exception)
+                    {
+                        //
+                    }
                 }
 
+                //}
 
-                try
-                {
-                    //if (run)
-                    //{
-                        Thread.Sleep(200);
-                    //}
-                }
-                catch (Exception)
-                {
-                    //Console.WriteLine(">>>>>>>>>>>>>>>>>>>>>>>>>2");
-                }
+                //try
+                //{
+                //    //if (run)
+                //    //{
+                //        Thread.Sleep(2000);
+                //    //}
+                //}
+                //catch (Exception)
+                //{
+                //    //Console.WriteLine(">>>>>>>>>>>>>>>>>>>>>>>>>2");
+                //}
+
+                //try
+                //{
+                //    if (task == null)
+                //    {
+                //        lock (queue)
+                //        {
+                //            if (queue.Count > 0)
+                //            {
+                //                task = queue.Dequeue();
+                //            }
+                //        }
+                //    }
+                //}
+                //catch (Exception)
+                //{
+                //    //Console.WriteLine(">>>>>>>>>>>>>>>>>>>>>>>>>1");
+                //}
+
+
                 /**
                 if (flag)
                 {
