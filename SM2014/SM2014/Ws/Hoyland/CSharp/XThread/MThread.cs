@@ -53,27 +53,18 @@ namespace Ws.Hoyland.CSharp.XThread
             //}
         }
 
-        public void Execute()
-        {
-            if (task == null)
-            {
-                lock (queue)
-                {
-                    if (queue.Count > 0)
-                    {
-                        task = queue.Dequeue();
-                    }
-                }
-            }
-            
-            if(task!=null)
-            {
-                if (t == null)
-                {
+        public void Start()
+        {            
+            //if(task!=null)
+            //{
+            //    if (t == null)
+            //    {
                     flag = true;
                     t = new Thread(new ThreadStart(this.ThreadProc));
+                    t.IsBackground = true;
+                    t.Name = "MThread's T";
                     t.Start();
-                }
+            //    }
                     /**
                 else
                 {
@@ -85,7 +76,7 @@ namespace Ws.Hoyland.CSharp.XThread
                         }
                     }
                 }**/
-            }
+            //}
         }
 
         private void ThreadProc()
@@ -95,18 +86,34 @@ namespace Ws.Hoyland.CSharp.XThread
                 //wc = null;
                 //wc = new WaitCallback(task.RunX);
                 //wc(null);
-                Thread.Sleep(500);
-                if (!flag)
-                {
-                    continue;
-                }
 
-                if (task != null)
+                //if (!flag)
+                //{
+                //    continue;
+                //}
+                //lock (this)
+                //{
+                try
                 {
-                    task.Run();
-                    task = null;
+                    if (task != null)
+                    {
+                        task.Run();
+                        task = null;
+                    }
                 }
-
+                catch (Exception)
+                {
+                    Console.WriteLine(">>>>>>>>>>>>>>>>>>>>>>>>>1");
+                }
+                //}
+                    try
+                    {
+                        Thread.Sleep(500);
+                    }
+                    catch (Exception)
+                    {
+                        Console.WriteLine(">>>>>>>>>>>>>>>>>>>>>>>>>2");
+                    }
                 /**
                 if (flag)
                 {

@@ -47,17 +47,9 @@ namespace SM2014
             get { return accounts; }
             set { accounts = value; }
         }
-        private List<String> proxies;
-
-        public List<String> Proxies
-        {
-            get { return proxies; }
-            set { proxies = value; }
-        }
 
         //private int pidx = 0; //当前代理索引
 
-        public static Random RANDOM = new Random();
         private static Form1 FORM;
 
         public static Form1 GetInstance()
@@ -69,7 +61,7 @@ namespace SM2014
         {
             InitializeComponent();
             FORM = this;
-            System.Net.ServicePointManager.DefaultConnectionLimit = 512;
+            //System.Net.ServicePointManager.DefaultConnectionLimit = 1024;
         }
 
         private void 退出XToolStripMenuItem_Click(object sender, EventArgs e)
@@ -158,7 +150,7 @@ namespace SM2014
         {
             dlg = delegate()
             {
-                if (accounts != null && accounts.Count > 0 && proxies != null && proxies.Count > 0)
+                if (accounts != null && accounts.Count > 0 && Engine.GetInstance().Proxies != null && Engine.GetInstance().Proxies.Count > 0)
                 {
                     button1.Enabled = true;
                 }
@@ -186,7 +178,7 @@ namespace SM2014
                     {
                         try
                         {
-                            proxies = new List<String>();
+                            Engine.GetInstance().Proxies = new List<String>();
 
                             Encoding ecdtype = EncodingType.GetType(fn);
                             FileStream fs = new FileStream(fn, FileMode.Open);
@@ -210,7 +202,7 @@ namespace SM2014
                                     ////listArr.Insert(3, "初始化");
                                     //lns = listArr.ToArray();
 
-                                    proxies.Add(line);
+                                    Engine.GetInstance().Proxies.Add(line);
                                     //							if (lns.size() == 3) {
                                     //								lns.add("0");
                                     //								lns.add("初始化");
@@ -228,7 +220,7 @@ namespace SM2014
                             fs.Close();
                             fs.Dispose();
 
-                            label2.Text = "代理: " + proxies.Count;
+                            label2.Text = "代理: " + Engine.GetInstance().Proxies.Count;
                             ready();
                         }
                         catch (Exception ex)
@@ -324,68 +316,50 @@ namespace SM2014
                 //{
                 //    accounts.Add(line);
                 //}
-
                 manager.Queue(new Task(line));
             }
         }
 
         private void Shutdown()
         {
-            //暂停处理代码
-            toolStripStatusLabel1.Text = "未运行";
-            button1.Text = "开始";
-
-            run = false;
-
-            if (manager != null)
+            if (run)
             {
-                this.manager.Shutdown();
-            }
+                run = false;
 
-            for (int i = 0; i < output.Length; i++)
-            {
-                try
+                //暂停处理代码
+                toolStripStatusLabel1.Text = "未运行";
+                button1.Text = "开始";
+                
+                if (manager != null)
                 {
-                    if (output[i] != null)
+                    this.manager.Shutdown();
+                }
+
+                for (int i = 0; i < output.Length; i++)
+                {
+                    try
                     {
-                        output[i].Close();
-                        output[i] = null;
+                        if (output[i] != null)
+                        {
+                            output[i].Close();
+                            output[i] = null;
+                        }
+                    }
+                    catch (Exception)
+                    {
+                        //throw ex;
                     }
                 }
-                catch (Exception ex)
-                {
-                    throw ex;
-                }
             }
         }
 
-        public String GetProxy()
+        public void UpdateProxy(int count)
         {
-            lock (proxies)
-            {
-                if (proxies.Count == 0)
-                {
-                    return null;
-                }
-                else
-                {
-                    return proxies[RANDOM.Next(proxies.Count)];
-                }
-            }
-        }
-
-        public void RemoveProxy(String proxy)
-        {
-            lock (proxies)
-            {
-                proxies.Remove(proxy);
-            }
-
             dlg = delegate()
             {
                 lock (pobj)
                 {
-                    label2.Text = "代理: " + proxies.Count;
+                    label2.Text = "代理: " + count;
                 }
             };
 
