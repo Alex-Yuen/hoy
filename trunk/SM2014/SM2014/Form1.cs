@@ -20,8 +20,6 @@ namespace SM2014
     public partial class Form1 : Form
     {
         private ThreadManager manager = null;
-        private delegate void Delegate();
-        private Delegate dlg;
 
         private StreamWriter[] output = new StreamWriter[4]; //成功，失败，未运行
         private String[] fns = new String[] { "密码正确", "密码错误", "帐号冻结", "未识别" };
@@ -77,7 +75,7 @@ namespace SM2014
 
         private void 导入帐号AToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            dlg = delegate()
+            this.BeginInvoke(new Action(() =>
             {
                 OpenFileDialog dialog = new OpenFileDialog();
                 //dialog.
@@ -143,13 +141,12 @@ namespace SM2014
                         }
                     }
                 }
-            };
-            this.BeginInvoke(dlg);
+            }));
         }
 
         private void ready()
         {
-            dlg = delegate()
+            this.BeginInvoke(new Action(() =>
             {
                 if (accounts != null && accounts.Count > 0 && Engine.GetInstance().Proxies != null && Engine.GetInstance().Proxies.Count > 0)
                 {
@@ -159,13 +156,12 @@ namespace SM2014
                 {
                     button1.Enabled = false;
                 }
-            };
-            this.BeginInvoke(dlg);
+            }));
         }
 
         private void 导入代理PToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            dlg = delegate()
+            this.BeginInvoke(new Action(() =>
             {
                 OpenFileDialog dialog = new OpenFileDialog();
                 //dialog.
@@ -230,13 +226,12 @@ namespace SM2014
                         }
                     }
                 }
-            };
-            this.BeginInvoke(dlg);
+            }));
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
-            dlg = delegate()
+            this.BeginInvoke(new Action(() =>
             {
                 if (button1.Text.Equals("开始"))
                 {
@@ -304,8 +299,7 @@ namespace SM2014
                     Info("运行结束");
                     Info("");
                 }
-            };
-            this.BeginInvoke(dlg);
+            }));
         }
 
         public void Queue(String line)
@@ -356,17 +350,15 @@ namespace SM2014
 
         public void UpdateProxy(int count)
         {
-            dlg = delegate()
-            {
-                lock (pobj)
-                {
-                    label2.Text = "代理: " + count;
-                }
-            };
-
             if (!this.IsDisposed)
             {
-                this.BeginInvoke(dlg);
+                this.BeginInvoke(new Action(() =>
+                {
+                    lock (pobj)
+                    {
+                        label2.Text = "代理: " + count;
+                    }
+                }));
             }
         }
 
@@ -397,19 +389,18 @@ namespace SM2014
 
                 if (finish % 100 == 0)
                 {
-                    dlg = delegate()
-                    {
-                        lock (this.textBox1)
-                        {
-                            if (this.textBox1.TextLength > 10000)
-                            {
-                                this.textBox1.ResetText();
-                            }
-                        }
-                    };
                     if (!this.IsDisposed)
                     {
-                        this.BeginInvoke(dlg);
+                        this.BeginInvoke(new Action(() =>
+                        {
+                            lock (this.textBox1)
+                            {
+                                if (this.textBox1.TextLength > 10000)
+                                {
+                                    this.textBox1.ResetText();
+                                }
+                            }
+                        }));
                     }
                 }
 
@@ -432,20 +423,19 @@ namespace SM2014
 
         public void Info(String message)
         {
-            dlg = delegate()
-             {
-                 lock (this.textBox1)
-                 {
-                     this.textBox1.AppendText(DateTime.Now.ToString("[yyyy/MM/dd HH:mm:ss] "));
-                     this.textBox1.AppendText(message + "\r\n");
-                 }
-             };
-            this.BeginInvoke(dlg);
+            this.BeginInvoke(new Action(() =>
+            {
+                lock (this.textBox1)
+                {
+                    this.textBox1.AppendText(DateTime.Now.ToString("[yyyy/MM/dd HH:mm:ss] "));
+                    this.textBox1.AppendText(message + "\r\n");
+                }
+            }));
         }
 
         public void Log(int type, String line)
-        {
-            dlg = delegate()
+        {           
+            this.BeginInvoke(new Action(() =>
             {
                 visited++;
                 stat[type]++;
@@ -454,8 +444,11 @@ namespace SM2014
                 label4.Text = stat[0] + " / " + stat[1] + " / " + stat[2];
 
                 //TODO, 加入日志文件
-                this.textBox1.AppendText(DateTime.Now.ToString("[yyyy/MM/dd HH:mm:ss] "));
-                this.textBox1.AppendText("DETECTED: " + line + "=" + type.ToString() + "\r\n");
+                lock (this.textBox1)
+                {
+                    this.textBox1.AppendText(DateTime.Now.ToString("[yyyy/MM/dd HH:mm:ss] "));
+                    this.textBox1.AppendText("DETECTED: " + line + "=" + type.ToString() + "\r\n");
+                }
 
                 try
                 {
@@ -466,8 +459,7 @@ namespace SM2014
                 {
                     //throw e;
                 };
-            };
-            this.BeginInvoke(dlg);
+            }));
         }
 
         private void 选项OToolStripMenuItem_Click(object sender, EventArgs e)

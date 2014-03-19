@@ -30,7 +30,7 @@ namespace SM2014
         private static Configuration cfa = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
         //        private static HttpClient client = new HttpClient();
 
-        private static AsyncCallback callback = new AsyncCallback(Engine.OnResponse);
+        //private static Object infoobj = new Object();
 
         public Task(String line)
         {
@@ -56,7 +56,11 @@ namespace SM2014
             String[] details = Regex.Split(line, "----");
             String url = "http://pt.3g.qq.com/login?act=json&format=2&bid_code=house_touch&r=#" + "&qq=" + details[1] + "&pmd5=" + Util.UMD5X(details[2]) + "&go_url=http%3A%2F%2Fhouse60.3g.qq.com%2Ftouch%2Findex.jsp%3Fsid%3DAd_JZ1k2ZviFLkV2nvFt7005%26g_ut%3D3%26g_f%3D15124";
 
+            //lock (infoobj)
+            //{
             Form1.GetInstance().Info("开始查询帐号:" + details[1]);
+            //}
+            //Console.WriteLine("开始查询帐号:" + details[1]);
 
             HttpWebRequest request = null;
             WebProxy wp = null;
@@ -88,6 +92,7 @@ namespace SM2014
 
                 wp = new WebProxy(proxy);
                 Form1.GetInstance().Info(details[1] + " -> " + proxy);
+                //Console.WriteLine(details[1] + " -> " + proxy);
                 //client.Proxy = wp;
                 //client.Encoding = Encoding.Default;
 
@@ -100,7 +105,8 @@ namespace SM2014
                     //request.Method = "GET";
                     request.Proxy = wp;
                     //Thread.Sleep(2000);
-                    request.BeginGetResponse(callback, new Tuple<HttpWebRequest, Task>(request, this));
+                    Engine.GetInstance().Put(request);
+                    //request.BeginGetResponse(callback, new Tuple<HttpWebRequest, Task>(request, this));
                 }
                 catch (Exception)
                 {

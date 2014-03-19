@@ -11,14 +11,17 @@ namespace SM2014
     public class Engine
     {
         private List<String> proxies;
-
-        public static Random RANDOM = new Random();
+        private Queue<HttpWebRequest> queue;
 
         public List<String> Proxies
         {
             get { return proxies; }
             set { proxies = value; }
         }
+
+        public static Random RANDOM = new Random();
+        private static AsyncCallback callback = new AsyncCallback(OnResponseX);
+
 
         private static Object iobj = new Object();
         private static Engine INSTANCE;
@@ -37,7 +40,7 @@ namespace SM2014
 
         private Engine()
         {
-
+            this.queue = new Queue<HttpWebRequest>();
         }
         
         public String GetProxy()
@@ -63,6 +66,21 @@ namespace SM2014
             }
             
             Form1.GetInstance().UpdateProxy(proxies.Count);
+        }
+
+        public void Put(HttpWebRequest request)
+        {
+            lock (this.queue)
+            {
+                queue.Enqueue(request);
+            }
+        }
+
+        //request.BeginGetResponse(callback, new Tuple<HttpWebRequest, Task>(request, this));
+
+
+        public static void OnResponseX(IAsyncResult ar)
+        {
         }
 
         public static void OnResponse(IAsyncResult ar)
