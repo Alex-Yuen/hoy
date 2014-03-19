@@ -17,6 +17,12 @@ namespace SM2014
     {
         //       private Form1 form;
         private String line;
+
+        public String Line
+        {
+            get { return line; }
+            set { line = value; }
+        }
         private bool flag = true;
         //private HttpClient client = null;
 
@@ -94,7 +100,7 @@ namespace SM2014
                     //request.Method = "GET";
                     request.Proxy = wp;
                     //Thread.Sleep(2000);
-                    //request.BeginGetResponse(callback, request);
+                    request.BeginGetResponse(callback, new Tuple<HttpWebRequest, Task>(request, this));
                 }
                 catch (Exception)
                 {
@@ -106,10 +112,6 @@ namespace SM2014
                     request = null;
                     wp = null;
                     proxy = null;
-                    //if (request != null)
-                    //{
-                    //    request.Abort();
-                    //}
                 }
                 
                 times++;

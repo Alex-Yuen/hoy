@@ -61,6 +61,7 @@ namespace SM2014
         {
             InitializeComponent();
             FORM = this;
+            //MessageBox.Show(System.Net.ServicePointManager.DefaultConnectionLimit.ToString());
             //System.Net.ServicePointManager.DefaultConnectionLimit = 1024;
         }
 
