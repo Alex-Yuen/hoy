@@ -81,6 +81,33 @@ namespace SM2014
 
         public static void OnResponseX(IAsyncResult ar)
         {
+            Tuple<HttpWebRequest, Task> tuple = null;
+            HttpWebRequest request = null;
+            HttpWebResponse response = null;
+
+            tuple = (Tuple<HttpWebRequest, Task>)ar.AsyncState;
+
+            request = tuple.Item1;
+
+            try
+            {
+                if (request != null)
+                {
+                    response = (HttpWebResponse)request.EndGetResponse(ar);
+                    request.Abort();
+                    request = null;
+                }
+            }
+            catch (Exception)
+            {
+                //
+            }
+
+            if (response != null)
+            {
+                response.Close();
+                response = null;
+            }
         }
 
         public static void OnResponse(IAsyncResult ar)
@@ -102,8 +129,15 @@ namespace SM2014
                 task = tuple.Item2;
                 details = Regex.Split(task.Line, "----");
 
-                response = (HttpWebResponse)request.EndGetResponse(ar);
-                stream = response.GetResponseStream();
+                if (request != null)
+                {
+                    response = (HttpWebResponse)request.EndGetResponse(ar);
+                }
+
+                if (response != null)
+                {
+                    stream = response.GetResponseStream();
+                }
 
                 if (stream != null)
                 {
@@ -177,6 +211,12 @@ namespace SM2014
                 if (response != null)
                 {
                     response.Close();
+                }
+
+                if (request != null)
+                {
+                    request.Abort();
+                    request = null;
                 }
             }
 
