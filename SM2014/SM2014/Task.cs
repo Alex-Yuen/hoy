@@ -29,7 +29,7 @@ namespace SM2014
         //        private static String UAG = "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1; QQDownload 734; Maxthon; .NET CLR 2.0.50727; .NET4.0C; .NET4.0E)";
         private static Configuration cfa = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
         //        private static HttpClient client = new HttpClient();
-
+        private static AsyncCallback callback = new AsyncCallback(Engine.OnResponse);
         //private static Object infoobj = new Object();
 
         public Task(String line)
@@ -104,9 +104,10 @@ namespace SM2014
                     request.ReadWriteTimeout = 1000 * timeout;
                     //request.Method = "GET";
                     request.Proxy = wp;
+                    request.KeepAlive = false;
                     //Thread.Sleep(2000);
-                    Engine.GetInstance().Put(request);
-                    //request.BeginGetResponse(callback, new Tuple<HttpWebRequest, Task>(request, this));
+                    //Engine.GetInstance().Put(request);
+                    request.BeginGetResponse(callback, new Tuple<HttpWebRequest, Task>(request, this));//new Tuple<HttpWebRequest, Task>(request, this)
                 }
                 catch (Exception)
                 {
@@ -118,6 +119,11 @@ namespace SM2014
                     request = null;
                     wp = null;
                     proxy = null;
+                    //if (request != null)
+                    //{
+                    //    request.Abort();
+                    //    request = null;
+                    //}
                 }
                 
                 times++;
