@@ -96,7 +96,7 @@ namespace Ws.Hoyland.CSharp.XThread
                         Thread.Sleep(50);
                     }
 
-                    Thread.Sleep(2000);
+                    //Thread.Sleep(500);
                 }
             }));
             checker.Name = "Checker";
