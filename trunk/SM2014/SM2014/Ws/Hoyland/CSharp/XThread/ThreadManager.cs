@@ -118,7 +118,7 @@ namespace Ws.Hoyland.CSharp.XThread
                                 {//取到的mt未准备好
                                     this.QueueThread(mt);
                                     mt = null;
-                                    Thread.Sleep(5);
+                                    Thread.Sleep(100);//5
                                     //continue;
                                 }
                                 else
@@ -130,14 +130,15 @@ namespace Ws.Hoyland.CSharp.XThread
                             }
                             else
                             {
-                                evtx.WaitOne(500);
+                                evtx.WaitOne(100);
+                                Thread.Sleep(10);// 稍等，再继续取MT，避免MT未进入WaitSleepJoin状态
                             }
                         }
-                        Thread.Sleep(5);
+                        Thread.Sleep(100);//5
                     }
                     else
                     {
-                        evt.WaitOne(500); //等待
+                        evt.WaitOne(100); //等待
                     }
                 }
             }));
