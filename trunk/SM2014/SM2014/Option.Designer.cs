@@ -144,7 +144,7 @@
             // 
             // numericUpDown3
             // 
-            this.numericUpDown3.Location = new System.Drawing.Point(216, 76);
+            this.numericUpDown3.Location = new System.Drawing.Point(216, 49);
             this.numericUpDown3.Maximum = new decimal(new int[] {
             10,
             0,
@@ -167,7 +167,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(19, 80);
+            this.label3.Location = new System.Drawing.Point(19, 53);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(101, 12);
             this.label3.TabIndex = 4;
@@ -175,7 +175,7 @@
             // 
             // numericUpDown2
             // 
-            this.numericUpDown2.Location = new System.Drawing.Point(216, 49);
+            this.numericUpDown2.Location = new System.Drawing.Point(216, 75);
             this.numericUpDown2.Maximum = new decimal(new int[] {
             10000,
             0,
@@ -194,6 +194,7 @@
             0,
             0,
             0});
+            this.numericUpDown2.Visible = false;
             // 
             // numericUpDown1
             // 
@@ -220,11 +221,12 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(19, 53);
+            this.label2.Location = new System.Drawing.Point(19, 79);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(113, 12);
             this.label2.TabIndex = 1;
             this.label2.Text = "每线程使用代理数：";
+            this.label2.Visible = false;
             // 
             // label1
             // 

@@ -6,10 +6,11 @@ using System.Threading;
 
 namespace Ws.Hoyland.CSharp.XThread
 {
-    internal class MThread
+    public class MThread
     {
         private Thread t;
-        private Queue<Runnable> queue;
+        private ThreadManager manager = null;
+        private AutoResetEvent evt = null;
         private bool flag = false;
 
         public Thread T
@@ -26,14 +27,18 @@ namespace Ws.Hoyland.CSharp.XThread
             set { task = value; }
         }
 
-        public MThread(Queue<Runnable> queue)
+        public MThread(ThreadManager manager)
         {
-            this.queue = queue;
+            this.manager = manager;
         }
 
         public void Abort()
         {
             flag = false;
+            if (evt != null)
+            {
+                evt.Set();
+            }
             //if (t.ThreadState == ThreadState.WaitSleepJoin)
             //{
             //    lock (this)
@@ -53,30 +58,27 @@ namespace Ws.Hoyland.CSharp.XThread
             //}
         }
 
-        public void Start()
+        public void Init()
         {
-            //if(task!=null)
-            //{
-            //    if (t == null)
-            //    {
             flag = true;
+            evt = new AutoResetEvent(false);
             t = new Thread(new ThreadStart(this.ThreadProc));
             t.IsBackground = true;
             t.Name = "MThread's Thread";
             t.Start();
-            //    }
-            /**
-        else
+        }
+
+        public void Execute()
         {
-            if (t.ThreadState == ThreadState.WaitSleepJoin)
-            {
-                lock (this)
-                {
-                    Monitor.PulseAll(this);
-                }
-            }
-        }**/
-            //}
+            //new Thread(new ThreadStart(() =>
+            //{
+            //    while (!((t.ThreadState | ThreadState.WaitSleepJoin) == t.ThreadState))
+            //    {
+            //        Thread.Sleep(50);
+            //    }
+            //    evt.Set();
+            //})).Start();
+            evt.Set();
         }
 
         private void ThreadProc()
@@ -98,54 +100,67 @@ namespace Ws.Hoyland.CSharp.XThread
                 //lock (this)
                 //{
 
-                if (task != null)
+                //if (task != null)
+                //{
+                try
                 {
-                    try
+                    manager.QueueThread(this); //标志为可用
+                    evt.WaitOne();
+                }
+                catch (Exception)
+                {
+                    //
+                }
+
+                //try
+                //{
+                //    Thread.Sleep(500);
+                //}
+                //catch (Exception)
+                //{
+                //    //
+                //}
+
+                try
+                {
+                    if (task != null)
                     {
                         task.Run();
                         task = null;
-                        //run = true;
                     }
-                    catch (Exception)
-                    {
-                        //
-                    }
-
-                    try
-                    {
-                        Thread.Sleep(2000);
-                    }
-                    catch (Exception)
-                    {
-                        //
-                    }
+                    //run = true;
                 }
-                else
+                catch (Exception)
                 {
-                    try
-                    {
-                        lock (queue)
-                        {
-                            if (queue.Count > 0)
-                            {
-                                task = queue.Dequeue();
-                            }
-                        }
-                    }
-                    catch (Exception)
-                    {
-                        //
-                    }
-
-                    try
-                    {
-                        Thread.Sleep(500);
-                    }
-                    catch (Exception)
-                    {
-                        //
-                    }
+                    //
                 }
+                //}
+                //else
+                //{
+                //    try
+                //    {
+                //        lock (queue)
+                //        {
+                //            if (queue.Count > 0)
+                //            {
+                //                task = queue.Dequeue();
+                //            }
+                //        }
+                //    }
+                //    catch (Exception)
+                //    {
+                //        //
+                //    }
+
+                //    try
+                //    {
+                //        Thread.Sleep(500);
+                //    }
+                //    catch (Exception)
+                //    {
+                //        //
+                //    }
+                //}
 
                 //}
 

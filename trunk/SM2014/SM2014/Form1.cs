@@ -271,6 +271,7 @@ namespace SM2014
 
                     toolStripStatusLabel1.Text = "正在运行";
 
+                    Engine.TIMEOUT = 1000*Int32.Parse(cfa.AppSettings.Settings["TIMEOUT"].Value);
                     int tc = Int32.Parse(cfa.AppSettings.Settings["THREAD_COUNT"].Value);
 
                     manager = new ThreadManager(tc);
@@ -283,7 +284,7 @@ namespace SM2014
                         //N 个任务
                         //Task task = new Task(this, accounts[i]);
                         //ThreadPool.QueueUserWorkItem(new WaitCallback(task.Run));
-                        manager.Queue(new Task(accounts[i]));
+                        manager.QueueTask(new Task(accounts[i]));
                     }
 
                     button1.Text = "停止";
@@ -311,7 +312,7 @@ namespace SM2014
                 //{
                 //    accounts.Add(line);
                 //}
-                manager.Queue(new Task(line));
+                manager.QueueTask(new Task(line));
             }
         }
 

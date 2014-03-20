@@ -12,8 +12,25 @@ namespace Ws.Hoyland.CSharp.XThread
     {
         private int core = 2;
         private ArrayList list = new ArrayList(); //线程列表
-        private Queue<Runnable> queue = new Queue<Runnable>();
-        private Thread starter = null;
+        private Queue<Runnable> queue = new Queue<Runnable>(); //task queue
+        private Queue<MThread> threadQueue = new Queue<MThread>(); //MThread Queue
+
+        public Queue<MThread> ThreadQueue
+        {
+            get { return threadQueue; }
+            set { threadQueue = value; }
+        }
+
+        public Queue<Runnable> Queue
+        {
+            get { return queue; }
+            set { queue = value; }
+        }
+
+        private Thread dispatcher = null;
+        private AutoResetEvent evt = null;
+        private AutoResetEvent evtx = null;
+        private bool flag = false;
 
         //不允许创建实例
         public ThreadManager()
@@ -31,38 +48,112 @@ namespace Ws.Hoyland.CSharp.XThread
         {
             for (int i = 0; i < core; i++)
             {
-                MThread t = new MThread(queue);
-                list.Add(t);
+                MThread mt = new MThread(this);
+                list.Add(mt);
             }
         }
 
-        public void Queue(Runnable task)
+        public void QueueTask(Runnable task)
         {
             lock (queue)
             {
                 queue.Enqueue(task);
             }
+
+            if (flag)
+            {
+                evt.Set();
+            }
+        }
+
+        public void QueueThread(MThread mt)
+        {
+            lock (threadQueue)
+            {
+                threadQueue.Enqueue(mt);
+            }
+
+            if (flag)
+            {
+                evtx.Set();
+            }
         }
 
         public void Execute()
         {
-            //flag = true;
+            flag = true;
+            evt = new AutoResetEvent(false);
+            evtx = new AutoResetEvent(false);
 
-            //开启初始化线程
-            starter = new Thread(new ThreadStart(() =>
+            //开启任务分配
+            dispatcher = new Thread(new ThreadStart(() =>
+            {
+                while (flag)
+                {
+                    Runnable task = null;
+                    lock (queue)
+                    {
+                        if (queue.Count > 0)
+                        {
+                            task = queue.Dequeue();
+                        }
+                    }
+
+                    if (task != null)
+                    {
+                        while (flag)
+                        {
+                            MThread mt = null;
+                            lock (threadQueue)
+                            {
+                                if (threadQueue.Count > 0)
+                                {
+                                    mt = threadQueue.Dequeue();
+                                }
+                            }
+                            
+                            if (mt != null)
+                            {
+                                if (!((mt.T.ThreadState | ThreadState.WaitSleepJoin) == mt.T.ThreadState))
+                                {//取到的mt未准备好
+                                    this.QueueThread(mt);
+                                    mt = null;
+                                    Thread.Sleep(5);
+                                    //continue;
+                                }
+                                else
+                                {
+                                    mt.Task = task;
+                                    mt.Execute();
+                                    break;
+                                }
+                            }
+                            else
+                            {
+                                evtx.WaitOne(500);
+                            }
+                        }
+                        Thread.Sleep(5);
+                    }
+                    else
+                    {
+                        evt.WaitOne(500); //等待
+                    }
+                }
+            }));
+            dispatcher.Name = "Dispatcher";
+            dispatcher.IsBackground = true;
+            
+            new Thread(new ThreadStart(() =>
             {
                 //初始化
                 foreach (MThread xt in list)
                 {
-                    //lock (xt)
-                    //{
-                        xt.Start();
-                    //}
-                    Thread.Sleep(50);
+                    xt.Init();
+                    Thread.Sleep(5);
                 }
-            }));
-            starter.Name = "Starter";
-            starter.Start();
+                dispatcher.Start();
+            })).Start();
 
             //开启检测线程
             //checker = new Thread(new ThreadStart(() =>
@@ -103,7 +194,16 @@ namespace Ws.Hoyland.CSharp.XThread
 
         public void Shutdown()
         {
-            //flag = false;
+            flag = false;
+            if (evtx != null)
+            {
+                evtx.Set();
+            }
+
+            if (evt != null)
+            {
+                evt.Set();
+            }
 
             lock (queue)
             {
@@ -114,7 +214,7 @@ namespace Ws.Hoyland.CSharp.XThread
             {
                 //if (xt.T != null)
                 //{
-                    xt.Abort();
+                xt.Abort();
                 //}
                 //Thread.Sleep(5);
             }
