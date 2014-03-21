@@ -1,21 +1,47 @@
 package ws.hoyland.sm;
 
+import java.util.List;
+import java.util.Observable;
+import java.util.Observer;
+
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.FileDialog;
+import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.MenuItem;
-import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.Label;
 import swing2swt.layout.BorderLayout;
-import swing2swt.layout.FlowLayout;
+import ws.hoyland.util.EngineMessage;
+import ws.hoyland.util.EngineMessageType;
+
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
-import org.eclipse.swt.layout.RowLayout;
+import org.eclipse.wb.swt.SWTResourceManager;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.ShellAdapter;
+import org.eclipse.swt.events.ShellEvent;
+import org.eclipse.swt.widgets.Group;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.browser.Browser;
+import org.eclipse.swt.widgets.Text;
 
-public class SM2014 {
-
+public class SM2014 implements Observer {
+	
 	protected Shell shell;
+	private Option option;
+	private About about;
+	protected Composite composite_4;
+	private Button btnNewButton;
+	private Label lblNewLabel;
+	private Label lblNewLabel_1;
+	private Label lblNewLabel_3;
+	private Label lblNewLabel_4;
+	private Label lblNewLabel_2;
+	private Text text;
 
 	/**
 	 * Launch the application.
@@ -49,34 +75,311 @@ public class SM2014 {
 	 * Create contents of the window.
 	 */
 	protected void createContents() {
-		shell = new Shell();
+		shell = new Shell(SWT.SHELL_TRIM ^ SWT.MAX
+				^ SWT.RESIZE);
+		shell.addShellListener(new ShellAdapter() {
+			@Override
+			public void shellClosed(ShellEvent e) {
+				MessageBox dialog=new MessageBox(shell, SWT.OK|SWT.CANCEL);
+		        dialog.setText("确认");
+		        dialog.setMessage("关闭当前窗口并退出程序？");
+
+	        	e.doit = false;
+	        	
+		        if(dialog.open()==SWT.OK){
+		        	Engine.getInstance().deleteObserver(SM2014.this);
+					
+					Thread t = new Thread(new Runnable(){
+						@Override
+						public void run() {
+							EngineMessage message = new EngineMessage();
+							message.setType(EngineMessageType.IM_EXIT);
+							Engine.getInstance().fire(message);
+						}
+						
+					});
+					t.start();
+		        }
+		        
+			}
+			@Override
+			public void shellActivated(ShellEvent e) {
+				Engine.getInstance().addObserver(SM2014.this);
+			}
+		});
+		shell.setImage(SWTResourceManager.getImage(SM2014.class, "/logo.ico"));
 		shell.setSize(601, 380);
 		shell.setText("晒密");
 		shell.setLayout(new BorderLayout(0, 0));
 		
+		Rectangle bounds = Display.getDefault().getPrimaryMonitor().getBounds();
+		Rectangle rect = shell.getBounds();
+		int x = bounds.x + (bounds.width - rect.width) / 2;
+		int y = bounds.y + (bounds.height - rect.height) / 2;
+		shell.setLocation(x, y);
+		
 		Menu menu = new Menu(shell, SWT.BAR);
 		shell.setMenuBar(menu);
 		
-		MenuItem mntmNewItem = new MenuItem(menu, SWT.NONE);
-		mntmNewItem.setText("文件(&F)");
+		MenuItem mntmf = new MenuItem(menu, SWT.CASCADE);
+		mntmf.setText("文件(&F)");
 		
-		MenuItem mntmt = new MenuItem(menu, SWT.NONE);
+		Menu menu_1 = new Menu(mntmf);
+		mntmf.setMenu(menu_1);
+		
+		MenuItem mntma = new MenuItem(menu_1, SWT.NONE);
+		mntma.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				final FileDialog fileDlg = new FileDialog(shell, SWT.OPEN);
+				fileDlg.setFilterPath(null);
+				fileDlg.setText("导入帐号");
+				String filePath = fileDlg.open();
+				if(filePath!=null){
+					EngineMessage message = new EngineMessage();
+					message.setType(EngineMessageType.IM_LOAD_ACCOUNT);
+					message.setData(filePath);
+					Engine.getInstance().fire(message);
+				}
+			}
+		});
+		mntma.setText("导入帐号(&A)...\tF2");
+		mntma.setAccelerator(SWT.F2);
+		
+		MenuItem mntmp = new MenuItem(menu_1, SWT.NONE);
+		mntmp.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				final FileDialog fileDlg = new FileDialog(shell, SWT.OPEN);
+				fileDlg.setFilterPath(null);
+				fileDlg.setText("导入代理");
+				String filePath = fileDlg.open();
+				if(filePath!=null){
+					EngineMessage message = new EngineMessage();
+					message.setType(EngineMessageType.IM_LOAD_PROXY);
+					message.setData(filePath);
+					Engine.getInstance().fire(message);
+				}
+			}
+		});
+		mntmp.setText("导入代理(&P)...\tF3");
+		mntmp.setAccelerator(SWT.F3);
+		
+		MenuItem menuItem = new MenuItem(menu_1, SWT.SEPARATOR);
+		menuItem.setText("-");
+		
+		MenuItem mntmx = new MenuItem(menu_1, SWT.NONE);
+		mntmx.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				shell.close();
+			}
+		});
+		mntmx.setText("退出(&X)\tCTRL+Q");
+		mntmx.setAccelerator(SWT.CTRL|'Q');
+		
+		MenuItem mntmt = new MenuItem(menu, SWT.CASCADE);
 		mntmt.setText("工具(&T)");
 		
-		MenuItem mntmh = new MenuItem(menu, SWT.NONE);
+		Menu menu_2 = new Menu(mntmt);
+		mntmt.setMenu(menu_2);
+		
+		MenuItem mntmo = new MenuItem(menu_2, SWT.NONE);		
+		mntmo.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				option = new Option(shell, SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL);
+				option.open();
+			}
+		});
+		mntmo.setText("选项(&O)...\tF4");
+		mntmo.setAccelerator(SWT.F4);
+		
+		MenuItem mntmh = new MenuItem(menu, SWT.CASCADE);
 		mntmh.setText("帮助(&H)");
 		
-		Label lblNewLabel = new Label(shell, SWT.NONE);
+		Menu menu_3 = new Menu(mntmh);
+		mntmh.setMenu(menu_3);
+		
+		MenuItem mntma_1 = new MenuItem(menu_3, SWT.NONE);
+		mntma_1.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				about = new About(shell, SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL);
+				about.open();
+			}
+		});
+		mntma_1.setText("关于(&A)...\tF10");
+		mntma_1.setAccelerator(SWT.F10);
+		
+		lblNewLabel = new Label(shell, SWT.BORDER);
+		lblNewLabel.setText("停止");
 		lblNewLabel.setLayoutData(BorderLayout.SOUTH);
 		
 		Composite composite = new Composite(shell, SWT.NONE);
 		composite.setLayoutData(BorderLayout.CENTER);
 		composite.setLayout(new FillLayout(SWT.VERTICAL));
-		
-		Composite composite_1 = new Composite(composite, SWT.NONE);
-		
+				
 		Composite composite_2 = new Composite(composite, SWT.NONE);
-		composite_2.setLayout(new RowLayout(SWT.VERTICAL));
+		composite_2.setLayout(new FillLayout(SWT.VERTICAL));
+		
+		Composite composite_1 = new Composite(composite_2, SWT.NONE);
+		composite_1.setBackground(SWTResourceManager.getColor(SWT.COLOR_WIDGET_NORMAL_SHADOW));
+		FillLayout fl_composite_1 = new FillLayout(SWT.HORIZONTAL);
+		fl_composite_1.spacing = 1;
+		composite_1.setLayout(fl_composite_1);
+		
+		Composite composite_9 = new Composite(composite_1, SWT.NONE);
+		composite_9.setBackground(SWTResourceManager.getColor(SWT.COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT));
+		
+		lblNewLabel_1 = new Label(composite_9, SWT.NONE);
+		lblNewLabel_1.setBounds(10, 55, 96, 17);
+		lblNewLabel_1.setText("帐号：0");
+		
+		lblNewLabel_2 = new Label(composite_9, SWT.NONE);
+		lblNewLabel_2.setBounds(10, 78, 96, 17);
+		lblNewLabel_2.setText("0 / 0 / 0");
+		
+		Composite composite_10 = new Composite(composite_1, SWT.NONE);
+		composite_10.setBackground(SWTResourceManager.getColor(SWT.COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT));
+		
+		lblNewLabel_3 = new Label(composite_10, SWT.NONE);
+		lblNewLabel_3.setBounds(10, 66, 96, 17);
+		lblNewLabel_3.setText("代理：0");
+		
+		Composite composite_11 = new Composite(composite_1, SWT.NONE);
+		composite_11.setBackground(SWTResourceManager.getColor(SWT.COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT));
+		
+		lblNewLabel_4 = new Label(composite_11, SWT.NONE);
+		lblNewLabel_4.setBounds(10, 66, 178, 17);
+		lblNewLabel_4.setText("0 / 0 = 0%");
+		
+		Composite composite_3 = new Composite(composite_2, SWT.NONE);
+		composite_3.setLayout(new BorderLayout(0, 0));
+		
+		Group group_1 = new Group(composite_3, SWT.NONE);
+		group_1.setLayoutData(BorderLayout.CENTER);
+		group_1.setText("日志");
+		group_1.setLayout(new BorderLayout(0, 0));
+		
+		text = new Text(group_1, SWT.BORDER | SWT.MULTI);
+		text.setEditable(false);
+		text.setLayoutData(BorderLayout.CENTER);
+		
+		Group group = new Group(composite_3, SWT.NONE);
+		group.setLayoutData(BorderLayout.EAST);
+		group.setText("操作");
+		group.setLayout(new FillLayout(SWT.VERTICAL));
+		
+		composite_4 = new Composite(group, SWT.NONE);
+		
+		Composite composite_5 = new Composite(group, SWT.NONE);
+		composite_5.setLayout(new BorderLayout(0, 0));
+		
+		Composite composite_6 = new Composite(composite_5, SWT.NONE);
+		composite_6.setLayoutData(BorderLayout.WEST);
+		
+		Composite composite_7 = new Composite(composite_5, SWT.NONE);
+		composite_7.setLayoutData(BorderLayout.CENTER);
+		composite_7.setLayout(new BorderLayout(0, 0));
+		
+		btnNewButton = new Button(composite_7, SWT.NONE);
+		btnNewButton.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				Thread t = new Thread(new Runnable(){
+					@Override
+					public void run() {
+						EngineMessage message = new EngineMessage();
+						message.setType(EngineMessageType.IM_PROCESS);
+						message.setData(null);
+						Engine.getInstance().fire(message);
+					}					
+				});
+				
+				t.start();
+			}
+		});
+		btnNewButton.setEnabled(false);
+		btnNewButton.setLayoutData(BorderLayout.CENTER);
+		btnNewButton.setText("        开始        ");
+		
+		Composite composite_8 = new Composite(composite_5, SWT.NONE);
+		composite_8.setLayoutData(BorderLayout.EAST);
+		
+		Browser browser = new Browser(group, SWT.NONE);
+		browser.setVisible(false);
+		browser.setUrl("http://www.2345.com/?k68159276");
 
+	}
+
+	@Override
+	public void update(Observable obj, Object arg) {
+		//接收来自Engine的消息
+		final EngineMessage msg = (EngineMessage) arg;
+		int type = msg.getType();
+				
+		switch(type){
+			case EngineMessageType.OM_READY:
+				Display.getDefault().asyncExec(new Runnable() {
+					@Override
+					public void run() {
+						btnNewButton.setEnabled(true);
+					}				
+				});
+				break;
+			case EngineMessageType.OM_UNREADY:
+				Display.getDefault().asyncExec(new Runnable() {
+					@Override
+					public void run() {
+						btnNewButton.setEnabled(false);
+					}				
+				});
+				break;
+			case EngineMessageType.OM_RUNNING:
+				Display.getDefault().asyncExec(new Runnable() {
+					@Override
+					public void run() {
+						if((Boolean)msg.getData()){
+							lblNewLabel.setText("正在运行...");
+							btnNewButton.setText("停止");
+						}else{
+							lblNewLabel.setText("停止");
+							btnNewButton.setText("开始");
+						}
+					}				
+				});
+				break;
+			case EngineMessageType.OM_ACCOUNT_LOADED:
+				Display.getDefault().asyncExec(new Runnable() {
+					@SuppressWarnings("unchecked")
+					@Override
+					public void run() {
+						List<String> ls = (List<String>)msg.getData();
+						lblNewLabel_1.setText("帐号： " + ls.get(0));
+					}
+				});
+				break;
+			case EngineMessageType.OM_PROXY_LOADED:
+				Display.getDefault().asyncExec(new Runnable() {
+					@SuppressWarnings("unchecked")
+					@Override
+					public void run() {
+						List<String> ls = (List<String>)msg.getData();
+						lblNewLabel_1.setText("代理： " + ls.get(0));
+					}
+				});
+				break;
+			case EngineMessageType.OM_INFO:
+				Display.getDefault().asyncExec(new Runnable() {
+					@Override
+					public void run() {
+						text.append((String)msg.getData()+"\r\n");
+					}
+				});
+				break;
+			default:
+				break;
+		}		
 	}
 }
