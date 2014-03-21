@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Observable;
+import java.util.Random;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.RejectedExecutionHandler;
@@ -39,6 +40,8 @@ public class Engine extends Observable {
 	private ThreadPoolExecutor pool;
 	private Configuration configuration = Configuration
 			.getInstance("config.ini");
+	private int[] stats = new int[3];
+	private Random random = new Random();
 
 	private static Engine instance;
 
@@ -70,9 +73,12 @@ public class Engine extends Observable {
 		}
 	}
 	
-
-
 	private void shutdown() {
+		EngineMessage msg = new EngineMessage();
+		msg.setType(EngineMessageType.OM_SHUTDOWN);
+		this.setChanged();
+		this.notifyObservers(msg);
+		
 		if (pool != null) {
 			// pool.shutdown();
 			pool.shutdownNow();
@@ -114,6 +120,7 @@ public class Engine extends Observable {
 	}
 	
 	public void log(int type, String content){
+		stats[type]++;
 		accountstodo.remove(content);
 		//写文件		
 		try{
@@ -124,9 +131,14 @@ public class Engine extends Observable {
 		}
 		
 		EngineMessage msg = new EngineMessage();
-		msg.setType(EngineMessageType.OM_INFO);
-		msg.setData("DETECTED:" + content + " = " + type);
+		msg.setType(EngineMessageType.OM_STATS);
+		msg.setData(stats);		
+		this.setChanged();
+		this.notifyObservers(msg);
 		
+		msg = new EngineMessage();
+		msg.setType(EngineMessageType.OM_INFO);
+		msg.setData("DETECTED:" + content + " = " + type);		
 		this.setChanged();
 		this.notifyObservers(msg);
 	}
@@ -260,8 +272,13 @@ public class Engine extends Observable {
 			this.setChanged();
 			this.notifyObservers(msg);
 
+			System.out.println("running="+running);
 			if (running) {
 				// 创建日志文件
+				for(int i=0;i<stats.length;i++){
+					stats[i] = 0;
+				}
+				
 				// long tm = System.currentTimeMillis();
 				DateFormat format = new java.text.SimpleDateFormat(
 						"yyyy年MM月dd日 hh时mm分ss秒");
@@ -320,10 +337,25 @@ public class Engine extends Observable {
 			this.setChanged();
 			this.notifyObservers(msg);
 			break;
+		case EngineMessageType.IM_REQUIRE_PROXY:
+			msg = new EngineMessage();
+			msg.setTid(message.getTid());
+			msg.setType(EngineMessageType.OM_REQUIRE_PROXY);
+						
+			synchronized(proxies){
+				if(proxies.size()==0){
+					msg.setData(null);
+				}else{
+					msg.setData(proxies.get(random.nextInt(proxies.size())));
+				}
+			}
+			this.setChanged();
+			this.notifyObservers(msg);
+			break;
 		case EngineMessageType.IM_START: 
 			break;
 		case EngineMessageType.IM_FINISH: 
-			break;	
+			break;
 		default:
 			break;
 		}

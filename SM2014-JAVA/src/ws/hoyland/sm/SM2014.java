@@ -174,7 +174,7 @@ public class SM2014 implements Observer {
 		mntmx.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				shell.close();
+				shell.dispose();
 			}
 		});
 		mntmx.setText("退出(&X)\tCTRL+Q");
@@ -235,18 +235,18 @@ public class SM2014 implements Observer {
 		composite_9.setBackground(SWTResourceManager.getColor(SWT.COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT));
 		
 		lblNewLabel_1 = new Label(composite_9, SWT.NONE);
-		lblNewLabel_1.setBounds(10, 55, 96, 17);
+		lblNewLabel_1.setBounds(10, 55, 178, 17);
 		lblNewLabel_1.setText("帐号：0");
 		
 		lblNewLabel_2 = new Label(composite_9, SWT.NONE);
-		lblNewLabel_2.setBounds(10, 78, 96, 17);
+		lblNewLabel_2.setBounds(10, 78, 178, 17);
 		lblNewLabel_2.setText("0 / 0 / 0");
 		
 		Composite composite_10 = new Composite(composite_1, SWT.NONE);
 		composite_10.setBackground(SWTResourceManager.getColor(SWT.COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT));
 		
 		lblNewLabel_3 = new Label(composite_10, SWT.NONE);
-		lblNewLabel_3.setBounds(10, 66, 96, 17);
+		lblNewLabel_3.setBounds(10, 66, 177, 17);
 		lblNewLabel_3.setText("代理：0");
 		
 		Composite composite_11 = new Composite(composite_1, SWT.NONE);
@@ -368,7 +368,7 @@ public class SM2014 implements Observer {
 					@Override
 					public void run() {
 						List<String> ls = (List<String>)msg.getData();
-						lblNewLabel_1.setText("代理： " + ls.get(0));
+						lblNewLabel_3.setText("代理： " + ls.get(0));
 					}
 				});
 				break;
@@ -380,6 +380,16 @@ public class SM2014 implements Observer {
 						String tm = format.format(new Date());
 						
 						text.append(tm + (String)msg.getData()+"\r\n");
+					}
+				});
+				break;
+			case EngineMessageType.OM_STATS:
+				Display.getDefault().asyncExec(new Runnable() {
+					@Override
+					public void run() {
+						Integer[] stats = (Integer[])msg.getData();		
+						lblNewLabel_2.setText(stats[0]+ " / " + stats[1] + " / " + stats[2] );
+						//text.append(tm + (String)msg.getData()+"\r\n");
 					}
 				});
 				break;

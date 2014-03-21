@@ -57,4 +57,8 @@ public class EngineMessageType {
 	public static final int OM_PROXY_LOADED = 0x202A;
 	public static final int OM_REQUIRE_PROXY = 0x202B;
 	
+	public static final int OM_STATS = 0x202C;
+	public static final int OM_SHUTDOWN = 0x202D;
+	
+	
 }

