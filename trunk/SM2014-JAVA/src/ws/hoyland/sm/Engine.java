@@ -27,6 +27,7 @@ import ws.hoyland.util.Configuration;
 
 public class Engine extends Observable {
 
+	private List<String> accountstodo;
 	private List<String> accounts;
 	private List<String> proxies;
 	private boolean running = false;
@@ -68,6 +69,93 @@ public class Engine extends Observable {
 			this.notifyObservers(msg);
 		}
 	}
+	
+
+
+	private void shutdown() {
+		if (pool != null) {
+			// pool.shutdown();
+			pool.shutdownNow();
+		}
+
+		// 等待所有运行线程执行完毕，关闭日志文件
+		while (pool != null && pool.getActiveCount() != 0) {
+			try {
+				Thread.sleep(1000);
+			} catch (Exception e) {
+				//
+			}
+		}
+
+		// 写入未运行帐号日志
+		try {
+			// if(lastTid!=-1){
+			if (output[3] != null) {
+				for (int i = 0; i < accountstodo.size(); i++) {
+					String[] accl = accounts.get(i).split("----");
+					output[3].write(accl[1] + "----" + accl[2] + "\r\n");
+				}
+				output[3].flush();
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		for (int i = 0; i < output.length; i++) {
+			try {
+				if (output[i] != null) {
+					output[i].close();
+					output[i] = null;
+				}
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
+		}
+	}
+	
+	public void log(int type, String content){
+		accountstodo.remove(content);
+		//写文件		
+		try{
+			output[type].write(content+ "\r\n");
+			output[type].flush();
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+		
+		EngineMessage msg = new EngineMessage();
+		msg.setType(EngineMessageType.OM_INFO);
+		msg.setData("DETECTED:" + content + " = " + type);
+		
+		this.setChanged();
+		this.notifyObservers(msg);
+	}
+	
+	public void info(String message){
+		EngineMessage msg = new EngineMessage();
+		msg.setType(EngineMessageType.OM_INFO);
+		msg.setData(message);
+		
+		this.setChanged();
+		this.notifyObservers(msg);
+	}
+	
+	public void addTask(String line){
+		try {
+			Task task = new Task(line);
+			Engine.getInstance().addObserver(task);
+			pool.execute(task);
+		} catch (ArrayIndexOutOfBoundsException e) {
+			e.printStackTrace();
+			// System.out.println(i + ":" + accounts.get(i));
+		}
+	}
+	
+	public void removeProxy(String proxy){
+		synchronized(proxy){
+			this.proxies.remove(proxy);
+		}
+	}
 
 	// 处理外来信息
 	public void fire(EngineMessage message) {
@@ -80,7 +168,8 @@ public class Engine extends Observable {
 
 			try {
 				accounts = new ArrayList<String>();
-
+				accountstodo = new ArrayList<String>();
+				
 				File ipf = new File(((String) data));
 				FileInputStream is = new FileInputStream(ipf);
 				InputStreamReader isr = new InputStreamReader(is);
@@ -91,6 +180,7 @@ public class Engine extends Observable {
 					if (!line.equals("")) {
 						line = i + "----" + line;
 						accounts.add(line);
+						accountstodo.add(line);
 					}
 					i++;
 				}
@@ -236,50 +326,6 @@ public class Engine extends Observable {
 			break;	
 		default:
 			break;
-		}
-	}
-
-	private void shutdown() {
-		if (pool != null) {
-			// pool.shutdown();
-			pool.shutdownNow();
-		}
-
-		// 等待所有运行线程执行完毕，关闭日志文件
-		while (pool != null && pool.getActiveCount() != 0) {
-			try {
-				Thread.sleep(1000);
-			} catch (Exception e) {
-				//
-			}
-		}
-
-		// if(pool!=null){
-		// 写入未运行帐号日志
-//		try {
-//			// if(lastTid!=-1){
-//			if (output[2] != null) {
-//				for (int i = lastTid; i < accounts.size(); i++) {
-//					String[] accl = accounts.get(i).split("----");
-//					output[2].write(accl[1] + "----" + accl[2] + "\r\n");
-//					output[2].flush();
-//				}
-//			}
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		}
-
-		// }
-
-		for (int i = 0; i < output.length; i++) {
-			try {
-				if (output[i] != null) {
-					output[i].close();
-					output[i] = null;
-				}
-			} catch (Exception ex) {
-				ex.printStackTrace();
-			}
 		}
 	}
 }
