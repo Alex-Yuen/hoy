@@ -82,7 +82,7 @@ public class SM2014 implements Observer {
 		shell.addShellListener(new ShellAdapter() {
 			@Override
 			public void shellClosed(ShellEvent e) {
-				MessageBox dialog=new MessageBox(shell, SWT.OK|SWT.CANCEL);
+				MessageBox dialog = new MessageBox(shell, SWT.OK|SWT.CANCEL);
 		        dialog.setText("确认");
 		        dialog.setMessage("关闭当前窗口并退出程序？");
 
@@ -304,7 +304,7 @@ public class SM2014 implements Observer {
 		});
 		btnNewButton.setEnabled(false);
 		btnNewButton.setLayoutData(BorderLayout.CENTER);
-		btnNewButton.setText("        开始        ");
+		btnNewButton.setText("       开始       ");
 		
 		Composite composite_8 = new Composite(composite_5, SWT.NONE);
 		composite_8.setLayoutData(BorderLayout.EAST);

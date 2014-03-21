@@ -74,10 +74,12 @@ public class Engine extends Observable {
 	}
 	
 	private void shutdown() {
-		EngineMessage msg = new EngineMessage();
-		msg.setType(EngineMessageType.OM_SHUTDOWN);
-		this.setChanged();
-		this.notifyObservers(msg);
+		//System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>1");
+//		EngineMessage msg = new EngineMessage();
+//		//msg.setTid(-1);
+//		msg.setType(EngineMessageType.OM_SHUTDOWN);
+//		this.setChanged();
+//		this.notifyObservers(msg);
 		
 		if (pool != null) {
 			// pool.shutdown();
@@ -167,6 +169,30 @@ public class Engine extends Observable {
 		synchronized(proxy){
 			this.proxies.remove(proxy);
 		}
+		
+		List<String> params = new ArrayList<String>();
+		params.add(String.valueOf(proxies.size()));
+
+		EngineMessage msg = new EngineMessage();
+		msg.setType(EngineMessageType.OM_PROXY_LOADED);
+		msg.setData(params);
+
+		this.setChanged();
+		this.notifyObservers(msg);
+	}
+	
+	public String getProxy(){
+		String proxy = null;
+		synchronized(proxies){
+			if(proxies.size()!=0){
+				proxy = proxies.get(random.nextInt(proxies.size()));
+			}
+		}
+		return proxy;
+	}
+	
+	public boolean isRun(){
+		return this.running;
 	}
 
 	// 处理外来信息
@@ -274,6 +300,11 @@ public class Engine extends Observable {
 
 			System.out.println("running="+running);
 			if (running) {
+				info("");
+				info("================");
+				info("开始运行");
+				info("================");
+				info("");
 				// 创建日志文件
 				for(int i=0;i<stats.length;i++){
 					stats[i] = 0;
@@ -314,16 +345,23 @@ public class Engine extends Observable {
 
 				for (int i = 0; i < accounts.size(); i++) {
 					// for (int i = flidx[0]; i <= flidx[1]; i++) {
-					try {
+					try {						
 						Task task = new Task(accounts.get(i));
 						Engine.getInstance().addObserver(task);
-						pool.execute(task);
+						if(running){
+							pool.execute(task);
+						}
 					} catch (ArrayIndexOutOfBoundsException e) {
 						e.printStackTrace();
 						// System.out.println(i + ":" + accounts.get(i));
 					}
 				}
 			} else {
+				info("");
+				info("================");
+				info("运行结束");
+				info("================");
+				info("");
 				// 停止情况下的处理
 				shutdown();
 			}
@@ -334,21 +372,6 @@ public class Engine extends Observable {
 			msg.setType(EngineMessageType.OM_INFO);
 			msg.setData(data);
 			
-			this.setChanged();
-			this.notifyObservers(msg);
-			break;
-		case EngineMessageType.IM_REQUIRE_PROXY:
-			msg = new EngineMessage();
-			msg.setTid(message.getTid());
-			msg.setType(EngineMessageType.OM_REQUIRE_PROXY);
-						
-			synchronized(proxies){
-				if(proxies.size()==0){
-					msg.setData(null);
-				}else{
-					msg.setData(proxies.get(random.nextInt(proxies.size())));
-				}
-			}
 			this.setChanged();
 			this.notifyObservers(msg);
 			break;
