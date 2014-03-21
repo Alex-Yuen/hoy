@@ -1,5 +1,7 @@
 package ws.hoyland.sm;
 
+import java.text.DateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
@@ -374,7 +376,10 @@ public class SM2014 implements Observer {
 				Display.getDefault().asyncExec(new Runnable() {
 					@Override
 					public void run() {
-						text.append((String)msg.getData()+"\r\n");
+						DateFormat format = new java.text.SimpleDateFormat("[yyyy/MM/dd hh:mm:ss] ");
+						String tm = format.format(new Date());
+						
+						text.append(tm + (String)msg.getData()+"\r\n");
 					}
 				});
 				break;
