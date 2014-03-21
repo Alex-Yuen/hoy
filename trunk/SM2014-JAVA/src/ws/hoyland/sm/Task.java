@@ -59,18 +59,8 @@ public class Task implements Runnable, Observer {
 		if (msg.getTid() == this.id || msg.getTid()==-1) { //-1, all tasks message
 			int type = msg.getType();
 			switch(type){
-				case EngineMessageType.OM_REQUIRE_PROXY:
-					if(msg.getData()!=null){
-						String[] ms = ((String) msg.getData()).split(":");
-						//System.err.println(ms[0] + "/" + ms[1] + "/" + ms[2]);
-						this.proxy = new HttpHost(ms[0], Integer.parseInt(ms[1]));
-						//System.out.println("PROXYDF:"+proxy);
-						
-					}else {
-						this.run = false;
-					}
-					break;
 				case EngineMessageType.OM_SHUTDOWN:
+					//System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>2");
 					this.run = false;
 					if(request!=null){
 						request.abort();
@@ -86,6 +76,10 @@ public class Task implements Runnable, Observer {
 	
 	@Override
 	public void run() {
+		if(!Engine.getInstance().isRun()){
+			return;
+		}
+		
 		synchronized(SyncUtil.START_OBJECT){	
 			//通知有新线程开始执行
 			message = new EngineMessage();
@@ -95,14 +89,13 @@ public class Task implements Runnable, Observer {
 		}
 		
 		try{
-			message = new EngineMessage();
-			message.setTid(this.id);
-			message.setType(EngineMessageType.IM_REQUIRE_PROXY);
-			Engine.getInstance().fire(message);
-			
-			if(run==false&&proxy==null){
+			String px = Engine.getInstance().getProxy();
+			if(px==null){
 				throw new Exception("No Proxy!");
 			}
+			
+			String[] ms = px.split(":");
+			this.proxy = new HttpHost(ms[0], Integer.parseInt(ms[1]));
 			
 			RequestConfig requestConfig = RequestConfig.custom()
 		            .setSocketTimeout(1000*Integer.parseInt(CONFIGURATION.getProperty("TIMEOUT")))
@@ -124,6 +117,12 @@ public class Task implements Runnable, Observer {
 			}catch(Exception e){
 				return;
 			}
+			
+			if(!Engine.getInstance().isRun()){
+				return;
+			}
+			
+			Engine.getInstance().info(account + " -> " + proxy.getHostName()+":"+proxy.getPort());
 			client.execute(request, new FutureCallback<HttpResponse>() {
                 public void completed(final HttpResponse response) {
                 	if(!run){
@@ -194,13 +193,23 @@ public class Task implements Runnable, Observer {
 
                 public void failed(final Exception ex) {
                     //ex.printStackTrace();
-//                	System.out.println("B");
-                    release();
+                	if(!run){
+                		release();
+                		return;
+                	}
+                	
+                	System.out.println("B:"+run);
                     Engine.getInstance().removeProxy(proxy.getHostName()+":"+proxy.getPort());
+                    release();
                 }
 
                 public void cancelled() {
 //                	System.out.println("C");
+                	if(!run){
+                		release();
+                		return;
+                	}
+                	
                 	release();
                 }
                 
