@@ -40,7 +40,7 @@ public class Engine extends Observable {
 	private ThreadPoolExecutor pool;
 	private Configuration configuration = Configuration
 			.getInstance("config.ini");
-	private int[] stats = new int[3];
+	private Integer[] stats = new Integer[3];
 	private Random random = new Random();
 
 	private static Engine instance;
@@ -48,16 +48,7 @@ public class Engine extends Observable {
 	private Engine() {
 		
 	}
-
-	public static Engine getInstance() {
-		synchronized (Engine.class) {
-			if (instance == null) {
-				instance = new Engine();
-			}
-		}
-		return instance;
-	}
-
+	
 	private void ready() {
 		if (accounts != null && accounts.size() > 0 && proxies != null
 				&& proxies.size() > 0) {
@@ -73,13 +64,17 @@ public class Engine extends Observable {
 		}
 	}
 	
+	private void notify(EngineMessage message){
+		this.setChanged();
+		this.notifyObservers(message);
+	}
+	
 	private void shutdown() {
 		//System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>1");
-//		EngineMessage msg = new EngineMessage();
-//		//msg.setTid(-1);
-//		msg.setType(EngineMessageType.OM_SHUTDOWN);
-//		this.setChanged();
-//		this.notifyObservers(msg);
+		EngineMessage msg = new EngineMessage();
+		msg.setTid(-1);
+		msg.setType(EngineMessageType.OM_SHUTDOWN);
+		notify(msg);
 		
 		if (pool != null) {
 			// pool.shutdown();
@@ -121,6 +116,11 @@ public class Engine extends Observable {
 		}
 	}
 	
+	//////////////////////////////////////////////////////public//////////////////////////////////////////////////
+	public boolean isRun(){
+		return this.running;
+	}
+	
 	public void log(int type, String content){
 		stats[type]++;
 		accountstodo.remove(content);
@@ -135,23 +135,19 @@ public class Engine extends Observable {
 		EngineMessage msg = new EngineMessage();
 		msg.setType(EngineMessageType.OM_STATS);
 		msg.setData(stats);		
-		this.setChanged();
-		this.notifyObservers(msg);
+		notify(msg);
 		
 		msg = new EngineMessage();
 		msg.setType(EngineMessageType.OM_INFO);
 		msg.setData("DETECTED:" + content + " = " + type);		
-		this.setChanged();
-		this.notifyObservers(msg);
+		notify(msg);
 	}
 	
 	public void info(String message){
 		EngineMessage msg = new EngineMessage();
 		msg.setType(EngineMessageType.OM_INFO);
-		msg.setData(message);
-		
-		this.setChanged();
-		this.notifyObservers(msg);
+		msg.setData(message);		
+		notify(msg);
 	}
 	
 	public void addTask(String line){
@@ -176,9 +172,7 @@ public class Engine extends Observable {
 		EngineMessage msg = new EngineMessage();
 		msg.setType(EngineMessageType.OM_PROXY_LOADED);
 		msg.setData(params);
-
-		this.setChanged();
-		this.notifyObservers(msg);
+		notify(msg);
 	}
 	
 	public String getProxy(){
@@ -191,196 +185,180 @@ public class Engine extends Observable {
 		return proxy;
 	}
 	
-	public boolean isRun(){
-		return this.running;
-	}
-
-	// 处理外来信息
-	public void fire(EngineMessage message) {
-		int type = message.getType();
-		Object data = message.getData();
-		EngineMessage msg = null;
-
-		switch (type) {
-		case EngineMessageType.IM_LOAD_ACCOUNT:
-
-			try {
-				accounts = new ArrayList<String>();
-				accountstodo = new ArrayList<String>();
-				
-				File ipf = new File(((String) data));
-				FileInputStream is = new FileInputStream(ipf);
-				InputStreamReader isr = new InputStreamReader(is);
-				BufferedReader reader = new BufferedReader(isr);
-				String line = null;
-				int i = 1;
-				while ((line = reader.readLine()) != null) {
-					if (!line.equals("")) {
-						line = i + "----" + line;
-						accounts.add(line);
-						accountstodo.add(line);
-					}
-					i++;
-				}
-
-				reader.close();
-				isr.close();
-				is.close();
-
-				if (accounts.size() > 0) {
-					List<String> params = new ArrayList<String>();
-					params.add(String.valueOf(accounts.size()));
-
-					msg = new EngineMessage();
-					msg.setType(EngineMessageType.OM_ACCOUNT_LOADED);
-					msg.setData(params);
-
-					this.setChanged();
-					this.notifyObservers(msg);
-				}
-
-				ready();
-			} catch (Exception ex) {
-				ex.printStackTrace();
-			}
-			break;
-		case EngineMessageType.IM_LOAD_PROXY:
-
-			try {
-				proxies = new ArrayList<String>();
-
-				File ipf = new File(((String) data));
-				FileInputStream is = new FileInputStream(ipf);
-				InputStreamReader isr = new InputStreamReader(is);
-				BufferedReader reader = new BufferedReader(isr);
-				String line = null;
-				// int i = 1;
-				while ((line = reader.readLine()) != null) {
-					if (!line.equals("")) {
-						// line = i + "----" + line;
-						proxies.add(line);
-					}
-					// i++;
-				}
-
-				reader.close();
-				isr.close();
-				is.close();
-
-				if (proxies.size() > 0) {
-					List<String> params = new ArrayList<String>();
-					params.add(String.valueOf(proxies.size()));
-
-					msg = new EngineMessage();
-					msg.setType(EngineMessageType.OM_PROXY_LOADED);
-					msg.setData(params);
-
-					this.setChanged();
-					this.notifyObservers(msg);
-				}
-
-				ready();
-			} catch (Exception ex) {
-				ex.printStackTrace();
-			}
-			break;
-		case EngineMessageType.IM_EXIT:
-			// 关闭日志文件
-			shutdown();
-			System.exit(0);
-			break;
-		case EngineMessageType.IM_PROCESS:
-			running = !running;
-
-			msg = new EngineMessage();
-			msg.setType(EngineMessageType.OM_RUNNING);
-			msg.setData(running);
-			this.setChanged();
-			this.notifyObservers(msg);
-
-			System.out.println("running="+running);
-			if (running) {
-				info("");
-				info("================");
-				info("开始运行");
-				info("================");
-				info("");
-				// 创建日志文件
-				for(int i=0;i<stats.length;i++){
-					stats[i] = 0;
-				}
-				
-				// long tm = System.currentTimeMillis();
-				DateFormat format = new java.text.SimpleDateFormat(
-						"yyyy年MM月dd日 hh时mm分ss秒");
-				String tm = format.format(new Date());
-				for (int i = 0; i < output.length; i++) {
-					File fff = new File(xpath + fns[i] + "-" + tm + ".txt");
-					try {
-						if (!fff.exists()) {
-							fff.createNewFile();
-						}
-
-						output[i] = new BufferedWriter(new FileWriter(fff));
-					} catch (Exception ex) {
-						ex.printStackTrace();
-					}
-				}
-
-				int tc = Integer.parseInt(configuration
-						.getProperty("THREAD_COUNT"));
-				int corePoolSize = tc;// minPoolSize
-				int maxPoolSize = tc;
-				int maxTaskSize = (1024 + 512) * 100 * 40;// 缓冲队列
-				long keepAliveTime = 0L;
-				TimeUnit unit = TimeUnit.MILLISECONDS;
-
-				BlockingQueue<Runnable> workQueue = new ArrayBlockingQueue<Runnable>(
-						maxTaskSize);
-				RejectedExecutionHandler handler = new AbortPolicy();// 饱和处理策略
-
-				// 创建线程池
-				pool = new ThreadPoolExecutor(corePoolSize, maxPoolSize,
-						keepAliveTime, unit, workQueue, handler);
-
-				for (int i = 0; i < accounts.size(); i++) {
-					// for (int i = flidx[0]; i <= flidx[1]; i++) {
-					try {						
-						Task task = new Task(accounts.get(i));
-						Engine.getInstance().addObserver(task);
-						if(running){
-							pool.execute(task);
-						}
-					} catch (ArrayIndexOutOfBoundsException e) {
-						e.printStackTrace();
-						// System.out.println(i + ":" + accounts.get(i));
-					}
-				}
-			} else {
-				info("");
-				info("================");
-				info("运行结束");
-				info("================");
-				info("");
-				// 停止情况下的处理
-				shutdown();
-			}
-			break;
-		case EngineMessageType.IM_INFO:
-			msg = new EngineMessage();
-			msg.setTid(message.getTid());
-			msg.setType(EngineMessageType.OM_INFO);
-			msg.setData(data);
+	public void loadAccount(String path){
+		try {
+			accounts = new ArrayList<String>();
+			accountstodo = new ArrayList<String>();
 			
-			this.setChanged();
-			this.notifyObservers(msg);
-			break;
-		case EngineMessageType.IM_START: 
-			break;
-		case EngineMessageType.IM_FINISH: 
-			break;
-		default:
-			break;
+			File ipf = new File(path);
+			FileInputStream is = new FileInputStream(ipf);
+			InputStreamReader isr = new InputStreamReader(is);
+			BufferedReader reader = new BufferedReader(isr);
+			String line = null;
+			int i = 1;
+			while ((line = reader.readLine()) != null) {
+				if (!line.equals("")) {
+					line = i + "----" + line;
+					accounts.add(line);
+					accountstodo.add(line);
+				}
+				i++;
+			}
+
+			reader.close();
+			isr.close();
+			is.close();
+
+			if (accounts.size() > 0) {
+				List<String> params = new ArrayList<String>();
+				params.add(String.valueOf(accounts.size()));
+
+				EngineMessage msg = new EngineMessage();
+				msg.setType(EngineMessageType.OM_ACCOUNT_LOADED);
+				msg.setData(params);
+				notify(msg);
+			}
+
+			ready();
+		} catch (Exception ex) {
+			ex.printStackTrace();
 		}
+	}
+	
+	public void loadProxy(String path){
+		try {
+			proxies = new ArrayList<String>();
+
+			File ipf = new File(path);
+			FileInputStream is = new FileInputStream(ipf);
+			InputStreamReader isr = new InputStreamReader(is);
+			BufferedReader reader = new BufferedReader(isr);
+			String line = null;
+			// int i = 1;
+			while ((line = reader.readLine()) != null) {
+				if (!line.equals("")) {
+					// line = i + "----" + line;
+					proxies.add(line);
+				}
+				// i++;
+			}
+
+			reader.close();
+			isr.close();
+			is.close();
+
+			if (proxies.size() > 0) {
+				List<String> params = new ArrayList<String>();
+				params.add(String.valueOf(proxies.size()));
+
+				EngineMessage msg = new EngineMessage();
+				msg.setType(EngineMessageType.OM_PROXY_LOADED);
+				msg.setData(params);
+				notify(msg);
+			}
+
+			ready();
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+	}
+	
+	public void exit(){
+		shutdown();
+		System.exit(0);
+	}
+	
+	public void process(){
+		running = !running;
+
+		EngineMessage msg = new EngineMessage();
+		msg.setType(EngineMessageType.OM_RUNNING);
+		msg.setData(running);
+		notify(msg);
+
+		System.out.println("running="+running);
+		if (running) {
+			info("");
+			info("================");
+			info("开始运行");
+			info("================");
+			info("");
+			// 创建日志文件
+			for(int i=0;i<stats.length;i++){
+				stats[i] = 0;
+			}
+			
+			// long tm = System.currentTimeMillis();
+			DateFormat format = new java.text.SimpleDateFormat(
+					"yyyy年MM月dd日 hh时mm分ss秒");
+			String tm = format.format(new Date());
+			for (int i = 0; i < output.length; i++) {
+				File fff = new File(xpath + fns[i] + "-" + tm + ".txt");
+				try {
+					if (!fff.exists()) {
+						fff.createNewFile();
+					}
+
+					output[i] = new BufferedWriter(new FileWriter(fff));
+				} catch (Exception ex) {
+					ex.printStackTrace();
+				}
+			}
+
+			int tc = Integer.parseInt(configuration
+					.getProperty("THREAD_COUNT"));
+			int corePoolSize = tc;// minPoolSize
+			int maxPoolSize = tc;
+			int maxTaskSize = (1024 + 512) * 100 * 40;// 缓冲队列
+			long keepAliveTime = 0L;
+			TimeUnit unit = TimeUnit.MILLISECONDS;
+
+			BlockingQueue<Runnable> workQueue = new ArrayBlockingQueue<Runnable>(
+					maxTaskSize);
+			RejectedExecutionHandler handler = new AbortPolicy();// 饱和处理策略
+
+			// 创建线程池
+			pool = new ThreadPoolExecutor(corePoolSize, maxPoolSize,
+					keepAliveTime, unit, workQueue, handler);
+
+			for (int i = 0; i < accounts.size(); i++) {
+				// for (int i = flidx[0]; i <= flidx[1]; i++) {
+				try {						
+					Task task = new Task(accounts.get(i));
+					Engine.getInstance().addObserver(task);
+					if(running){
+						pool.execute(task);
+					}
+				} catch (ArrayIndexOutOfBoundsException e) {
+					e.printStackTrace();
+					// System.out.println(i + ":" + accounts.get(i));
+				}
+			}
+		} else {
+			info("");
+			info("================");
+			info("运行结束");
+			info("================");
+			info("");
+			// 停止情况下的处理
+			shutdown();
+		}
+	}
+	
+	public void beginTask(){
+		
+	}
+	
+	public void endTask(){
+		
+	}
+	
+	public static Engine getInstance() {
+		synchronized (Engine.class) {
+			if (instance == null) {
+				instance = new Engine();
+			}
+		}
+		return instance;
 	}
 }
