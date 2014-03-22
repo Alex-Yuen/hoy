@@ -8,6 +8,7 @@ import java.util.Observable;
 import java.util.Observer;
 
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
@@ -31,6 +32,8 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.ModifyEvent;
 
 public class SM2014 implements Observer {
 	
@@ -271,6 +274,14 @@ public class SM2014 implements Observer {
 		group_1.setLayout(new BorderLayout(0, 0));
 		
 		text = new Text(group_1, SWT.BORDER | SWT.MULTI);
+		//text.setTextLimit(1000);
+//		text.addModifyListener(new ModifyListener() {
+//			public void modifyText(ModifyEvent e) {
+//				if(text.getText().length()>10000*5){
+//					text.setText("");
+//				}
+//			}
+//		});
 		text.setEditable(false);
 		text.setLayoutData(BorderLayout.CENTER);
 		
@@ -401,6 +412,22 @@ public class SM2014 implements Observer {
 					}
 				});
 				break;
+			case EngineMessageType.OM_NO_PROXY:
+				Display.getDefault().asyncExec(new Runnable() {
+					@Override
+					public void run() {
+						Event ex = new Event();
+						ex.widget = btnNewButton;
+						//主动触发button点击事件				
+						btnNewButton.notifyListeners(SWT.Selection, ex);
+						
+						MessageBox dialog = new MessageBox(shell, SWT.OK);
+				        dialog.setText("确认");
+				        dialog.setMessage("代理用完，任务结束！");
+				        dialog.open();
+					}
+				});
+				break;				
 			default:
 				break;
 		}		
