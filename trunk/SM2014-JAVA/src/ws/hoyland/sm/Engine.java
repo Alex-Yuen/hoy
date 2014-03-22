@@ -41,7 +41,7 @@ public class Engine extends Observable {
 	private boolean running = false;
 
 	private BufferedWriter[] output = new BufferedWriter[4]; // 成功，失败，未运行
-	private String[] fns = new String[] { "密码正确", "密码错误", "未识别", "未运行帐号" };
+	private String[] fns = new String[] { "密码正确", "密码错误", "帐号冻结", "未识别" };
 	private URL url = Engine.class.getClassLoader().getResource("");
 	private String xpath = url.getPath();
 	private ThreadPoolExecutor pool;
@@ -319,9 +319,13 @@ public class Engine extends Observable {
 			for (int i = 0; i < output.length; i++) {
 				try {
 					String path = xpath + fns[i] + "-" + tm + ".txt";
-					System.err.println(path);
+					//System.out.println(path.substring(path.lastIndexOf("/")-4, path.lastIndexOf("/")+1));
+					if("/lib/".equals(path.substring(path.lastIndexOf("/")-4, path.lastIndexOf("/")+1))){
+						path = path.replace("/lib/", "/");	
+					}
+					//System.err.println(path);
 					path = URLDecoder.decode(path, "UTF-8");
-					System.err.println(path);
+					//System.err.println(path);
 					File fff = new File(path);
 					
 					if (!fff.exists()) {
