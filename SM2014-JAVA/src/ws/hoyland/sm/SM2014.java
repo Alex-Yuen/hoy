@@ -1,6 +1,7 @@
 package ws.hoyland.sm;
 
 import java.text.DateFormat;
+import java.text.DecimalFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Observable;
@@ -44,6 +45,7 @@ public class SM2014 implements Observer {
 	private Label lblNewLabel_4;
 	private Label lblNewLabel_2;
 	private Text text;
+	private DecimalFormat df  = new DecimalFormat("0.00");
 
 	/**
 	 * Launch the application.
@@ -94,9 +96,7 @@ public class SM2014 implements Observer {
 					Thread t = new Thread(new Runnable(){
 						@Override
 						public void run() {
-							EngineMessage message = new EngineMessage();
-							message.setType(EngineMessageType.IM_EXIT);
-							Engine.getInstance().fire(message);
+							Engine.getInstance().exit();
 						}
 						
 					});
@@ -136,12 +136,15 @@ public class SM2014 implements Observer {
 				final FileDialog fileDlg = new FileDialog(shell, SWT.OPEN);
 				fileDlg.setFilterPath(null);
 				fileDlg.setText("导入帐号");
-				String filePath = fileDlg.open();
+				final String filePath = fileDlg.open();
 				if(filePath!=null){
-					EngineMessage message = new EngineMessage();
-					message.setType(EngineMessageType.IM_LOAD_ACCOUNT);
-					message.setData(filePath);
-					Engine.getInstance().fire(message);
+					Thread t = new Thread(new Runnable(){
+						@Override
+						public void run() {
+							Engine.getInstance().loadAccount(filePath);
+						}						
+					});
+					t.start();
 				}
 			}
 		});
@@ -155,12 +158,15 @@ public class SM2014 implements Observer {
 				final FileDialog fileDlg = new FileDialog(shell, SWT.OPEN);
 				fileDlg.setFilterPath(null);
 				fileDlg.setText("导入代理");
-				String filePath = fileDlg.open();
+				final String filePath = fileDlg.open();
 				if(filePath!=null){
-					EngineMessage message = new EngineMessage();
-					message.setType(EngineMessageType.IM_LOAD_PROXY);
-					message.setData(filePath);
-					Engine.getInstance().fire(message);
+					Thread t = new Thread(new Runnable(){
+						@Override
+						public void run() {
+							Engine.getInstance().loadProxy(filePath);
+						}						
+					});
+					t.start();
 				}
 			}
 		});
@@ -292,10 +298,7 @@ public class SM2014 implements Observer {
 				Thread t = new Thread(new Runnable(){
 					@Override
 					public void run() {
-						EngineMessage message = new EngineMessage();
-						message.setType(EngineMessageType.IM_PROCESS);
-						message.setData(null);
-						Engine.getInstance().fire(message);
+						Engine.getInstance().process();
 					}					
 				});
 				
@@ -358,7 +361,10 @@ public class SM2014 implements Observer {
 					@Override
 					public void run() {
 						List<String> ls = (List<String>)msg.getData();
-						lblNewLabel_1.setText("帐号： " + ls.get(0));
+						lblNewLabel_1.setText("帐号： " + ls.get(0));	
+
+						lblNewLabel_4.setData(ls.get(0));
+						lblNewLabel_4.setText("0 / "+ls.get(0)+" = 0%");
 					}
 				});
 				break;
@@ -389,7 +395,9 @@ public class SM2014 implements Observer {
 					public void run() {
 						Integer[] stats = (Integer[])msg.getData();		
 						lblNewLabel_2.setText(stats[0]+ " / " + stats[1] + " / " + stats[2] );
-						//text.append(tm + (String)msg.getData()+"\r\n");
+						int success = stats[0]+stats[1]+stats[2];
+						int total = Integer.parseInt(lblNewLabel_4.getData().toString());
+						lblNewLabel_4.setText(success+" / "+total+" = "+df.format((double)(100*success)/(double)total)+"%");
 					}
 				});
 				break;
