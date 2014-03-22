@@ -161,7 +161,7 @@ public class Task implements Runnable, Observer {
                 	//System.out.println("proxy="+proxy);
                     Engine.getInstance().removeProxy(proxy.getHostName()+":"+proxy.getPort());
                 }
-            }			
+            }
 		}catch(NoProxyException e){
 			//
 		}catch(Exception e){

@@ -162,12 +162,7 @@ public class Engine extends Observable {
 		
 		EngineMessage msg = new EngineMessage();
 		msg.setType(EngineMessageType.OM_STATS);
-		msg.setData(stats);		
-		notify(msg);
-		
-		msg = new EngineMessage();
-		msg.setType(EngineMessageType.OM_INFO);
-		msg.setData("DETECTED:" + content + " = " + type);		
+		msg.setData(new Object[]{stats, new Integer(type), content});
 		notify(msg);
 	}
 	
