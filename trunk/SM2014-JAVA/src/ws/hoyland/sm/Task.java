@@ -165,7 +165,13 @@ public class Task implements Runnable, Observer {
 		}catch(Exception e){
 			//e.printStackTrace();
 			//System.err.println(e.getMessage());
-			Engine.getInstance().removeProxy(proxy.getHostName()+":"+proxy.getPort());
+			try{
+				Engine.getInstance().removeProxy(proxy.getHostName()+":"+proxy.getPort());
+			}catch(Exception ex){
+				e.printStackTrace();
+				System.err.println("////////////");
+				ex.printStackTrace();
+			}
 		}finally{
 			try{
         		if (entity != null) {
