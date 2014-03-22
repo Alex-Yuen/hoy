@@ -7,6 +7,7 @@ import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.net.URLDecoder;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -316,9 +317,13 @@ public class Engine extends Observable {
 					"yyyy年MM月dd日 hh时mm分ss秒");
 			String tm = format.format(new Date());
 			for (int i = 0; i < output.length; i++) {
-				System.err.println(xpath + fns[i] + "-" + tm + ".txt");
-				File fff = new File(xpath + fns[i] + "-" + tm + ".txt");
 				try {
+					String path = xpath + fns[i] + "-" + tm + ".txt";
+					System.err.println(path);
+					path = URLDecoder.decode(path, "UTF-8");
+					System.err.println(path);
+					File fff = new File(path);
+					
 					if (!fff.exists()) {
 						fff.createNewFile();
 					}
