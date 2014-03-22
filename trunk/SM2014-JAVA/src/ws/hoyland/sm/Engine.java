@@ -364,19 +364,23 @@ public class Engine extends Observable {
 			pool = new ThreadPoolExecutor(corePoolSize, maxPoolSize,
 					keepAliveTime, unit, workQueue, handler);
 
-			for (int i = 0; i < accounts.size(); i++) {
-				// for (int i = flidx[0]; i <= flidx[1]; i++) {
-				try {						
-					Task task = new Task(accounts.get(i));
-					Engine.getInstance().addObserver(task);
-					if(running){
-						pool.execute(task);
+			//添加任务
+			new Thread(new Runnable(){
+				@Override
+				public void run() {					
+					for (int i = 0; i < accounts.size(); i++) {
+						try {						
+							Task task = new Task(accounts.get(i));
+							Engine.getInstance().addObserver(task);
+							if(running){
+								pool.execute(task);
+							}
+						} catch (ArrayIndexOutOfBoundsException e) {
+							e.printStackTrace();
+						}
 					}
-				} catch (ArrayIndexOutOfBoundsException e) {
-					e.printStackTrace();
-					// System.out.println(i + ":" + accounts.get(i));
-				}
-			}
+				}			
+			}).start();
 		} else {
 			// 停止情况下的处理
 			shutdown();
