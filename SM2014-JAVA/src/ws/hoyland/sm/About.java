@@ -57,7 +57,8 @@ public class About extends Dialog {
 		shell.setSize(400, 250);
 		shell.setText("关于");
 
-		Rectangle bounds = Display.getDefault().getPrimaryMonitor().getBounds();
+		//Rectangle bounds = Display.getDefault().getPrimaryMonitor().getBounds();
+		Rectangle bounds = getParent().getBounds();
 		Rectangle rect = shell.getBounds();
 		int x = bounds.x + (bounds.width - rect.width) / 2;
 		int y = bounds.y + (bounds.height - rect.height) / 2;

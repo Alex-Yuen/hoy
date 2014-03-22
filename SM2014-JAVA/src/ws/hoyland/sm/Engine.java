@@ -39,6 +39,7 @@ public class Engine extends Observable {
 	private List<String> accounts;
 	private List<String> proxies;
 	private boolean running = false;
+	private boolean noproxy = false;
 
 	private BufferedWriter[] output = new BufferedWriter[4]; // 成功，失败，未运行
 	private String[] fns = new String[] { "密码正确", "密码错误", "帐号冻结", "未识别" };
@@ -83,6 +84,8 @@ public class Engine extends Observable {
 	
 	private void shutdown() {
 		//System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>1");
+		running = false;
+		
 		EngineMessage msg = new EngineMessage();
 		msg.setTid(-1);
 		msg.setType(EngineMessageType.OM_SHUTDOWN);
@@ -129,8 +132,9 @@ public class Engine extends Observable {
 	}
 	
 	//////////////////////////////////////////////////////public//////////////////////////////////////////////////
-	public boolean isRun(){
+	public boolean canRun(){
 		return this.running;
+		//return this.running&&!this.noproxy;
 	}
 	
 	public void log(final int type, final String content){
@@ -204,6 +208,16 @@ public class Engine extends Observable {
 		synchronized(proxies){
 			if(proxies.size()!=0){
 				proxy = proxies.get(random.nextInt(proxies.size()));
+			}else{
+				if(!noproxy){
+					noproxy = true;
+					
+					EngineMessage msg = new EngineMessage();
+					msg.setType(EngineMessageType.OM_NO_PROXY);
+					this.setChanged();
+					this.notifyObservers(msg);
+					//shutdown();
+				}
 			}
 		}
 		return proxy;
@@ -311,6 +325,7 @@ public class Engine extends Observable {
 			for(int i=0;i<stats.length;i++){
 				stats[i] = 0;
 			}
+			noproxy = false;
 			
 			// long tm = System.currentTimeMillis();
 			DateFormat format = new java.text.SimpleDateFormat(
@@ -368,13 +383,13 @@ public class Engine extends Observable {
 				}
 			}
 		} else {
+			// 停止情况下的处理
+			shutdown();
 			info("");
 			info("================");
 			info("运行结束");
 			info("================");
 			info("");
-			// 停止情况下的处理
-			shutdown();
 		}
 	}
 	

@@ -75,7 +75,7 @@ public class Task implements Runnable, Observer {
 	
 	@Override
 	public void run() {
-		if(!Engine.getInstance().isRun()){
+		if(!Engine.getInstance().canRun()){
 		//if(!run){
 			return;
 		}
@@ -88,7 +88,7 @@ public class Task implements Runnable, Observer {
 		try{
 			String px = Engine.getInstance().getProxy();
 			if(px==null){
-				throw new Exception("No Proxy!");
+				throw new NoProxyException("No Proxy!");
 			}
 			
 			String[] ms = px.split(":");
@@ -113,7 +113,7 @@ public class Task implements Runnable, Observer {
 //			}
 			
 			//if(!run){
-			if(!Engine.getInstance().isRun()){
+			if(!Engine.getInstance().canRun()){
 				return;
 			}
 			
@@ -162,16 +162,20 @@ public class Task implements Runnable, Observer {
                     Engine.getInstance().removeProxy(proxy.getHostName()+":"+proxy.getPort());
                 }
             }			
+		}catch(NoProxyException e){
+			//
 		}catch(Exception e){
 			//e.printStackTrace();
 			//System.err.println(e.getMessage());
-			try{
-				Engine.getInstance().removeProxy(proxy.getHostName()+":"+proxy.getPort());
-			}catch(Exception ex){
-				e.printStackTrace();
-				System.err.println("////////////");
-				ex.printStackTrace();
-			}
+			//try{
+				if(proxy!=null){
+					Engine.getInstance().removeProxy(proxy.getHostName()+":"+proxy.getPort());
+				}
+//			}catch(Exception ex){
+//				e.printStackTrace();
+//				System.err.println("////////////");
+//				ex.printStackTrace();
+//			}
 		}finally{
 			try{
         		if (entity != null) {
