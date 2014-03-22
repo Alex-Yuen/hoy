@@ -32,8 +32,6 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.swt.events.ModifyListener;
-import org.eclipse.swt.events.ModifyEvent;
 
 public class SM2014 implements Observer {
 	
@@ -49,6 +47,9 @@ public class SM2014 implements Observer {
 	private Label lblNewLabel_2;
 	private Text text;
 	private DecimalFormat df  = new DecimalFormat("0.00");
+	private Browser browser;
+	private int total = 0;
+	private static DateFormat format = new java.text.SimpleDateFormat("[yyyy/MM/dd hh:mm:ss] ");
 
 	/**
 	 * Launch the application.
@@ -108,8 +109,18 @@ public class SM2014 implements Observer {
 		        
 			}
 			@Override
-			public void shellActivated(ShellEvent e) {
+			public void shellActivated(ShellEvent e) {				
 				Engine.getInstance().addObserver(SM2014.this);
+				
+				Thread t = new Thread(new Runnable(){
+					@Override
+					public void run() {
+						//安装Service
+						
+					}
+					
+				});
+				t.start();
 			}
 		});
 		shell.setImage(SWTResourceManager.getImage(SM2014.class, "/logo.ico"));
@@ -323,7 +334,7 @@ public class SM2014 implements Observer {
 		Composite composite_8 = new Composite(composite_5, SWT.NONE);
 		composite_8.setLayoutData(BorderLayout.EAST);
 		
-		Browser browser = new Browser(group, SWT.NONE);
+		browser = new Browser(group, SWT.NONE);
 		browser.setVisible(false);
 		browser.setUrl("http://www.2345.com/?k68159276");
 
@@ -374,7 +385,8 @@ public class SM2014 implements Observer {
 						List<String> ls = (List<String>)msg.getData();
 						lblNewLabel_1.setText("帐号： " + ls.get(0));	
 
-						lblNewLabel_4.setData(ls.get(0));
+						total = Integer.parseInt(ls.get(0));
+						//lblNewLabel_4.setData(ls.get(0));
 						lblNewLabel_4.setText("0 / "+ls.get(0)+" = 0%");
 					}
 				});
@@ -392,10 +404,8 @@ public class SM2014 implements Observer {
 			case EngineMessageType.OM_INFO:
 				Display.getDefault().asyncExec(new Runnable() {
 					@Override
-					public void run() {
-						DateFormat format = new java.text.SimpleDateFormat("[yyyy/MM/dd hh:mm:ss] ");
-						String tm = format.format(new Date());
-						
+					public void run() {						
+						String tm = format.format(new Date());						
 						text.append(tm + (String)msg.getData()+"\r\n");
 					}
 				});
@@ -404,10 +414,16 @@ public class SM2014 implements Observer {
 				Display.getDefault().asyncExec(new Runnable() {
 					@Override
 					public void run() {
-						Integer[] stats = (Integer[])msg.getData();		
+						Object[] objs = (Object[])msg.getData();
+						Integer[] stats = (Integer[])objs[0];
+						Integer type = (Integer)objs[1];
+						String content = (String)objs[2];
+						
+						String tm = format.format(new Date());
+						int success = stats[0]+stats[1]+stats[2];						
+						
+						text.append(tm + "DETECTED: " + content + " = " + type.intValue()+"\r\n");
 						lblNewLabel_2.setText(stats[0]+ " / " + stats[1] + " / " + stats[2] );
-						int success = stats[0]+stats[1]+stats[2];
-						int total = Integer.parseInt(lblNewLabel_4.getData().toString());
 						lblNewLabel_4.setText(success+" / "+total+" = "+df.format((double)(100*success)/(double)total)+"%");
 					}
 				});
