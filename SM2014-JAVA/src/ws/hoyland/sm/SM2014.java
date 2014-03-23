@@ -105,6 +105,7 @@ public class SM2014 implements Observer {
 						}
 						
 					});
+					t.setDaemon(true);
 					t.start();
 		        }		        
 			}
@@ -144,6 +145,7 @@ public class SM2014 implements Observer {
 							Engine.getInstance().loadAccount(filePath);
 						}						
 					});
+					t.setDaemon(true);
 					t.start();
 				}
 			}
@@ -166,6 +168,7 @@ public class SM2014 implements Observer {
 							Engine.getInstance().loadProxy(filePath);
 						}						
 					});
+					t.setDaemon(true);
 					t.start();
 				}
 			}
@@ -309,7 +312,7 @@ public class SM2014 implements Observer {
 						Engine.getInstance().process();
 					}					
 				});
-				
+				t.setDaemon(true);
 				t.start();
 			}
 		});
@@ -338,6 +341,7 @@ public class SM2014 implements Observer {
 			}
 			
 		});
+		t.setDaemon(true);
 		t.start();
 	}
 	@Override
