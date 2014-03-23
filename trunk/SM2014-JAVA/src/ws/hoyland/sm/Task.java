@@ -69,7 +69,7 @@ public class Task implements Runnable, Observer {
 					}
 					break;
 				case EngineMessageType.OM_RELOAD_PROXIES:
-					wflag = true;
+					wflag = !wflag;
 				default:
 					break;
 			}
@@ -81,6 +81,16 @@ public class Task implements Runnable, Observer {
 		if(!Engine.getInstance().canRun()){
 		//if(!run){
 			return;
+		}
+		
+		if(wflag){
+			synchronized(SyncUtil.RELOAD_PROXY_OBJECT){
+				try{
+					SyncUtil.RELOAD_PROXY_OBJECT.wait();//等待更新完代理
+				}catch(Exception e){
+					//
+				}
+			}
 		}
 		
 		synchronized(SyncUtil.START_OBJECT){	

@@ -26,7 +26,11 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.ThreadPoolExecutor.AbortPolicy;
 
 import javax.management.MBeanServer;
+import javax.management.MBeanServerConnection;
+import javax.management.MBeanServerInvocationHandler;
 import javax.management.ObjectName;
+import javax.management.remote.JMXConnector;
+import javax.management.remote.JMXConnectorFactory;
 import javax.management.remote.JMXConnectorServer;
 import javax.management.remote.JMXConnectorServerFactory;
 import javax.management.remote.JMXServiceURL;
@@ -39,10 +43,12 @@ import org.apache.http.params.CoreConnectionPNames;
 import ws.hoyland.sm.Engine;
 import ws.hoyland.sm.Task;
 import ws.hoyland.sm.service.ProxyService;
+import ws.hoyland.sm.service.ProxyServiceMBean;
 import ws.hoyland.util.Converts;
 import ws.hoyland.util.EngineMessage;
 import ws.hoyland.util.EngineMessageType;
 import ws.hoyland.util.Configuration;
+import ws.hoyland.util.SyncUtil;
 
 public class Engine extends Observable {
 
@@ -78,13 +84,11 @@ public class Engine extends Observable {
 				&& proxies.size() > 0) {
 			EngineMessage msg = new EngineMessage();
 			msg.setType(EngineMessageType.OM_READY);
-			this.setChanged();
-			this.notifyObservers(msg);
+			notify(msg);
 		} else {
 			EngineMessage msg = new EngineMessage();
 			msg.setType(EngineMessageType.OM_UNREADY);
-			this.setChanged();
-			this.notifyObservers(msg);
+			notify(msg);
 		}
 	}
 	
@@ -220,8 +224,7 @@ public class Engine extends Observable {
 					
 					EngineMessage msg = new EngineMessage();
 					msg.setType(EngineMessageType.OM_NO_PROXY);
-					this.setChanged();
-					this.notifyObservers(msg);
+					notify(msg);
 					//shutdown();
 				}
 			}
@@ -451,16 +454,19 @@ public class Engine extends Observable {
 					//开始定时扫描
 					while(true){
 						try{
-							//扫描
+							//执行扫描
+							
+							
 							//通知Engine需要更换IP
 							Engine.getInstance().reloadProxies();
-							Thread.sleep(1000*10);							
+							Thread.sleep(1000*10);//休眠一段时间							
 						}catch(Exception e){
 							e.printStackTrace();
 						}
 					}
 				}
 			});
+			t.setDaemon(true);
 			t.start();
 		}catch(Exception e){
 			e.printStackTrace();
@@ -468,15 +474,66 @@ public class Engine extends Observable {
 	}
 	
 	public void reloadProxies() {
+		info("");
+		info("================");
+		info("正在更新代理");
+		info("================");
+		info("");
+		
 		EngineMessage msg = new EngineMessage();
 		msg.setTid(-1);//通知所有线程
 		msg.setType(EngineMessageType.OM_RELOAD_PROXIES);
-		this.setChanged();
-		this.notifyObservers(msg);
+		notify(msg);
 		
 		//loadproxies form jmx service
+		try {
+			JMXServiceURL url = new JMXServiceURL(
+					"service:jmx:rmi:///jndi/rmi://localhost:8023/service");
+			JMXConnector jmxc = JMXConnectorFactory.connect(url, null);
+			
+			MBeanServerConnection mbsc = jmxc.getMBeanServerConnection();
+			//String domain = mbsc.getDefaultDomain();
+			
+			ObjectName objectName = new ObjectName("ws.hoyland.sm.service:name=ProxyService");
+			ProxyServiceMBean service = (ProxyServiceMBean)MBeanServerInvocationHandler.newProxyInstance(mbsc, objectName, ProxyServiceMBean.class, true);
+			String[] ps = service.getProxies().split("\r\n");
+			this.proxies.clear();
+			for(int i=0;i<ps.length;i++){
+				proxies.add(ps[i]);
+			}
+			
+			//显示代理数量
+			List<String> params = new ArrayList<String>();
+			params.add(String.valueOf(proxies.size()));
+
+			msg = new EngineMessage();
+			msg.setType(EngineMessageType.OM_PROXY_LOADED);
+			msg.setData(params);
+			notify(msg);
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		
+		msg = new EngineMessage();
+		msg.setTid(-1);//通知所有线程
+		msg.setType(EngineMessageType.OM_RELOAD_PROXIES);
+		notify(msg);
+		notify(msg);
+
+		info("");
+		info("================");
+		info("更新完毕:"+proxies.size());
+		info("================");
+		info("");
 		
+		synchronized(SyncUtil.RELOAD_PROXY_OBJECT){
+			try{
+				SyncUtil.RELOAD_PROXY_OBJECT.notifyAll();//更新完毕，唤醒线程
+			}catch(Exception e){
+				//
+			}
+		}
 	}
 
 	public void beginTask(){
