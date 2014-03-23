@@ -6,8 +6,12 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.InputStreamReader;
+import java.lang.management.ManagementFactory;
 import java.net.URL;
 import java.net.URLDecoder;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
+import java.rmi.server.UnicastRemoteObject;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -21,6 +25,12 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.ThreadPoolExecutor.AbortPolicy;
 
+import javax.management.MBeanServer;
+import javax.management.ObjectName;
+import javax.management.remote.JMXConnectorServer;
+import javax.management.remote.JMXConnectorServerFactory;
+import javax.management.remote.JMXServiceURL;
+
 import org.apache.commons.codec.binary.Base64;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -28,6 +38,7 @@ import org.apache.http.params.CoreConnectionPNames;
 
 import ws.hoyland.sm.Engine;
 import ws.hoyland.sm.Task;
+import ws.hoyland.sm.service.ProxyService;
 import ws.hoyland.util.Converts;
 import ws.hoyland.util.EngineMessage;
 import ws.hoyland.util.EngineMessageType;
@@ -392,6 +403,82 @@ public class Engine extends Observable {
 		}
 	}
 	
+	public void startService() {
+		try{
+//			MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
+//		    ObjectName name = new ObjectName("ws.hoyland.sm.service:type=ProxyService");
+//		    //ProxyService mbean = new ProxyService();
+//		    mbs.registerMBean("ws.hoyland.sm.service.ProxyService", name);
+			boolean flag = true;
+			Registry registry = null;
+			while(flag){
+				try{
+					flag = false;
+					LocateRegistry.createRegistry(8023);
+				}catch(Exception e){
+					if(e.getMessage().indexOf("internal error: ObjID already in use")!=-1){
+					    UnicastRemoteObject.unexportObject(registry, true);
+						flag = true;
+					    continue;
+					}else if(e.getMessage().indexOf("Port already in use:")!=-1){
+						return;
+					}else{
+						e.printStackTrace();
+						return;
+					}
+				}
+			}
+			 
+			MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();  //MBeanServerFactory.createMBeanServer();//			
+			JMXServiceURL url = new JMXServiceURL("service:jmx:rmi:///jndi/rmi://localhost:8023/service");
+			JMXConnectorServer cs = JMXConnectorServerFactory.newJMXConnectorServer(url, null, mbs);			
+			cs.start();
+			
+			ObjectName name = new ObjectName("ws.hoyland.sm.service:name=ProxyService");
+			ProxyService mbean = new ProxyService();
+			mbs.registerMBean(mbean, name);
+
+//			String domain = mbs.getDefaultDomain();
+//			String className = "ws.hoyland.sm.service.ProxyService";
+//			String init = domain+":type="+className+",index=1";
+//			ObjectName objectName = ObjectName.getInstance(init);
+//			mbs.createMBean(className, objectName);
+			
+			//开始扫描的线程
+			Thread t = new Thread(new Runnable(){
+				@Override
+				public void run() {
+					//开始定时扫描
+					while(true){
+						try{
+							//扫描
+							//通知Engine需要更换IP
+							Engine.getInstance().reloadProxies();
+							Thread.sleep(1000*10);							
+						}catch(Exception e){
+							e.printStackTrace();
+						}
+					}
+				}
+			});
+			t.start();
+		}catch(Exception e){
+			e.printStackTrace();
+		}		
+	}
+	
+	public void reloadProxies() {
+		EngineMessage msg = new EngineMessage();
+		msg.setTid(-1);//通知所有线程
+		msg.setType(EngineMessageType.OM_RELOAD_PROXIES);
+		this.setChanged();
+		this.notifyObservers(msg);
+		
+		//loadproxies form jmx service
+		
+		
+	}
+
 	public void beginTask(){
 		
 	}
@@ -408,4 +495,5 @@ public class Engine extends Observable {
 		}
 		return instance;
 	}
+
 }
