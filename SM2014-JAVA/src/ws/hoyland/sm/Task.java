@@ -17,7 +17,6 @@ import ws.hoyland.util.Configuration;
 import ws.hoyland.util.Converts;
 import ws.hoyland.util.EngineMessage;
 import ws.hoyland.util.EngineMessageType;
-import ws.hoyland.util.SyncUtil;
 
 public class Task implements Runnable, Observer {
 	private int id = 0;
@@ -83,26 +82,26 @@ public class Task implements Runnable, Observer {
 			return;
 		}
 		
-		if(wflag){
-			synchronized(SyncUtil.RELOAD_PROXY_OBJECT){
-				try{
-					SyncUtil.RELOAD_PROXY_OBJECT.wait();//等待更新完代理
-				}catch(Exception e){
-					//
-				}
-			}
-		}
-		
-		synchronized(SyncUtil.START_OBJECT){	
-			//通知有新线程开始执行
+//		if(wflag){
+//			synchronized(SyncUtil.RELOAD_PROXY_OBJECT){
+//				try{
+//					SyncUtil.RELOAD_PROXY_OBJECT.wait();//等待更新完代理
+//				}catch(Exception e){
+//					//
+//				}
+//			}
+//		}
+//		
+//		synchronized(SyncUtil.START_OBJECT){	
+//			//通知有新线程开始执行
 			Engine.getInstance().beginTask();
-		}
+//		}
 		
 		try{
 			String px = Engine.getInstance().getProxy();
-			if(px==null){
-				throw new NoProxyException("No Proxy!");
-			}
+//			if(px==null){
+//				throw new NoProxyException("No Proxy!");
+//			}
 			
 			String[] ms = px.split(":");
 			this.proxy = new HttpHost(ms[0], Integer.parseInt(ms[1]));
@@ -140,7 +139,7 @@ public class Task implements Runnable, Observer {
 			if (resp.indexOf("pt.handleLoginResult") == -1)//代理异常
             {
             	//System.out.println("A2");
-                Engine.getInstance().removeProxy(proxy.getHostName()+":"+proxy.getPort());
+                //Engine.getInstance().removeProxy(proxy.getHostName()+":"+proxy.getPort());
             }
             else
             {
@@ -172,18 +171,22 @@ public class Task implements Runnable, Observer {
                 {
                 	//System.out.println("A4");
                 	//System.out.println("proxy="+proxy);
-                    Engine.getInstance().removeProxy(proxy.getHostName()+":"+proxy.getPort());
+                    //Engine.getInstance().removeProxy(proxy.getHostName()+":"+proxy.getPort());
                 }
             }
-		}catch(NoProxyException e){
-			//
-		}catch(Exception e){
+		}
+//		catch(NoProxyException e){
+//			//
+//		}
+		catch(Exception e){
 			//e.printStackTrace();
 			//System.err.println(e.getMessage());
 			//try{
-				if(proxy!=null){
-					Engine.getInstance().removeProxy(proxy.getHostName()+":"+proxy.getPort());
-				}
+			
+//				if(proxy!=null){
+//					Engine.getInstance().removeProxy(proxy.getHostName()+":"+proxy.getPort());
+//				}
+				
 //			}catch(Exception ex){
 //				e.printStackTrace();
 //				System.err.println("////////////");
@@ -208,8 +211,8 @@ public class Task implements Runnable, Observer {
 		
 		Engine.getInstance().deleteObserver(this);
 		
-		synchronized(SyncUtil.FINISH_OBJECT){
-			Engine.getInstance().beginTask();
-		}
+//		synchronized(SyncUtil.FINISH_OBJECT){
+			Engine.getInstance().endTask();
+//		}
 	}
 }

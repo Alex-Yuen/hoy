@@ -56,7 +56,7 @@ public class Engine extends Observable {
 	private List<String> accounts;
 	private List<String> proxies;
 	private boolean running = false;
-	private boolean noproxy = false;
+//	private boolean noproxy = false;
 
 	private BufferedWriter[] output = new BufferedWriter[4]; // 成功，失败，未运行
 	private String[] fns = new String[] { "密码正确", "密码错误", "帐号冻结", "未识别" };
@@ -68,7 +68,11 @@ public class Engine extends Observable {
 	private Integer[] stats = new Integer[3];
 	private Random random = new Random();
 	private Base64 base64 = new Base64();
-
+	private boolean reload = false;
+	private boolean hasService = false;
+	protected int bc = 0;
+	protected int ec = 0;
+	
 	private static Engine instance;
 	private DefaultHttpClient client = null;
 	
@@ -214,20 +218,32 @@ public class Engine extends Observable {
 	}
 	
 	public String getProxy(){
-		String proxy = null;
-		synchronized(proxies){
-			if(proxies.size()!=0){
-				proxy = proxies.get(random.nextInt(proxies.size()));
-			}else{
-				if(!noproxy){
-					noproxy = true;
-					
-					EngineMessage msg = new EngineMessage();
-					msg.setType(EngineMessageType.OM_NO_PROXY);
-					notify(msg);
-					//shutdown();
+		if(reload){
+			synchronized(SyncUtil.RELOAD_PROXY_OBJECT){
+				try{
+					SyncUtil.RELOAD_PROXY_OBJECT.wait();
+				}catch(Exception e){
+					e.printStackTrace();
 				}
 			}
+		}
+		
+		String proxy = null;
+		synchronized(proxies){
+			proxy = proxies.get(random.nextInt(proxies.size()));
+			
+//			if(proxies.size()!=0){
+//				proxy = proxies.get(random.nextInt(proxies.size()));
+//			}else{
+//				if(!noproxy){
+//					noproxy = true;
+//					
+//					EngineMessage msg = new EngineMessage();
+//					msg.setType(EngineMessageType.OM_NO_PROXY);
+//					notify(msg);
+//					//shutdown();
+//				}
+//			}
 		}
 		return proxy;
 	}
@@ -334,7 +350,10 @@ public class Engine extends Observable {
 			for(int i=0;i<stats.length;i++){
 				stats[i] = 0;
 			}
-			noproxy = false;
+			reload = false;
+			bc = 0;
+			ec = 0;
+//			noproxy = false;
 			
 			// long tm = System.currentTimeMillis();
 			DateFormat format = new java.text.SimpleDateFormat(
@@ -360,6 +379,31 @@ public class Engine extends Observable {
 				} catch (Exception ex) {
 					ex.printStackTrace();
 				}
+			}
+			
+			if("true".equals(configuration.getProperty("SCAN"))&&hasService){
+				//开始扫描的线程
+				Thread t = new Thread(new Runnable(){
+					@Override
+					public void run() {
+						//开始定时扫描
+						while(running){
+							try{
+								//执行扫描, 并将结果写入MBean
+								
+								//休眠
+								Thread.sleep(1000*60*Integer.parseInt(configuration
+										.getProperty("SCAN")));//休眠一段时间							
+								//通知Engine需要更换IP
+								Engine.getInstance().reloadProxies();					
+							}catch(Exception e){
+								e.printStackTrace();
+							}
+						}
+					}
+				});
+				t.setDaemon(true);
+				t.start();
 			}
 
 			int tc = Integer.parseInt(configuration
@@ -446,45 +490,31 @@ public class Engine extends Observable {
 //			String init = domain+":type="+className+",index=1";
 //			ObjectName objectName = ObjectName.getInstance(init);
 //			mbs.createMBean(className, objectName);
-			
-			//开始扫描的线程
-			Thread t = new Thread(new Runnable(){
-				@Override
-				public void run() {
-					//开始定时扫描
-					while(true){
-						try{
-							//执行扫描
-							
-							
-							//通知Engine需要更换IP
-							Engine.getInstance().reloadProxies();
-							Thread.sleep(1000*10);//休眠一段时间							
-						}catch(Exception e){
-							e.printStackTrace();
-						}
-					}
-				}
-			});
-			t.setDaemon(true);
-			t.start();
+			hasService = true;
 		}catch(Exception e){
 			e.printStackTrace();
 		}		
 	}
 	
+//	@Deprecated
+//	private void needReloadProxies(){
+//		reload = true;
+//		reloadProxies();
+//		
+////		EngineMessage msg = new EngineMessage();
+////		msg.setTid(-1);//通知所有线程
+////		msg.setType(EngineMessageType.OM_RELOAD_PROXIES);
+////		notify(msg);		
+//	}
+	
 	public void reloadProxies() {
+		reload = true;
 		info("");
 		info("================");
 		info("正在更新代理");
 		info("================");
 		info("");
-		
-		EngineMessage msg = new EngineMessage();
-		msg.setTid(-1);//通知所有线程
-		msg.setType(EngineMessageType.OM_RELOAD_PROXIES);
-		notify(msg);
-		
+				
 		//loadproxies form jmx service
 		try {
 			JMXServiceURL url = new JMXServiceURL(
@@ -506,7 +536,7 @@ public class Engine extends Observable {
 			List<String> params = new ArrayList<String>();
 			params.add(String.valueOf(proxies.size()));
 
-			msg = new EngineMessage();
+			EngineMessage msg = new EngineMessage();
 			msg.setType(EngineMessageType.OM_PROXY_LOADED);
 			msg.setData(params);
 			notify(msg);
@@ -515,17 +545,19 @@ public class Engine extends Observable {
 			e.printStackTrace();
 		}
 		
-		msg = new EngineMessage();
-		msg.setTid(-1);//通知所有线程
-		msg.setType(EngineMessageType.OM_RELOAD_PROXIES);
-		notify(msg);
-		notify(msg);
-
+//		msg = new EngineMessage();
+//		msg.setTid(-1);//通知所有线程
+//		msg.setType(EngineMessageType.OM_RELOAD_PROXIES);
+//		notify(msg);
+//		notify(msg);
+		
 		info("");
 		info("================");
 		info("更新完毕:"+proxies.size());
 		info("================");
 		info("");
+
+		reload = false;
 		
 		synchronized(SyncUtil.RELOAD_PROXY_OBJECT){
 			try{
@@ -536,12 +568,16 @@ public class Engine extends Observable {
 		}
 	}
 
-	public void beginTask(){
-		
+	public synchronized void beginTask(){
+		bc++;
 	}
 	
-	public void endTask(){
-		
+	public synchronized void endTask(){
+		ec++;
+//		if(ec==bc&&reload){
+//			reload = false;
+//			reloadProxies();
+//		}
 	}
 	
 	public static Engine getInstance() {
