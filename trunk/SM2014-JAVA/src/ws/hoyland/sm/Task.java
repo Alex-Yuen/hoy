@@ -33,6 +33,7 @@ public class Task implements Runnable, Observer {
 	private String resp = null;
 	
 	protected boolean run = false;
+	private boolean wflag = false;
 	
 	private static Random RND = new Random();
 	//private static String UAG = "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1; QQDownload 734; Maxthon; .NET CLR 2.0.50727; .NET4.0C; .NET4.0E)";
@@ -67,6 +68,8 @@ public class Task implements Runnable, Observer {
 						request.releaseConnection();
 					}
 					break;
+				case EngineMessageType.OM_RELOAD_PROXIES:
+					wflag = true;
 				default:
 					break;
 			}

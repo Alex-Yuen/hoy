@@ -70,6 +70,7 @@ public class SM2014 implements Observer {
 	public void open() {
 		Display display = Display.getDefault();
 		createContents();
+		load();
 		shell.open();
 		shell.layout();
 		while (!shell.isDisposed()) {
@@ -105,22 +106,7 @@ public class SM2014 implements Observer {
 						
 					});
 					t.start();
-		        }
-		        
-			}
-			@Override
-			public void shellActivated(ShellEvent e) {				
-				Engine.getInstance().addObserver(SM2014.this);
-				
-				Thread t = new Thread(new Runnable(){
-					@Override
-					public void run() {
-						//安装Service
-						
-					}
-					
-				});
-				t.start();
+		        }		        
 			}
 		});
 		shell.setImage(SWTResourceManager.getImage(SM2014.class, "/logo.ico"));
@@ -340,6 +326,20 @@ public class SM2014 implements Observer {
 
 	}
 
+	private void load(){
+		
+		Engine.getInstance().addObserver(SM2014.this);
+		
+		Thread t = new Thread(new Runnable(){
+			@Override
+			public void run() {
+				//开始JMX服务
+				Engine.getInstance().startService();
+			}
+			
+		});
+		t.start();
+	}
 	@Override
 	public void update(Observable obj, Object arg) {
 		//接收来自Engine的消息
