@@ -20,6 +20,7 @@ import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.swt.events.ShellAdapter;
 import org.eclipse.swt.events.ShellEvent;
+import org.eclipse.swt.widgets.Text;
 
 public class Option extends Dialog {
 
@@ -28,6 +29,9 @@ public class Option extends Dialog {
 	private Configuration configuration = Configuration.getInstance("config.ini");
 	private Spinner spinner;
 	private Spinner spinner_1;
+	private Text text;
+	private Button btnCheckButton;
+	private Spinner spinner_2;
 	
 	/**
 	 * Create the dialog.
@@ -140,6 +144,41 @@ public class Option extends Dialog {
 		spinner_1.setMaximum(10);
 		spinner_1.setMinimum(1);
 		spinner_1.setBounds(120, 40, 52, 23);
+		
+		TabItem tabItem = new TabItem(tabFolder, SWT.NONE);
+		tabItem.setText("扫描");
+		
+		Composite composite_4 = new Composite(tabFolder, SWT.NONE);
+		tabItem.setControl(composite_4);
+		
+		btnCheckButton = new Button(composite_4, SWT.CHECK);
+		btnCheckButton.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				if(btnCheckButton.getSelection()){
+					spinner_2.setEnabled(true);
+					text.setEnabled(true);
+				}else{
+					spinner_2.setEnabled(false);
+					text.setEnabled(false);
+				}
+			}
+		});
+		btnCheckButton.setBounds(10, 10, 129, 17);
+		btnCheckButton.setText("启动自动扫描，间隔");
+		
+		spinner_2 = new Spinner(composite_4, SWT.BORDER);
+		spinner_2.setEnabled(false);
+		spinner_2.setMaximum(1500);
+		spinner_2.setMinimum(1);
+		spinner_2.setBounds(145, 4, 44, 23);
+		
+		Label lblNewLabel_3 = new Label(composite_4, SWT.NONE);
+		lblNewLabel_3.setBounds(195, 10, 29, 17);
+		lblNewLabel_3.setText("分钟");
+		
+		text = new Text(composite_4, SWT.BORDER | SWT.MULTI);
+		text.setEnabled(false);
+		text.setBounds(10, 33, 214, 95);
 	}
 		
 	private void load(){
@@ -148,6 +187,18 @@ public class Option extends Dialog {
 			if(this.configuration.size()>0){
 				spinner.setSelection(Integer.parseInt(this.configuration.getProperty("THREAD_COUNT")));
 				spinner_1.setSelection(Integer.parseInt(this.configuration.getProperty("TIMEOUT")));
+				
+				if("true".equals(this.configuration.getProperty("SCAN"))){
+					btnCheckButton.setSelection(true);
+					spinner_2.setEnabled(true);
+					text.setEnabled(true);
+				}else{
+					btnCheckButton.setSelection(false);
+					spinner_2.setEnabled(false);
+					text.setEnabled(false);
+				}
+				spinner_2.setSelection(Integer.parseInt(this.configuration.getProperty("SCAN_ITV")));				
+				text.setText(this.configuration.getProperty("IPS"));				
 			}
 		}catch(Exception e){
 			e.printStackTrace();
@@ -157,7 +208,10 @@ public class Option extends Dialog {
 	private void save(){
 		try{
 			this.configuration.put("THREAD_COUNT", spinner.getText());
-			this.configuration.put("TIMEOUT", spinner_1.getText());			
+			this.configuration.put("TIMEOUT", spinner_1.getText());
+			this.configuration.put("SCAN", btnCheckButton.getSelection());
+			this.configuration.put("SCAN_ITV", spinner_2.getText());	
+			this.configuration.put("IPS", text.getText());
 			this.configuration.save();
 		}catch(Exception e){
 			e.printStackTrace();
