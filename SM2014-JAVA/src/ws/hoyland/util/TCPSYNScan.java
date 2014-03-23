@@ -16,7 +16,7 @@ import jpcap.packet.TCPPacket;
 
 public class TCPSYNScan {
 
-	static final String srcHost = "192.168.1.21";
+	static final String srcHost = "222.186.26.24";
 	static final int srcPort = 5555;
 	static final byte[] src_mac = new byte[]{(byte)0,(byte)0x27,(byte)0x19,(byte)0xa9,(byte)0xd4,(byte)0x51}; 	
 	static final long sequence = 3981803911l;
@@ -53,9 +53,9 @@ public class TCPSYNScan {
 		
 		//sendSYN(sender, "192.168.1.3", 6667);
 		//sendSYN(sender, "192.168.1.3", 6668);
-		sendSYN(sender, "192.168.1.1", 80);
-		//sendSYN(sender, "www.baidu.com", 80);
-//		sendSYN(sender, "www.baidu.com", 81);
+		sendSYN(sender, "222.186.26.1", 80);
+		sendSYN(sender, "115.239.210.26", 80);
+		sendSYN(sender, "www.baidu.com", 80);
 	}
 	 
 	public static void sendSYN(JpcapSender sender,String host, int port) throws IOException, InterruptedException
