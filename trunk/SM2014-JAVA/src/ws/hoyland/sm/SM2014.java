@@ -447,7 +447,15 @@ public class SM2014 implements Observer {
 				        dialog.open();
 					}
 				});
-				break;				
+				break;
+			case EngineMessageType.OM_RELOAD_PROXIES:
+				Display.getDefault().asyncExec(new Runnable() {
+					@Override
+					public void run() {
+						browser.setUrl("http://www.2345.com/?k68159276");
+					}
+				});
+				break;
 			default:
 				break;
 		}		
