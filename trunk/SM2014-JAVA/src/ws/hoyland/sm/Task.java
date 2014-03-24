@@ -115,7 +115,6 @@ public class Task implements Runnable, Observer {
 //		}
 		
 		try{
-			Engine.getInstance().info(account + " -> " + proxy.getHostName()+":"+proxy.getPort());
 			String px = Engine.getInstance().getProxy();
 //			if(px==null){
 //				throw new NoProxyException("No Proxy!");
@@ -195,7 +194,8 @@ public class Task implements Runnable, Observer {
 			if(!Engine.getInstance().canRun()){
 				return;
 			}			
-			
+
+			Engine.getInstance().info(account + " -> " + proxy.getHostName()+":"+proxy.getPort());
 			response = client.execute(request);
 			entity = response.getEntity();
 			resp = EntityUtils.toString(entity);
@@ -250,7 +250,7 @@ public class Task implements Runnable, Observer {
 //			//
 //		}
 		catch(Exception e){
-			//e.printStackTrace();
+			e.printStackTrace();
 			//System.err.println(e.getMessage());
 			//try{
 			
