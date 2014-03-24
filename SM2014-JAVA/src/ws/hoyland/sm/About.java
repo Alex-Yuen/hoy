@@ -5,6 +5,8 @@ import org.eclipse.swt.widgets.Dialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import swing2swt.layout.BorderLayout;
+import ws.hoyland.security.ClientDetecter;
+
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Label;
@@ -14,6 +16,8 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.wb.swt.SWTResourceManager;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.events.ShellAdapter;
+import org.eclipse.swt.events.ShellEvent;
 
 public class About extends Dialog {
 
@@ -54,6 +58,12 @@ public class About extends Dialog {
 	 */
 	private void createContents() {
 		shell = new Shell(getParent(), getStyle());
+		shell.addShellListener(new ShellAdapter() {
+			@Override
+			public void shellActivated(ShellEvent e) {
+				txtD.setText(ClientDetecter.getMachineID("SMZS"));
+			}
+		});
 		shell.setSize(400, 250);
 		shell.setText("关于");
 
