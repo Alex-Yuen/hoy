@@ -153,7 +153,6 @@ public class ArrayUtils {
      * @throws IllegalArgumentException  if the array contains elements other
      *  than {@link java.util.Map.Entry} and an Array
      */
-    @SuppressWarnings("unchecked")
     public static Map<Object, Object> toMap(Object[] array) {
         if (array == null) {
             return null;
