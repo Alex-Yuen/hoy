@@ -2,6 +2,7 @@ package ws.hoyland.sm;
 
 import java.text.DateFormat;
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Observable;
@@ -33,6 +34,8 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.widgets.Text;
 
+import com.ibm.icu.util.Calendar;
+
 public class SM2014 implements Observer {
 	
 	protected Shell shell;
@@ -49,6 +52,7 @@ public class SM2014 implements Observer {
 	private DecimalFormat df  = new DecimalFormat("0.00");
 	private Browser browser;
 	private int total = 0;
+	private int expire = 0;
 	private static DateFormat format = new java.text.SimpleDateFormat("[yyyy/MM/dd hh:mm:ss] ");
 
 	/**
@@ -56,12 +60,16 @@ public class SM2014 implements Observer {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		try {
-			SM2014 window = new SM2014();
-			window.open();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+//		try {
+//			SM2014 window = new SM2014();
+//			window.open();
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+	}
+	
+	public SM2014(int expire){
+		this.expire = expire;
 	}
 
 	/**
@@ -82,6 +90,7 @@ public class SM2014 implements Observer {
 
 	/**
 	 * Create contents of the window.
+	 * @wbp.parser.entryPoint
 	 */
 	protected void createContents() {
 		shell = new Shell(SWT.SHELL_TRIM ^ SWT.MAX
@@ -330,6 +339,11 @@ public class SM2014 implements Observer {
 	}
 
 	private void load(){
+		SimpleDateFormat sf=new SimpleDateFormat("yyyy年MM月dd日");
+		Calendar cal = Calendar.getInstance();
+		cal.add(Calendar.DATE, expire);
+		
+		shell.setText(shell.getText()+" - 有效期至["+sf.format(cal.getTime())+"]");
 		
 		Engine.getInstance().addObserver(SM2014.this);
 		

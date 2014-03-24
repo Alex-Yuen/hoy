@@ -209,7 +209,7 @@ public class Option extends Dialog {
 		try{
 			this.configuration.put("THREAD_COUNT", spinner.getText());
 			this.configuration.put("TIMEOUT", spinner_1.getText());
-			this.configuration.put("SCAN", btnCheckButton.getSelection());
+			this.configuration.put("SCAN", String.valueOf(btnCheckButton.getSelection()));
 			this.configuration.put("SCAN_ITV", spinner_2.getText());	
 			this.configuration.put("IPS", text.getText());
 			this.configuration.save();
