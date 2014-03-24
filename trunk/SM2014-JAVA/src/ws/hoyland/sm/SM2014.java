@@ -148,7 +148,7 @@ public class SM2014 {
 								@Override
 								public void run() {
 									shell.dispose();
-									System.exit(0);
+									new ExpireInfo().open();
 								}
 							});
 						}						
