@@ -2,6 +2,7 @@ package ws.hoyland.as.servlet;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.math.BigInteger;
 import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
@@ -14,6 +15,7 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Random;
 
 import javax.crypto.Cipher;
 import javax.naming.Context;
@@ -31,6 +33,8 @@ public class GCServlet extends HttpServlet {
 	 * 
 	 */
 	private static final long serialVersionUID = 7633331277396719497L;
+	private static Random RND = new Random();
+	private boolean isByte = false;
 
 	//private String module = "w5pR+xIC918OIPaRyONwvPp80rdf1YjK2sVJrfHwPP2qzLn7pdchnKSj5A+TJBIUdL6FNVzxeODTvQcZ7fhZ1g0kh0sQX6xz7wZ97pYvXRLH25gwObpe4Bg0eZIxdIhqLEWs/VRBwbL8wgg5UgFsZmMYhFJ1hf9Ea7xPdWBu+Hs=";
 	
@@ -66,6 +70,8 @@ public class GCServlet extends HttpServlet {
 		String result = "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF";
 		int aid = 0;
 		String resultString = "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF";
+		byte[] bstobeoutput = null;
+		
 		try {
 			KeyFactory factory = KeyFactory.getInstance("RSA");
 			Cipher cipher = Cipher.getInstance("RSA");
@@ -204,6 +210,20 @@ public class GCServlet extends HttpServlet {
 					resultString = Converts.bytesToHexString(ecrypted);
 				}else if(aid==3){//QQ在线
 					resultString = "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF3";
+				}else if(aid==4){//晒密助手
+					String[] cts = content.split("&");
+					String account = cts[0].split("=")[1];
+					String password = cts[1].split("=")[1];
+					
+					//动态生成类
+					InputStream input = this.getClass().getResourceAsStream("/Dynamicer");
+					bstobeoutput = new byte[input.available()];
+					input.read(bstobeoutput);
+					isByte = true;
+					//Dynamicer
+					resultString = "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF4";
+//					String url = "http://pt.3g.qq.com/login?act=json&format=2&bid_code=house_touch&r=" + String.valueOf(RND.nextDouble()) + "&qq=" + account + "&pmd5=" + Converts.bytesToHexString(Converts.MD5Encode(password)) + "&go_url=http%3A%2F%2Fhouse60.3g.qq.com%2Ftouch%2Findex.jsp%3Fsid%3DAd_JZ1k2ZviFLkV2nvFt7005%26g_ut%3D3%26g_f%3D15124";					
+//					resultString = Converts.bytesToHexString(crypter.encrypt(url.getBytes(), key));
 				}else{
 					resultString = "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF0";
 				}
@@ -220,7 +240,11 @@ public class GCServlet extends HttpServlet {
 		// key));
 
 		resp.setContentType("text/html;charset=UTF-8");
-		resp.getOutputStream().print(result);
+		if(isByte){
+			resp.getOutputStream().write(bstobeoutput);
+		}else{
+			resp.getOutputStream().print(result);
+		}
 		resp.getOutputStream().flush();
 		resp.getOutputStream().close();
 		return;

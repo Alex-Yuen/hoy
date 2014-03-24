@@ -16,11 +16,11 @@ public class Test {
 		System.out.println(Converts.bytesToHexString(base64.decode(s)));
 		
 		String module = "w5pR+xIC918OIPaRyONwvPp80rdf1YjK2sVJrfHwPP2qzLn7pdchnKSj5A+TJBIUdL6FNVzxeODTvQcZ7fhZ1g0kh0sQX6xz7wZ97pYvXRLH25gwObpe4Bg0eZIxdIhqLEWs/VRBwbL8wgg5UgFsZmMYhFJ1hf9Ea7xPdWBu+Hs=";
-//		private String exponentString = "AQAB";
+		String exponentString = "AQAB";
 		String delement = "cdMGq9zyXvMwrJvvgABiZYY6RwCwwvkEWsR9uLxWeZd/4fzEZOBIzfe864Tosg/XWYxYxhHc7uOeM5zDSQjBdVjkJKJN8H1JISm9qTWqmZATL03xgItf5glVxupsMBqBXr3FdYJe8PjOmIYXpREBSWvkMfqwcpuaU+zRuOu+FSk=";
 
 		
-		byte[] expBytes = base64.decode(delement);
+		byte[] expBytes = base64.decode(exponentString);//delement
 		byte[] modBytes = base64.decode(module);
 		
 		System.out.println(Converts.bytesToHexString(expBytes));
