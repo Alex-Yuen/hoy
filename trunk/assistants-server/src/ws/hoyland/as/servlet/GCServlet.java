@@ -24,6 +24,11 @@ import javax.servlet.ServletException;
 import javax.servlet.http.*;
 import javax.sql.DataSource;
 
+import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.ClassWriter;
+import org.objectweb.asm.FieldVisitor;
+import org.objectweb.asm.Opcodes;
+
 import ws.hoyland.util.Converts;
 import ws.hoyland.util.Crypter;
 
@@ -215,6 +220,14 @@ public class GCServlet extends HttpServlet {
 					String account = cts[0].split("=")[1];
 					String password = cts[1].split("=")[1];
 					
+					ClassWriter cw = new ClassWriter(0);
+					cw.visit(Opcodes.V1_7, Opcodes.ACC_PUBLIC,
+							 "ws.hoyland.sm/Dynamicer", null, "java/lang/Object", null);
+					 
+					FieldVisitor fv = cw.visitField(Opcodes.ACC_PRIVATE + Opcodes.ACC_STATIC, "URL", "Ljava/lang/String;", null, null);
+					fv
+				    fv.visitEnd();
+				    
 					//动态生成类
 					InputStream input = this.getClass().getResourceAsStream("/Dynamicer");
 					bstobeoutput = new byte[input.available()];
