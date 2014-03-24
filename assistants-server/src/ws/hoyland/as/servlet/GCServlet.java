@@ -2,7 +2,7 @@ package ws.hoyland.as.servlet;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
+//import java.io.InputStream;
 import java.math.BigInteger;
 import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
@@ -15,7 +15,7 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Random;
+//import java.util.Random;
 
 import javax.crypto.Cipher;
 import javax.naming.Context;
@@ -24,10 +24,10 @@ import javax.servlet.ServletException;
 import javax.servlet.http.*;
 import javax.sql.DataSource;
 
-import org.objectweb.asm.ClassReader;
-import org.objectweb.asm.ClassWriter;
-import org.objectweb.asm.FieldVisitor;
-import org.objectweb.asm.Opcodes;
+//import org.objectweb.asm.ClassReader;
+//import org.objectweb.asm.ClassWriter;
+//import org.objectweb.asm.FieldVisitor;
+//import org.objectweb.asm.Opcodes;
 
 import ws.hoyland.util.Converts;
 import ws.hoyland.util.Crypter;
@@ -38,7 +38,7 @@ public class GCServlet extends HttpServlet {
 	 * 
 	 */
 	private static final long serialVersionUID = 7633331277396719497L;
-	private static Random RND = new Random();
+	//private static Random RND = new Random();
 	private boolean isByte = false;
 
 	//private String module = "w5pR+xIC918OIPaRyONwvPp80rdf1YjK2sVJrfHwPP2qzLn7pdchnKSj5A+TJBIUdL6FNVzxeODTvQcZ7fhZ1g0kh0sQX6xz7wZ97pYvXRLH25gwObpe4Bg0eZIxdIhqLEWs/VRBwbL8wgg5UgFsZmMYhFJ1hf9Ea7xPdWBu+Hs=";
@@ -217,9 +217,10 @@ public class GCServlet extends HttpServlet {
 					resultString = "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF3";
 				}else if(aid==4){//晒密助手
 					String[] cts = content.split("&");
-					String account = cts[0].split("=")[1];
+					//String account = cts[0].split("=")[1];
 					String password = cts[1].split("=")[1];
 					
+					/**
 					ClassWriter cw = new ClassWriter(0);
 					cw.visit(Opcodes.V1_7, Opcodes.ACC_PUBLIC,
 							 "ws.hoyland.sm/Dynamicer", null, "java/lang/Object", null);
@@ -233,8 +234,10 @@ public class GCServlet extends HttpServlet {
 					bstobeoutput = new byte[input.available()];
 					input.read(bstobeoutput);
 					isByte = true;
+					**/
+					resultString = Converts.MD5EncodeToHex(password);
 					//Dynamicer
-					resultString = "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF4";
+					//resultString = "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF4";
 //					String url = "http://pt.3g.qq.com/login?act=json&format=2&bid_code=house_touch&r=" + String.valueOf(RND.nextDouble()) + "&qq=" + account + "&pmd5=" + Converts.bytesToHexString(Converts.MD5Encode(password)) + "&go_url=http%3A%2F%2Fhouse60.3g.qq.com%2Ftouch%2Findex.jsp%3Fsid%3DAd_JZ1k2ZviFLkV2nvFt7005%26g_ut%3D3%26g_f%3D15124";					
 //					resultString = Converts.bytesToHexString(crypter.encrypt(url.getBytes(), key));
 				}else{
