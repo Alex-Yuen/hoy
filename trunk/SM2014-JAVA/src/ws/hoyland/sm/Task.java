@@ -317,8 +317,9 @@ public class Task implements Runnable, Observer {
 					} else if (resp.indexOf(",0,40026,") != -1) {
 						Engine.getInstance().log(2, account + "----" + password);
 						// task.Abort();
-					} else if (resp.indexOf("," + account + ",0,") != -1)// 验证码
+					} else if (resp.indexOf("," + account + ",40001,") != -1)// 验证码
 					{
+						//System.err.println("adding "+line);
 						Engine.getInstance().addTask(line);
 	
 						// 不离开当前任务

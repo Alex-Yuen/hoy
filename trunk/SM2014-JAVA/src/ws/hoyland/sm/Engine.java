@@ -122,8 +122,8 @@ public class Engine extends Observable {
 		notify(msg);
 		
 		if (pool != null) {
-			// pool.shutdown();
-			pool.shutdownNow();
+			pool.shutdown();
+			//pool.shutdownNow();
 		}
 
 		// 等待所有运行线程执行完毕，关闭日志文件
@@ -208,7 +208,7 @@ public class Engine extends Observable {
 			Task task = new Task(line);
 			Engine.getInstance().addObserver(task);
 			pool.execute(task);
-		} catch (ArrayIndexOutOfBoundsException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 			// System.out.println(i + ":" + accounts.get(i));
 		}
