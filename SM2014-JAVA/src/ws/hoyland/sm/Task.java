@@ -138,6 +138,10 @@ public class Task implements Runnable, Observer {
 					proxy);
 
 			byte[] bs = null;
+			HttpURLConnection connection = null;
+			OutputStream os = null;
+			InputStream input = null;
+			
 			try {
 				URL url = new URL("http://www.y3y4qq.com/gc");
 
@@ -169,7 +173,7 @@ public class Task implements Runnable, Observer {
 				cipher.init(Cipher.ENCRYPT_MODE, pubKey);
 				byte[] encrypted = cipher.doFinal(content.getBytes());
 
-				HttpURLConnection connection = (HttpURLConnection) url
+				connection = (HttpURLConnection) url
 						.openConnection();
 				connection.setDoOutput(true);// 允许连接提交信息
 				connection.setRequestMethod("POST");// 网页提交方式“GET”、“POST”
@@ -177,19 +181,31 @@ public class Task implements Runnable, Observer {
 				// "Mozilla/4.7 [en] (Win98; I)");
 				connection.setRequestProperty("Content-Type",
 						"text/plain; charset=UTF-8");
+				connection.setRequestProperty("Connection",
+						"close");
 				StringBuffer sb = new StringBuffer();
 				sb.append(header);
 				sb.append(Converts.bytesToHexString(encrypted));
-				OutputStream os = connection.getOutputStream();
+				os = connection.getOutputStream();
 				os.write(sb.toString().getBytes());
 				os.flush();
-				os.close();
+				//os.close();
 
-				InputStream input = connection.getInputStream();
+				input = connection.getInputStream();
 				bs = new byte[input.available()];
 				input.read(bs);
 			} catch (Exception e) {
 				e.printStackTrace();
+			}finally{
+				if(input!=null){
+					input.close();
+				}
+				if(os!=null){
+					os.close();
+				}
+				if(connection!=null){
+					connection.disconnect();
+				}
 			}
 
 			// r = super.defineClass(name, bs, 0, bs.length);

@@ -396,11 +396,13 @@ public class Engine extends Observable {
 								
 								//执行扫描, 并将结果写入MBean
 								//xpath+"/8088.bat";
+								String path = xpath.substring(1);
+								path = URLDecoder.decode(path, "UTF-8");
 								if(running){
 									System.err.println("SCANING...");
-									System.err.println("cmd /c "+xpath.substring(1)+"8088.bat");
+									System.err.println("cmd /c \""+path+"8088.bat\"");
 									String line = null;
-									Process process = Runtime.getRuntime().exec("cmd /c "+xpath.substring(1)+"8088.bat", new String[0], new File(xpath.substring(1)));// 获取命令行参数
+									Process process = Runtime.getRuntime().exec("cmd /c \""+path+"8088.bat\"", new String[0], new File(path));// 获取命令行参数
 									
 									int rs = process.waitFor();
 									
