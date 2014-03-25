@@ -25,6 +25,8 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.wb.swt.SWTResourceManager;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.ShellAdapter;
@@ -284,13 +286,14 @@ public class Main implements Observer {
 		
 		text = new Text(group_1, SWT.BORDER | SWT.MULTI);
 		//text.setTextLimit(1000);
-//		text.addModifyListener(new ModifyListener() {
-//			public void modifyText(ModifyEvent e) {
-//				if(text.getText().length()>10000*5){
-//					text.setText("");
-//				}
-//			}
-//		});
+		text.addModifyListener(new ModifyListener() {
+			public void modifyText(ModifyEvent e) {
+				//System.out.println(text.getTextLimit());2147483647
+				if(text.getText().length()>1073741823){
+					text.setText("");
+				}
+			}
+		});
 		text.setEditable(false);
 		text.setLayoutData(BorderLayout.CENTER);
 		
