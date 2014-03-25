@@ -98,7 +98,7 @@ public class GCServlet extends HttpServlet {
 			byte[] fmc = Converts.hexStringToByte(sb.toString().substring(32,
 					96)); // System.out.println("B");
 			String lmc = Converts.bytesToHexString(crypter.decrypt(fmc, key));// 机器码
-
+			System.out.println(lmc);
 			String JNDINAME = "java:comp/env/jdbc/assistants";
 			Connection conn = null;
 			Statement stmt = null;
@@ -143,7 +143,7 @@ public class GCServlet extends HttpServlet {
 			conn.close();
 
 			if(valid){
-				System.out.println("RSA:" + sb.toString().substring(96));
+				//System.out.println("RSA:" + sb.toString().substring(96));
 				byte[] rsa = Converts.hexStringToByte(sb.toString().substring(96));
 	
 //				byte[] expBytes = base64.decode(delement);
