@@ -31,8 +31,8 @@ public class AccessClassAdapter extends ClassAdapter {
 		cr.accept(classAdapter, ClassReader.SKIP_DEBUG);
 		byte[] data = cw.toByteArray(); // 生成新的字节码文件 File file = new
 										// File("A.class");
-		FileOutputStream fout = new FileOutputStream(file);
-		fout.write(data);
-		fout.close();
+//		FileOutputStream fout = new FileOutputStream(file);
+//		fout.write(data);
+//		fout.close();
 	}
 }
