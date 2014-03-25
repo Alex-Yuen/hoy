@@ -395,7 +395,7 @@ public class Engine extends Observable {
 								Thread.sleep(1000*60*Integer.parseInt(configuration
 										.getProperty("SCAN")));//休眠一段时间							
 								//通知Engine需要更换IP
-								//Engine.getInstance().reloadProxies();					
+								Engine.getInstance().reloadProxies();					
 							}catch(Exception e){
 								e.printStackTrace();
 							}

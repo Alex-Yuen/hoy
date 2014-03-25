@@ -28,6 +28,7 @@ public class SM2014 {
 
 	protected Shell shell;
 	private Text text;
+	private Button btnNewButton;
 
 	/**
 	 * Launch the application.
@@ -83,10 +84,11 @@ public class SM2014 {
 		
 		Composite composite_1 = new Composite(composite, SWT.NONE);
 		
-		Button btnNewButton = new Button(composite_1, SWT.NONE);
+		btnNewButton = new Button(composite_1, SWT.NONE);
 		btnNewButton.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
+				btnNewButton.setEnabled(false);
 				new Thread(new Runnable(){
 
 					@Override
