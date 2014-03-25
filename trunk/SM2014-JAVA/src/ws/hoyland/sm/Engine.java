@@ -82,6 +82,16 @@ public class Engine extends Observable {
 		client.getParams().setParameter(
 				CoreConnectionPNames.CONNECTION_TIMEOUT, 4000);
 		client.getParams().setParameter(CoreConnectionPNames.SO_TIMEOUT, 4000);
+		
+		if("/lib/".equals(xpath.substring(xpath.lastIndexOf("/")-4, xpath.lastIndexOf("/")+1))){
+			xpath = xpath.replace("/lib/", "/");	
+		}
+		try{
+			xpath = URLDecoder.decode(xpath, "UTF-8");
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+		System.err.println("xpath="+xpath);
 	}
 	
 	private void ready() {
@@ -364,11 +374,8 @@ public class Engine extends Observable {
 				try {
 					String path = xpath + fns[i] + "-" + tm + ".txt";
 					//System.out.println(path.substring(path.lastIndexOf("/")-4, path.lastIndexOf("/")+1));
-					if("/lib/".equals(path.substring(path.lastIndexOf("/")-4, path.lastIndexOf("/")+1))){
-						path = path.replace("/lib/", "/");	
-					}
+					
 					//System.err.println(path);
-					path = URLDecoder.decode(path, "UTF-8");
 					//System.err.println(path);
 					File fff = new File(path);
 					
@@ -397,14 +404,14 @@ public class Engine extends Observable {
 								//执行扫描, 并将结果写入MBean
 								//xpath+"/8088.bat";
 								String path = xpath.substring(1);
-								path = URLDecoder.decode(path, "UTF-8");
+								//path = URLDecoder.decode(path, "UTF-8");
 								if(running){
 									System.err.println("SCANING...");
 									System.err.println("cmd /c \""+path+"8088.bat\"");
 									String line = null;
 									Process process = Runtime.getRuntime().exec("cmd /c \""+path+"8088.bat\"", new String[0], new File(path));// 获取命令行参数
 									
-									int rs = process.waitFor();
+//									int rs = process.waitFor();
 									
 									BufferedReader info = new BufferedReader(new InputStreamReader(process.getInputStream(), "GB2312"));
 							        BufferedReader error = new BufferedReader(new InputStreamReader(process.getErrorStream(), "GB2312"));
@@ -416,7 +423,7 @@ public class Engine extends Observable {
 							        	System.err.println(line);
 							        }
 							        
-							        //int rs = process.exitValue();
+							        int rs = process.exitValue();
 									if(rs==0){
 										//读取8088.txt
 

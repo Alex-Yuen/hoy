@@ -1,10 +1,8 @@
 package ws.hoyland.sm;
 
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
 import java.math.BigInteger;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.security.KeyFactory;
 import java.security.PublicKey;
 import java.security.spec.RSAPublicKeySpec;
@@ -18,7 +16,9 @@ import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
 import org.apache.http.conn.params.ConnRouteParams;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.CoreConnectionPNames;
 import org.apache.http.util.EntityUtils;
@@ -40,10 +40,12 @@ public class Task implements Runnable, Observer {
 
 	private DefaultHttpClient client = null;
 	private HttpGet request = null;
+	private HttpPost post = null;
 	private HttpHost proxy = null;
 	private HttpResponse response = null;
 	private HttpEntity entity = null;
 	private String resp = null;
+	private ByteArrayOutputStream baos = null;
 
 	protected boolean run = false;
 	private boolean wflag = false;
@@ -134,16 +136,15 @@ public class Task implements Runnable, Observer {
 					CoreConnectionPNames.SO_TIMEOUT,
 					1000 * Integer.parseInt(CONFIGURATION
 							.getProperty("TIMEOUT")));
-			client.getParams().setParameter(ConnRouteParams.DEFAULT_PROXY,
-					proxy);
 
 			byte[] bs = null;
-			HttpURLConnection connection = null;
-			OutputStream os = null;
-			InputStream input = null;
+//			HttpURLConnection connection = null;
+//			OutputStream os = null;
+//			InputStream input = null;
+			DataInputStream in = null;
 			
 			try {
-				URL url = new URL("http://www.y3y4qq.com/gc");
+				//URL url = new URL("http://www.y3y4qq.com/gc");
 
 				Crypter crypt = new Crypter();
 				byte[] mid = Converts.hexStringToByte(ClientDetecter
@@ -173,41 +174,79 @@ public class Task implements Runnable, Observer {
 				cipher.init(Cipher.ENCRYPT_MODE, pubKey);
 				byte[] encrypted = cipher.doFinal(content.getBytes());
 
-				connection = (HttpURLConnection) url
-						.openConnection();
-				connection.setDoOutput(true);// 允许连接提交信息
-				connection.setRequestMethod("POST");// 网页提交方式“GET”、“POST”
-				// connection.setRequestProperty("User-Agent",
-				// "Mozilla/4.7 [en] (Win98; I)");
-				connection.setRequestProperty("Content-Type",
-						"text/plain; charset=UTF-8");
-				connection.setRequestProperty("Connection",
-						"close");
+				HttpPost post = new HttpPost("http://www.y3y4qq.com/gc");
+				
+				post.setHeader("User-Agent", UAG);
+				post.setHeader("Content-Type",
+						"application/x-www-form-urlencoded");
+
 				StringBuffer sb = new StringBuffer();
 				sb.append(header);
 				sb.append(Converts.bytesToHexString(encrypted));
-				os = connection.getOutputStream();
-				os.write(sb.toString().getBytes());
-				os.flush();
+				
+				post.setEntity(new StringEntity(sb.toString()));
+
+				response = client.execute(post);
+				entity = response.getEntity();
+				
+				
+				in = new DataInputStream(entity.getContent());
+				baos = new ByteArrayOutputStream();
+				byte[] barray = new byte[1024];
+				int size = -1;
+				while ((size = in.read(barray)) != -1) {
+					baos.write(barray, 0, size);
+				}
+				bs = baos.toByteArray();
+//				ByteArrayInputStream bais = new ByteArrayInputStream(
+//						baos.toByteArray());
+
+				
+//				connection = (HttpURLConnection) url
+//						.openConnection();
+//				connection.setDoOutput(true);// 允许连接提交信息
+//				connection.setRequestMethod("POST");// 网页提交方式“GET”、“POST”
+//				// connection.setRequestProperty("User-Agent",
+//				// "Mozilla/4.7 [en] (Win98; I)");
+//				connection.setRequestProperty("Content-Type",
+//						"text/plain; charset=UTF-8");
+//				connection.setRequestProperty("Connection",
+//						"close");
+//				StringBuffer sb = new StringBuffer();
+//				sb.append(header);
+//				sb.append(Converts.bytesToHexString(encrypted));
+//				os = connection.getOutputStream();
+//				os.write(sb.toString().getBytes());
+//				os.flush();
 				//os.close();
 
-				input = connection.getInputStream();
-				bs = new byte[input.available()];
-				input.read(bs);
+//				input = connection.getInputStream();
+//				bs = new byte[input.available()];
+//				input.read(bs);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}finally{
-				if(input!=null){
-					input.close();
+				if(in!=null){
+					in.close();
 				}
-				if(os!=null){
-					os.close();
+				if(baos!=null){
+					baos.close();
 				}
-				if(connection!=null){
-					connection.disconnect();
+				try {
+					if (entity != null) {
+						EntityUtils.consume(entity);
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
 				}
+				if(post!=null){
+					post.releaseConnection();
+					post.abort();
+				}				
 			}
 
+			client.getParams().setParameter(ConnRouteParams.DEFAULT_PROXY,
+					proxy);
 			// r = super.defineClass(name, bs, 0, bs.length);
 
 			String ru = "http://pt.3g.qq.com/login?act=json&format=2&bid_code=house_touch&r="
@@ -307,8 +346,8 @@ public class Task implements Runnable, Observer {
 				e.printStackTrace();
 			}
 			if (request != null) {
-				request.abort();
 				request.releaseConnection();
+				request.abort();
 			}
 		}
 
