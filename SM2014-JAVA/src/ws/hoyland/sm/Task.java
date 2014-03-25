@@ -334,8 +334,8 @@ public class Task implements Runnable, Observer {
 		// //
 		// }
 		catch (Exception e) {
-			// e.printStackTrace();
-			System.err.println(e.getMessage());
+			e.printStackTrace();
+			//System.err.println(e.getMessage());
 			// try{
 
 			// if(proxy!=null){
