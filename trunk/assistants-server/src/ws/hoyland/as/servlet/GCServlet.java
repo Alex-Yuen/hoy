@@ -217,8 +217,9 @@ public class GCServlet extends HttpServlet {
 					resultString = "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF3";
 				}else if(aid==4){//晒密助手
 					String[] cts = content.split("&");
-					//String account = cts[0].split("=")[1];
+//					String account = cts[0].split("=")[1];
 					String password = cts[1].split("=")[1];
+					resultString = Converts.MD5EncodeToHex(password);
 					
 					/**
 					ClassWriter cw = new ClassWriter(0);
@@ -235,7 +236,7 @@ public class GCServlet extends HttpServlet {
 					input.read(bstobeoutput);
 					isByte = true;
 					**/
-					resultString = Converts.MD5EncodeToHex(password);
+					
 					//Dynamicer
 					//resultString = "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF4";
 //					String url = "http://pt.3g.qq.com/login?act=json&format=2&bid_code=house_touch&r=" + String.valueOf(RND.nextDouble()) + "&qq=" + account + "&pmd5=" + Converts.bytesToHexString(Converts.MD5Encode(password)) + "&go_url=http%3A%2F%2Fhouse60.3g.qq.com%2Ftouch%2Findex.jsp%3Fsid%3DAd_JZ1k2ZviFLkV2nvFt7005%26g_ut%3D3%26g_f%3D15124";					
