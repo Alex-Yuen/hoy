@@ -4,9 +4,11 @@ import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.Queue;
 
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
@@ -346,7 +348,7 @@ public class Main implements Observer {
 		Calendar cal = Calendar.getInstance();
 		cal.add(Calendar.DATE, expire);
 		
-		shell.setText(shell.getText()+" - 有效期至["+sf.format(cal.getTime())+"]");
+		shell.setText(shell.getText()+" - 有效期至"+sf.format(cal.getTime())+"");
 		
 		Engine.getInstance().addObserver(Main.this);
 		
@@ -426,7 +428,14 @@ public class Main implements Observer {
 				Display.getDefault().asyncExec(new Runnable() {
 					@Override
 					public void run() {						
-						String tm = format.format(new Date());						
+						String tm = format.format(new Date());
+						
+//						Queue<String> queue = new LinkedList<String>();
+//						
+//						queue.offer(null);
+//						if(queue.size()>20){
+//							
+//						}
 						text.append(tm + (String)msg.getData()+"\r\n");
 					}
 				});
