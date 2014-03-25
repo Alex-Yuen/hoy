@@ -192,7 +192,7 @@ public class Main implements Observer {
 		mntmx.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				shell.dispose();
+				shell.close();
 			}
 		});
 		mntmx.setText("退出(&X)\tCTRL+Q");
