@@ -53,7 +53,7 @@ public class Main implements Observer {
 	private Browser browser;
 	private int total = 0;
 	private int expire = 0;
-	private static DateFormat format = new java.text.SimpleDateFormat("[yyyy/MM/dd hh:mm:ss] ");
+	private static DateFormat format = new java.text.SimpleDateFormat("[yyyy/MM/dd HH:mm:ss] ");
 
 	/**
 	 * Launch the application.

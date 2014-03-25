@@ -1,5 +1,13 @@
 package ws.hoyland.sm;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Dialog;
 import org.eclipse.swt.widgets.Display;
@@ -197,9 +205,20 @@ public class Option extends Dialog {
 					spinner_2.setEnabled(false);
 					text.setEnabled(false);
 				}
-				spinner_2.setSelection(Integer.parseInt(this.configuration.getProperty("SCAN_ITV")));				
-				text.setText(this.configuration.getProperty("IPS"));				
+				spinner_2.setSelection(Integer.parseInt(this.configuration.getProperty("SCAN_ITV")));
+				//text.setText(this.configuration.getProperty("IPS"));				
 			}
+			
+			InputStream input = this.getClass().getResourceAsStream("/ip.txt");
+			if(input!=null){
+				BufferedReader br = new BufferedReader(new InputStreamReader(input));
+				String line = null;
+				while((line=br.readLine())!=null){
+					text.append(line+"\r\n");
+				}
+				br.close();
+			}
+			
 		}catch(Exception e){
 			e.printStackTrace();
 		}
@@ -211,8 +230,17 @@ public class Option extends Dialog {
 			this.configuration.put("TIMEOUT", spinner_1.getText());
 			this.configuration.put("SCAN", String.valueOf(btnCheckButton.getSelection()));
 			this.configuration.put("SCAN_ITV", spinner_2.getText());	
-			this.configuration.put("IPS", text.getText());
+			//this.configuration.put("IPS", text.getText());
 			this.configuration.save();
+			
+			String path = this.getClass().getClassLoader().getResource("").getPath()+"/ip.txt";
+			File f = new File(path);
+			if(!f.exists()){
+				f.createNewFile();
+			}
+			BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(f)));
+			bw.write(text.getText());
+			bw.close();
 		}catch(Exception e){
 			e.printStackTrace();
 		}

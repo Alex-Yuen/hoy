@@ -5,6 +5,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.management.ManagementFactory;
 import java.net.URL;
@@ -69,7 +70,7 @@ public class Engine extends Observable {
 	private Random random = new Random();
 	private Base64 base64 = new Base64();
 	private boolean reload = false;
-	private boolean hasService = false;
+	private boolean hasService = false;	
 	protected int bc = 0;
 	protected int ec = 0;
 	
@@ -389,13 +390,67 @@ public class Engine extends Observable {
 						//开始定时扫描
 						while(running){
 							try{
-								//执行扫描, 并将结果写入MBean
-								
 								//休眠
 								Thread.sleep(1000*60*Integer.parseInt(configuration
-										.getProperty("SCAN")));//休眠一段时间							
-								//通知Engine需要更换IP
-								Engine.getInstance().reloadProxies();					
+										.getProperty("SCAN_ITV")));//休眠一段时间	
+								
+								//执行扫描, 并将结果写入MBean
+								//xpath+"/8088.bat";
+								if(running){									
+									System.err.println("SCANING...");
+									System.err.println("cmd /c "+xpath.substring(1)+"8088.bat");
+									String line = null;
+									Process process = Runtime.getRuntime().exec("cmd /c "+xpath.substring(1)+"8088.bat", new String[0], new File(xpath.substring(1)));// 获取命令行参数
+									
+									int rs = process.waitFor();
+									
+									BufferedReader info = new BufferedReader(new InputStreamReader(process.getInputStream(), "GB2312"));
+							        BufferedReader error = new BufferedReader(new InputStreamReader(process.getErrorStream(), "GB2312"));
+							        while((line=info.readLine())!=null) {
+							        	System.err.println(line);
+							        }
+							        
+							        while((line=error.readLine())!=null) {
+							        	System.err.println(line);
+							        }
+							        
+							        //int rs = process.exitValue();
+									if(rs==0){
+										//读取8088.txt
+
+										JMXServiceURL url = new JMXServiceURL(
+												"service:jmx:rmi:///jndi/rmi://localhost:8023/service");
+										JMXConnector jmxc = JMXConnectorFactory.connect(url, null);
+										
+										MBeanServerConnection mbsc = jmxc.getMBeanServerConnection();
+										//String domain = mbsc.getDefaultDomain();
+										
+										ObjectName objectName = new ObjectName("ws.hoyland.sm.service:name=ProxyService");
+										ProxyServiceMBean service = (ProxyServiceMBean)MBeanServerInvocationHandler.newProxyInstance(mbsc, objectName, ProxyServiceMBean.class, true);
+										
+										StringBuilder sb = new StringBuilder();
+										InputStream input = this.getClass().getResourceAsStream("/8088.txt");
+										if(input!=null){
+											BufferedReader br = new BufferedReader(new InputStreamReader(input));
+											while((line=br.readLine())!=null){
+												sb.append(line+"\r\n");
+												//text.append(line+"\r\n");
+											}
+											br.close();
+											service.setProxies(sb.toString());
+										}else{
+											//sb.append("127.0.0.1:8082\r\n");
+										}
+
+										//service.setProxies(sb.toString());
+										
+										System.err.println("SCANING...OK");
+										Engine.getInstance().reloadProxies();
+									}else{
+										System.err.println("SCANING...FAIL["+rs+"]");
+									}
+								}
+								//通知Engine需要更换IP				
 							}catch(Exception e){
 								e.printStackTrace();
 							}
@@ -553,7 +608,7 @@ public class Engine extends Observable {
 		
 		info("");
 		info("================");
-		info("更新完毕:"+proxies.size());
+		info("更新完毕: ["+proxies.size()+"]");
 		info("================");
 		info("");
 
