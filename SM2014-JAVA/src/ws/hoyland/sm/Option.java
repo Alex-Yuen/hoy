@@ -7,6 +7,7 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.net.URLDecoder;
 
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Dialog;
@@ -234,6 +235,7 @@ public class Option extends Dialog {
 			this.configuration.save();
 			
 			String path = this.getClass().getClassLoader().getResource("").getPath()+"/ip.txt";
+			path = URLDecoder.decode(path, "UTF-8");
 			File f = new File(path);
 			if(!f.exists()){
 				f.createNewFile();

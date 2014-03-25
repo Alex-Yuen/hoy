@@ -396,7 +396,7 @@ public class Engine extends Observable {
 								
 								//执行扫描, 并将结果写入MBean
 								//xpath+"/8088.bat";
-								if(running){									
+								if(running){
 									System.err.println("SCANING...");
 									System.err.println("cmd /c "+xpath.substring(1)+"8088.bat");
 									String line = null;
