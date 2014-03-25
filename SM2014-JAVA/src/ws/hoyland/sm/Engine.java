@@ -403,13 +403,13 @@ public class Engine extends Observable {
 								
 								//执行扫描, 并将结果写入MBean
 								//xpath+"/8088.bat";
-								String path = xpath.substring(1);
+								//String path = xpath.substring(1);
 								//path = URLDecoder.decode(path, "UTF-8");
 								if(running){
 									System.err.println("SCANING...");
-									System.err.println("cmd /c \""+path+"8088.bat\"");
+									System.err.println("cmd /c \""+xpath.substring(1)+"8088.bat\"");
 									String line = null;
-									Process process = Runtime.getRuntime().exec("cmd /c \""+path+"8088.bat\"", new String[0], new File(path));// 获取命令行参数
+									Process process = Runtime.getRuntime().exec("cmd /c \""+xpath.substring(1)+"8088.bat\"", new String[0], new File(xpath));// 获取命令行参数
 									
 //									int rs = process.waitFor();
 									
@@ -438,7 +438,7 @@ public class Engine extends Observable {
 										ProxyServiceMBean service = (ProxyServiceMBean)MBeanServerInvocationHandler.newProxyInstance(mbsc, objectName, ProxyServiceMBean.class, true);
 										
 										StringBuilder sb = new StringBuilder();
-										InputStream input = this.getClass().getResourceAsStream("/8088.txt");
+										InputStream input = new FileInputStream(new File(xpath+"8088.txt"));//this.getClass().getResourceAsStream("/8088.txt");
 										if(input!=null){
 											BufferedReader br = new BufferedReader(new InputStreamReader(input));
 											while((line=br.readLine())!=null){
@@ -447,9 +447,10 @@ public class Engine extends Observable {
 											}
 											br.close();
 											service.setProxies(sb.toString());
-										}else{
-											//sb.append("127.0.0.1:8082\r\n");
 										}
+//										else{
+//											//sb.append("127.0.0.1:8082\r\n");
+//										}
 
 										//service.setProxies(sb.toString());
 										

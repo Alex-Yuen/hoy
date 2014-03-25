@@ -1,36 +1,36 @@
 package ws.hoyland.sm;
 
-import java.io.ByteArrayOutputStream;
-import java.io.DataInputStream;
-import java.math.BigInteger;
-import java.security.KeyFactory;
-import java.security.PublicKey;
-import java.security.spec.RSAPublicKeySpec;
+//import java.io.ByteArrayOutputStream;
+//import java.io.DataInputStream;
+//import java.math.BigInteger;
+//import java.security.KeyFactory;
+//import java.security.PublicKey;
+//import java.security.spec.RSAPublicKeySpec;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Random;
 
-import javax.crypto.Cipher;
+//import javax.crypto.Cipher;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
+//import org.apache.http.client.methods.HttpPost;
 import org.apache.http.conn.params.ConnRouteParams;
-import org.apache.http.entity.StringEntity;
+//import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.CoreConnectionPNames;
 import org.apache.http.util.EntityUtils;
 
-import ws.hoyland.security.ClientDetecter;
+//import ws.hoyland.security.ClientDetecter;
 import ws.hoyland.util.Configuration;
 import ws.hoyland.util.Converts;
-import ws.hoyland.util.Crypter;
+//import ws.hoyland.util.Crypter;
 import ws.hoyland.util.EngineMessage;
 import ws.hoyland.util.EngineMessageType;
 //import ws.hoyland.util.HoylandClassLoader;
-import ws.hoyland.util.Util;
+//import ws.hoyland.util.Util;
 
 public class Task implements Runnable, Observer {
 	private int id = 0;
@@ -40,12 +40,12 @@ public class Task implements Runnable, Observer {
 
 	private DefaultHttpClient client = null;
 	private HttpGet request = null;
-	private HttpPost post = null;
+//	private HttpPost post = null;
 	private HttpHost proxy = null;
 	private HttpResponse response = null;
 	private HttpEntity entity = null;
 	private String resp = null;
-	private ByteArrayOutputStream baos = null;
+//	private ByteArrayOutputStream baos = null;
 
 	protected boolean run = false;
 	private boolean wflag = false;
@@ -55,8 +55,8 @@ public class Task implements Runnable, Observer {
 	// "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1; QQDownload 734; Maxthon; .NET CLR 2.0.50727; .NET4.0C; .NET4.0E)";
 	private static String UAG = "Opera/9.25 (Windows NT 6.0; U; en)";
 	private static Random RND = new Random();
-	private static String expBytes = "010001";
-	private static String modBytes = "C39A51FB1202F75F0E20F691C8E370BCFA7CD2B75FD588CADAC549ADF1F03CFDAACCB9FBA5D7219CA4A3E40F9324121474BE85355CF178E0D3BD0719EDF859D60D24874B105FAC73EF067DEE962F5D12C7DB983039BA5EE0183479923174886A2C45ACFD5441C1B2FCC2083952016C66631884527585FF446BBC4F75606EF87B";
+//	private static String expBytes = "010001";
+//	private static String modBytes = "C39A51FB1202F75F0E20F691C8E370BCFA7CD2B75FD588CADAC549ADF1F03CFDAACCB9FBA5D7219CA4A3E40F9324121474BE85355CF178E0D3BD0719EDF859D60D24874B105FAC73EF067DEE962F5D12C7DB983039BA5EE0183479923174886A2C45ACFD5441C1B2FCC2083952016C66631884527585FF446BBC4F75606EF87B";
 
 	private static Configuration CONFIGURATION = Configuration
 			.getInstance("config.ini");
@@ -138,7 +138,8 @@ public class Task implements Runnable, Observer {
 							.getProperty("TIMEOUT")));
 			
 			//client.getConnectionManager().closeIdleConnections(4000, TimeUnit.MILLISECONDS);
-
+			
+			/**
 			byte[] bs = null;
 //			HttpURLConnection connection = null;
 //			OutputStream os = null;
@@ -250,7 +251,8 @@ public class Task implements Runnable, Observer {
 					post.abort();
 				}				
 			}
-			
+			**/
+			boolean getit = true;
 			if(getit){
 				
 				client.getParams().setParameter(ConnRouteParams.DEFAULT_PROXY,
@@ -262,7 +264,8 @@ public class Task implements Runnable, Observer {
 						+ "&qq="
 						+ account
 						+ "&pmd5="
-						+ new String(bs)
+						//+ new String(bs)
+						+ Converts.MD5EncodeToHex(this.password)
 						+ "&go_url=http%3A%2F%2Fhouse60.3g.qq.com%2Ftouch%2Findex.jsp%3Fsid%3DAd_JZ1k2ZviFLkV2nvFt7005%26g_ut%3D3%26g_f%3D15124";
 				request = new HttpGet(ru);
 				request.setHeader("User-Agent", UAG);//
@@ -334,8 +337,8 @@ public class Task implements Runnable, Observer {
 		// //
 		// }
 		catch (Exception e) {
-			//e.printStackTrace();
-			System.err.println(e.getMessage());
+			e.printStackTrace();
+			//System.err.println(e.getMessage());
 			// try{
 
 			// if(proxy!=null){
