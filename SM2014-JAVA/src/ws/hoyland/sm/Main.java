@@ -4,11 +4,11 @@ import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.LinkedList;
+//import java.util.LinkedList;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
-import java.util.Queue;
+//import java.util.Queue;
 
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
