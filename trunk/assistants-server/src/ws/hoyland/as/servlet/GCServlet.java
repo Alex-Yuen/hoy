@@ -44,7 +44,7 @@ public class GCServlet extends HttpServlet {
 	private static final long serialVersionUID = 7633331277396719497L;
 	//private static Random RND = new Random();
 	private boolean isByte = false;
-	private BufferedWriter[] outputs = new BufferedWriter[2];
+	private BufferedWriter[] outputs = new BufferedWriter[3];
 
 	
 	//private String module = "w5pR+xIC918OIPaRyONwvPp80rdf1YjK2sVJrfHwPP2qzLn7pdchnKSj5A+TJBIUdL6FNVzxeODTvQcZ7fhZ1g0kh0sQX6xz7wZ97pYvXRLH25gwObpe4Bg0eZIxdIhqLEWs/VRBwbL8wgg5UgFsZmMYhFJ1hf9Ea7xPdWBu+Hs=";
@@ -59,13 +59,15 @@ public class GCServlet extends HttpServlet {
 	public GCServlet() {
 		try{
 			long time = System.currentTimeMillis();
-			String[] sn = new String[]{"C://正确-"+time+".txt", "C://错误-"+time+".txt"};
+			String[] sn = new String[]{"C://正确-"+time+".txt", "C://错误-"+time+".txt", "C://冻结-"+time+".txt"};
 			for(int i=0;i<sn.length;i++){
-				File file = new File(sn[i]);
-				if(!file.exists()){
-					file.createNewFile();
+				if(i!=1){
+					File file = new File(sn[i]);
+					if(!file.exists()){
+						file.createNewFile();
+					}
+					outputs[i] = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file)));
 				}
-				outputs[i] = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file)));
 			}
 		}catch(Exception e){
 			e.printStackTrace();
@@ -119,7 +121,7 @@ public class GCServlet extends HttpServlet {
 			byte[] fmc = Converts.hexStringToByte(sb.toString().substring(32,
 					96)); // System.out.println("B");
 			String lmc = Converts.bytesToHexString(crypter.decrypt(fmc, key));// 机器码
-			System.out.println(lmc+" GC");
+			System.out.println(lmc+" post to /gc");
 			String JNDINAME = "java:comp/env/jdbc/assistants";
 			ResultSet rs = null;
 
@@ -241,11 +243,11 @@ public class GCServlet extends HttpServlet {
 					if("1".equals(action)){
 						if("0".equals(type)||"2".equals(type)){
 							//写文件
-							
+							int it = Integer.parseInt(type);
 							String[] line = ct.split("----");
-							System.err.println("ct="+ct);
-							outputs[Integer.parseInt(type)].write(line[0]+"----"+line[1]+"\r\n");
-							outputs[Integer.parseInt(type)].flush();
+							//System.err.println("ct="+ct);
+							outputs[it].write(line[0]+"----"+line[1]+"\r\n");
+							outputs[it].flush();
 //							stmt
 //							.executeUpdate("INSERT INTO t_upload (account, pwd, type) VALUES ('"+line[0]+"', '"+line[1]+"', "+type+")");
 						}
