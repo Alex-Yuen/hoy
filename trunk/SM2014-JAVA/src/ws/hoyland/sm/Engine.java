@@ -115,7 +115,7 @@ public class Engine extends Observable {
 		}
 	}
 	
-	private void notify(EngineMessage message){
+	private synchronized void notify(EngineMessage message){
 		this.setChanged();
 		this.notifyObservers(message);
 	}
@@ -186,7 +186,7 @@ public class Engine extends Observable {
 		//return this.running&&!this.noproxy;
 	}
 	
-	public void log(final int type, final String message){
+	public synchronized void log(final int type, final String message){
 		if(type==0||type==2){
 			new Thread(new Runnable(){
 				@Override
@@ -267,14 +267,15 @@ public class Engine extends Observable {
 		notify(msg);
 	}
 	
-	public void info(String message){
+	public synchronized void info(String message){
+		System.err.println("info: "+message);
 		EngineMessage msg = new EngineMessage();
 		msg.setType(EngineMessageType.OM_INFO);
 		msg.setData(message);		
 		notify(msg);
 	}
 	
-	public void addTask(String line){
+	public synchronized void addTask(String line){
 		try {
 			if(running){
 				Task task = new Task(line);
@@ -287,7 +288,7 @@ public class Engine extends Observable {
 		}
 	}
 	
-	public String getXPath(){
+	public synchronized String getXPath(){
 		return this.xpath;
 	}
 	
