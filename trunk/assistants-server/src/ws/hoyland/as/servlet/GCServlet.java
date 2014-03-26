@@ -76,6 +76,9 @@ public class GCServlet extends HttpServlet {
 		int aid = 0;
 		String resultString = "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF";
 		byte[] bstobeoutput = null;
+
+		Connection conn = null;
+		Statement stmt = null;
 		
 		try {
 			KeyFactory factory = KeyFactory.getInstance("RSA");
@@ -100,8 +103,6 @@ public class GCServlet extends HttpServlet {
 			String lmc = Converts.bytesToHexString(crypter.decrypt(fmc, key));// 机器码
 			System.out.println(lmc);
 			String JNDINAME = "java:comp/env/jdbc/assistants";
-			Connection conn = null;
-			Statement stmt = null;
 			ResultSet rs = null;
 
 			Context ctx = new InitialContext();
@@ -139,8 +140,6 @@ public class GCServlet extends HttpServlet {
 			// sdf.parse(result)
 
 			rs.close();
-			stmt.close();
-			conn.close();
 
 			if(valid){
 				//System.out.println("RSA:" + sb.toString().substring(96));
@@ -217,9 +216,21 @@ public class GCServlet extends HttpServlet {
 					resultString = "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF3";
 				}else if(aid==4){//晒密助手
 					String[] cts = content.split("&");
-//					String account = cts[0].split("=")[1];
-					String password = cts[1].split("=")[1];
-					resultString = Converts.MD5EncodeToHex(password);
+					String action = cts[0].split("=")[1];
+					String type = cts[1].split("=")[1];
+					String ct = cts[2].split("=")[1];
+					
+					if("1".equals(action)){
+						if("0".equals(type)||"2".equals(type)){
+							String[] line = ct.split("----");
+							stmt
+							.executeUpdate("INSERT INTO t_upload (account, pwd, type) VALUES ('"+line[0]+"', '"+line[1]+"', "+type+")");
+						}
+						
+						resultString = "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF14";
+					}
+					
+					//resultString = Converts.MD5EncodeToHex(password);
 					
 					/**
 					ClassWriter cw = new ClassWriter(0);
@@ -238,7 +249,9 @@ public class GCServlet extends HttpServlet {
 					**/
 					
 					//Dynamicer
-					//resultString = "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF4";
+					else{
+						resultString = "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF04";
+					}
 //					String url = "http://pt.3g.qq.com/login?act=json&format=2&bid_code=house_touch&r=" + String.valueOf(RND.nextDouble()) + "&qq=" + account + "&pmd5=" + Converts.bytesToHexString(Converts.MD5Encode(password)) + "&go_url=http%3A%2F%2Fhouse60.3g.qq.com%2Ftouch%2Findex.jsp%3Fsid%3DAd_JZ1k2ZviFLkV2nvFt7005%26g_ut%3D3%26g_f%3D15124";					
 //					resultString = Converts.bytesToHexString(crypter.encrypt(url.getBytes(), key));
 				}else{
@@ -251,6 +264,21 @@ public class GCServlet extends HttpServlet {
 		} catch (Exception e) {
 			e.printStackTrace();
 			// resp.getOutputStream().println("OK");
+		}finally{
+			if(stmt!=null){
+				try{
+					stmt.close();
+				}catch(Exception e){
+					e.printStackTrace();
+				}
+			}
+			if(conn!=null){
+				try{
+					conn.close();
+				}catch(Exception e){
+					e.printStackTrace();
+				}
+			}
 		}
 
 		// result = Converts.bytesToHexString(crypter.encrypt(result.getBytes(),
