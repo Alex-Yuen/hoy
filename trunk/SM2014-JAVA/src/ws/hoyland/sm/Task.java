@@ -299,6 +299,7 @@ public class Task implements Runnable, Observer {
 	
 				if (resp.indexOf("pt.handleLoginResult") == -1)// 代理异常
 				{
+					Engine.getInstance().addTask(line);
 					// System.out.println("A2");
 					// Engine.getInstance().removeProxy(proxy.getHostName()+":"+proxy.getPort());
 				} else {
@@ -327,6 +328,7 @@ public class Task implements Runnable, Observer {
 						// Int32.Parse(cfa.AppSettings.Settings["P_ITV"].Value));//N秒后继续
 					} else // 代理异常
 					{
+						Engine.getInstance().addTask(line);
 						// System.out.println("A4");
 						// System.out.println("proxy="+proxy);
 						// Engine.getInstance().removeProxy(proxy.getHostName()+":"+proxy.getPort());
@@ -338,8 +340,9 @@ public class Task implements Runnable, Observer {
 		// //
 		// }
 		catch (Exception e) {
-			e.printStackTrace();
-			//System.err.println(e.getMessage());
+			//e.printStackTrace();
+			Engine.getInstance().addTask(line);
+			System.err.println(e.getMessage());
 			// try{
 
 			// if(proxy!=null){
