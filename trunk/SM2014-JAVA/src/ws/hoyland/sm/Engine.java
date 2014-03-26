@@ -106,7 +106,7 @@ public class Engine extends Observable {
 	
 	public void ready() {
 		if (accounts != null && accounts.size() > 0 && ((proxies != null
-				&& proxies.size() > 0))||"true".equals(configuration.getProperty("SCAN"))) {
+				&& proxies.size() > 0)||"true".equals(configuration.getProperty("SCAN")))) {
 			EngineMessage msg = new EngineMessage();
 			msg.setType(EngineMessageType.OM_READY);
 			notify(msg);
@@ -125,6 +125,17 @@ public class Engine extends Observable {
 	private void shutdown() {
 		//System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>1");
 		running = false;
+		
+		////////////////////////////////////////reload的处理
+		reload = false;
+		
+		synchronized(SyncUtil.RELOAD_PROXY_OBJECT){
+			try{
+				SyncUtil.RELOAD_PROXY_OBJECT.notifyAll();//更新完毕，唤醒线程
+			}catch(Exception e){
+				//
+			}
+		}		
 		
 		EngineMessage msg = new EngineMessage();
 		msg.setTid(-1);
@@ -430,6 +441,7 @@ public class Engine extends Observable {
 			
 			if("true".equals(configuration.getProperty("SCAN"))){ //等待扫描完代理
 				reload = true;
+				this.proxies = new ArrayList<String>();
 			}
 			
 			// long tm = System.currentTimeMillis();
@@ -475,6 +487,7 @@ public class Engine extends Observable {
 									
 //									int rs = process.waitFor();
 									
+									boolean hasRun = true;
 									BufferedReader info = new BufferedReader(new InputStreamReader(process.getInputStream(), "GB2312"));
 							        BufferedReader error = new BufferedReader(new InputStreamReader(process.getErrorStream(), "GB2312"));
 							        while((line=info.readLine())!=null) {
@@ -483,10 +496,13 @@ public class Engine extends Observable {
 							        
 							        while((line=error.readLine())!=null) {
 							        	System.err.println(line);
+							        	if(line.indexOf("拒绝访问")!=-1){
+							        		hasRun = false;
+							        	}
 							        }
 							        
 							        int rs = process.exitValue();
-									if(rs==0){
+									if(rs==0&&hasRun){
 										//读取8088.txt
 
 										JMXServiceURL url = new JMXServiceURL(
@@ -500,19 +516,36 @@ public class Engine extends Observable {
 										ProxyServiceMBean service = (ProxyServiceMBean)MBeanServerInvocationHandler.newProxyInstance(mbsc, objectName, ProxyServiceMBean.class, true);
 										
 										StringBuilder sb = new StringBuilder();
-										InputStream input = new FileInputStream(new File(xpath+"8088.txt"));//this.getClass().getResourceAsStream("/8088.txt");
-										if(input!=null){
-											BufferedReader br = new BufferedReader(new InputStreamReader(input));
-											while((line=br.readLine())!=null){
-												sb.append(line+"\r\n");
-												//text.append(line+"\r\n");
+										File file = null;
+										InputStream input = null;
+										BufferedReader br = null;
+										
+										try{
+											file = new File(xpath+"8088.txt");
+											//this.getClass().getResourceAsStream("/8088.txt");
+											if(file.exists()){
+												input = new FileInputStream(file);
+												br = new BufferedReader(new InputStreamReader(input));
+												while((line=br.readLine())!=null){
+													sb.append(line+"\r\n");
+													//text.append(line+"\r\n");
+												}
+												br.close();
+												service.setProxies(sb.toString());
 											}
-											br.close();
-											service.setProxies(sb.toString());
+	//										else{
+	//											//sb.append("127.0.0.1:8082\r\n");
+	//										}
+										}catch(Exception e){
+											e.printStackTrace();
+										}finally{
+											if(br!=null){
+												br.close();
+											}
+											if(input!=null){
+												input.close();
+											}
 										}
-//										else{
-//											//sb.append("127.0.0.1:8082\r\n");
-//										}
 
 										//service.setProxies(sb.toString());
 										
@@ -523,7 +556,11 @@ public class Engine extends Observable {
 									}
 								}
 								//通知Engine需要更换IP	
-								
+							}catch(Exception e){
+								e.printStackTrace();
+							}
+							
+							try{
 								//休眠
 								Thread.sleep(1000*60*Integer.parseInt(configuration
 										.getProperty("SCAN_ITV")));//休眠一段时间	

@@ -123,7 +123,10 @@ public class Task implements Runnable, Observer {
 			// if(px==null){
 			// throw new NoProxyException("No Proxy!");
 			// }
-
+			if (!Engine.getInstance().canRun()) {
+				return;
+			}
+			
 			String[] ms = px.split(":");
 			this.proxy = new HttpHost(ms[0], Integer.parseInt(ms[1]));
 
