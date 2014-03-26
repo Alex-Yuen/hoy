@@ -88,7 +88,7 @@ public class Help extends Dialog {
 		composite_1.setLayout(new BorderLayout(0, 0));
 		
 		txtipip = new Text(composite_1, SWT.BORDER | SWT.READ_ONLY | SWT.MULTI);
-		txtipip.setText("\r\n1，导入号码，手动导入代理，然后点击开始。\r\n\r\n2，导入号码，设置好自动扫描，设置好定时扫描时间。(建议放入的IP短\r\n在200个以内，时间20分钟)然后点击软件界面上的开始，会开始自动扫\r\n第一轮代理，扫完代理后自动导入并开始，后面会定时执行扫IP程序并且\r\n自动更换新代理)");
+		txtipip.setText("\r\n1，导入号码，手动导入代理，然后点击开始。\r\n\r\n2，导入号码，设置好自动扫描，设置好定时扫描时间。(建议放入的IP在\r\n200个以内，时间20分钟)然后点击软件界面上的开始，会开始自动扫第一\r\n轮代理，扫完代理后自动导入并开始，后面会定时执行扫IP程序并且自动\r\n更换新代理)");
 		txtipip.setEditable(false);
 		txtipip.setLayoutData(BorderLayout.CENTER);
 	}
