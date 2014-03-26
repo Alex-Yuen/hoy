@@ -104,9 +104,9 @@ public class Engine extends Observable {
 		System.err.println("xpath="+xpath);
 	}
 	
-	private void ready() {
-		if (accounts != null && accounts.size() > 0 && proxies != null
-				&& proxies.size() > 0) {
+	public void ready() {
+		if (accounts != null && accounts.size() > 0 && ((proxies != null
+				&& proxies.size() > 0))||"true".equals(configuration.getProperty("SCAN"))) {
 			EngineMessage msg = new EngineMessage();
 			msg.setType(EngineMessageType.OM_READY);
 			notify(msg);
@@ -272,6 +272,10 @@ public class Engine extends Observable {
 		}
 	}
 	
+	public String getXPath(){
+		return this.xpath;
+	}
+	
 	public void removeProxy(String proxy){
 		synchronized(proxy){
 			this.proxies.remove(proxy);
@@ -424,6 +428,10 @@ public class Engine extends Observable {
 			ec = 0;
 //			noproxy = false;
 			
+			if("true".equals(configuration.getProperty("SCAN"))){ //等待扫描完代理
+				reload = true;
+			}
+			
 			// long tm = System.currentTimeMillis();
 			DateFormat format = new java.text.SimpleDateFormat(
 					"yyyy年MM月dd日 hh时mm分ss秒");
@@ -455,10 +463,6 @@ public class Engine extends Observable {
 						//开始定时扫描
 						while(running){
 							try{
-								//休眠
-								Thread.sleep(1000*60*Integer.parseInt(configuration
-										.getProperty("SCAN_ITV")));//休眠一段时间	
-								
 								//执行扫描, 并将结果写入MBean
 								//xpath+"/8088.bat";
 								//String path = xpath.substring(1);
@@ -518,7 +522,12 @@ public class Engine extends Observable {
 										System.err.println("SCANING...FAIL["+rs+"]");
 									}
 								}
-								//通知Engine需要更换IP				
+								//通知Engine需要更换IP	
+								
+								//休眠
+								Thread.sleep(1000*60*Integer.parseInt(configuration
+										.getProperty("SCAN_ITV")));//休眠一段时间	
+								
 							}catch(Exception e){
 								e.printStackTrace();
 							}

@@ -45,6 +45,7 @@ public class Main implements Observer {
 	protected Shell shell;
 	private Option option;
 	private About about;
+	private Help help;
 	protected Composite composite_4;
 	private Button btnNewButton;
 	private Label lblNewLabel;
@@ -225,6 +226,17 @@ public class Main implements Observer {
 		Menu menu_3 = new Menu(mntmh);
 		mntmh.setMenu(menu_3);
 		
+		MenuItem mntmNewItem = new MenuItem(menu_3, SWT.NONE);
+		mntmNewItem.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				help = new Help(shell, SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL);
+				help.open();
+			}
+		});
+		mntmNewItem.setText("内容(C)...\tF1");
+		mntmNewItem.setAccelerator(SWT.F1);
+		
 		MenuItem mntma_1 = new MenuItem(menu_3, SWT.NONE);
 		mntma_1.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -233,8 +245,8 @@ public class Main implements Observer {
 				about.open();
 			}
 		});
-		mntma_1.setText("关于(&A)...\tF10");
-		mntma_1.setAccelerator(SWT.F10);
+		mntma_1.setText("关于(&A)...\tF8");
+		mntma_1.setAccelerator(SWT.F8);
 		
 		lblNewLabel = new Label(shell, SWT.BORDER);
 		lblNewLabel.setText("停止");
