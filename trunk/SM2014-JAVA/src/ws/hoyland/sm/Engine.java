@@ -278,7 +278,7 @@ public class Engine extends Observable {
 		try {
 			if(running){
 				Task task = new Task(line);
-				Engine.getInstance().addObserver(task);
+//				Engine.getInstance().addObserver(task);
 				pool.execute(task);
 			}
 		} catch (Exception e) {
@@ -536,7 +536,10 @@ public class Engine extends Observable {
 												}
 												br.close();
 												service.setProxies(sb.toString());
+											}else{
+												System.err.println("8088.txt no exists");
 											}
+										
 	//										else{
 	//											//sb.append("127.0.0.1:8082\r\n");
 	//										}
@@ -601,12 +604,12 @@ public class Engine extends Observable {
 				public void run() {					
 					for (int i = 0; i < accounts.size(); i++) {
 						try {						
-							Task task = new Task(accounts.get(i));
-							Engine.getInstance().addObserver(task);
 							if(running){
+								Task task = new Task(accounts.get(i));
+//								Engine.getInstance().addObserver(task);
 								pool.execute(task);
 							}
-						} catch (ArrayIndexOutOfBoundsException e) {
+						} catch (Exception e) {
 							e.printStackTrace();
 						}
 					}
@@ -681,6 +684,7 @@ public class Engine extends Observable {
 //	}
 	
 	public void reloadProxies() {
+		System.err.println("reloading proxies 1");
 		reload = true;
 		info("");
 		info("================");
@@ -705,6 +709,7 @@ public class Engine extends Observable {
 				proxies.add(ps[i]);
 			}
 			
+		System.err.println("reloading proxies 2");
 			//显示代理数量
 			List<String> params = new ArrayList<String>();
 			params.add(String.valueOf(proxies.size()));
@@ -714,10 +719,12 @@ public class Engine extends Observable {
 			msg.setData(params);
 			notify(msg);
 			
+		System.err.println("reloading proxies 3");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		
+		System.err.println("reloading proxies 4");
 //		msg = new EngineMessage();
 //		msg.setTid(-1);//通知所有线程
 //		msg.setType(EngineMessageType.OM_RELOAD_PROXIES);
@@ -730,6 +737,7 @@ public class Engine extends Observable {
 		info("================");
 		info("");
 
+		System.err.println("reloading proxies 5");
 		reload = false;
 		
 		synchronized(SyncUtil.RELOAD_PROXY_OBJECT){
@@ -739,6 +747,8 @@ public class Engine extends Observable {
 				//
 			}
 		}
+		
+		System.err.println("reloading proxies 6");
 	}
 
 	public synchronized void beginTask(){

@@ -10,6 +10,7 @@ public class ProxyService implements ProxyServiceMBean {
 	}
 
 	public void setProxies(String proxies) {
+		System.err.println("Setting proxies...");
 		this.proxies = proxies;
 		
 	}
