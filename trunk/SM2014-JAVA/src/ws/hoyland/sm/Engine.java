@@ -234,7 +234,7 @@ public class Engine extends Observable {
 						
 						client.execute(post);
 					}catch(Exception e){
-						//e.printStackTrace();
+						e.printStackTrace();
 					}finally{
 						if(post!=null){
 							post.releaseConnection();
@@ -272,7 +272,7 @@ public class Engine extends Observable {
 	
 	public void addTask(String line){
 		try {
-			if(!pool.isTerminating()){
+			if(running){
 				Task task = new Task(line);
 				Engine.getInstance().addObserver(task);
 				pool.execute(task);
