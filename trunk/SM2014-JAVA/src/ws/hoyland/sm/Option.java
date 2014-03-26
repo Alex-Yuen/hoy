@@ -3,11 +3,11 @@ package ws.hoyland.sm;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.net.URLDecoder;
 
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Dialog;
@@ -105,6 +105,7 @@ public class Option extends Dialog {
 				//shell.close();
 				save();
 				Option.this.shell.dispose();
+				Engine.getInstance().ready();
 			}
 		});
 		button.setText("确定(&O)");
@@ -210,7 +211,13 @@ public class Option extends Dialog {
 				//text.setText(this.configuration.getProperty("IPS"));				
 			}
 			
-			InputStream input = this.getClass().getResourceAsStream("/ip.txt");
+			String path = Engine.getInstance().getXPath()+"ip.txt";
+			//path = URLDecoder.decode(path, "UTF-8");
+			File f = new File(path);
+			if(!f.exists()){
+				f.createNewFile();
+			}
+			InputStream input = new FileInputStream(new File(Engine.getInstance().getXPath()+"ip.txt"));//this.getClass().getResourceAsStream("/ip.txt");
 			if(input!=null){
 				BufferedReader br = new BufferedReader(new InputStreamReader(input));
 				String line = null;
@@ -234,8 +241,8 @@ public class Option extends Dialog {
 			//this.configuration.put("IPS", text.getText());
 			this.configuration.save();
 			
-			String path = this.getClass().getClassLoader().getResource("").getPath()+"/ip.txt";
-			path = URLDecoder.decode(path, "UTF-8");
+			String path = Engine.getInstance().getXPath()+"ip.txt";
+			//path = URLDecoder.decode(path, "UTF-8");
 			File f = new File(path);
 			if(!f.exists()){
 				f.createNewFile();
