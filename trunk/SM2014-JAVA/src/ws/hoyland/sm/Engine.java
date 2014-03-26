@@ -87,8 +87,12 @@ public class Engine extends Observable {
 	private static String modBytes = "C39A51FB1202F75F0E20F691C8E370BCFA7CD2B75FD588CADAC549ADF1F03CFDAACCB9FBA5D7219CA4A3E40F9324121474BE85355CF178E0D3BD0719EDF859D60D24874B105FAC73EF067DEE962F5D12C7DB983039BA5EE0183479923174886A2C45ACFD5441C1B2FCC2083952016C66631884527585FF446BBC4F75606EF87B";
 	
 	private Engine() {
-		if("/lib/".equals(xpath.substring(xpath.lastIndexOf("/")-4, xpath.lastIndexOf("/")+1))){
-			xpath = xpath.replace("/lib/", "/");	
+		System.err.println(xpath);
+		//System.err.println(xpath.lastIndexOf("/"));
+		if(xpath.length()>4){
+			if("/lib/".equals(xpath.substring(xpath.lastIndexOf("/")-4, xpath.lastIndexOf("/")+1))){
+				xpath = xpath.replace("/lib/", "/");	
+			}
 		}
 		try{
 			xpath = URLDecoder.decode(xpath, "UTF-8");

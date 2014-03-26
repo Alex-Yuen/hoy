@@ -1,10 +1,12 @@
 package ws.hoyland.util;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
+import java.net.URLDecoder;
 import java.util.Properties;
 
 public class Configuration extends Properties {
@@ -18,8 +20,27 @@ public class Configuration extends Properties {
 
 	private Configuration(String path) {
 		try{
+			URL url = Configuration.class.getClassLoader().getResource("");
+			String xpath = url.getPath();
+			
+			if(xpath.length()>4){
+				if("/lib/".equals(xpath.substring(xpath.lastIndexOf("/")-4, xpath.lastIndexOf("/")+1))){
+					xpath = xpath.replace("/lib/", "/");	
+				}
+			}
+			try{
+				xpath = URLDecoder.decode(xpath, "UTF-8");
+			}catch(Exception e){
+				e.printStackTrace();
+			}
+			
 			this.path = path;
-			InputStream is = Configuration.class.getResourceAsStream("/"+path);
+			File file = new File(xpath+path);
+			if(!file.exists()){
+				file.createNewFile();
+			}
+			
+			InputStream is = new FileInputStream(file);//("/"+path);
 			load(is);
 			is.close();
 		}catch(Exception e){
