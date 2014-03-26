@@ -456,6 +456,7 @@ public class Main implements Observer {
 //						if(queue.size()>20){
 //							
 //						}
+						System.err.println(tm + (String)msg.getData()+"\r\n");
 						text.append(tm + (String)msg.getData()+"\r\n");
 					}
 				});
@@ -472,6 +473,7 @@ public class Main implements Observer {
 						String tm = format.format(new Date());
 						int success = stats[0]+stats[1]+stats[2];						
 						
+						System.err.println(tm + "DETECTED: " + content + " = " + type.intValue()+"\r\n");
 						text.append(tm + "DETECTED: " + content + " = " + type.intValue()+"\r\n");
 						lblNewLabel_2.setText(stats[0]+ " / " + stats[1] + " / " + stats[2] );
 						lblNewLabel_4.setText(success+" / "+total+" = "+df.format((double)(100*success)/(double)total)+"%");
