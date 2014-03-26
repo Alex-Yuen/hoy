@@ -126,7 +126,7 @@ public class Main implements Observer {
 		});
 		shell.setImage(SWTResourceManager.getImage(Main.class, "/logo.ico"));
 		shell.setSize(601, 380);
-		shell.setText("晒密");
+		shell.setText("微风晒密(代理版) 1.0");
 		shell.setLayout(new BorderLayout(0, 0));
 		
 		Rectangle bounds = Display.getDefault().getPrimaryMonitor().getBounds();
@@ -269,12 +269,16 @@ public class Main implements Observer {
 		composite_9.setBackground(SWTResourceManager.getColor(SWT.COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT));
 		
 		lblNewLabel_1 = new Label(composite_9, SWT.NONE);
-		lblNewLabel_1.setBounds(10, 55, 178, 17);
+		lblNewLabel_1.setBounds(10, 44, 178, 17);
 		lblNewLabel_1.setText("帐号：0");
 		
 		lblNewLabel_2 = new Label(composite_9, SWT.NONE);
-		lblNewLabel_2.setBounds(10, 78, 178, 17);
+		lblNewLabel_2.setBounds(10, 90, 178, 17);
 		lblNewLabel_2.setText("0 / 0 / 0");
+		
+		Label label = new Label(composite_9, SWT.NONE);
+		label.setText("正确/错误/冻结");
+		label.setBounds(10, 67, 178, 17);
 		
 		Composite composite_10 = new Composite(composite_1, SWT.NONE);
 		composite_10.setBackground(SWTResourceManager.getColor(SWT.COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT));
@@ -287,8 +291,12 @@ public class Main implements Observer {
 		composite_11.setBackground(SWTResourceManager.getColor(SWT.COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT));
 		
 		lblNewLabel_4 = new Label(composite_11, SWT.NONE);
-		lblNewLabel_4.setBounds(10, 66, 178, 17);
+		lblNewLabel_4.setBounds(10, 77, 178, 17);
 		lblNewLabel_4.setText("0 / 0 = 0%");
+		
+		Label lblNewLabel_5 = new Label(composite_11, SWT.NONE);
+		lblNewLabel_5.setBounds(10, 55, 178, 17);
+		lblNewLabel_5.setText("已验证/总数 = 验证百分比");
 		
 		Composite composite_3 = new Composite(composite_2, SWT.NONE);
 		composite_3.setLayout(new BorderLayout(0, 0));
