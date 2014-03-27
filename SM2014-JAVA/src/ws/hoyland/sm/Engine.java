@@ -23,6 +23,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Observable;
 import java.util.Random;
+import java.util.Stack;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -84,7 +85,7 @@ public class Engine extends Observable {
 	private Timer timer = null;
 
 
-	private BlockingQueue<String> infq = null;
+	private Stack<String> infq = null;
 	
 	protected int bc = 0;
 	protected int ec = 0;
@@ -110,7 +111,7 @@ public class Engine extends Observable {
 		}
 		System.err.println("xpath="+xpath);
 		
-		infq = new ArrayBlockingQueue<String>(5000);
+		infq = new Stack<String>();
 	}
 	
 	public void ready() {
@@ -280,7 +281,7 @@ public class Engine extends Observable {
 		}
 		
 		String tm = format.format(new Date());
-		infq.add(tm + "DETECTED: " + message + " = " + type);
+		infq.push(tm + "DETECTED: " + message + " = " + type);
 		
 		EngineMessage msg = new EngineMessage();
 		msg.setType(EngineMessageType.OM_STATS);
@@ -296,7 +297,7 @@ public class Engine extends Observable {
 //		msg.setType(EngineMessageType.OM_INFO);
 //		msg.setData(message);		
 //		notify(msg);
-		infq.add(tm+message);
+		infq.push(tm+message);
 //		}
 	}
 	
@@ -503,39 +504,61 @@ public class Engine extends Observable {
 			//开始Timer
 			timer = new Timer();
 			timer.schedule(new TimerTask(){
-
+				private Stack<String> ts = new Stack<String>();
+				
 				@Override
 				public void run() {
-					StringBuilder sb = new StringBuilder();
-					Object[] contents = (Object[]) infq.toArray();
-					for(int i=0;i<contents.length;i++){
-							sb.append(contents[i]+"\r\n");
-					}
-					infq.clear();
-					
-					if(contents.length>0){
-						EngineMessage msg = new EngineMessage();
-						msg.setType(EngineMessageType.OM_INFO);
-						msg.setData(sb.toString());		
-						Engine.this.notify(msg);
-					}
-					
-					if(!running){
-						timer.cancel();
-						infq.clear();
+					try{
+						StringBuilder sb = new StringBuilder();
+						ts.clear();
 						
-						String tm = Engine.format.format(new Date());
-						sb = new StringBuilder();
-						sb.append(tm+"\r\n");
-						sb.append(tm+"================\r\n");
-						sb.append(tm+"运行结束\r\n");
-						sb.append(tm+"================\r\n");
-						sb.append(tm+"\r\n");
+						int size = infq.size();
+						//if(!infq.isEmpty()){
+							for(int i=0;i<size;i++){
+								ts.push(infq.pop()+"\r\n");
+							}
+
+							//System.err.println("size="+size+"/"+ts.size());
+							
+							while(!ts.isEmpty()){
+								sb.append(ts.pop());
+							}
+							
+		//					Object[] contents = (Object[]) infq.toArray();
+		//					for(int i=0;i<contents.length;i++){
+		//							sb.append(contents[i]+"\r\n");
+		//					}
+							
+							//infq.clear();
+							
+						//}
 						
-						EngineMessage msg = new EngineMessage();
-						msg.setType(EngineMessageType.OM_INFO);
-						msg.setData(sb.toString());		
-						Engine.this.notify(msg);
+						if(size>0){
+							EngineMessage msg = new EngineMessage();
+							msg.setType(EngineMessageType.OM_INFO);
+							msg.setData(sb.toString());		
+							Engine.this.notify(msg);
+						}
+						
+						if(!running){
+							timer.cancel();
+							infq.clear();
+							
+							String tm = Engine.format.format(new Date());
+							sb = new StringBuilder();
+							sb.append(tm+"\r\n");
+							sb.append(tm+"================\r\n");
+							sb.append(tm+"运行结束\r\n");
+							sb.append(tm+"================\r\n");
+							sb.append(tm+"\r\n");
+							
+							EngineMessage msg = new EngineMessage();
+							msg.setType(EngineMessageType.OM_INFO);
+							msg.setData(sb.toString());		
+							Engine.this.notify(msg);
+						}
+					}catch(Exception e){
+						e.printStackTrace();
 					}
 				}}, 
 			0, 500);
@@ -718,6 +741,7 @@ public class Engine extends Observable {
 							if(running){
 								Task task = new Task(accounts.get(i));
 //								Engine.getInstance().addObserver(task);
+								System.err.println("inited task "+i);
 								pool.execute(task);
 							}
 						} catch (Exception e) {
