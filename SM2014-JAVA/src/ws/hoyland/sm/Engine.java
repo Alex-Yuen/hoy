@@ -561,7 +561,7 @@ public class Engine extends Observable {
 						e.printStackTrace();
 					}
 				}}, 
-			0, 500);
+			0, 200);
 			
 			
 			if("true".equals(configuration.getProperty("SCAN"))&&hasService){
