@@ -201,7 +201,7 @@ public class Engine extends Observable {
 		//return this.running&&!this.noproxy;
 	}
 	
-	public synchronized void log(final int type, final String message){		
+	public synchronized void log(final int type, final int id, final String message){		
 		if(type==0||type==2){
 			new Thread(new Runnable(){
 				@Override
@@ -267,7 +267,10 @@ public class Engine extends Observable {
 			}).start();
 		}
 		stats[type]++;
-		accountstodo.remove(message);
+//		System.err.println("1:"+accountstodo.size());
+//		System.err.println("2:"+message);
+		accountstodo.remove(id+"----"+message);
+//		System.err.println("3:"+accountstodo.size());
 		//写文件		
 		try{
 			output[type].write(message+ "\r\n");
