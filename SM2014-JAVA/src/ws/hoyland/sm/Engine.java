@@ -326,7 +326,7 @@ public class Engine extends Observable {
 	}
 	
 	public void removeProxy(String proxy){
-		synchronized(proxy){
+		synchronized(proxies){
 			this.proxies.remove(proxy);
 		}
 		
@@ -412,7 +412,13 @@ public class Engine extends Observable {
 	
 	public void loadProxy(String path){
 		try {
-			proxies = new ArrayList<String>();
+			if(running){
+				synchronized(proxies){
+					proxies.clear();
+				}
+			}else{
+				proxies = new ArrayList<String>();
+			}
 
 			File ipf = new File(path);
 			FileInputStream is = new FileInputStream(ipf);
@@ -423,7 +429,13 @@ public class Engine extends Observable {
 			while ((line = reader.readLine()) != null) {
 				if (!line.equals("")) {
 					// line = i + "----" + line;
-					proxies.add(line);
+					if(running){
+						synchronized(proxies){
+							proxies.add(line);
+						}
+					}else{
+						proxies.add(line);
+					}
 				}
 				// i++;
 			}
