@@ -454,7 +454,7 @@ public class Engine extends Observable {
 		msg.setData(running);
 		notify(msg);
 
-		System.out.println("running="+running);
+		System.err.println("running="+running);
 		if (running) {
 			info("");
 			info("================");
@@ -741,7 +741,7 @@ public class Engine extends Observable {
 							if(running){
 								Task task = new Task(accounts.get(i));
 //								Engine.getInstance().addObserver(task);
-								System.err.println("inited task "+i);
+								//System.err.println("inited task "+i);
 								pool.execute(task);
 							}
 						} catch (Exception e) {
