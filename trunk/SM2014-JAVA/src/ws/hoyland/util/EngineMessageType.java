@@ -63,6 +63,8 @@ public class EngineMessageType {
 	public static final int OM_NO_PROXY = 0x202E;
 	public static final int OM_RELOAD_PROXIES = 0x202F;
 	
+	public static final int OM_SCAN_PROGRESS = 0x2030;
+	
 	
 	
 }

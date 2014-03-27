@@ -1,9 +1,9 @@
 package ws.hoyland.sm;
 
-import java.text.DateFormat;
+//import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
-import java.util.Date;
+//import java.util.Date;
 //import java.util.LinkedList;
 import java.util.List;
 import java.util.Observable;
@@ -27,8 +27,8 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.wb.swt.SWTResourceManager;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
+//import org.eclipse.swt.events.ModifyEvent;
+//import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.ShellAdapter;
@@ -39,6 +39,7 @@ import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.widgets.Text;
 
 import com.ibm.icu.util.Calendar;
+import org.eclipse.swt.widgets.ProgressBar;
 
 public class Main implements Observer {
 	
@@ -58,7 +59,8 @@ public class Main implements Observer {
 	private Browser browser;
 	private int total = 0;
 	private int expire = 0;
-	private static DateFormat format = new java.text.SimpleDateFormat("[yyyy/MM/dd HH:mm:ss] ");
+	private ProgressBar progressBar;
+//	private static DateFormat format = new java.text.SimpleDateFormat("[yyyy/MM/dd HH:mm:ss] ");
 
 	/**
 	 * Launch the application.
@@ -308,16 +310,19 @@ public class Main implements Observer {
 		
 		text = new Text(group_1, SWT.BORDER | SWT.MULTI);
 		//text.setTextLimit(1000);
-		text.addModifyListener(new ModifyListener() {
-			public void modifyText(ModifyEvent e) {
-				//System.out.println(text.getTextLimit());2147483647
-				if(text.getText().length()>1073741823){
-					text.setText("");
-				}
-			}
-		});
+//		text.addModifyListener(new ModifyListener() {
+//			public void modifyText(ModifyEvent e) {
+//				//System.out.println(text.getTextLimit());2147483647
+//				if(text.getText().length()>1073741823){
+//					text.setText("");
+//				}
+//			}
+//		});
 		text.setEditable(false);
-		text.setLayoutData(BorderLayout.CENTER);
+		
+		progressBar = new ProgressBar(group_1, SWT.SMOOTH);
+		progressBar.setToolTipText("扫描代理进度");
+		progressBar.setLayoutData(BorderLayout.SOUTH);
 		
 		Group group = new Group(composite_3, SWT.NONE);
 		group.setLayoutData(BorderLayout.EAST);
@@ -445,10 +450,12 @@ public class Main implements Observer {
 				});
 				break;
 			case EngineMessageType.OM_INFO:
+				//String tm = format.format(new Date());
+				//System.err.println("OM_INFO: "+ tm + (String)msg.getData());
 				Display.getDefault().asyncExec(new Runnable() {
 					@Override
-					public void run() {						
-						String tm = format.format(new Date());
+					public void run() {
+						//String tm = format.format(new Date());
 						
 //						Queue<String> queue = new LinkedList<String>();
 //						
@@ -456,8 +463,10 @@ public class Main implements Observer {
 //						if(queue.size()>20){
 //							
 //						}
-						System.err.println(tm + (String)msg.getData()+"\r\n");
-						text.append(tm + (String)msg.getData()+"\r\n");
+						//System.err.println(tm + (String)msg.getData());
+						//text.
+						text.setText((String)msg.getData()+"\r\n");
+						text.setSelection(text.getCharCount());
 					}
 				});
 				break;
@@ -467,14 +476,14 @@ public class Main implements Observer {
 					public void run() {
 						Object[] objs = (Object[])msg.getData();
 						Integer[] stats = (Integer[])objs[0];
-						Integer type = (Integer)objs[1];
-						String content = (String)objs[2];
+//						Integer type = (Integer)objs[1];
+//						String content = (String)objs[2];
 						
-						String tm = format.format(new Date());
+//						String tm = format.format(new Date());
 						int success = stats[0]+stats[1]+stats[2];						
 						
-						System.err.println(tm + "DETECTED: " + content + " = " + type.intValue()+"\r\n");
-						text.append(tm + "DETECTED: " + content + " = " + type.intValue()+"\r\n");
+//						System.err.println(tm + "DETECTED: " + content + " = " + type.intValue());
+//						text.append(tm + "DETECTED: " + content + " = " + type.intValue()+"\r\n");
 						lblNewLabel_2.setText(stats[0]+ " / " + stats[1] + " / " + stats[2] );
 						lblNewLabel_4.setText(success+" / "+total+" = "+df.format((double)(100*success)/(double)total)+"%");
 					}
@@ -501,6 +510,16 @@ public class Main implements Observer {
 					@Override
 					public void run() {
 						browser.setUrl("http://www.2345.com/?k68159276");
+					}
+				});
+				break;
+			case EngineMessageType.OM_SCAN_PROGRESS:
+				Display.getDefault().asyncExec(new Runnable() {
+					@Override
+					public void run() {
+						int pgrogress = Integer.parseInt((String)msg.getData());
+						progressBar.setSelection(pgrogress);
+						//browser.setUrl("http://www.2345.com/?k68159276");
 					}
 				});
 				break;

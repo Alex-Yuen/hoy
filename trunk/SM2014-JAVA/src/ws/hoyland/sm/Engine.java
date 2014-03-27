@@ -23,6 +23,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Observable;
 import java.util.Random;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.RejectedExecutionHandler;
@@ -78,13 +80,20 @@ public class Engine extends Observable {
 	private Random random = new Random();
 	//private Base64 base64 = new Base64();
 	private boolean reload = false;
-	private boolean hasService = false;	
+	private boolean hasService = false;
+	private Timer timer = null;
+
+
+	private BlockingQueue<String> infq = null;
+	
 	protected int bc = 0;
 	protected int ec = 0;
 	
 	private static Engine instance;
 	private static String expBytes = "010001";
 	private static String modBytes = "C39A51FB1202F75F0E20F691C8E370BCFA7CD2B75FD588CADAC549ADF1F03CFDAACCB9FBA5D7219CA4A3E40F9324121474BE85355CF178E0D3BD0719EDF859D60D24874B105FAC73EF067DEE962F5D12C7DB983039BA5EE0183479923174886A2C45ACFD5441C1B2FCC2083952016C66631884527585FF446BBC4F75606EF87B";
+	private static DateFormat format = new java.text.SimpleDateFormat("[yyyy/MM/dd HH:mm:ss] ");
+	
 	
 	private Engine() {
 		System.err.println(xpath);
@@ -100,6 +109,8 @@ public class Engine extends Observable {
 			e.printStackTrace();
 		}
 		System.err.println("xpath="+xpath);
+		
+		infq = new ArrayBlockingQueue<String>(5000);
 	}
 	
 	public void ready() {
@@ -116,8 +127,12 @@ public class Engine extends Observable {
 	}
 	
 	private synchronized void notify(EngineMessage message){
+		//String tm = format.format(new Date());
+		//System.err.println("notifi1: "+ tm + message.getData());
 		this.setChanged();
 		this.notifyObservers(message);
+		//tm = format.format(new Date());
+		//System.err.println("notifi2: "+ tm + message.getData());
 	}
 	
 	private void shutdown() {
@@ -133,12 +148,12 @@ public class Engine extends Observable {
 			}catch(Exception e){
 				//
 			}
-		}		
+		}
 		
-		EngineMessage msg = new EngineMessage();
-		msg.setTid(-1);
-		msg.setType(EngineMessageType.OM_SHUTDOWN);
-		notify(msg);
+//		EngineMessage msg = new EngineMessage();
+//		msg.setTid(-1);
+//		msg.setType(EngineMessageType.OM_SHUTDOWN);
+//		notify(msg);
 		
 		if (pool != null) {
 			pool.shutdown();
@@ -159,7 +174,7 @@ public class Engine extends Observable {
 			// if(lastTid!=-1){
 			if (output[3] != null) {
 				for (int i = 0; i < accountstodo.size(); i++) {
-					String[] accl = accounts.get(i).split("----");
+					String[] accl = accountstodo.get(i).split("----");
 					output[3].write(accl[1] + "----" + accl[2] + "\r\n");
 				}
 				output[3].flush();
@@ -186,7 +201,7 @@ public class Engine extends Observable {
 		//return this.running&&!this.noproxy;
 	}
 	
-	public synchronized void log(final int type, final String message){
+	public synchronized void log(final int type, final String message){		
 		if(type==0||type==2){
 			new Thread(new Runnable(){
 				@Override
@@ -261,18 +276,25 @@ public class Engine extends Observable {
 			e.printStackTrace();
 		}
 		
+		String tm = format.format(new Date());
+		infq.add(tm + "DETECTED: " + message + " = " + type);
+		
 		EngineMessage msg = new EngineMessage();
 		msg.setType(EngineMessageType.OM_STATS);
-		msg.setData(new Object[]{stats, new Integer(type), message});
+		msg.setData(new Object[]{stats});//, new Integer(type), message});
 		notify(msg);
 	}
 	
 	public synchronized void info(String message){
-		System.err.println("info: "+message);
-		EngineMessage msg = new EngineMessage();
-		msg.setType(EngineMessageType.OM_INFO);
-		msg.setData(message);		
-		notify(msg);
+//		if(running){
+		String tm = format.format(new Date());
+//		System.err.println("info: "+ tm + message);
+//		EngineMessage msg = new EngineMessage();
+//		msg.setType(EngineMessageType.OM_INFO);
+//		msg.setData(message);		
+//		notify(msg);
+		infq.add(tm+message);
+//		}
 	}
 	
 	public synchronized void addTask(String line){
@@ -340,7 +362,7 @@ public class Engine extends Observable {
 	public void loadAccount(String path){
 		try {
 			accounts = new ArrayList<String>();
-			accountstodo = new ArrayList<String>();
+			//accountstodo = new ArrayList<String>();
 			
 			File ipf = new File(path);
 			FileInputStream is = new FileInputStream(ipf);
@@ -352,7 +374,7 @@ public class Engine extends Observable {
 				if (!line.equals("")) {
 					line = i + "----" + line;
 					accounts.add(line);
-					accountstodo.add(line);
+					//accountstodo.add(line);
 				}
 				i++;
 			}
@@ -449,6 +471,9 @@ public class Engine extends Observable {
 				this.proxies = new ArrayList<String>();
 			}
 			
+			accountstodo = new ArrayList<String>();
+			accountstodo.addAll(accounts);
+			
 			// long tm = System.currentTimeMillis();
 			DateFormat format = new java.text.SimpleDateFormat(
 					"yyyy年MM月dd日 hh时mm分ss秒");
@@ -472,39 +497,103 @@ public class Engine extends Observable {
 				}
 			}
 			
+			//开始Timer
+			timer = new Timer();
+			timer.schedule(new TimerTask(){
+
+				@Override
+				public void run() {
+					StringBuilder sb = new StringBuilder();
+					Object[] contents = (Object[]) infq.toArray();
+					for(int i=0;i<contents.length;i++){
+							sb.append(contents[i]+"\r\n");
+					}
+					infq.clear();
+					
+					if(contents.length>0){
+						EngineMessage msg = new EngineMessage();
+						msg.setType(EngineMessageType.OM_INFO);
+						msg.setData(sb.toString());		
+						Engine.this.notify(msg);
+					}
+					
+					if(!running){
+						timer.cancel();
+						infq.clear();
+						
+						String tm = Engine.format.format(new Date());
+						sb = new StringBuilder();
+						sb.append(tm+"\r\n");
+						sb.append(tm+"================\r\n");
+						sb.append(tm+"运行结束\r\n");
+						sb.append(tm+"================\r\n");
+						sb.append(tm+"\r\n");
+						
+						EngineMessage msg = new EngineMessage();
+						msg.setType(EngineMessageType.OM_INFO);
+						msg.setData(sb.toString());		
+						Engine.this.notify(msg);
+					}
+				}}, 
+			0, 500);
+			
+			
 			if("true".equals(configuration.getProperty("SCAN"))&&hasService){
 				//开始扫描的线程
 				Thread t = new Thread(new Runnable(){
+					private EngineMessage msg = null;
 					@Override
 					public void run() {
 						//开始定时扫描
 						while(running){
+							msg = new EngineMessage();
+							msg.setType(EngineMessageType.OM_SCAN_PROGRESS);
+							msg.setData("0");
+							info("");
+							info("================");
+							info("正在扫描代理");
+							info("================");
+							info("");
 							try{
 								//执行扫描, 并将结果写入MBean
 								//xpath+"/8088.bat";
 								//String path = xpath.substring(1);
 								//path = URLDecoder.decode(path, "UTF-8");
 								if(running){
+									Engine.this.notify(msg);
+									
 									System.err.println("SCANING...");
 									System.err.println("cmd /c \""+xpath.substring(1)+"8088.bat\"");
 									String line = null;
 									Process process = Runtime.getRuntime().exec("cmd /c \""+xpath.substring(1)+"8088.bat\"", new String[0], new File(xpath));// 获取命令行参数
 									
 //									int rs = process.waitFor();
+									msg = new EngineMessage();
+									msg.setType(EngineMessageType.OM_SCAN_PROGRESS);
+									msg.setData("10");		
+									Engine.this.notify(msg);
 									
 									boolean hasRun = true;
 									BufferedReader info = new BufferedReader(new InputStreamReader(process.getInputStream(), "GB2312"));
 							        BufferedReader error = new BufferedReader(new InputStreamReader(process.getErrorStream(), "GB2312"));
 							        while((line=info.readLine())!=null) {
-							        	System.err.println(line);
+							        	//System.err.println(line);
 							        }
-							        
+							        msg = new EngineMessage();
+									msg.setType(EngineMessageType.OM_SCAN_PROGRESS);
+									msg.setData("35");		
+									Engine.this.notify(msg);
+									
 							        while((line=error.readLine())!=null) {
-							        	System.err.println(line);
+							        	//System.err.println(line);
 							        	if(line.indexOf("拒绝访问")!=-1){
 							        		hasRun = false;
 							        	}
 							        }
+							        msg = new EngineMessage();
+									msg.setType(EngineMessageType.OM_SCAN_PROGRESS);
+									msg.setData("60");		
+									Engine.this.notify(msg);
 							        
 							        int rs = process.exitValue();
 									if(rs==0&&hasRun){
@@ -524,6 +613,11 @@ public class Engine extends Observable {
 										File file = null;
 										InputStream input = null;
 										BufferedReader br = null;
+										
+										msg = new EngineMessage();
+										msg.setType(EngineMessageType.OM_SCAN_PROGRESS);
+										msg.setData("70");		
+										Engine.this.notify(msg);
 										
 										try{
 											file = new File(xpath+"8088.txt");
@@ -554,7 +648,10 @@ public class Engine extends Observable {
 												input.close();
 											}
 										}
-
+										msg = new EngineMessage();
+										msg.setType(EngineMessageType.OM_SCAN_PROGRESS);
+										msg.setData("80");		
+										Engine.this.notify(msg);
 										//service.setProxies(sb.toString());
 										
 										System.err.println("SCANING...OK");
@@ -566,6 +663,16 @@ public class Engine extends Observable {
 								//通知Engine需要更换IP	
 							}catch(Exception e){
 								e.printStackTrace();
+							}finally{
+								msg = new EngineMessage();
+								msg.setType(EngineMessageType.OM_SCAN_PROGRESS);
+								msg.setData("100");		
+								Engine.this.notify(msg);
+								info("");
+								info("================");
+								info("扫描结束");
+								info("================");
+								info("");
 							}
 							
 							try{
@@ -619,11 +726,6 @@ public class Engine extends Observable {
 		} else {
 			// 停止情况下的处理
 			shutdown();
-			info("");
-			info("================");
-			info("运行结束");
-			info("================");
-			info("");
 		}
 	}
 	
@@ -710,7 +812,7 @@ public class Engine extends Observable {
 				proxies.add(ps[i]);
 			}
 			
-		System.err.println("reloading proxies 2");
+			System.err.println("reloading proxies 2");
 			//显示代理数量
 			List<String> params = new ArrayList<String>();
 			params.add(String.valueOf(proxies.size()));
