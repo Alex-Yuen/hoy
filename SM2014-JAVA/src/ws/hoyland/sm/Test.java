@@ -48,19 +48,23 @@ public class Test {
 //		}
 		
 		//System.out.println(ClientDetecter.getMachineID("SMZS"));
-		Stack<String> stack = new Stack<String>();
-		//stack.setSize(10);
+//		Stack<String> stack = new Stack<String>();
+//		//stack.setSize(10);
+//		
+//		for(int i=0;i<20;i++){
+//			stack.push(String.valueOf(i));
+//		}
+//		System.out.println(stack.size());
+//		//stack.re
+//		
+//		while(!stack.isEmpty()){
+//			System.out.println(stack.pop());
+//		}
+//		System.out.println(stack.size());
 		
-		for(int i=0;i<20;i++){
-			stack.push(String.valueOf(i));
-		}
-		System.out.println(stack.size());
-		//stack.re
-		
-		while(!stack.isEmpty()){
-			System.out.println(stack.pop());
-		}
-		System.out.println(stack.size());
+		String accl = "1----2----323";
+		accl = accl.substring(accl.indexOf("----")+4);
+		System.out.println(accl);
 	}
 
 }

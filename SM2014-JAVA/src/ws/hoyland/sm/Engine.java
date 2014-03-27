@@ -175,8 +175,15 @@ public class Engine extends Observable {
 			// if(lastTid!=-1){
 			if (output[3] != null) {
 				for (int i = 0; i < accountstodo.size(); i++) {
-					String[] accl = accountstodo.get(i).split("----");
-					output[3].write(accl[1] + "----" + accl[2] + "\r\n");
+					try{
+						String accl = accountstodo.get(i);
+						accl = accl.substring(accl.indexOf("----")+4);
+//						String[] accl = accountstodo.get(i).split("----");
+//						output[3].write(accl[1] + "----" + accl[2] + "\r\n");
+						output[3].write(accl + "\r\n");
+					}catch(Exception e){
+						e.printStackTrace();
+					}
 				}
 				output[3].flush();
 			}
