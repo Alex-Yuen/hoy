@@ -309,17 +309,17 @@ public class Task implements Runnable, Observer {
 					// System.out.println("A3");
 					// bool ok = false;
 					if (resp.indexOf("," + account + ",0,") != -1) {
-						Engine.getInstance().log(0, account + "----" + password);// account
+						Engine.getInstance().log(0, this.id, account + "----" + password);// account
 																					// +
 																					// " / "
 																					// +
 																					// proxy
 						// task.Abort();
 					} else if (resp.indexOf(",0,40010,") != -1) {
-						Engine.getInstance().log(1, account + "----" + password);
+						Engine.getInstance().log(1, this.id,  account + "----" + password);
 						// task.Abort();
 					} else if (resp.indexOf(",0,40026,") != -1) {
-						Engine.getInstance().log(2, account + "----" + password);
+						Engine.getInstance().log(2, this.id, account + "----" + password);
 						// task.Abort();
 					} else if (resp.indexOf("," + account + ",40001,") != -1)// 验证码
 					{

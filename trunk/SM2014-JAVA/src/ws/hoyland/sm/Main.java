@@ -465,8 +465,8 @@ public class Main implements Observer {
 //						}
 						//System.err.println(tm + (String)msg.getData());
 						//text.
-						text.setText((String)msg.getData()+"\r\n");
-						text.setSelection(text.getCharCount());
+						text.setText((String)msg.getData());
+						text.setSelection(text.getCharCount()-2>0?(text.getCharCount()-2):text.getCharCount());
 					}
 				});
 				break;
