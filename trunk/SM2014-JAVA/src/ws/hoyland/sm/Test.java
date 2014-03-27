@@ -1,5 +1,7 @@
 package ws.hoyland.sm;
 
+import java.util.Stack;
+
 import javax.management.MBeanServerConnection;
 import javax.management.MBeanServerInvocationHandler;
 import javax.management.ObjectName;
@@ -45,7 +47,20 @@ public class Test {
 //			e.printStackTrace();
 //		}
 		
-		System.out.println(ClientDetecter.getMachineID("SMZS"));
+		//System.out.println(ClientDetecter.getMachineID("SMZS"));
+		Stack<String> stack = new Stack<String>();
+		//stack.setSize(10);
+		
+		for(int i=0;i<20;i++){
+			stack.push(String.valueOf(i));
+		}
+		System.out.println(stack.size());
+		//stack.re
+		
+		while(!stack.isEmpty()){
+			System.out.println(stack.pop());
+		}
+		System.out.println(stack.size());
 	}
 
 }
