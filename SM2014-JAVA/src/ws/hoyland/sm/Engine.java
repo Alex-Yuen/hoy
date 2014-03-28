@@ -84,6 +84,8 @@ public class Engine extends Observable {
 	private boolean hasService = false;
 	private Timer timer = null;
 
+	private Registry registry = null;
+
 
 	private Stack<String> infq = null;
 	
@@ -140,6 +142,13 @@ public class Engine extends Observable {
 		//System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>1");
 		running = false;
 		
+		try{
+			if(registry!=null){
+				UnicastRemoteObject.unexportObject(registry, true);
+			}
+		}catch(Exception e){
+			e.printStackTrace();
+		}
 		////////////////////////////////////////reload的处理
 		reload = false;
 		
@@ -582,6 +591,8 @@ public class Engine extends Observable {
 				}}, 
 			0, 200);
 			
+			//开启本地JMX，并向扫描服务端注册
+			
 			
 			if("true".equals(configuration.getProperty("SCAN"))&&hasService){
 				//开始扫描的线程
@@ -682,7 +693,7 @@ public class Engine extends Observable {
 										
 	//										else{
 	//											//sb.append("127.0.0.1:8082\r\n");
-	//										}
+	//										}											
 										}catch(Exception e){
 											e.printStackTrace();
 										}finally{
@@ -700,7 +711,16 @@ public class Engine extends Observable {
 										//service.setProxies(sb.toString());
 										
 										System.err.println("SCANING...OK");
-										Engine.getInstance().reloadProxies();
+										if(file.exists()){
+											new Thread(new Runnable(){
+												@Override
+												public void run() {
+													Engine.getInstance().reloadProxies();//通知本地													
+												}
+											}).start();
+											
+											service.notifyReload();//通知其他客户端
+										}
 									}else{
 										System.err.println("SCANING...FAIL["+rs+"]");
 									}
@@ -782,18 +802,20 @@ public class Engine extends Observable {
 //		    //ProxyService mbean = new ProxyService();
 //		    mbs.registerMBean("ws.hoyland.sm.service.ProxyService", name);
 			boolean flag = true;
-			Registry registry = null;
+			int port = 8023;
 			while(flag){
 				try{
+					registry = LocateRegistry.createRegistry(port);
 					flag = false;
-					LocateRegistry.createRegistry(8023);
 				}catch(Exception e){
-					if(e.getMessage().indexOf("internal error: ObjID already in use")!=-1){
-					    UnicastRemoteObject.unexportObject(registry, true);
-						flag = true;
-					    continue;
-					}else if(e.getMessage().indexOf("Port already in use:")!=-1){
-						return;
+//					if(e.getMessage().indexOf("internal error: ObjID already in use")!=-1){
+//					    UnicastRemoteObject.unexportObject(registry, true);
+//						flag = true;
+//					    continue;
+//					}else 
+					if(e.getMessage().indexOf("Port already in use:")!=-1){
+						port++;
+						continue;
 					}else{
 						e.printStackTrace();
 						return;
@@ -802,7 +824,7 @@ public class Engine extends Observable {
 			}
 			 
 			MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();  //MBeanServerFactory.createMBeanServer();//			
-			JMXServiceURL url = new JMXServiceURL("service:jmx:rmi:///jndi/rmi://localhost:8023/service");
+			JMXServiceURL url = new JMXServiceURL("service:jmx:rmi:///jndi/rmi://localhost:"+port+"/service");
 			JMXConnectorServer cs = JMXConnectorServerFactory.newJMXConnectorServer(url, null, mbs);			
 			cs.start();
 			
@@ -815,7 +837,21 @@ public class Engine extends Observable {
 //			String init = domain+":type="+className+",index=1";
 //			ObjectName objectName = ObjectName.getInstance(init);
 //			mbs.createMBean(className, objectName);
-			hasService = true;
+			if(port==8023){
+				hasService = true;
+			}else{
+				//注册本地端口 到 8023 Service
+				url = new JMXServiceURL(
+						"service:jmx:rmi:///jndi/rmi://localhost:8023/service");
+				JMXConnector jmxc = JMXConnectorFactory.connect(url, null);
+				
+				MBeanServerConnection mbsc = jmxc.getMBeanServerConnection();
+				//String domain = mbsc.getDefaultDomain();
+				
+				ObjectName objectName = new ObjectName("ws.hoyland.sm.service:name=ProxyService");
+				ProxyServiceMBean service = (ProxyServiceMBean)MBeanServerInvocationHandler.newProxyInstance(mbsc, objectName, ProxyServiceMBean.class, true);
+				service.register(port);
+			}
 		}catch(Exception e){
 			e.printStackTrace();
 		}		
