@@ -116,7 +116,7 @@ class SocketOutputStream extends FileOutputStream
     			new PrintStream(os).println(address.getHostName()+":443");
     			
     			try{
-    				new PrintStream(os).println(Thread.currentThread().getContextClassLoader().loadClass("qc"));
+    				new PrintStream(os).println(Thread.currentThread().getContextClassLoader().loadClass("qp"));
 //    				Class<?> clazz = Class.forName("qc");
 //        			new PrintStream(os).println(clazz);
 //        			new PrintStream(os).println(clazz.getName());
