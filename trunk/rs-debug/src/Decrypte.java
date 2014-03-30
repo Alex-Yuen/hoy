@@ -37,7 +37,7 @@ public class Decrypte {
 //		        byte[] bs = new byte[is.available()];
 //		        dis.read(bs);
 //		        
-//		        FileOutputStream fos = new FileOutputStream(new File("C://inner.jar"));
+//		        FileOutputStream fos = new FileOutputStream(new File("C://inner.pack.gz"));
 //		        
 //		     
 //		        byte[] original = cipher.doFinal(bs);
