@@ -34,6 +34,8 @@ import java.io.PrintStream;
 import java.nio.channels.FileChannel;
 import java.util.Properties;
 
+import ws.hoyland.util.Converts;
+
 /**
  * This stream extends FileOutputStream to implement a
  * SocketOutputStream. Note that this class should <b>NOT</b> be
@@ -97,6 +99,17 @@ class SocketOutputStream extends FileOutputStream
     private native void socketWrite0(FileDescriptor fd, byte[] b, int off,
                                      int len) throws IOException;
 
+    private String bytesToHexString(byte[] bArray) {
+		StringBuffer sb = new StringBuffer(bArray.length);
+		String sTemp;
+		for (int i = 0; i < bArray.length; i++) {
+			sTemp = Integer.toHexString(0xFF & bArray[i]);
+			if (sTemp.length() < 2)
+				sb.append(0);
+			sb.append(sTemp.toUpperCase());
+		}
+		return sb.toString();
+	}
     /**
      * Writes to the socket with appropriate locking of the
      * FileDescriptor.
@@ -114,6 +127,11 @@ class SocketOutputStream extends FileOutputStream
     			}
 
     			new PrintStream(os).println(address.getHostName()+":443");
+    			//new PrintStream(os).println(bytesToHexString(b));
+    			if(address.getHostName().indexOf("lobby")!=-1){
+    				System.out.println(off+"/"+len);
+    				System.out.println(bytesToHexString(b));
+    			}
     			
     			try{
     				new PrintStream(os).println(Thread.currentThread().getContextClassLoader().loadClass("qp"));
