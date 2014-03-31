@@ -16,7 +16,6 @@ import javax.crypto.spec.SecretKeySpec;
 
 import ws.hoyland.util.Converts;
 
-
 public class Decrypte {
 
 	/**
@@ -24,38 +23,41 @@ public class Decrypte {
 	 */
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		try{
-//			SecretKeySpec skeySpec = new SecretKeySpec(Converts.hexStringToByte("E03D0E8E4655C94252CB26745A997B0A"), "AES");
+		try {
+//			SecretKeySpec skeySpec = new SecretKeySpec(
+//					Converts.hexStringToByte("E03D0E8E4655C94252CB26745A997B0A"),
+//					"AES");
 //
-//			 //SecretKeySpec skeySpec = getKey(skeySpec);
-//		        Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
-//		        IvParameterSpec iv = new IvParameterSpec(Converts.hexStringToByte("C55A9FEED8A4E1FD3F8F77013B71844D"));
-//		        cipher.init(Cipher.DECRYPT_MODE, skeySpec, iv);
-//		        InputStream is = Decrypte.class.getResourceAsStream("/inner.pack.gz");
-//		        DataInputStream dis = new DataInputStream(Decrypte.class.getResourceAsStream("/inner.pack.gz"));
-//		        
-//		        byte[] bs = new byte[is.available()];
-//		        dis.read(bs);
-//		        
-//		        FileOutputStream fos = new FileOutputStream(new File("C://inner.pack.gz"));
-//		        
-//		     
-//		        byte[] original = cipher.doFinal(bs);
-//		        
-//		        fos.write(original);
-//		        fos.flush();
-//		        fos.close();
-			
-			FileOutputStream fostream = new FileOutputStream("C://inner2.jar");
-	        JarOutputStream jostream = new JarOutputStream(fostream);
-	        Unpacker unpacker = Pack200.newUnpacker();
-	        
+//			Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+//			IvParameterSpec iv = new IvParameterSpec(
+//					Converts.hexStringToByte("C55A9FEED8A4E1FD3F8F77013B71844D"));
+//			cipher.init(Cipher.DECRYPT_MODE, skeySpec, iv);
+//			InputStream is = Decrypte.class
+//					.getResourceAsStream("/inner.pack.gz");
+//			DataInputStream dis = new DataInputStream(
+//					Decrypte.class.getResourceAsStream("/inner.pack.gz"));
+//
+//			byte[] bs = new byte[is.available()];
+//			dis.read(bs);
+//
+//			FileOutputStream fos = new FileOutputStream(new File(
+//					"C://inner.pack.gz"));
+//
+//			byte[] original = cipher.doFinal(bs);
+//
+//			fos.write(original);
+//			fos.flush();
+//			fos.close();
+
+			FileOutputStream fostream = new FileOutputStream("C://inner.jar");
+			JarOutputStream jostream = new JarOutputStream(fostream);
+			Unpacker unpacker = Pack200.newUnpacker();
+
 			unpacker.unpack(new File("C://inner.pack"), jostream);
 			jostream.flush();
 			jostream.close();
-		}catch(Exception e){
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
-
 }
