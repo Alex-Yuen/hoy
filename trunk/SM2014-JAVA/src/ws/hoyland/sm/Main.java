@@ -466,7 +466,11 @@ public class Main implements Observer {
 						//System.err.println(tm + (String)msg.getData());
 						//text.
 						text.setText((String)msg.getData());
-						text.setSelection(text.getCharCount()-2>0?(text.getCharCount()-2):text.getCharCount());
+						int position = text.getText().lastIndexOf("[");
+						if(position!=-1){
+							text.setSelection(position);
+						}
+						//text.setSelection(text.getCharCount()-2>0?(text.getCharCount()-2):text.getCharCount());
 					}
 				});
 				break;
