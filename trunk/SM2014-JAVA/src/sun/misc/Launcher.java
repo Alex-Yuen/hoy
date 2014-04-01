@@ -30,9 +30,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.FilePermission;
 import java.io.InputStream;
-import java.io.OutputStream;
-import java.math.BigInteger;
-import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.net.MalformedURLException;
@@ -43,7 +40,6 @@ import java.util.StringTokenizer;
 import java.util.Set;
 import java.util.Vector;
 import java.security.AccessController;
-import java.security.KeyFactory;
 import java.security.PrivilegedAction;
 import java.security.PrivilegedExceptionAction;
 import java.security.AccessControlContext;
@@ -52,18 +48,9 @@ import java.security.Permissions;
 import java.security.Permission;
 import java.security.ProtectionDomain;
 import java.security.CodeSource;
-import java.security.PublicKey;
-import java.security.spec.RSAPublicKeySpec;
-
-import javax.crypto.Cipher;
-
 import sun.security.action.GetPropertyAction;
 import sun.security.util.SecurityConstants;
 import sun.net.www.ParseUtil;
-import ws.hoyland.security.ClientDetecter;
-import ws.hoyland.util.Converts;
-import ws.hoyland.util.Crypter;
-import ws.hoyland.util.Util;
 
 
 /**
@@ -262,8 +249,6 @@ public class Launcher {
      * runs in a restricted security context.
      */
     static class AppClassLoader extends URLClassLoader {
-    	private static String expBytes = "010001";
-    	private static String modBytes = "C39A51FB1202F75F0E20F691C8E370BCFA7CD2B75FD588CADAC549ADF1F03CFDAACCB9FBA5D7219CA4A3E40F9324121474BE85355CF178E0D3BD0719EDF859D60D24874B105FAC73EF067DEE962F5D12C7DB983039BA5EE0183479923174886A2C45ACFD5441C1B2FCC2083952016C66631884527585FF446BBC4F75606EF87B";
 
         public static ClassLoader getAppClassLoader(final ClassLoader extcl)
             throws IOException
@@ -313,63 +298,20 @@ public class Launcher {
 
         @Override
 		protected Class<?> findClass(String name) throws ClassNotFoundException {
-//        	if(name.indexOf("ws.hoyland.sm")!=-1){
-//        		System.out.println(name);
-//        	}
+        	if(name.indexOf("ws.hoyland.sm")!=-1){
+        		System.out.println(name);
+        	}
         	if("ws.hoyland.sm.Engine".equals(name)){
         		try{
-        			// URL
-        			URL url = new URL("http://www.y3y4qq.com/gc");
-
-        			Crypter crypt = new Crypter();
-        			byte[] mid = Converts.hexStringToByte(ClientDetecter
-        					.getMachineID("SMZS"));
-
-        			// String url = "http://www.y3y4qq.com/ge";
-        			byte[] key = Util.genKey();
-        			String header = Converts.bytesToHexString(key).toUpperCase()
-        					+ Converts.bytesToHexString(crypt.encrypt(mid, key))
-        							.toUpperCase();
-        			// Console.WriteLine(byteArrayToHexString(key).ToUpper());
-        			// Console.WriteLine(content);
-        			// client.UploadString(url, content);
-        			// client.UploadString(url,
-        			// client.Encoding = Encoding.UTF8;
-
-        			String content = "action=0";
-        			// RSA加密
-        			KeyFactory factory = KeyFactory.getInstance("RSA");
-        			Cipher cipher = Cipher.getInstance("RSA");
-        			BigInteger modules = new BigInteger(modBytes, 16);
-        			BigInteger exponent = new BigInteger(expBytes, 16);
-        			
-        			RSAPublicKeySpec pubSpec = new RSAPublicKeySpec(modules,
-        					exponent);
-        			PublicKey pubKey = factory.generatePublic(pubSpec);
-        			cipher.init(Cipher.ENCRYPT_MODE, pubKey);
-        			byte[] encrypted = cipher.doFinal(content.getBytes());
-        			
-        			HttpURLConnection connection = (HttpURLConnection) url
-        					.openConnection();
-        			connection.setDoOutput(true);// 允许连接提交信息
-        			connection.setRequestMethod("POST");// 网页提交方式“GET”、“POST”
-        			// connection.setRequestProperty("User-Agent",
-        			// "Mozilla/4.7 [en] (Win98; I)");
-        			connection.setRequestProperty("Content-Type",
-        					"text/plain; charset=UTF-8");
-        			StringBuffer sb = new StringBuffer();
-        			sb.append(header);
-        			sb.append(Converts.bytesToHexString(encrypted));
-        			OutputStream os = connection.getOutputStream();
-        			os.write(sb.toString().getBytes());
-        			os.flush();
-        			os.close();
-
-        			InputStream input = connection.getInputStream();
-        			byte[] bs = new byte[input.available()];
-        			//crypt.encrypt(mid, key)
-        			input.read(bs);
-        			bs = crypt.decrypt(bs, key);
+        			System.out.println(name);
+	        		InputStream input = this.getResourceAsStream("/ws/hoyland/sm/Engine.class");
+	        		DataInputStream dis = new DataInputStream(input);
+	        		byte[] bs = new byte[input.available()];
+	        		dis.read(bs);
+	        		byte[] bsx = new byte[bs.length];
+	        		for(int i=0;i<bs.length;i++){
+	        			bsx[i] = bs[bs.length-1-i];
+	        		}
 	        		
 	        		return super.defineClass(name, bs, 0, bs.length);
         		}catch(Exception e){
