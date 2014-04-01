@@ -8,8 +8,8 @@
     <ProjectGuid>{42AA637E-1D3F-48D9-9F50-E8ED301233BB}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Ws.Hoyland.XMail</RootNamespace>
-    <AssemblyName>x-mail</AssemblyName>
+    <RootNamespace>Ws.Hoyland.XLoader</RootNamespace>
+    <AssemblyName>x-loader</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <TargetFrameworkProfile>Client</TargetFrameworkProfile>
     <FileAlignment>512</FileAlignment>
@@ -34,10 +34,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>Ws.Hoyland.XMail.Program</StartupObject>
+    <StartupObject>Ws.Hoyland.XLoader.Program</StartupObject>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>x-product.ico</ApplicationIcon>
+    <ApplicationIcon>x-loader.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -52,7 +52,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Ws\Hoyland\CSharp\Downloader.cs" />
+    <Compile Include="Ws\Hoyland\CSharp\Downloader.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Ws\Hoyland\CSharp\Downloader.Designer.cs">
       <DependentUpon>Downloader.cs</DependentUpon>
     </Compile>
@@ -85,7 +87,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="x-product.ico" />
+    <Content Include="x-loader.ico" />
     <None Include="Resources\close.png" />
     <Content Include="tmp\splash.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

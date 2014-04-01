@@ -14,7 +14,7 @@ using System.Diagnostics;
 
 namespace Ws.Hoyland.CSharp
 {
-    public partial class Downloader
+    public partial class Downloader : Form
     {
         private string version = null;
         private WebClient client = null;
