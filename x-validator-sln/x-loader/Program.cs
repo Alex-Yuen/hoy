@@ -9,7 +9,7 @@ using System.Diagnostics;
 using System.Security.Permissions;
 using Ws.Hoyland.CSharp;
 
-namespace Ws.Hoyland.XMail
+namespace Ws.Hoyland.XLoader
 {
     static class Program
     {
