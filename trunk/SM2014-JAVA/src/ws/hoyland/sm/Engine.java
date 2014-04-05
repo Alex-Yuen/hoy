@@ -88,6 +88,7 @@ public class Engine extends Observable {
 
 
 	private Stack<String> infq = null;
+	//private boolean tf = true;//是否执行timer
 	
 	protected int bc = 0;
 	protected int ec = 0;
@@ -114,6 +115,71 @@ public class Engine extends Observable {
 		System.err.println("xpath="+xpath);
 		
 		infq = new Stack<String>();
+		proxies = new ArrayList<String>();
+		
+		//开始Timer
+		timer = new Timer();
+		timer.schedule(new TimerTask(){
+			private Stack<String> ts = new Stack<String>();
+			
+			@Override
+			public void run() {
+				try{
+					StringBuilder sb = new StringBuilder();
+					ts.clear();
+					
+					int size = infq.size();
+					//if(!infq.isEmpty()){
+						for(int i=0;i<size;i++){
+							ts.push(infq.pop()+"\r\n");
+						}
+
+						//System.err.println("size="+size+"/"+ts.size());
+						
+						while(!ts.isEmpty()){
+							sb.append(ts.pop());
+						}
+						
+	//					Object[] contents = (Object[]) infq.toArray();
+	//					for(int i=0;i<contents.length;i++){
+	//							sb.append(contents[i]+"\r\n");
+	//					}
+						
+						//infq.clear();
+						
+					//}
+					
+					if(size>0){
+						EngineMessage msg = new EngineMessage();
+						msg.setType(EngineMessageType.OM_INFO);
+						msg.setData(sb.toString());		
+						Engine.this.notify(msg);
+					}
+					
+//					if(!running){
+//						String tm = Engine.format.format(new Date());
+//						sb = new StringBuilder();
+//						sb.append(tm+"\r\n");
+//						sb.append(tm+"================\r\n");
+//						sb.append(tm+"运行结束\r\n");
+//						sb.append(tm+"================\r\n");
+//						sb.append(tm+"\r\n");
+//						
+//						EngineMessage msg = new EngineMessage();
+//						msg.setType(EngineMessageType.OM_INFO);
+//						msg.setData(sb.toString());		
+//						Engine.this.notify(msg);
+//					}
+					
+//					if(!tf){//系统退出
+//						timer.cancel();
+//						infq.clear();
+//					}
+				}catch(Exception e){
+					e.printStackTrace();
+				}
+			}}, 
+		0, 200);
 	}
 	
 	public void ready() {
@@ -138,16 +204,27 @@ public class Engine extends Observable {
 		//System.err.println("notifi2: "+ tm + message.getData());
 	}
 	
-	private void shutdown() {
+	public void shutdown() {
 		//System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>1");
+		if(!running){
+			return;
+		}
+		
 		running = false;
+		
+		EngineMessage msg = new EngineMessage();
+		msg.setType(EngineMessageType.OM_RUNNING);
+		msg.setData(running);
+		notify(msg);
+
+		System.err.println("running="+running);
 		
 		try{
 			if(registry!=null){
 				UnicastRemoteObject.unexportObject(registry, true);
 			}
 		}catch(Exception e){
-			e.printStackTrace();
+			//e.printStackTrace();
 		}
 		////////////////////////////////////////reload的处理
 		reload = false;
@@ -210,6 +287,17 @@ public class Engine extends Observable {
 				ex.printStackTrace();
 			}
 		}
+		
+		msg = new EngineMessage();
+		msg.setType(EngineMessageType.OM_RUNNING);
+		msg.setData(running);
+		notify(msg);
+		
+		info("");
+		info("================");
+		info("运行结束");
+		info("================");
+		info("");
 	}
 	
 	//////////////////////////////////////////////////////public//////////////////////////////////////////////////
@@ -421,13 +509,14 @@ public class Engine extends Observable {
 	
 	public void loadProxy(String path){
 		try {
-			if(running){
+			//if(running){
 				synchronized(proxies){
 					proxies.clear();
 				}
-			}else{
-				proxies = new ArrayList<String>();
-			}
+			//}
+//			else{
+//				proxies = new ArrayList<String>();
+//			}
 
 			File ipf = new File(path);
 			FileInputStream is = new FileInputStream(ipf);
@@ -470,20 +559,23 @@ public class Engine extends Observable {
 	}
 	
 	public void exit(){
-		shutdown();
+		//tf = false;//停止timer
+
+		infq.clear();
+		timer.cancel();
 		System.exit(0);
 	}
 	
 	public void process(){
-		running = !running;
+		if (!running) {
+			running = true;
+			EngineMessage msg = new EngineMessage();
+			msg.setType(EngineMessageType.OM_RUNNING);
+			msg.setData(running);
+			notify(msg);
 
-		EngineMessage msg = new EngineMessage();
-		msg.setType(EngineMessageType.OM_RUNNING);
-		msg.setData(running);
-		notify(msg);
-
-		System.err.println("running="+running);
-		if (running) {
+			System.err.println("running="+running);
+			
 			info("");
 			info("================");
 			info("开始运行");
@@ -498,9 +590,12 @@ public class Engine extends Observable {
 			ec = 0;
 //			noproxy = false;
 			
-			if("true".equals(configuration.getProperty("SCAN"))){ //等待扫描完代理
+			if("true".equals(configuration.getProperty("SCAN"))&&hasService){ //等待扫描完代理
 				reload = true;
-				this.proxies = new ArrayList<String>();
+				synchronized(proxies){
+					proxies.clear();
+				}
+//				this.proxies = new ArrayList<String>();
 			}
 			
 			accountstodo = new ArrayList<String>();
@@ -529,67 +624,7 @@ public class Engine extends Observable {
 				}
 			}
 			
-			//开始Timer
-			timer = new Timer();
-			timer.schedule(new TimerTask(){
-				private Stack<String> ts = new Stack<String>();
-				
-				@Override
-				public void run() {
-					try{
-						StringBuilder sb = new StringBuilder();
-						ts.clear();
-						
-						int size = infq.size();
-						//if(!infq.isEmpty()){
-							for(int i=0;i<size;i++){
-								ts.push(infq.pop()+"\r\n");
-							}
-
-							//System.err.println("size="+size+"/"+ts.size());
-							
-							while(!ts.isEmpty()){
-								sb.append(ts.pop());
-							}
-							
-		//					Object[] contents = (Object[]) infq.toArray();
-		//					for(int i=0;i<contents.length;i++){
-		//							sb.append(contents[i]+"\r\n");
-		//					}
-							
-							//infq.clear();
-							
-						//}
-						
-						if(size>0){
-							EngineMessage msg = new EngineMessage();
-							msg.setType(EngineMessageType.OM_INFO);
-							msg.setData(sb.toString());		
-							Engine.this.notify(msg);
-						}
-						
-						if(!running){
-							timer.cancel();
-							infq.clear();
-							
-							String tm = Engine.format.format(new Date());
-							sb = new StringBuilder();
-							sb.append(tm+"\r\n");
-							sb.append(tm+"================\r\n");
-							sb.append(tm+"运行结束\r\n");
-							sb.append(tm+"================\r\n");
-							sb.append(tm+"\r\n");
-							
-							EngineMessage msg = new EngineMessage();
-							msg.setType(EngineMessageType.OM_INFO);
-							msg.setData(sb.toString());		
-							Engine.this.notify(msg);
-						}
-					}catch(Exception e){
-						e.printStackTrace();
-					}
-				}}, 
-			0, 200);
+			//开始timer，原有位置
 			
 			//开启本地JMX，并向扫描服务端注册
 			
@@ -837,6 +872,7 @@ public class Engine extends Observable {
 //			String init = domain+":type="+className+",index=1";
 //			ObjectName objectName = ObjectName.getInstance(init);
 //			mbs.createMBean(className, objectName);
+			System.err.println("Service PORT: "+port);
 			if(port==8023){
 				hasService = true;
 			}else{
@@ -869,6 +905,11 @@ public class Engine extends Observable {
 //	}
 	
 	public void reloadProxies() {
+//		System.err.println("Reloading proxies");
+//		if(!running){
+//			System.err.println("Reloading proxies break");
+//			return;
+//		}
 		System.err.println("reloading proxies 1");
 		reload = true;
 		info("");
@@ -894,7 +935,7 @@ public class Engine extends Observable {
 				proxies.add(ps[i]);
 			}
 			
-			System.err.println("reloading proxies 2");
+			System.err.println("reloading proxies 2:"+proxies.size());
 			//显示代理数量
 			List<String> params = new ArrayList<String>();
 			params.add(String.valueOf(proxies.size()));

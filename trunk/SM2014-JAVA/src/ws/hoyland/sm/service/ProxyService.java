@@ -24,9 +24,10 @@ public class ProxyService implements ProxyServiceMBean {
 	public void setProxies(String proxies) {
 		System.err.println("Setting proxies...");
 		this.proxies = proxies;
-		for(;;){
-			//通知所有注册的JMX客户端
-		}		
+//		for(;;){
+//			//通知所有注册的JMX客户端
+//		}
+//		notifyReload();
 	}
 
 	@Override
@@ -41,6 +42,7 @@ public class ProxyService implements ProxyServiceMBean {
 	
 	@Override
 	public void notifyReload() {
+		System.err.println("clients:"+clients.size());
 		for(Integer port : clients){
 			try{
 				JMXServiceURL url = new JMXServiceURL(
