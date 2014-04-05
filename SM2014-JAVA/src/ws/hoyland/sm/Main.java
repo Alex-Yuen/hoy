@@ -105,7 +105,15 @@ public class Main implements Observer {
 		shell.addShellListener(new ShellAdapter() {
 			@Override
 			public void shellClosed(ShellEvent e) {
-				MessageBox dialog = new MessageBox(shell, SWT.OK|SWT.CANCEL);
+				Engine.getInstance().shutdown();
+				MessageBox dialog = new MessageBox(shell, SWT.OK|SWT.CANCEL|SWT.ICON_QUESTION);
+				
+//				Rectangle bounds = Display.getDefault().getPrimaryMonitor().getBounds();
+//				Rectangle rect = dialog..getBounds();
+//				int x = bounds.x + (bounds.width - rect.width) / 2;
+//				int y = bounds.y + (bounds.height - rect.height) / 2;
+//				shell.setLocation(x, y);
+				
 		        dialog.setText("确认");
 		        dialog.setMessage("关闭当前窗口并退出程序？");
 
@@ -419,7 +427,12 @@ public class Main implements Observer {
 							lblNewLabel.setText("正在运行...");
 							btnNewButton.setText("停止");
 						}else{
-							lblNewLabel.setText("停止");
+							if("正在运行...".equals(lblNewLabel.getText())){
+								lblNewLabel.setText("正在停止...");
+							}else{
+								lblNewLabel.setText("停止");
+							}
+							
 							btnNewButton.setText("开始");
 						}
 					}				
@@ -502,7 +515,7 @@ public class Main implements Observer {
 						//主动触发button点击事件				
 						btnNewButton.notifyListeners(SWT.Selection, ex);
 						
-						MessageBox dialog = new MessageBox(shell, SWT.OK);
+						MessageBox dialog = new MessageBox(shell, SWT.OK|SWT.ICON_INFORMATION);
 				        dialog.setText("确认");
 				        dialog.setMessage("代理用完，任务结束！");
 				        dialog.open();
