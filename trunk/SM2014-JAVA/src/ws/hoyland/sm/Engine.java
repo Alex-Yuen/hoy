@@ -184,7 +184,7 @@ public class Engine extends Observable {
 	
 	public void ready() {
 		if (accounts != null && accounts.size() > 0 && ((proxies != null
-				&& proxies.size() > 0)||"true".equals(configuration.getProperty("SCAN")))) {
+				&& proxies.size() > 0)||("true".equals(configuration.getProperty("SCAN"))&&hasService))) {
 			EngineMessage msg = new EngineMessage();
 			msg.setType(EngineMessageType.OM_READY);
 			notify(msg);
@@ -975,6 +975,7 @@ public class Engine extends Observable {
 		}
 		
 		System.err.println("reloading proxies 6");
+		ready();
 	}
 
 	public synchronized void beginTask(){
