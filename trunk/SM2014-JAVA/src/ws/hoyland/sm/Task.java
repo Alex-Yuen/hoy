@@ -12,16 +12,11 @@ import java.util.Random;
 
 //import javax.crypto.Cipher;
 
-import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
-import org.apache.http.HttpResponse;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpGet;
 //import org.apache.http.client.methods.HttpPost;
-import org.apache.http.conn.params.ConnRouteParams;
 //import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.params.CoreConnectionPNames;
-import org.apache.http.util.EntityUtils;
 
 //import ws.hoyland.security.ClientDetecter;
 import ws.hoyland.util.Configuration;
@@ -53,6 +48,8 @@ public class Task implements Runnable {//, Observer {
 
 	private static Configuration CONFIGURATION = Configuration
 			.getInstance("config.ini");
+	private static int TIME_OUT = 1000*Integer.parseInt(CONFIGURATION
+			.getProperty("TIMEOUT"));
 
 	public Task(String line) {
 		this.line = line;
@@ -93,13 +90,13 @@ public class Task implements Runnable {//, Observer {
 			return;
 		}
 
-		int id = 0;
+		//int id = 0;
 		String account = null;
 		String password = null;
 		
 		String[] ls = line.split("----");
 		try{
-			id = Integer.parseInt(ls[0]);
+			//id = Integer.parseInt(ls[0]);
 			account = ls[1];
 			password = ls[2];
 		}catch(Exception e){
@@ -107,13 +104,9 @@ public class Task implements Runnable {//, Observer {
 			e.printStackTrace();			
 		}
 		
-		DefaultHttpClient client = null;
 		HttpGet request = null;
 //		private HttpPost post = null;
 		HttpHost proxy = null;
-		HttpResponse response = null;
-		HttpEntity entity = null;
-		String resp = null;
 		
 		// if(wflag){
 		// synchronized(SyncUtil.RELOAD_PROXY_OBJECT){
@@ -127,7 +120,7 @@ public class Task implements Runnable {//, Observer {
 		//
 		// synchronized(SyncUtil.START_OBJECT){
 		// //通知有新线程开始执行
-		Engine.getInstance().beginTask();
+//		Engine.getInstance().beginTask();
 		// }
 
 		try {
@@ -142,15 +135,16 @@ public class Task implements Runnable {//, Observer {
 			String[] ms = px.split(":");
 			proxy = new HttpHost(ms[0], Integer.parseInt(ms[1]));
 
-			client = new DefaultHttpClient();
-			client.getParams().setParameter(
-					CoreConnectionPNames.CONNECTION_TIMEOUT,
-					1000 * Integer.parseInt(CONFIGURATION
-							.getProperty("TIMEOUT")));
-			client.getParams().setParameter(
-					CoreConnectionPNames.SO_TIMEOUT,
-					1000 * Integer.parseInt(CONFIGURATION
-							.getProperty("TIMEOUT")));
+			 
+//			client = new DefaultHttpClient();
+//			client.getParams().setParameter(
+//					CoreConnectionPNames.CONNECTION_TIMEOUT,
+//					1000 * Integer.parseInt(CONFIGURATION
+//							.getProperty("TIMEOUT")));
+//			client.getParams().setParameter(
+//					CoreConnectionPNames.SO_TIMEOUT,
+//					1000 * Integer.parseInt(CONFIGURATION
+//							.getProperty("TIMEOUT")));
 			
 			//client.getConnectionManager().closeIdleConnections(4000, TimeUnit.MILLISECONDS);
 			
@@ -270,8 +264,16 @@ public class Task implements Runnable {//, Observer {
 			boolean getit = true;
 			if(getit){
 				
-				client.getParams().setParameter(ConnRouteParams.DEFAULT_PROXY,
-						proxy);
+//				client.getParams().setParameter(ConnRouteParams.DEFAULT_PROXY,
+//						proxy);
+
+				
+				RequestConfig config = RequestConfig.custom()
+						 	.setSocketTimeout(TIME_OUT)
+			                .setConnectTimeout(TIME_OUT)
+			                .setConnectionRequestTimeout(TIME_OUT)
+		                    .setProxy(proxy)
+		                    .build();
 				// r = super.defineClass(name, bs, 0, bs.length);
 	
 				String ru = "http://pt.3g.qq.com/login?act=json&format=2&bid_code=house_touch&r="
@@ -286,6 +288,7 @@ public class Task implements Runnable {//, Observer {
 				request.setHeader("User-Agent", UAG);//
 				request.setHeader("Connection", "close");//
 	
+				request.setConfig(config);
 				// try{
 				// Thread.sleep(200);
 				// }catch(Exception e){
@@ -300,10 +303,12 @@ public class Task implements Runnable {//, Observer {
 				Engine.getInstance().info(
 						account + " -> " + proxy.getHostName() + ":"
 								+ proxy.getPort());
-				response = client.execute(request);
-				entity = response.getEntity();
-				resp = EntityUtils.toString(entity);
+//				response = client.execute(request);
+//				entity = response.getEntity();
+//				resp = EntityUtils.toString(entity);
 	
+				Engine.getInstance().execute(line, request);
+				
 				/**
 				 * Class<?> clazz = null; clazz = new
 				 * HoylandClassLoader().loadClass("ws.hoyland.sm.Dynamicer",
@@ -312,43 +317,43 @@ public class Task implements Runnable {//, Observer {
 				 * Object[]{client}));
 				 **/
 	
-				if (resp.indexOf("pt.handleLoginResult") == -1)// 代理异常
-				{
-					Engine.getInstance().addTask(line);
-					// System.out.println("A2");
-					// Engine.getInstance().removeProxy(proxy.getHostName()+":"+proxy.getPort());
-				} else {
-					// System.out.println("A3");
-					// bool ok = false;
-					if (resp.indexOf("," + account + ",0,") != -1) {
-						Engine.getInstance().log(0, id, account + "----" + password);// account
-																					// +
-																					// " / "
-																					// +
-																					// proxy
-						// task.Abort();
-					} else if (resp.indexOf(",0,40010,") != -1) {
-						Engine.getInstance().log(1, id,  account + "----" + password);
-						// task.Abort();
-					} else if (resp.indexOf(",0,40026,") != -1) {
-						Engine.getInstance().log(2, id, account + "----" + password);
-						// task.Abort();
-					} else if (resp.indexOf("," + account + ",40001,") != -1)// 验证码
-					{
-						//System.err.println("adding "+line);
-						Engine.getInstance().addTask(line);
-	
-						// 不离开当前任务
-						// Thread.Sleep(1000 *
-						// Int32.Parse(cfa.AppSettings.Settings["P_ITV"].Value));//N秒后继续
-					} else // 代理异常
-					{
-						Engine.getInstance().addTask(line);
-						// System.out.println("A4");
-						// System.out.println("proxy="+proxy);
-						// Engine.getInstance().removeProxy(proxy.getHostName()+":"+proxy.getPort());
-					}
-				}
+//				if (resp.indexOf("pt.handleLoginResult") == -1)// 代理异常
+//				{
+//					Engine.getInstance().addTask(line);
+//					// System.out.println("A2");
+//					// Engine.getInstance().removeProxy(proxy.getHostName()+":"+proxy.getPort());
+//				} else {
+//					// System.out.println("A3");
+//					// bool ok = false;
+//					if (resp.indexOf("," + account + ",0,") != -1) {
+//						Engine.getInstance().log(0, id, account + "----" + password);// account
+//																					// +
+//																					// " / "
+//																					// +
+//																					// proxy
+//						// task.Abort();
+//					} else if (resp.indexOf(",0,40010,") != -1) {
+//						Engine.getInstance().log(1, id,  account + "----" + password);
+//						// task.Abort();
+//					} else if (resp.indexOf(",0,40026,") != -1) {
+//						Engine.getInstance().log(2, id, account + "----" + password);
+//						// task.Abort();
+//					} else if (resp.indexOf("," + account + ",40001,") != -1)// 验证码
+//					{
+//						//System.err.println("adding "+line);
+//						Engine.getInstance().addTask(line);
+//	
+//						// 不离开当前任务
+//						// Thread.Sleep(1000 *
+//						// Int32.Parse(cfa.AppSettings.Settings["P_ITV"].Value));//N秒后继续
+//					} else // 代理异常
+//					{
+//						Engine.getInstance().addTask(line);
+//						// System.out.println("A4");
+//						// System.out.println("proxy="+proxy);
+//						// Engine.getInstance().removeProxy(proxy.getHostName()+":"+proxy.getPort());
+//					}
+//				}
 			}
 		}
 		// catch(NoProxyException e){
@@ -370,30 +375,30 @@ public class Task implements Runnable {//, Observer {
 			// ex.printStackTrace();
 			// }
 		} finally {
-			try {
-				if (entity != null) {
-					EntityUtils.consume(entity);
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-			if (request != null) {
-				request.releaseConnection();
-				request.abort();
-			}
+//			try {
+//				if (entity != null) {
+//					EntityUtils.consume(entity);
+//				}
+//			} catch (Exception e) {
+//				e.printStackTrace();
+//			}
+//			if (request != null) {
+//				request.releaseConnection();
+//				request.abort();
+//			}
 
-			if(client!=null){
-				client.getConnectionManager().shutdown();
-			}
+//			if(client!=null){
+//				client.getConnectionManager().shutdown();
+//			}
 		}
 
-		String[] dt = new String[2];
-		dt[0] = "0";
+//		String[] dt = new String[2];
+//		dt[0] = "0";
 
 		//Engine.getInstance().deleteObserver(this);
 
 		// synchronized(SyncUtil.FINISH_OBJECT){
-		Engine.getInstance().endTask();
+//		Engine.getInstance().endTask();
 		// }
 	}
 }
