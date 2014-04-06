@@ -41,6 +41,7 @@ public class Option extends Dialog {
 	private Text text;
 	private Button btnCheckButton;
 	private Spinner spinner_2;
+	private Button button_2;
 	
 	/**
 	 * Create the dialog.
@@ -167,9 +168,11 @@ public class Option extends Dialog {
 				if(btnCheckButton.getSelection()){
 					spinner_2.setEnabled(true);
 					text.setEnabled(true);
+					button_2.setEnabled(true);
 				}else{
 					spinner_2.setEnabled(false);
 					text.setEnabled(false);
+					button_2.setEnabled(false);
 				}
 			}
 		});
@@ -189,6 +192,10 @@ public class Option extends Dialog {
 		text = new Text(composite_4, SWT.BORDER | SWT.MULTI);
 		text.setEnabled(false);
 		text.setBounds(10, 33, 214, 95);
+		
+		button_2 = new Button(composite_4, SWT.CHECK);
+		button_2.setText("验证代理");
+		button_2.setBounds(230, 10, 69, 17);
 	}
 		
 	private void load(){
@@ -202,10 +209,18 @@ public class Option extends Dialog {
 					btnCheckButton.setSelection(true);
 					spinner_2.setEnabled(true);
 					text.setEnabled(true);
+					button_2.setEnabled(true);
 				}else{
 					btnCheckButton.setSelection(false);
 					spinner_2.setEnabled(false);
 					text.setEnabled(false);
+					button_2.setEnabled(false);
+				}
+				
+				if("true".equals(this.configuration.getProperty("VALIDATE"))){
+					button_2.setSelection(true);
+				}else{
+					button_2.setSelection(false);
 				}
 				spinner_2.setSelection(Integer.parseInt(this.configuration.getProperty("SCAN_ITV")));
 				//text.setText(this.configuration.getProperty("IPS"));				
@@ -237,7 +252,8 @@ public class Option extends Dialog {
 			this.configuration.put("THREAD_COUNT", spinner.getText());
 			this.configuration.put("TIMEOUT", spinner_1.getText());
 			this.configuration.put("SCAN", String.valueOf(btnCheckButton.getSelection()));
-			this.configuration.put("SCAN_ITV", spinner_2.getText());	
+			this.configuration.put("SCAN_ITV", spinner_2.getText());
+			this.configuration.put("VALIDATE", String.valueOf(button_2.getSelection()));
 			//this.configuration.put("IPS", text.getText());
 			this.configuration.save();
 			

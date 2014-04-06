@@ -633,9 +633,30 @@ public class Engine extends Observable {
 				//开始扫描的线程
 				Thread t = new Thread(new Runnable(){
 					private EngineMessage msg = null;
+					private boolean validate = false;
+					private ThreadPoolExecutor poolx = null;
 					@Override
 					public void run() {
 						//开始定时扫描
+						if("true".equals(configuration.getProperty("VALIDATE"))&&hasService){
+							validate = true;							
+							
+							int tc = 100;
+							int corePoolSize = tc;// minPoolSize
+							int maxPoolSize = tc;
+							int maxTaskSize = (1024 + 512) * 100 * 40;// 缓冲队列
+							long keepAliveTime = 0L;
+							TimeUnit unit = TimeUnit.MILLISECONDS;
+
+							BlockingQueue<Runnable> workQueue = new ArrayBlockingQueue<Runnable>(
+									maxTaskSize);
+							RejectedExecutionHandler handler = new AbortPolicy();// 饱和处理策略
+
+							// 创建线程池
+							poolx = new ThreadPoolExecutor(corePoolSize, maxPoolSize,
+									keepAliveTime, unit, workQueue, handler);
+						}
+						
 						while(running){
 							msg = new EngineMessage();
 							msg.setType(EngineMessageType.OM_SCAN_PROGRESS);
@@ -717,10 +738,24 @@ public class Engine extends Observable {
 												input = new FileInputStream(file);
 												br = new BufferedReader(new InputStreamReader(input));
 												while((line=br.readLine())!=null){
-													sb.append(line+"\r\n");
+													if(validate){
+														//do validate
+														poolx.execute(new ValidateTask(sb, line));
+													}else{
+														sb.append(line+"\r\n");
+													}
 													//text.append(line+"\r\n");
 												}
 												br.close();
+												
+												if(poolx!=null&&poolx.getActiveCount()!=0){
+													try{
+														Thread.sleep(1000);
+													}catch(Exception e){
+														//e.printStackTrace();
+													}
+												}
+												
 												service.setProxies(sb.toString());
 											}else{
 												System.err.println("8088.txt no exists");
@@ -784,6 +819,20 @@ public class Engine extends Observable {
 								e.printStackTrace();
 							}
 						}
+						
+						if (poolx != null) {
+							poolx.shutdown();
+							//pool.shutdownNow();
+						}
+
+//						// 等待所有运行线程执行完毕
+//						while (poolx != null && poolx.getActiveCount() != 0) {
+//							try {
+//								Thread.sleep(1000);
+//							} catch (Exception e) {
+//								//
+//							}
+//						}
 					}
 				});
 				t.setDaemon(true);
