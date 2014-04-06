@@ -748,7 +748,7 @@ public class Engine extends Observable {
 												}
 												br.close();
 												
-												if(poolx!=null&&poolx.getActiveCount()!=0){
+												while(poolx!=null&&poolx.getActiveCount()!=0){
 													try{
 														Thread.sleep(1000);
 													}catch(Exception e){
