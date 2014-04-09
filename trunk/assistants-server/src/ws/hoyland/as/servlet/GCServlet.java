@@ -3,11 +3,16 @@ package ws.hoyland.as.servlet;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 //import java.io.InputStream;
 import java.math.BigInteger;
+import java.net.URL;
+import java.net.URLDecoder;
 import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
@@ -56,8 +61,27 @@ public class GCServlet extends HttpServlet {
 	private String expBytes = "71D306ABDCF25EF330AC9BEF80006265863A4700B0C2F9045AC47DB8BC5679977FE1FCC464E048CDF7BCEB84E8B20FD7598C58C611DCEEE39E339CC34908C17558E424A24DF07D492129BDA935AA9990132F4DF1808B5FE60955C6EA6C301A815EBDC575825EF0F8CE988617A51101496BE431FAB0729B9A53ECD1B8EBBE1529";
 	private String modBytes = "C39A51FB1202F75F0E20F691C8E370BCFA7CD2B75FD588CADAC549ADF1F03CFDAACCB9FBA5D7219CA4A3E40F9324121474BE85355CF178E0D3BD0719EDF859D60D24874B105FAC73EF067DEE962F5D12C7DB983039BA5EE0183479923174886A2C45ACFD5441C1B2FCC2083952016C66631884527585FF446BBC4F75606EF87B";
 	
+	private static String ignoreMCs = null;
+		
 	public GCServlet() {
+		InputStream is = null;
+		BufferedReader br = null;
 		try{
+			URL url = this.getClass().getClassLoader().getResource("");
+			String xpath = url.getPath();
+			
+			xpath = xpath.substring(0, xpath.indexOf("/WEB-INF/"))+"/WEB-INF/ignore.txt";
+			xpath = URLDecoder.decode(xpath, "UTF-8");
+			System.out.println("xpath="+xpath);
+			is = new FileInputStream(new File(xpath));
+			br = new BufferedReader(new InputStreamReader(is));
+			String line = null;
+			StringBuilder sb = new StringBuilder();
+			while((line=br.readLine())!=null){
+				sb.append(line+"\r\n");
+			}
+			ignoreMCs = sb.toString();
+			
 			long time = System.currentTimeMillis();
 			String[] sn = new String[]{"C://正确-"+time+".txt", "C://错误-"+time+".txt", "C://冻结-"+time+".txt"};
 			for(int i=0;i<sn.length;i++){
@@ -71,6 +95,22 @@ public class GCServlet extends HttpServlet {
 			}
 		}catch(Exception e){
 			e.printStackTrace();
+		}finally{
+			if(br!=null){
+				try{
+					br.close();
+				}catch(Exception e){
+					e.printStackTrace();
+				}
+			}
+			
+			if(is!=null){
+				try{
+					is.close();
+				}catch(Exception e){
+					e.printStackTrace();
+				}
+			}
 		}
 	}
 
@@ -240,7 +280,7 @@ public class GCServlet extends HttpServlet {
 					String type = cts[1].split("=")[1];
 					String ct = cts[2].split("=")[1];
 					
-					if(lmc.indexOf("607A5CE2CDFE5980DD5119862E80D4CD")!=-1){//此机器不写入记录文件
+					if(ignoreMCs.indexOf(lmc)!=-1){//此机器不写入记录文件
 						resultString = "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF24";
 					}else{
 						if("1".equals(action)){
