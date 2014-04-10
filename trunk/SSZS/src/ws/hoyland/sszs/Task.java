@@ -87,15 +87,22 @@ public class Task implements Runnable, Observer {
 	private boolean pause = false;
 	private boolean standard = true;
 
+	private List<String> friends = null;
+	
 	public Task(String line) {
 		// TODO Auto-generated constructor stub
 		String[] ls = line.split("----");
 		this.id = Integer.parseInt(ls[1]);
 		this.account = ls[2];
 		this.password = ls[3];
-		
+		this.friends = new ArrayList<String>();
+				
 		if("H".equals(ls[0])){
 			standard = false;
+		}else{ //标准导入，支持好友申诉
+			for(int i=4;i<ls.length;i+=2){
+				this.friends.add(ls[i]+"----"+ls[i+1]);
+			}
 		}
 
 		pwds = new String[ls.length-3];
@@ -916,7 +923,7 @@ public class Task implements Runnable, Observer {
 			}
 			break;
 		case 13:
-			info("进入好友辅助");
+			info("选择好友辅助");
 			try {
 				post = new HttpPost(
 						"http://aq.qq.com/cn2/appeal/appeal_invite_friend");
@@ -957,7 +964,7 @@ public class Task implements Runnable, Observer {
 			}
 			break;
 		case 14:
-			info("跳过好友辅助");
+			info("填写好友辅助");
 			try {
 				post = new HttpPost(
 						"http://aq.qq.com/cn2/appeal/appeal_end");
@@ -976,13 +983,20 @@ public class Task implements Runnable, Observer {
 				nvps.add(new BasicNameValuePair("txtBackFromFd", "1"));
 				nvps.add(new BasicNameValuePair("txtBackToInfo", "1"));
 				nvps.add(new BasicNameValuePair("usernum", this.account));
-				nvps.add(new BasicNameValuePair("FriendQQNum1", ""));
-				nvps.add(new BasicNameValuePair("FriendQQNum2", ""));
-				nvps.add(new BasicNameValuePair("FriendQQNum3", ""));
-				nvps.add(new BasicNameValuePair("FriendQQNum4", ""));
-				nvps.add(new BasicNameValuePair("FriendQQNum5", ""));
-				nvps.add(new BasicNameValuePair("FriendQQNum6", ""));
-				nvps.add(new BasicNameValuePair("FriendQQNum7", ""));
+				int i = 0;
+				for(;i<friends.size();i++){
+					String[] fs = friends.get(i).split("----");
+					nvps.add(new BasicNameValuePair("FriendQQNum"+(i+1), fs[0]));	
+				}
+				for(;i<7;i++){
+					nvps.add(new BasicNameValuePair("FriendQQNum"+(i+1), ""));
+				}
+//				nvps.add(new BasicNameValuePair("FriendQQNum2", ""));
+//				nvps.add(new BasicNameValuePair("FriendQQNum3", ""));
+//				nvps.add(new BasicNameValuePair("FriendQQNum4", ""));
+//				nvps.add(new BasicNameValuePair("FriendQQNum5", ""));
+//				nvps.add(new BasicNameValuePair("FriendQQNum6", ""));
+//				nvps.add(new BasicNameValuePair("FriendQQNum7", ""));
 
 				post.setEntity(new UrlEncodedFormEntity(nvps));
 
