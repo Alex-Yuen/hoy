@@ -46,7 +46,8 @@ public class Task implements Runnable {//, Observer {
 	// private static Random RND = new Random();
 	// private static String UAG =
 	// "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1; QQDownload 734; Maxthon; .NET CLR 2.0.50727; .NET4.0C; .NET4.0E)";
-	private static String UAG = "Opera/9.25 (Windows NT 6.0; U; en)";
+	// "Opera/9.25 (Windows NT 6.0; U; en)";
+	private static String UAG = "Mozilla/5.0 (Linux; U; Android 2.3.3; en-us; sdk Build/GRI34) AppleWebKit/533.1 (KHTML, like Gecko) Version/4.0 Mobile Safari/533.1";
 	private static Random RND = new Random();
 //	private static String expBytes = "010001";
 //	private static String modBytes = "C39A51FB1202F75F0E20F691C8E370BCFA7CD2B75FD588CADAC549ADF1F03CFDAACCB9FBA5D7219CA4A3E40F9324121474BE85355CF178E0D3BD0719EDF859D60D24874B105FAC73EF067DEE962F5D12C7DB983039BA5EE0183479923174886A2C45ACFD5441C1B2FCC2083952016C66631884527585FF446BBC4F75606EF87B";
@@ -127,7 +128,7 @@ public class Task implements Runnable {//, Observer {
 		//
 		// synchronized(SyncUtil.START_OBJECT){
 		// //通知有新线程开始执行
-		Engine.getInstance().beginTask();
+//		Engine.getInstance().beginTask();
 		// }
 
 		try {
@@ -281,7 +282,7 @@ public class Task implements Runnable {//, Observer {
 						+ "&pmd5="
 						//+ new String(bs)
 						+ Converts.MD5EncodeToHex(password)
-						+ "&go_url=http%3A%2F%2Fhouse60.3g.qq.com%2Ftouch%2Findex.jsp%3Fsid%3DAd_JZ1k2ZviFLkV2nvFt7005%26g_ut%3D3%26g_f%3D15124";
+						+ "&go_url=http%3A%2F%2Fhouse60.3g.qq.com%2Ftouch%2Findex.jsp%3Fsid%3DAeZfOtPghWDus8jPo5rPFP8C%26g_ut%3D3%26g_f%3D15125";
 				request = new HttpGet(ru);
 				request.setHeader("User-Agent", UAG);//
 				request.setHeader("Connection", "close");//
@@ -387,13 +388,13 @@ public class Task implements Runnable {//, Observer {
 			}
 		}
 
-		String[] dt = new String[2];
-		dt[0] = "0";
+//		String[] dt = new String[2];
+//		dt[0] = "0";
 
 		//Engine.getInstance().deleteObserver(this);
 
 		// synchronized(SyncUtil.FINISH_OBJECT){
-		Engine.getInstance().endTask();
+//		Engine.getInstance().endTask();
 		// }
 	}
 }
