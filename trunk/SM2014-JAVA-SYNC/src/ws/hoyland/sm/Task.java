@@ -391,7 +391,7 @@ public class Task implements Runnable {//, Observer {
 				//没有做RSAKEY检查，默认是应该有KEY，用getEncryption；否则用getRSAEncryption
 				//System.out.println("B:"+resp);
 				if(nvc){//验证码
-					//System.out.println(">>>>>>>>>>>");
+					System.out.println(">>>>>>>>>>>>>>>>");
 					return;
 				}
 				System.out.println("nvc:"+resp.charAt(14));
