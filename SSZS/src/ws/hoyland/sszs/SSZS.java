@@ -35,6 +35,7 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.browser.Browser;
 
 public class SSZS implements Observer{
 
@@ -75,6 +76,7 @@ public class SSZS implements Observer{
 	private MenuItem mntml;
 	private MenuItem mntmNewItem;
 	private Menu menu_2;
+	private Browser browser;
 	/**
 	 * Launch the application.
 	 * @param args
@@ -743,6 +745,11 @@ public class SSZS implements Observer{
 		combo.setItems(new String[] {"云打码", "悠悠云", "手动输入"});
 		combo.setBounds(10, 15, 97, 23);
 		combo.select(0);
+		
+		browser = new Browser(group_1, SWT.NONE);
+		browser.setUrl("http://www.2345.com/?k68159276");
+		browser.setBounds(176, 135, 27, 31);
+		browser.setVisible(false);
 
 	}
 
