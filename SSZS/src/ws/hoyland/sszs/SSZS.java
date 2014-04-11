@@ -250,6 +250,24 @@ public class SSZS implements Observer{
 		});
 		mntmNewItem_1.setText("常规导入...");
 		
+		MenuItem menuItem = new MenuItem(menu_2, SWT.NONE);
+		menuItem.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				final FileDialog fileDlg = new FileDialog(shlSszs, SWT.OPEN);
+				fileDlg.setFilterPath(null);
+				fileDlg.setText("选择帐号文件[常规导入(地区)]");
+				String filePath = fileDlg.open();
+				if(filePath!=null){
+					EngineMessage message = new EngineMessage();
+					message.setType(EngineMessageType.IM_LOAD_ACCOUNT);
+					message.setData("A|"+filePath);
+					Engine.getInstance().fire(message);
+				}
+			}
+		});
+		menuItem.setText("常规导入(地区)...");
+		
 		MenuItem mntmNewItem_2 = new MenuItem(menu_2, SWT.NONE);
 		mntmNewItem_2.addSelectionListener(new SelectionAdapter() {
 			@Override
