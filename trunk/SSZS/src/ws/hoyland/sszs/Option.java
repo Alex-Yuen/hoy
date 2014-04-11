@@ -90,6 +90,7 @@ public class Option extends Dialog implements Observer {
 	private Spinner spinner_10;
 	private Spinner spinner_11;
 	private Spinner spinner_8;
+	private Spinner spinner_12;
 	/**
 	 * Create the dialog.
 	 * @param parent
@@ -122,7 +123,8 @@ public class Option extends Dialog implements Observer {
 				combo_6.setItems(cities[combo_5.getSelectionIndex()]);
 				combo_6.select(Integer.parseInt(this.configuration.getProperty("C3")));
 				
-				spinner.setSelection(Integer.parseInt(this.configuration.getProperty("EMAIL_TIMES")));				
+				spinner.setSelection(Integer.parseInt(this.configuration.getProperty("EMAIL_TIMES")));
+				spinner_12.setSelection(Integer.parseInt(this.configuration.getProperty("TRY_TIMES")));		
 				//spinner_1.setSelection(Integer.parseInt(this.configuration.getProperty("TOKEN_QUANTITY")));
 //				if(Integer.parseInt(this.configuration.getProperty("RECONN_GROUP_QUANTITY_FLAG"))==1){
 //					btnCheckButton.setSelection(true);
@@ -202,6 +204,7 @@ public class Option extends Dialog implements Observer {
 	
 	private void save(){
 		this.configuration.put("EMAIL_TIMES", spinner.getText());
+		this.configuration.put("TRY_TIMES", spinner_12.getText());
 //		this.configuration.put("RECONN_GROUP_QUANTITY_FLAG", btnCheckButton.getSelection()?"1":"0");
 //		this.configuration.put("RECONN_GROUP_QUANTITY", spinner_2.getText());
 //		this.configuration.put("RECONN_ACCOUNT_QUANTITY_FLAG", btnCheckButton_1.getSelection()?"1":"0");
@@ -432,6 +435,16 @@ public class Option extends Dialog implements Observer {
 		});
 		button.setBounds(153, 38, 33, 17);
 		button.setText("每");
+		
+		Label label_15 = new Label(composite, SWT.NONE);
+		label_15.setText("重试:");
+		label_15.setBounds(291, 10, 33, 17);
+		
+		spinner_12 = new Spinner(composite, SWT.BORDER);
+		spinner_12.setMaximum(2000);
+		spinner_12.setMinimum(1);
+		spinner_12.setSelection(1);
+		spinner_12.setBounds(330, 7, 47, 23);
 		
 		TabItem tbtmNewItem_1 = new TabItem(tabFolder, SWT.NONE);
 		tbtmNewItem_1.setText("高级");
