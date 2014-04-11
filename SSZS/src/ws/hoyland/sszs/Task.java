@@ -223,7 +223,6 @@ public class Task implements Runnable, Observer {
 
 	@Override
 	public void run() {
-		info("开始运行");
 	
 		//初始化
 		String[] ls = line.split("----");
@@ -232,6 +231,9 @@ public class Task implements Runnable, Observer {
 		friends = new ArrayList<String>();
 
 		itype = ls[0];
+
+		info("开始运行");
+		
 		if ("H".equals(ls[0])) {
 			//standard = false;
 			password = ls[3];
@@ -241,7 +243,7 @@ public class Task implements Runnable, Observer {
 				friends.add(ls[i] + "----" + ls[i + 1]);
 			}
 		} else if("A".equals(ls[0])){ //无密带地区辅助好友导入
-			password = "/";
+			password = "-";
 			int i = 3;
 			for (; i < ls.length; i++) {
 				if(ls[i].charAt(0)>='0'&&ls[i].charAt(0)<='9'){
@@ -271,6 +273,10 @@ public class Task implements Runnable, Observer {
 				friends.add(ls[i] + "----" + ls[i + 1]);
 			}
 		}
+		System.err.println("itype:"+itype);
+		System.err.println("province:"+sProvince+"/"+iProvince);
+		System.err.println("city:"+sCity+"/"+iCity);
+		System.err.println("friends size:"+friends.size());
 
 		pwds = new String[ls.length - 3];
 		for (int i = 0; i < pwds.length; i++) {
@@ -933,7 +939,11 @@ public class Task implements Runnable, Observer {
 				nvps.add(new BasicNameValuePair("txtEmailVerifyCode", rc));
 				nvps.add(new BasicNameValuePair("pwdHOldPW1", ""));
 				nvps.add(new BasicNameValuePair("txtOldPW1", ""));
-				nvps.add(new BasicNameValuePair("pwdOldPW1", password));
+				if("A".equals(itype)){
+					nvps.add(new BasicNameValuePair("pwdOldPW1", ""));
+				}else{
+					nvps.add(new BasicNameValuePair("pwdOldPW1", password));
+				}
 				nvps.add(new BasicNameValuePair("pwdHOldPW2", ""));
 				nvps.add(new BasicNameValuePair("txtOldPW2", ""));
 				nvps.add(new BasicNameValuePair("pwdOldPW2",
