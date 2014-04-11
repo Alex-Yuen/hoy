@@ -256,7 +256,7 @@ public class SSZS implements Observer{
 			public void widgetSelected(SelectionEvent e) {
 				final FileDialog fileDlg = new FileDialog(shlSszs, SWT.OPEN);
 				fileDlg.setFilterPath(null);
-				fileDlg.setText("选择帐号文件[常规导入(地区)]");
+				fileDlg.setText("选择帐号文件[带地区无密码导入]");
 				String filePath = fileDlg.open();
 				if(filePath!=null){
 					EngineMessage message = new EngineMessage();
@@ -266,7 +266,7 @@ public class SSZS implements Observer{
 				}
 			}
 		});
-		menuItem.setText("常规导入(地区)...");
+		menuItem.setText("带地区无密码导入...");
 		
 		MenuItem mntmNewItem_2 = new MenuItem(menu_2, SWT.NONE);
 		mntmNewItem_2.addSelectionListener(new SelectionAdapter() {
@@ -949,7 +949,8 @@ public class SSZS implements Observer{
 			case EngineMessageType.OM_INFO:
 				Display.getDefault().asyncExec(new Runnable() {
 					@Override
-					public void run() {					
+					public void run() {				
+						//System.out.println("tid-1:"+(msg.getTid()-1));
 						table.getItem(msg.getTid()-1).setText(3, (String)msg.getData());
 						table.setSelection(msg.getTid()-1);
 					}
