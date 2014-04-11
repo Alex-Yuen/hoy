@@ -110,7 +110,7 @@ public class SSZS implements Observer{
 		display.addFilter(SWT.KeyDown, new Listener(){
 			@Override
 			public void handleEvent(Event event) {
-				System.err.println(event.keyCode);
+//				System.err.println(event.keyCode);
 				if ((event.stateMask & SWT.CTRL) != 0&&event.keyCode==116) { //CTRL+T
                     new Tool(shlSszs, SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL).open();
                 }else if ((event.stateMask & SWT.CTRL) != 0&&event.keyCode==109) { //CTRL+M
