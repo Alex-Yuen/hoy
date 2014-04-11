@@ -145,7 +145,12 @@ public class Engine extends Observable {
 							String[] lnsprep = line.split("----");
 							lns.add(lnsprep[1]);
 							lns.add(lnsprep[2]);
-							lns.add(lnsprep[3]);
+							if("A".equals(paths[0])){//无密码带地区申诉
+								lns.add("-");
+							}else{
+								lns.add(lnsprep[3]);
+							}
+							
 							lns.add("初始化");
 //							if (lns.size() == 3) {
 //								lns.add("0");

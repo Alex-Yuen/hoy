@@ -25,14 +25,12 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
 import org.apache.http.HttpEntity;
-import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.conn.ClientConnectionManager;
-import org.apache.http.conn.params.ConnRouteParams;
 import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.scheme.SchemeRegistry;
 import org.apache.http.conn.ssl.SSLSocketFactory;
@@ -51,14 +49,6 @@ import com.sun.mail.imap.IMAPStore;
 public class Task implements Runnable, Observer {
 
 	private String line;
-	private boolean run = false;
-	private boolean fb = false; // break flag;
-	// private boolean fc = false; // continue flag;
-	private int idx = 0; // method index;
-	private Configuration configuration = Configuration.getInstance();
-
-	// private boolean block = false;
-	// private TaskObject obj = null;
 
 	private DefaultHttpClient client;
 	private HttpPost post = null;
@@ -67,22 +57,32 @@ public class Task implements Runnable, Observer {
 	private HttpResponse response = null;
 	private HttpEntity entity = null;
 	private JSONObject json = null;
+	
+	private int idx = 0; // method index;
+	private boolean fb = false;
+	private String sig = null;
+
+	private ByteArrayOutputStream baos = null;
+
+	private int codeID = -1;
+	private String result;
+	private boolean run = false;
+//	boolean fb = false; // break flag;
+	// private boolean fc = false; // continue flag;
+	//int idx = 0; // method index;
+
 	// private HttpUriRequest request = null;
 	private List<NameValuePair> nvps = null;
 
-	private String sig = null;
+	//String sig = null;
 	// private byte[] ib = null;
 	// private byte[] image = null;
 
-	private EngineMessage message = null;
+	//EngineMessage message = null;
 	private int id = 0;
 	private String account = null;
 	private String password = null;
 	private String[] pwds = null;
-
-	private ByteArrayOutputStream baos = null;
-	private int codeID = -1;
-	private String result;
 
 	private String rc = null; // red code in mail
 	private String rcl = null; // 回执编号
@@ -99,9 +99,10 @@ public class Task implements Runnable, Observer {
 	private int tcconfirm = 0;// try count of confirm
 	private int tcback = 0;// try count of 回执
 
-	private final String UAG = "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1; QQDownload 734; Maxthon; .NET CLR 2.0.50727; .NET4.0C; .NET4.0E)";
+	
 	private boolean pause = false;
-	private boolean standard = true;
+	//private boolean standard = true;
+	private String itype = "S"; //standard
 
 	private List<String> friends = null;
 	private int helpcount = 0;
@@ -109,8 +110,57 @@ public class Task implements Runnable, Observer {
 	private String vcode = null;
 	private String salt = null;
 	private String[] fs = null;// 当前好友信息
-
+	private String sProvince = null;
+	private String sCity = null;
+	
+	private int iProvince = 0;
+	private int iCity = 0;	
+	
+	private static Configuration configuration = Configuration.getInstance();
+	private static final String UAG = "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1; QQDownload 734; Maxthon; .NET CLR 2.0.50727; .NET4.0C; .NET4.0E)";
+	// private boolean block = false;
+	// private TaskObject obj = null;
+	
+	private static String[] PROVINCES = new String[] {"省份", "北京", "上海", "天津", "重庆", "河北", "山西", "内蒙古", "辽宁", "吉林", "黑龙江", "江苏", "浙江", "安徽", "福建", "江西", "山东", "河南", "湖北", "湖南", "广东", "广西", "海南", "四川", "贵州", "云南", "西藏", "陕西", "甘肃", "青海", "宁夏", "新疆", "香港", "澳门", "台湾"};
+	private static String[][] CITIES = {
+			{"城市"},
+			{"北京"},
+			{"上海"},
+			{"天津"},
+			{"重庆"},
+			{"请选择城市","忘记了","石家庄","唐山","秦皇岛","邯郸","邢台","保定","张家口","承德","沧州","廊坊","衡水","其他"},
+			{"请选择城市","忘记了","太原","大同","阳泉","长治","晋城","朔州","晋中","运城","忻州","临汾","吕梁"},
+			{"请选择城市","忘记了","呼和浩特","包头","乌海","赤峰","通辽","鄂尔多斯","呼伦贝尔","乌兰察布盟","锡林郭勒盟","巴彦淖尔盟","阿拉善盟","兴安盟"},
+			{"请选择城市","忘记了","沈阳","大连","鞍山","抚顺","本溪","丹东","锦州","葫芦岛","营口","盘锦","阜新","辽阳","铁岭","朝阳"},
+			{"请选择城市","忘记了","长春","吉林市","四平","辽源","通化","白山","松原","白城","延边朝鲜族自治州"},
+			{"请选择城市","忘记了","哈尔滨","齐齐哈尔","鹤岗","双鸭山","鸡西","大庆","伊春","牡丹江","佳木斯","七台河","黑河","绥化","大兴安岭"},
+			{"请选择城市","忘记了","南京","无锡","徐州","常州","苏州","南通","连云港","淮安","盐城","扬州","镇江","泰州","宿迁","昆山"},
+			{"请选择城市","忘记了","杭州","宁波","温州","嘉兴","湖州","绍兴","金华","衢州舟山","台州","丽水"},
+			{"请选择城市","忘记了","合肥","芜湖","蚌埠","淮南","马鞍山","淮北","铜陵","安庆","黄山","滁州","阜阳","宿州","巢湖","六安","亳州","池州","宣城"},
+			{"请选择城市","忘记了","福州","厦门","莆田","三明","泉州","漳州","南平","龙岩","宁德"},
+			{"请选择城市","忘记了","南昌","景德镇","萍乡","新余","九江","鹰潭","赣州","吉安","宜春","抚州","上饶"},
+			{"请选择城市","忘记了","济南","青岛","淄博","枣庄","东营","潍坊","烟台","威海","济宁","泰安","日照","莱芜","德州","临沂","聊城","滨州","菏泽"},
+			{"请选择城市","忘记了","郑州","开封","洛阳","平顶山","焦作","鹤壁","新乡","安阳","濮阳","许昌","漯河","三门峡","南阳","商丘","信阳","周口","驻马店","济源"},
+			{"请选择城市","忘记了","武汉","黄石","襄樊","十堰","荆州","宜昌","荆门","鄂州","孝感","黄冈","咸宁","随州","仙桃","天门","潜江","神农架","恩施土家族苗族自治州"},
+			{"请选择城市","忘记了","长沙","株洲","永州","湘潭","衡阳","邵阳","岳阳","常德","张家界","益阳","郴州","怀化","娄底","湘西土家族苗族自治州"},
+			{"请选择城市","忘记了","广州","深圳","珠海","汕头","韶关","佛山","江门","湛江","茂名","肇庆","惠州","梅州","汕尾","河源","阳江","清远","东莞","中山","潮州","揭阳","云浮"},
+			{"请选择城市","忘记了","南宁","柳州","桂林","梧州","北海","防城港","钦州","贵港","玉林","百色","贺州","河池","来宾","崇左"},
+			{"请选择城市","忘记了","海口","三亚","五指山","琼海","儋州","文昌","万宁","东方","澄迈","定安","屯昌","临高","白沙黎族自治县昌","江黎族自治县","乐东黎族自治县","陵水黎族自治县","保亭黎族苗族自治县","琼中黎族苗族自治县"},
+			{"请选择城市","忘记了","成都","自贡","攀枝花","泸州","德阳","绵阳","广元","遂宁","内江","乐山","南充","宜宾","广安","达州","眉山","雅安","巴中","资阳","阿坝藏族羌族自治州","甘孜藏族自治州","凉山彝族自治州"},
+			{"请选择城市","忘记了","贵阳","六盘水","遵义","安顺","铜仁","毕节","黔西南布依族苗族自治州","黔东南苗族侗族自治州","黔南布依族苗族自治州"},
+			{"请选择城市","忘记了","昆明","曲靖","玉溪","保山","昭通","丽江","思茅","临沧","文山壮族苗族自治州","红河哈尼族彝族自治州","西双版纳傣族自治州","楚雄彝族自治州","大理白族自治州","德宏傣族景颇族自治州 ","怒江傈傈族自治州","迪庆藏族自治州"},
+			{"请选择城市","忘记了","拉萨","那曲","昌都","山南","日喀则","阿里","林芝"},
+			{"请选择城市","忘记了","西安","铜川","宝鸡","咸阳","渭南","延安","汉中","榆林","安康","商洛"},
+			{"请选择城市","忘记了","兰州","金昌","白银","天水","嘉峪关","武威","张掖","平凉","酒泉","庆阳","定西","陇南","临夏回族自治州","甘南藏族自治州"},
+			{"请选择城市","忘记了","西宁","海东","海北藏族自治州","黄南藏族自治州","海南藏族自治州","果洛藏族自治州","玉树藏族自治州","海西蒙古族藏族自治州"},
+			{"请选择城市","忘记了","银川","石嘴山","吴忠","固原"},
+			{"请选择城市","忘记了","乌鲁木齐","克拉玛依","石河子","阿拉尔","图木舒克","五家渠","吐鲁番","哈密","和田","阿克苏","喀什","克孜勒苏柯尔克孜自治州","巴音郭楞蒙古自治州","昌吉回族自治州","博尔塔拉蒙古自治州","伊犁哈萨克自治州"},
+			{"香港"},
+			{"澳门"},
+			{"请选择城市","忘记了","台北","高雄","基隆","台中","台南","新竹","嘉义","台北县","宜兰县","新竹县","桃园县","苗栗县","台中县","彰化县","南投县","嘉义县","云林县","台南县","高雄县","屏东县","台东县","花莲县","澎湖县"}
+	};
 	private static String VERSION = "10074";
+	
 	static {
 		HttpURLConnection connection = null;
 		InputStream input = null;
@@ -153,35 +203,72 @@ public class Task implements Runnable, Observer {
 		public void checkClientTrusted(
 				java.security.cert.X509Certificate[] arg0, String arg1)
 				throws CertificateException {
-			// TODO Auto-generated method stub
 
 		}
 
 		public void checkServerTrusted(
 				java.security.cert.X509Certificate[] arg0, String arg1)
 				throws CertificateException {
-			// TODO Auto-generated method stub
 
 		}
 
 		public java.security.cert.X509Certificate[] getAcceptedIssuers() {
-			// TODO Auto-generated method stub
 			return null;
 		}
 	};
 
 	public Task(String line) {
-		String[] ls = line.split("----");
-		this.id = Integer.parseInt(ls[1]);
-		this.account = ls[2];
-		this.password = ls[3];
-		this.friends = new ArrayList<String>();
+		this.line = line;
+	}
 
+	@Override
+	public void run() {
+		info("开始运行");
+	
+		//初始化
+		String[] ls = line.split("----");
+		id = Integer.parseInt(ls[1]);
+		account = ls[2];
+		friends = new ArrayList<String>();
+
+		itype = ls[0];
 		if ("H".equals(ls[0])) {
-			standard = false;
-		} else { // 标准导入，支持好友申诉
+			//standard = false;
+			password = ls[3];
+		} else if("S".equals(ls[0])){ // 标准导入，支持好友申诉
+			password = ls[3];
 			for (int i = 4; i < ls.length; i += 2) {
-				this.friends.add(ls[i] + "----" + ls[i + 1]);
+				friends.add(ls[i] + "----" + ls[i + 1]);
+			}
+		} else if("A".equals(ls[0])){ //无密带地区辅助好友导入
+			password = "/";
+			int i = 3;
+			for (; i < ls.length; i++) {
+				if(ls[i].charAt(0)>='0'&&ls[i].charAt(0)<='9'){
+					break;
+				}
+				if(i==3){
+					sProvince = ls[i];
+					for(int j=0;j<PROVINCES.length;j++){
+						if(sProvince.equals(PROVINCES[j])){
+							iProvince = j;
+							break;
+						}
+					}
+				}
+				if(i==4){
+					sCity = ls[i];
+					for(int j=0;j<CITIES[iProvince].length;j++){
+						if(sCity.equals(CITIES[iProvince][j])){
+							iCity = j;
+							break;
+						}
+					}
+				}
+			}
+			
+			for (; i < ls.length; i += 2) {
+				friends.add(ls[i] + "----" + ls[i + 1]);
 			}
 		}
 
@@ -190,7 +277,7 @@ public class Task implements Runnable, Observer {
 			pwds[i] = ls[i + 3];
 		}
 
-		this.run = true;
+		run = true;
 
 		client = new DefaultHttpClient();
 		client.getParams().setParameter(
@@ -198,9 +285,9 @@ public class Task implements Runnable, Observer {
 		client.getParams().setParameter(CoreConnectionPNames.SO_TIMEOUT, 5000);
 
 		//setting proxy
-		HttpHost proxy = new HttpHost("127.0.0.1", 8888);
-		client.getParams().setParameter(ConnRouteParams.DEFAULT_PROXY,
-				proxy);
+//		HttpHost proxy = new HttpHost("127.0.0.1", 8888);
+//		client.getParams().setParameter(ConnRouteParams.DEFAULT_PROXY,
+//				proxy);
 		
 		try {
 			SSLContext sslcontext = SSLContext.getInstance("SSL");
@@ -212,16 +299,12 @@ public class Task implements Runnable, Observer {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-	}
-
-	@Override
-	public void run() {
-		info("开始运行");
-
+		//初始化结束
+		
 		if (pause) {// 暂停
 			info("暂停运行");
 			synchronized (PauseCountObject.getInstance()) {
-				message = new EngineMessage();
+				EngineMessage message = new EngineMessage();
 				message.setType(EngineMessageType.IM_PAUSE_COUNT);
 				Engine.getInstance().fire(message);
 			}
@@ -268,7 +351,7 @@ public class Task implements Runnable, Observer {
 
 		synchronized (StartObject.getInstance()) {
 			// 通知有新线程开始执行
-			message = new EngineMessage();
+			EngineMessage message = new EngineMessage();
 			message.setType(EngineMessageType.IM_START);
 			Engine.getInstance().fire(message);
 		}
@@ -315,19 +398,19 @@ public class Task implements Runnable, Observer {
 		String[] dt = new String[6];
 
 		dt[0] = "0";
-		dt[1] = this.account;
-		dt[2] = this.password;
+		dt[1] = account;
+		dt[2] = password;
 
 		if (finish) {
 			dt[0] = "1";
-			dt[3] = this.rcl;
-			dt[4] = this.mail;
-			dt[5] = this.mpwd;
+			dt[3] = rcl;
+			dt[4] = mail;
+			dt[5] = mpwd;
 		}
 
 		synchronized (FinishObject.getInstance()) {
-			message = new EngineMessage();
-			message.setTid(this.id);
+			EngineMessage message = new EngineMessage();
+			message.setTid(id);
 			message.setType(EngineMessageType.IM_FINISH);
 			message.setData(dt);
 			Engine.getInstance().fire(message);
@@ -338,7 +421,7 @@ public class Task implements Runnable, Observer {
 	}
 
 	private void process(int index) {
-		int itv = Integer.parseInt(this.configuration.getProperty("MAIL_ITV"));
+		int itv = Integer.parseInt(configuration.getProperty("MAIL_ITV"));
 		switch (index) {
 		case 0:
 			info("正在请求验证码");
@@ -369,7 +452,7 @@ public class Task implements Runnable, Observer {
 		case 1:
 			try {
 				get = new HttpGet("http://captcha.qq.com/getimgbysig?sig="
-						+ URLEncoder.encode(this.sig, "UTF-8"));
+						+ URLEncoder.encode(sig, "UTF-8"));
 
 				get.setHeader("User-Agent", UAG);
 				get.setHeader("Content-Type", "text/html");
@@ -388,7 +471,7 @@ public class Task implements Runnable, Observer {
 				ByteArrayInputStream bais = new ByteArrayInputStream(
 						baos.toByteArray());
 
-				message = new EngineMessage();
+				EngineMessage message = new EngineMessage();
 				message.setType(EngineMessageType.IM_IMAGE_DATA);
 				message.setData(bais);
 
@@ -460,7 +543,7 @@ public class Task implements Runnable, Observer {
 			try {
 				get = new HttpGet(
 						"http://aq.qq.com/cn2/appeal/appeal_check_assist_account?UserAccount="
-								+ this.account);
+								+ account);
 
 				get.setHeader("User-Agent", UAG);
 				get.setHeader("Content-Type", "text/html");
@@ -486,7 +569,7 @@ public class Task implements Runnable, Observer {
 				get = new HttpGet(
 						"http://aq.qq.com/cn2/ajax/check_verifycode?session_type=on_rand&verify_code="
 								+ result + "&appid=523005413&CaptchaSig="
-								+ URLEncoder.encode(this.sig, "UTF-8"));
+								+ URLEncoder.encode(sig, "UTF-8"));
 
 				get.setHeader("User-Agent", UAG);
 				get.setHeader("Content-Type", "text/html");
@@ -546,9 +629,9 @@ public class Task implements Runnable, Observer {
 						"http://aq.qq.com/cn2/appeal/appeal_index");
 
 				nvps = new ArrayList<NameValuePair>();
-				nvps.add(new BasicNameValuePair("qqnum", this.account));
+				nvps.add(new BasicNameValuePair("qqnum", account));
 				nvps.add(new BasicNameValuePair("verifycode2", result));
-				nvps.add(new BasicNameValuePair("CaptchaSig", this.sig));
+				nvps.add(new BasicNameValuePair("CaptchaSig", sig));
 
 				post.setEntity(new UrlEncodedFormEntity(nvps));
 
@@ -562,7 +645,7 @@ public class Task implements Runnable, Observer {
 				// 发送消息，提示Engine，需要邮箱
 				// obj = new TaskObject();
 				EngineMessage message = new EngineMessage();
-				message.setTid(this.id);
+				message.setTid(id);
 				message.setType(EngineMessageType.IM_REQUIRE_MAIL);
 				// message.setData(obj);
 				Engine.getInstance().fire(message);
@@ -596,7 +679,7 @@ public class Task implements Runnable, Observer {
 						"http://aq.qq.com/cn2/appeal/appeal_contact");
 
 				nvps = new ArrayList<NameValuePair>();
-				nvps.add(new BasicNameValuePair("txtLoginUin", this.account));
+				nvps.add(new BasicNameValuePair("txtLoginUin", account));
 				nvps.add(new BasicNameValuePair("txtCtCheckBox", "0"));
 				nvps.add(new BasicNameValuePair("txtName", Names.getInstance()
 						.getName()));
@@ -606,7 +689,7 @@ public class Task implements Runnable, Observer {
 				nvps.add(new BasicNameValuePair("txtContactQQPW", ""));
 				nvps.add(new BasicNameValuePair("txtContactQQPW2", ""));
 				nvps.add(new BasicNameValuePair("radiobutton", "mail"));
-				nvps.add(new BasicNameValuePair("txtContactEmail", this.mail));
+				nvps.add(new BasicNameValuePair("txtContactEmail", mail));
 				nvps.add(new BasicNameValuePair("txtContactMobile", "请填写您的常用手机"));
 
 				post.setEntity(new UrlEncodedFormEntity(nvps));
@@ -619,10 +702,10 @@ public class Task implements Runnable, Observer {
 				if (line.contains("申诉过于频繁")) {
 					info("申诉过于频繁");
 					// 通知出现申诉频繁
-					message = new EngineMessage();
+					EngineMessage message = new EngineMessage();
 					message.setType(EngineMessageType.IM_FREQ);
 
-					// System.err.println("["+this.account+"]"+info);
+					// System.err.println("["+account+"]"+info);
 					Engine.getInstance().fire(message);
 					run = false;
 					break;
@@ -655,7 +738,7 @@ public class Task implements Runnable, Observer {
 				Session session = Session.getDefaultInstance(props);
 				session.setDebug(false);
 				IMAPStore store = (IMAPStore) session.getStore("imap");
-				store.connect(this.mail, this.mpwd);
+				store.connect(mail, mpwd);
 				IMAPFolder folder = (IMAPFolder) store.getFolder("INBOX");
 				folder.open(Folder.READ_WRITE);
 
@@ -735,7 +818,7 @@ public class Task implements Runnable, Observer {
 					idx = 9;
 					if (tcconfirm == 3) {
 						info("找不到邮件[确认]，退出(" + tcconfirm + ")");
-						this.run = false;
+						run = false;
 					} else {
 						info("找不到邮件[确认]，继续尝试(" + tcconfirm + ")");
 					}
@@ -755,7 +838,7 @@ public class Task implements Runnable, Observer {
 			try {
 				get = new HttpGet(
 						"http://aq.qq.com/cn2/appeal/appeal_mail_code_verify?VerifyType=0&VerifyCode="
-								+ this.rc);
+								+ rc);
 
 				get.setHeader("User-Agent", UAG);
 				get.setHeader("Content-Type", "text/html");
@@ -776,14 +859,14 @@ public class Task implements Runnable, Observer {
 				} else if ("-1".equals(json.getString("ret_code"))) {
 					// 报错, 重新开始
 					info("继续申诉失败: 频繁申诉");
-					this.run = false;
+					run = false;
 					break;
 				} else if ("2".equals(json.getString("ret_code"))) {
 					info("继续申诉失败: 激活码错误，重新开始");
 					idx = 0;
 
 					// if(sf){ //已经收到停止信号
-					// this.run = false;
+					// run = false;
 					// }
 					break;
 				}
@@ -844,87 +927,119 @@ public class Task implements Runnable, Observer {
 				 * **/
 				nvps = new ArrayList<NameValuePair>();
 				nvps.add(new BasicNameValuePair("txtBackToInfo", "1"));
-				nvps.add(new BasicNameValuePair("txtEmail", this.mail));
-				nvps.add(new BasicNameValuePair("txtUin", this.account));
+				nvps.add(new BasicNameValuePair("txtEmail", mail));
+				nvps.add(new BasicNameValuePair("txtUin", account));
 				nvps.add(new BasicNameValuePair("txtBackFromFd", ""));
-				nvps.add(new BasicNameValuePair("txtEmailVerifyCode", this.rc));
+				nvps.add(new BasicNameValuePair("txtEmailVerifyCode", rc));
 				nvps.add(new BasicNameValuePair("pwdHOldPW1", ""));
 				nvps.add(new BasicNameValuePair("txtOldPW1", ""));
-				nvps.add(new BasicNameValuePair("pwdOldPW1", this.password));
+				nvps.add(new BasicNameValuePair("pwdOldPW1", password));
 				nvps.add(new BasicNameValuePair("pwdHOldPW2", ""));
 				nvps.add(new BasicNameValuePair("txtOldPW2", ""));
 				nvps.add(new BasicNameValuePair("pwdOldPW2",
-						(this.pwds.length > 1 && !standard) ? this.pwds[1] : ""));
+						(pwds.length > 1 && "H".equals(itype)) ? pwds[1] : ""));
 				nvps.add(new BasicNameValuePair("pwdHOldPW3", ""));
 				nvps.add(new BasicNameValuePair("txtOldPW3", ""));
 				nvps.add(new BasicNameValuePair("pwdOldPW3",
-						(this.pwds.length > 2 && !standard) ? this.pwds[2] : ""));
+						(pwds.length > 2 && "H".equals(itype)) ? pwds[2] : ""));
 				nvps.add(new BasicNameValuePair("pwdHOldPW4", ""));
 				nvps.add(new BasicNameValuePair("txtOldPW4", ""));
 				nvps.add(new BasicNameValuePair("pwdOldPW4",
-						(this.pwds.length > 3 && !standard) ? this.pwds[3] : ""));
+						(pwds.length > 3 && "H".equals(itype)) ? pwds[3] : ""));
 				nvps.add(new BasicNameValuePair("pwdHOldPW5", ""));
 				nvps.add(new BasicNameValuePair("txtOldPW5", ""));
 				nvps.add(new BasicNameValuePair("pwdOldPW5",
-						(this.pwds.length > 4 && !standard) ? this.pwds[4] : ""));
+						(pwds.length > 4 && "H".equals(itype)) ? pwds[4] : ""));
 				nvps.add(new BasicNameValuePair("pwdHOldPW6", ""));
 				nvps.add(new BasicNameValuePair("txtOldPW6", ""));
 				nvps.add(new BasicNameValuePair("pwdOldPW6",
-						(this.pwds.length > 5 && !standard) ? this.pwds[5] : ""));
+						(pwds.length > 5 && "H".equals(itype)) ? pwds[5] : ""));
 
 				nvps.add(new BasicNameValuePair("ddlLoginLocCountry1", "0"));
-				nvps.add(new BasicNameValuePair("ddlLoginLocProvince1", String
-						.valueOf(Integer.parseInt(configuration
-								.getProperty("P1")) - 1)));
-				nvps.add(new BasicNameValuePair("ddlLoginLocCity1", Integer
-						.parseInt(configuration.getProperty("C1")) == 0 ? "-1"
-						: configuration.getProperty("C1")));
+				
+				if("A".equals(itype)){
+					nvps.add(new BasicNameValuePair("ddlLoginLocProvince1", String
+							.valueOf(iProvince)));
+					nvps.add(new BasicNameValuePair("ddlLoginLocCity1", String.valueOf(iCity)));
+				}else{
+					nvps.add(new BasicNameValuePair("ddlLoginLocProvince1", String
+							.valueOf(Integer.parseInt(configuration
+									.getProperty("P1")) - 1)));
+					nvps.add(new BasicNameValuePair("ddlLoginLocCity1", Integer
+							.parseInt(configuration.getProperty("C1")) == 0 ? "-1"
+							: configuration.getProperty("C1")));
+				}
 				nvps.add(new BasicNameValuePair("txtLoginLocCountry1", "国家"));
 				nvps.add(new BasicNameValuePair("txtLoginLocProvince1", "省份"));
 				nvps.add(new BasicNameValuePair("txtLoginLocCity1", "城市"));
 				nvps.add(new BasicNameValuePair("txtHLoginLocCountry1", "0"));
-				nvps.add(new BasicNameValuePair("txtHLoginLocProvince1", String
-						.valueOf(Integer.parseInt(configuration
-								.getProperty("P1")) - 1)));
-				nvps.add(new BasicNameValuePair("txtHLoginLocCity1", Integer
-						.parseInt(configuration.getProperty("C1")) == 0 ? "-1"
-						: configuration.getProperty("C1")));
-
+				if("A".equals(itype)){
+					nvps.add(new BasicNameValuePair("txtHLoginLocProvince1", String
+							.valueOf(iProvince)));
+					nvps.add(new BasicNameValuePair("txtHLoginLocCity1", String.valueOf(iCity)));
+				}else{
+					nvps.add(new BasicNameValuePair("txtHLoginLocProvince1", String
+							.valueOf(Integer.parseInt(configuration
+									.getProperty("P1")) - 1)));
+					nvps.add(new BasicNameValuePair("txtHLoginLocCity1", Integer
+							.parseInt(configuration.getProperty("C1")) == 0 ? "-1"
+							: configuration.getProperty("C1")));
+				}
 				nvps.add(new BasicNameValuePair("ddlLoginLocCountry2", "0"));
-				nvps.add(new BasicNameValuePair("ddlLoginLocProvince2", String
-						.valueOf(Integer.parseInt(configuration
-								.getProperty("P2")) - 1)));
-				nvps.add(new BasicNameValuePair("ddlLoginLocCity2", Integer
-						.parseInt(configuration.getProperty("C2")) == 0 ? "-1"
-						: configuration.getProperty("C2")));
+				if("A".equals(itype)){
+					nvps.add(new BasicNameValuePair("ddlLoginLocProvince2", "0"));
+					nvps.add(new BasicNameValuePair("ddlLoginLocCity2", "0"));
+				}else{
+					nvps.add(new BasicNameValuePair("ddlLoginLocProvince2", String
+							.valueOf(Integer.parseInt(configuration
+									.getProperty("P2")) - 1)));
+					nvps.add(new BasicNameValuePair("ddlLoginLocCity2", Integer
+							.parseInt(configuration.getProperty("C2")) == 0 ? "-1"
+							: configuration.getProperty("C2")));
+				}
 				nvps.add(new BasicNameValuePair("txtLoginLocCountry2", "国家"));
 				nvps.add(new BasicNameValuePair("txtLoginLocProvince2", "省份"));
 				nvps.add(new BasicNameValuePair("txtLoginLocCity2", "城市"));
 				nvps.add(new BasicNameValuePair("txtHLoginLocCountry2", "0"));
-				nvps.add(new BasicNameValuePair("txtHLoginLocProvince2", String
-						.valueOf(Integer.parseInt(configuration
-								.getProperty("P2")) - 1)));
-				nvps.add(new BasicNameValuePair("txtHLoginLocCity2", Integer
-						.parseInt(configuration.getProperty("C2")) == 0 ? "-1"
-						: configuration.getProperty("C2")));
+				if("A".equals(itype)){
+					nvps.add(new BasicNameValuePair("txtHLoginLocProvince2", "0"));
+					nvps.add(new BasicNameValuePair("txtHLoginLocCity2", "0"));
+				}else{
+					nvps.add(new BasicNameValuePair("txtHLoginLocProvince2", String
+							.valueOf(Integer.parseInt(configuration
+									.getProperty("P2")) - 1)));
+					nvps.add(new BasicNameValuePair("txtHLoginLocCity2", Integer
+							.parseInt(configuration.getProperty("C2")) == 0 ? "-1"
+							: configuration.getProperty("C2")));
+				}
 
 				nvps.add(new BasicNameValuePair("ddlLoginLocCountry3", "0"));
-				nvps.add(new BasicNameValuePair("ddlLoginLocProvince3", String
-						.valueOf(Integer.parseInt(configuration
-								.getProperty("P3")) - 1)));
-				nvps.add(new BasicNameValuePair("ddlLoginLocCity3", Integer
-						.parseInt(configuration.getProperty("C3")) == 0 ? "-1"
-						: configuration.getProperty("C3")));
+				if("A".equals(itype)){
+					nvps.add(new BasicNameValuePair("ddlLoginLocProvince3", "0"));
+					nvps.add(new BasicNameValuePair("ddlLoginLocCity3", "0"));
+				}else{
+					nvps.add(new BasicNameValuePair("ddlLoginLocProvince3", String
+							.valueOf(Integer.parseInt(configuration
+									.getProperty("P3")) - 1)));
+					nvps.add(new BasicNameValuePair("ddlLoginLocCity3", Integer
+							.parseInt(configuration.getProperty("C3")) == 0 ? "-1"
+							: configuration.getProperty("C3")));
+				}
 				nvps.add(new BasicNameValuePair("txtLoginLocCountry3", "国家"));
 				nvps.add(new BasicNameValuePair("txtLoginLocProvince3", "省份"));
 				nvps.add(new BasicNameValuePair("txtLoginLocCity3", "城市"));
 				nvps.add(new BasicNameValuePair("txtHLoginLocCountry2", "0"));
-				nvps.add(new BasicNameValuePair("txtHLoginLocProvince3", String
-						.valueOf(Integer.parseInt(configuration
-								.getProperty("P3")) - 1)));
-				nvps.add(new BasicNameValuePair("txtHLoginLocCity3", Integer
-						.parseInt(configuration.getProperty("C3")) == 0 ? "-1"
-						: configuration.getProperty("C3")));
+				if("A".equals(itype)){
+					nvps.add(new BasicNameValuePair("txtHLoginLocProvince3", "0"));
+					nvps.add(new BasicNameValuePair("txtHLoginLocCity3", "0"));
+				}else{
+					nvps.add(new BasicNameValuePair("txtHLoginLocProvince3", String
+							.valueOf(Integer.parseInt(configuration
+									.getProperty("P3")) - 1)));
+					nvps.add(new BasicNameValuePair("txtHLoginLocCity3", Integer
+							.parseInt(configuration.getProperty("C3")) == 0 ? "-1"
+							: configuration.getProperty("C3")));
+				}
 
 				nvps.add(new BasicNameValuePair("ddlLocYear4", ""));
 				nvps.add(new BasicNameValuePair("txtHLoginLocCountry4", "0"));
@@ -1061,7 +1176,7 @@ public class Task implements Runnable, Observer {
 				nvps.add(new BasicNameValuePair("txtUserPPSType", "1"));
 				nvps.add(new BasicNameValuePair("txtBackFromFd", "1"));
 				nvps.add(new BasicNameValuePair("txtBackToInfo", "1"));
-				nvps.add(new BasicNameValuePair("usernum", this.account));
+				nvps.add(new BasicNameValuePair("usernum", account));
 				int i = 0;
 				for (; i < friends.size(); i++) {
 					fs = friends.get(i).split("----");
@@ -1113,7 +1228,7 @@ public class Task implements Runnable, Observer {
 				Session session = Session.getDefaultInstance(props);
 				session.setDebug(false);
 				IMAPStore store = (IMAPStore) session.getStore("imap");
-				store.connect(this.mail, this.mpwd);
+				store.connect(mail, mpwd);
 				IMAPFolder folder = (IMAPFolder) store.getFolder("INBOX");
 				folder.open(Folder.READ_WRITE);
 
@@ -1181,9 +1296,9 @@ public class Task implements Runnable, Observer {
 					tcback++;
 					idx = 15;
 					if (tcback == 3) {
-						info("找不到邮件[回执]，退出(" + tcback + ")->" + this.mail
-								+ "----" + this.mpwd);
-						this.run = false;
+						info("找不到邮件[回执]，退出(" + tcback + ")->" + mail
+								+ "----" + mpwd);
+						run = false;
 					} else {
 						info("找不到邮件[回执]，继续尝试(" + tcback + ")");
 					}
@@ -1191,9 +1306,9 @@ public class Task implements Runnable, Observer {
 					info("找到邮件[回执]");
 					idx++;
 					info("进入好友辅助申诉");
-					// this.finish = true;
+					// finish = true;
 					// info("申诉成功");
-					// this.run = false; //结束运行
+					// run = false; //结束运行
 				}
 			} catch (Exception e) {
 				info("连接邮箱失败");
@@ -1293,7 +1408,7 @@ public class Task implements Runnable, Observer {
 				ByteArrayInputStream bais = new ByteArrayInputStream(
 						baos.toByteArray());
 
-				message = new EngineMessage();
+				EngineMessage message = new EngineMessage();
 				message.setType(EngineMessageType.IM_IMAGE_DATA);
 				message.setData(bais);
 
@@ -1395,8 +1510,8 @@ public class Task implements Runnable, Observer {
 			try {
 				info("提交登录请求");
 
-				// "password=" + this.password + "&salt=" + this.salt +
-				// "&vcode="+this.vcode;
+				// "password=" + password + "&salt=" + salt +
+				// "&vcode="+vcode;
 
 				// generate ECP
 				byte[] rsx = Converts.MD5Encode(fs[1].getBytes());
@@ -1547,8 +1662,8 @@ public class Task implements Runnable, Observer {
 	}
 
 	private void info(String info) {
-		message = new EngineMessage();
-		message.setTid(this.id);
+		EngineMessage message = new EngineMessage();
+		message.setTid(id);
 		message.setType(EngineMessageType.IM_INFO);
 		message.setData(info);
 
@@ -1556,7 +1671,7 @@ public class Task implements Runnable, Observer {
 				"yyyy/MM/dd hh:mm:ss");
 		String tm = format.format(new Date());
 
-		System.err.println("[" + this.account + "]" + info + "(" + tm + ")");
+		System.err.println("[" + account + "]" + info + "(" + tm + ")");
 		Engine.getInstance().fire(message);
 	}
 
@@ -1564,7 +1679,7 @@ public class Task implements Runnable, Observer {
 	public void update(Observable obj, Object arg) {
 		final EngineMessage msg = (EngineMessage) arg;
 
-		if (msg.getTid() == this.id || msg.getTid() == -1) { // -1, all tasks
+		if (msg.getTid() == id || msg.getTid() == -1) { // -1, all tasks
 																// message
 			int type = msg.getType();
 
@@ -1573,16 +1688,16 @@ public class Task implements Runnable, Observer {
 				if (msg.getData() != null) {
 					String[] ms = (String[]) msg.getData();
 					System.err.println(ms[0] + "/" + ms[1] + "/" + ms[2]);
-					this.mid = ms[0];
-					this.mail = ms[1];
-					this.mpwd = ms[2];
+					mid = ms[0];
+					mail = ms[1];
+					mpwd = ms[2];
 				} else {
 					info("没有可用邮箱, 退出任务");
-					this.run = false;
+					run = false;
 
 					// 通知引擎
 					EngineMessage message = new EngineMessage();
-					// message.setTid(this.id);
+					// message.setTid(id);
 					message.setType(EngineMessageType.IM_NO_EMAILS);
 					// message.setData(obj);
 					Engine.getInstance().fire(message);
