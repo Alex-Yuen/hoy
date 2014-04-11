@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.security.cert.CertificateException;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -19,13 +20,22 @@ import javax.mail.Flags;
 import javax.mail.Folder;
 import javax.mail.Message;
 import javax.mail.Session;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 
 import org.apache.http.HttpEntity;
+import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.conn.ClientConnectionManager;
+import org.apache.http.conn.params.ConnRouteParams;
+import org.apache.http.conn.scheme.Scheme;
+import org.apache.http.conn.scheme.SchemeRegistry;
+import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.params.CoreConnectionPNames;
@@ -43,10 +53,10 @@ public class Task implements Runnable, Observer {
 	private String line;
 	private boolean run = false;
 	private boolean fb = false; // break flag;
-//	private boolean fc = false; // continue flag;
+	// private boolean fc = false; // continue flag;
 	private int idx = 0; // method index;
 	private Configuration configuration = Configuration.getInstance();
-	
+
 	// private boolean block = false;
 	// private TaskObject obj = null;
 
@@ -73,22 +83,22 @@ public class Task implements Runnable, Observer {
 	private ByteArrayOutputStream baos = null;
 	private int codeID = -1;
 	private String result;
-	
-	private String rc = null; //red code in mail
-	private String rcl = null; //回执编号
+
+	private String rc = null; // red code in mail
+	private String rcl = null; // 回执编号
 
 	protected String mid = null;
 	private String mail = null;
 	private String mpwd = null;
-	
-	private boolean sf = false; //stop flag from engine
-	private boolean rec = false;//是否准备重拨
-	private boolean np = false;//是否准备暂停
+
+	private boolean sf = false; // stop flag from engine
+	private boolean rec = false;// 是否准备重拨
+	private boolean np = false;// 是否准备暂停
 	private boolean finish = false;
-	
-	private int tcconfirm = 0;//try count of confirm
-	private int tcback = 0;//try count of 回执
-	
+
+	private int tcconfirm = 0;// try count of confirm
+	private int tcback = 0;// try count of 回执
+
 	private final String UAG = "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1; QQDownload 734; Maxthon; .NET CLR 2.0.50727; .NET4.0C; .NET4.0E)";
 	private boolean pause = false;
 	private boolean standard = true;
@@ -98,141 +108,179 @@ public class Task implements Runnable, Observer {
 	private String loginsig = null;
 	private String vcode = null;
 	private String salt = null;
-	private String[] fs = null;//当前好友信息
-	
+	private String[] fs = null;// 当前好友信息
+
 	private static String VERSION = "10074";
-	static{
+	static {
 		HttpURLConnection connection = null;
 		InputStream input = null;
-		try{
-			URL url = new URL("http://ui.ptlogin2.qq.com/ptui_ver.js?v="+Math.random());
-			connection = (HttpURLConnection) url
-					.openConnection();
+		try {
+			URL url = new URL("http://ui.ptlogin2.qq.com/ptui_ver.js?v="
+					+ Math.random());
+			connection = (HttpURLConnection) url.openConnection();
 			connection.setDoOutput(true);
 			connection.setRequestMethod("GET");
-			
+
 			input = connection.getInputStream();
 			byte[] bs = new byte[input.available()];
 			input.read(bs);
 			String resp = new String(bs);
-			VERSION = resp.substring(resp.indexOf("ptuiV(\"")+7, resp.indexOf("\");"));
-			System.err.println("version:"+VERSION);
-		}catch(Exception e){
+			VERSION = resp.substring(resp.indexOf("ptuiV(\"") + 7,
+					resp.indexOf("\");"));
+			System.err.println("version:" + VERSION);
+		} catch (Exception e) {
 			e.printStackTrace();
-		}finally{
-			if(input!=null){
-				try{
+		} finally {
+			if (input != null) {
+				try {
 					input.close();
-				}catch(Exception e){
+				} catch (Exception e) {
 					e.printStackTrace();
 				}
 			}
-			if(connection!=null){
-				try{
+			if (connection != null) {
+				try {
 					connection.disconnect();
-				}catch(Exception e){
+				} catch (Exception e) {
 					e.printStackTrace();
 				}
 			}
-		}		
+		}
 	}
-	
+
+	private static TrustManager tm = new X509TrustManager() {
+
+		public void checkClientTrusted(
+				java.security.cert.X509Certificate[] arg0, String arg1)
+				throws CertificateException {
+			// TODO Auto-generated method stub
+
+		}
+
+		public void checkServerTrusted(
+				java.security.cert.X509Certificate[] arg0, String arg1)
+				throws CertificateException {
+			// TODO Auto-generated method stub
+
+		}
+
+		public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+	};
+
 	public Task(String line) {
 		String[] ls = line.split("----");
 		this.id = Integer.parseInt(ls[1]);
 		this.account = ls[2];
 		this.password = ls[3];
 		this.friends = new ArrayList<String>();
-				
-		if("H".equals(ls[0])){
+
+		if ("H".equals(ls[0])) {
 			standard = false;
-		}else{ //标准导入，支持好友申诉
-			for(int i=4;i<ls.length;i+=2){
-				this.friends.add(ls[i]+"----"+ls[i+1]);
+		} else { // 标准导入，支持好友申诉
+			for (int i = 4; i < ls.length; i += 2) {
+				this.friends.add(ls[i] + "----" + ls[i + 1]);
 			}
 		}
 
-		pwds = new String[ls.length-3];
-		for(int i=0;i<pwds.length;i++){
-			pwds[i] = ls[i+3];
+		pwds = new String[ls.length - 3];
+		for (int i = 0; i < pwds.length; i++) {
+			pwds[i] = ls[i + 3];
 		}
-		
+
 		this.run = true;
 
 		client = new DefaultHttpClient();
 		client.getParams().setParameter(
 				CoreConnectionPNames.CONNECTION_TIMEOUT, 5000);
 		client.getParams().setParameter(CoreConnectionPNames.SO_TIMEOUT, 5000);
+
+		//setting proxy
+		HttpHost proxy = new HttpHost("127.0.0.1", 8888);
+		client.getParams().setParameter(ConnRouteParams.DEFAULT_PROXY,
+				proxy);
+		
+		try {
+			SSLContext sslcontext = SSLContext.getInstance("SSL");
+			sslcontext.init(null, new TrustManager[]{tm}, null);
+	        SSLSocketFactory ssf = new    SSLSocketFactory(sslcontext, SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
+	        ClientConnectionManager ccm = client.getConnectionManager();
+	        SchemeRegistry sr = ccm.getSchemeRegistry();
+	        sr.register(new Scheme("https", 443, ssf));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Override
 	public void run() {
 		info("开始运行");
-		
-		if(pause){//暂停
+
+		if (pause) {// 暂停
 			info("暂停运行");
-			synchronized(PauseCountObject.getInstance()){
+			synchronized (PauseCountObject.getInstance()) {
 				message = new EngineMessage();
 				message.setType(EngineMessageType.IM_PAUSE_COUNT);
 				Engine.getInstance().fire(message);
 			}
-			
-			synchronized(PauseObject.getInstance()){
-				try{
+
+			synchronized (PauseObject.getInstance()) {
+				try {
 					PauseObject.getInstance().wait();
-				}catch(Exception e){
+				} catch (Exception e) {
 					e.printStackTrace();
 				}
 			}
 		}
 
-		//阻塞等待暂停
-		if(np){
+		// 阻塞等待暂停
+		if (np) {
 			info("等待系统暂停");
-			synchronized(PauseXObject.getInstance()){
-				try{
+			synchronized (PauseXObject.getInstance()) {
+				try {
 					PauseXObject.getInstance().wait();
-				}catch(Exception e){
+				} catch (Exception e) {
 					e.printStackTrace();
 				}
 			}
 			info("等待系统暂停结束， 继续执行");
 		}
-		
-			
-			//阻塞等待重拨
-			if(rec){
-				info("等待重拨");
-				synchronized(ReconObject.getInstance()){
-					try{
-						ReconObject.getInstance().wait();
-					}catch(Exception e){
-						e.printStackTrace();
-					}
-				}
-				info("等待重拨结束， 继续执行");
-			}
-	
-			if(sf){//如果此时有停止信号，直接返回
-				info("初始化(任务取消)");
-				return;
-			}
 
-		synchronized(StartObject.getInstance()){	
-			//通知有新线程开始执行
+		// 阻塞等待重拨
+		if (rec) {
+			info("等待重拨");
+			synchronized (ReconObject.getInstance()) {
+				try {
+					ReconObject.getInstance().wait();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+			info("等待重拨结束， 继续执行");
+		}
+
+		if (sf) {// 如果此时有停止信号，直接返回
+			info("初始化(任务取消)");
+			return;
+		}
+
+		synchronized (StartObject.getInstance()) {
+			// 通知有新线程开始执行
 			message = new EngineMessage();
 			message.setType(EngineMessageType.IM_START);
 			Engine.getInstance().fire(message);
 		}
-		
+
 		// System.err.println(line);
-		while (run&&!sf) { //正常运行，以及未收到停止信号
+		while (run && !sf) { // 正常运行，以及未收到停止信号
 			if (fb) {
 				break;
 			}
-//			if (fc) {
-//				continue;
-//			}
+			// if (fc) {
+			// continue;
+			// }
 
 			// if(block){
 			// synchronized (obj.getBlock()) {
@@ -262,32 +310,31 @@ public class Task implements Runnable, Observer {
 			}
 		}
 
-		//通知Engine: 线程结束
-		
+		// 通知Engine: 线程结束
+
 		String[] dt = new String[6];
 
 		dt[0] = "0";
 		dt[1] = this.account;
 		dt[2] = this.password;
-		
-		if(finish){
+
+		if (finish) {
 			dt[0] = "1";
 			dt[3] = this.rcl;
 			dt[4] = this.mail;
 			dt[5] = this.mpwd;
 		}
-		
 
-		synchronized(FinishObject.getInstance()){
+		synchronized (FinishObject.getInstance()) {
 			message = new EngineMessage();
 			message.setTid(this.id);
 			message.setType(EngineMessageType.IM_FINISH);
 			message.setData(dt);
 			Engine.getInstance().fire(message);
 		}
-		
+
 		Engine.getInstance().deleteObserver(this);
-		
+
 	}
 
 	private void process(int index) {
@@ -359,28 +406,27 @@ public class Task implements Runnable, Observer {
 			try {
 				byte[] by = baos.toByteArray();
 				byte[] resultByte = new byte[30]; // 为识别结果申请内存空间
-//				StringBuffer rsb = new StringBuffer(30);
+				// StringBuffer rsb = new StringBuffer(30);
 				String rsb = "0000";
 				resultByte = rsb.getBytes();
 
-				if(Engine.getInstance().getCptType()==0){
-					codeID = YDM.INSTANCE.YDM_DecodeByBytes(by, by.length, 1004, resultByte);//result byte
-//					result = "xxxx";
-//					for(int i=0;i<resultByte.length;i++){
-//						System.out.println(resultByte[i]);
-//					}
-//					System.out.println("TTT:"+codeID);
+				if (Engine.getInstance().getCptType() == 0) {
+					codeID = YDM.INSTANCE.YDM_DecodeByBytes(by, by.length,
+							1004, resultByte);// result byte
+					// result = "xxxx";
+					// for(int i=0;i<resultByte.length;i++){
+					// System.out.println(resultByte[i]);
+					// }
+					// System.out.println("TTT:"+codeID);
 					result = new String(resultByte, "UTF-8").trim();
-				}else{
+				} else {
 					codeID = DM.INSTANCE.uu_recognizeByCodeTypeAndBytesA(by,
-							by.length, 1, resultByte); // 调用识别函数,resultBtye为识别结果
+							by.length, 1004, resultByte); // 调用识别函数,resultBtye为识别结果
 					result = new String(resultByte, "UTF-8").trim();
 				}
-				
-				
-				
-				//result = rsb.toString();
-				//System.out.println("---"+result);
+
+				// result = rsb.toString();
+				// System.out.println("---"+result);
 
 				idx++;
 			} catch (Exception e) {
@@ -473,13 +519,13 @@ public class Task implements Runnable, Observer {
 			try {
 				//
 				int reportErrorResult = -1;
-				if(Engine.getInstance().getCptType()==0){
+				if (Engine.getInstance().getCptType() == 0) {
 					reportErrorResult = YDM.INSTANCE.YDM_Report(codeID, false);
-				}else{
+				} else {
 					reportErrorResult = DM.INSTANCE.uu_reportError(codeID);
 				}
 				System.err.println(reportErrorResult);
-				
+
 				idx = 0; // 重新开始
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -532,10 +578,13 @@ public class Task implements Runnable, Observer {
 		case 8:
 			info("提交申诉资料");
 			try {
-				String code = IdentificationCardCodeUtil.getRandomAreaCode() + IdentificationCardCodeUtil.getRandomBirthdayCode(1980, 2000)
+				String code = IdentificationCardCodeUtil.getRandomAreaCode()
+						+ IdentificationCardCodeUtil.getRandomBirthdayCode(
+								1980, 2000)
 						+ IdentificationCardCodeUtil.getRandomSequenceCode();
-				String randomCardCode = code + IdentificationCardCodeUtil.calculateVerifyCode(code);
-				
+				String randomCardCode = code
+						+ IdentificationCardCodeUtil.calculateVerifyCode(code);
+
 				post = new HttpPost(
 						"http://aq.qq.com/cn2/appeal/appeal_contact_confirm");
 
@@ -566,14 +615,14 @@ public class Task implements Runnable, Observer {
 				entity = response.getEntity();
 
 				line = EntityUtils.toString(entity);
-				
-				if(line.contains("申诉过于频繁")){
+
+				if (line.contains("申诉过于频繁")) {
 					info("申诉过于频繁");
-					//通知出现申诉频繁
+					// 通知出现申诉频繁
 					message = new EngineMessage();
 					message.setType(EngineMessageType.IM_FREQ);
 
-					//System.err.println("["+this.account+"]"+info);
+					// System.err.println("["+this.account+"]"+info);
 					Engine.getInstance().fire(message);
 					run = false;
 					break;
@@ -587,36 +636,36 @@ public class Task implements Runnable, Observer {
 				fb = true;
 			}
 			break;
-		case 9: // 收邮件 
-			info("等待"+itv+"秒，接收邮件[确认]");
+		case 9: // 收邮件
+			info("等待" + itv + "秒，接收邮件[确认]");
 			try {
-				try{
-					Thread.sleep(1000*itv);
-				}catch(Exception e){
+				try {
+					Thread.sleep(1000 * itv);
+				} catch (Exception e) {
 					sf = true;
-					Thread.sleep(1000*4); //意外中断，继续等待
+					Thread.sleep(1000 * 4); // 意外中断，继续等待
 				}
-				
+
 				Properties props = new Properties();
-//				props.setProperty("mail.store.protocol", "pop3");
-//				props.setProperty("mail.pop3.host", "pop3.163.com");
-				props.put("mail.imap.host", "imap.163.com");	            
-	            props.put("mail.imap.auth.plain.disable", "true");
-	             
+				// props.setProperty("mail.store.protocol", "pop3");
+				// props.setProperty("mail.pop3.host", "pop3.163.com");
+				props.put("mail.imap.host", "imap.163.com");
+				props.put("mail.imap.auth.plain.disable", "true");
+
 				Session session = Session.getDefaultInstance(props);
-				session.setDebug(false); 
-				IMAPStore store = (IMAPStore)session.getStore("imap");
+				session.setDebug(false);
+				IMAPStore store = (IMAPStore) session.getStore("imap");
 				store.connect(this.mail, this.mpwd);
-				IMAPFolder folder = (IMAPFolder)store.getFolder("INBOX");
+				IMAPFolder folder = (IMAPFolder) store.getFolder("INBOX");
 				folder.open(Folder.READ_WRITE);
 
 				// 全部邮件
 				Message[] messages = folder.getMessages();
-				
+
 				boolean seen = true;
-				//System.err.println(messages.length);
+				// System.err.println(messages.length);
 				info("X");
-				for (int i = messages.length-1; i >=0; i--) {
+				for (int i = messages.length - 1; i >= 0; i--) {
 					seen = true;
 					Message message = messages[i];
 					// 删除邮件
@@ -624,7 +673,7 @@ public class Task implements Runnable, Observer {
 					message.getAllHeaders();
 					info("A");
 					Flags flags = message.getFlags();
-					if (flags.contains(Flags.Flag.SEEN)){
+					if (flags.contains(Flags.Flag.SEEN)) {
 						info("A1");
 						seen = true;
 					} else {
@@ -633,60 +682,65 @@ public class Task implements Runnable, Observer {
 					}
 					info("B");
 					info(String.valueOf(seen));
-					//info(message.get)
+					// info(message.get)
 					info(message.getSubject());
-					if(!seen&&message.getSubject().startsWith("QQ号码申诉联系方式确认")){
+					if (!seen
+							&& message.getSubject().startsWith("QQ号码申诉联系方式确认")) {
 						info("C");
-//						boolean isold = false;
-//				        Flags flags = message.getFlags();
-//				        Flags.Flag[] flag = flags.getSystemFlags(); 
-//				        
-//				        for (int ix = 0; ix< flag.length; ix++) {      
-//				            if (flag[ix] == Flags.Flag.SEEN) {      
-//				            	isold = true;
-//				                break;
-//				            }
-//				        }
+						// boolean isold = false;
+						// Flags flags = message.getFlags();
+						// Flags.Flag[] flag = flags.getSystemFlags();
+						//
+						// for (int ix = 0; ix< flag.length; ix++) {
+						// if (flag[ix] == Flags.Flag.SEEN) {
+						// isold = true;
+						// break;
+						// }
+						// }
 
-						String ssct = (String)message.getContent();
+						String ssct = (String) message.getContent();
 						message.setFlag(Flags.Flag.SEEN, false);
-						if(ssct.contains("[<b>"+account.substring(0, 1))&&ssct.contains(account.substring(account.length()-1)+"</b>]")){
-				        //if(!isold){
+						if (ssct.contains("[<b>" + account.substring(0, 1))
+								&& ssct.contains(account.substring(account
+										.length() - 1) + "</b>]")) {
+							// if(!isold){
 							info("D");
-							message.setFlag(Flags.Flag.SEEN, true);	// 标记为已读
-							rc = ssct.substring(ssct.indexOf("<b class=\"red\">")+15, ssct.indexOf("<b class=\"red\">")+23);
-								
+							message.setFlag(Flags.Flag.SEEN, true); // 标记为已读
+							rc = ssct.substring(
+									ssct.indexOf("<b class=\"red\">") + 15,
+									ssct.indexOf("<b class=\"red\">") + 23);
+
 							System.err.println(rc);
 							break;
 						}
-//						else {
-//							info("D1");
-//							message.setFlag(Flags.Flag.SEEN, false);
-//							info("D2");
-//						}
+						// else {
+						// info("D1");
+						// message.setFlag(Flags.Flag.SEEN, false);
+						// info("D2");
+						// }
 						info("E");
-				        //}
-					}else{
-//						if(!seen){
-//							message.setFlag(Flags.Flag.SEEN, false);
-//						}
+						// }
+					} else {
+						// if(!seen){
+						// message.setFlag(Flags.Flag.SEEN, false);
+						// }
 					}
 				}
 				info("F");
 				folder.close(true);
 				store.close();
-				
-				if(rc==null){
-					tcconfirm++;					
+
+				if (rc == null) {
+					tcconfirm++;
 					idx = 9;
-					if(tcconfirm==3){
-						info("找不到邮件[确认]，退出("+tcconfirm+")");
+					if (tcconfirm == 3) {
+						info("找不到邮件[确认]，退出(" + tcconfirm + ")");
 						this.run = false;
-					}else{
-						info("找不到邮件[确认]，继续尝试("+tcconfirm+")");
+					} else {
+						info("找不到邮件[确认]，继续尝试(" + tcconfirm + ")");
 					}
-					
-				}else{
+
+				} else {
 					info("找到邮件[确认]");
 					idx++;
 				}
@@ -719,18 +773,18 @@ public class Task implements Runnable, Observer {
 				if ("1".equals(json.getString("ret_code"))) {
 					// 验证成功
 					info("继续申诉成功");
-				} else if ("-1".equals(json.getString("ret_code"))){
+				} else if ("-1".equals(json.getString("ret_code"))) {
 					// 报错, 重新开始
 					info("继续申诉失败: 频繁申诉");
 					this.run = false;
 					break;
-				} else if("2".equals(json.getString("ret_code"))){
+				} else if ("2".equals(json.getString("ret_code"))) {
 					info("继续申诉失败: 激活码错误，重新开始");
 					idx = 0;
-					
-//					if(sf){ //已经收到停止信号
-//						this.run = false;
-//					}
+
+					// if(sf){ //已经收到停止信号
+					// this.run = false;
+					// }
 					break;
 				}
 				// System.err.println(line);
@@ -754,93 +808,39 @@ public class Task implements Runnable, Observer {
 				post.setHeader("Accept", "text/html, */*");
 				post.setHeader("Referer",
 						"http://aq.qq.com/cn2/appeal/appeal_contact_confirm");
-										
+
 				/**
-				 	txtUin:	1079066920
-					txtRegProvince:	省份
-					txtRegPayAccount:	
-					txtRegMobile:	
-					txtRegCountry:	国家
-					txtRegCity:	城市
-					txtOldPW6:	
-					txtOldPW5:	
-					txtOldPW4:	
-					txtOldPW3:	
-					txtOldPW2:	
-					txtOldPW1:	
-					txtLoginLocProvince4:	省份
-					txtLoginLocProvince3:	省份
-					txtLoginLocProvince2:	省份
-					txtLoginLocProvince1:	省份
-					txtLoginLocCountry4:	国家
-					txtLoginLocCountry3:	国家
-					txtLoginLocCountry2:	国家
-					txtLoginLocCountry1:	国家
-					txtLoginLocCity4:	城市
-					txtLoginLocCity3:	城市
-					txtLoginLocCity2:	城市
-					txtLoginLocCity1:	城市
-					txtHRegType:	0
-					txtHRegTimeYear:	
-					txtHRegTimeMonth:	
-					txtHRegPayType:	0
-					txtHRegPayAccount:	
-					txtHRegMobile:	
-					txtHRegLocationProvince:	-1
-					txtHRegLocationCountry:	0
-					txtHRegLocationCity:	-1
-					txtHLoginLocYear4:	
-					txtHLoginLocYear3:	
-					txtHLoginLocYear2:	
-					txtHLoginLocYear1:	
-					txtHLoginLocProvince4:	-1
-					txtHLoginLocProvince3:	0
-					txtHLoginLocProvince2:	32
-					txtHLoginLocProvince1:	12
-					txtHLoginLocCountry4:	0
-					txtHLoginLocCountry3:	0
-					txtHLoginLocCountry2:	0
-					txtHLoginLocCountry1:	0
-					txtHLoginLocCity4:	-1
-					txtHLoginLocCity3:	0
-					txtHLoginLocCity2:	0
-					txtHLoginLocCity1:	9
-					txtEmailVerifyCode:	14567217
-					txtEmail:	hoyzhang@163.com
-					txtBackToInfo:	1
-					txtBackFromFd:	1
-					pwdOldPW6:	
-					pwdOldPW5:	
-					pwdOldPW4:	
-					pwdOldPW3:	
-					pwdOldPW2:	
-					pwdOldPW1:	
-					pwdHOldPW6:	
-					pwdHOldPW5:	
-					pwdHOldPW4:	
-					pwdHOldPW3:	
-					pwdHOldPW2:	
-					pwdHOldPW1:	
-					ddlRegYear:	
-					ddlRegType:	0
-					ddlRegProvince:	-1
-					ddlRegPayMode:	0
-					ddlRegMonth:	
-					ddlRegCountry:	0
-					ddlRegCity:	-1
-					ddlLoginLocProvince4:	-1
-					ddlLoginLocProvince3:	0
-					ddlLoginLocProvince2:	32
-					ddlLoginLocProvince1:	12
-					ddlLoginLocCountry4:	0
-					ddlLoginLocCountry3:	0
-					ddlLoginLocCountry2:	0
-					ddlLoginLocCountry1:	0
-					ddlLoginLocCity4:	-1
-					ddlLoginLocCity3:	0
-					ddlLoginLocCity2:	0
-					ddlLoginLocCity1:	9
-					ddlLocYear4:	
+				 * txtUin: 1079066920 txtRegProvince: 省份 txtRegPayAccount:
+				 * txtRegMobile: txtRegCountry: 国家 txtRegCity: 城市 txtOldPW6:
+				 * txtOldPW5: txtOldPW4: txtOldPW3: txtOldPW2: txtOldPW1:
+				 * txtLoginLocProvince4: 省份 txtLoginLocProvince3: 省份
+				 * txtLoginLocProvince2: 省份 txtLoginLocProvince1: 省份
+				 * txtLoginLocCountry4: 国家 txtLoginLocCountry3: 国家
+				 * txtLoginLocCountry2: 国家 txtLoginLocCountry1: 国家
+				 * txtLoginLocCity4: 城市 txtLoginLocCity3: 城市 txtLoginLocCity2:
+				 * 城市 txtLoginLocCity1: 城市 txtHRegType: 0 txtHRegTimeYear:
+				 * txtHRegTimeMonth: txtHRegPayType: 0 txtHRegPayAccount:
+				 * txtHRegMobile: txtHRegLocationProvince: -1
+				 * txtHRegLocationCountry: 0 txtHRegLocationCity: -1
+				 * txtHLoginLocYear4: txtHLoginLocYear3: txtHLoginLocYear2:
+				 * txtHLoginLocYear1: txtHLoginLocProvince4: -1
+				 * txtHLoginLocProvince3: 0 txtHLoginLocProvince2: 32
+				 * txtHLoginLocProvince1: 12 txtHLoginLocCountry4: 0
+				 * txtHLoginLocCountry3: 0 txtHLoginLocCountry2: 0
+				 * txtHLoginLocCountry1: 0 txtHLoginLocCity4: -1
+				 * txtHLoginLocCity3: 0 txtHLoginLocCity2: 0 txtHLoginLocCity1:
+				 * 9 txtEmailVerifyCode: 14567217 txtEmail: hoyzhang@163.com
+				 * txtBackToInfo: 1 txtBackFromFd: 1 pwdOldPW6: pwdOldPW5:
+				 * pwdOldPW4: pwdOldPW3: pwdOldPW2: pwdOldPW1: pwdHOldPW6:
+				 * pwdHOldPW5: pwdHOldPW4: pwdHOldPW3: pwdHOldPW2: pwdHOldPW1:
+				 * ddlRegYear: ddlRegType: 0 ddlRegProvince: -1 ddlRegPayMode: 0
+				 * ddlRegMonth: ddlRegCountry: 0 ddlRegCity: -1
+				 * ddlLoginLocProvince4: -1 ddlLoginLocProvince3: 0
+				 * ddlLoginLocProvince2: 32 ddlLoginLocProvince1: 12
+				 * ddlLoginLocCountry4: 0 ddlLoginLocCountry3: 0
+				 * ddlLoginLocCountry2: 0 ddlLoginLocCountry1: 0
+				 * ddlLoginLocCity4: -1 ddlLoginLocCity3: 0 ddlLoginLocCity2: 0
+				 * ddlLoginLocCity1: 9 ddlLocYear4:
 				 * **/
 				nvps = new ArrayList<NameValuePair>();
 				nvps.add(new BasicNameValuePair("txtBackToInfo", "1"));
@@ -853,50 +853,79 @@ public class Task implements Runnable, Observer {
 				nvps.add(new BasicNameValuePair("pwdOldPW1", this.password));
 				nvps.add(new BasicNameValuePair("pwdHOldPW2", ""));
 				nvps.add(new BasicNameValuePair("txtOldPW2", ""));
-				nvps.add(new BasicNameValuePair("pwdOldPW2", (this.pwds.length>1&&!standard)?this.pwds[1]:""));
+				nvps.add(new BasicNameValuePair("pwdOldPW2",
+						(this.pwds.length > 1 && !standard) ? this.pwds[1] : ""));
 				nvps.add(new BasicNameValuePair("pwdHOldPW3", ""));
 				nvps.add(new BasicNameValuePair("txtOldPW3", ""));
-				nvps.add(new BasicNameValuePair("pwdOldPW3", (this.pwds.length>2&&!standard)?this.pwds[2]:""));
+				nvps.add(new BasicNameValuePair("pwdOldPW3",
+						(this.pwds.length > 2 && !standard) ? this.pwds[2] : ""));
 				nvps.add(new BasicNameValuePair("pwdHOldPW4", ""));
 				nvps.add(new BasicNameValuePair("txtOldPW4", ""));
-				nvps.add(new BasicNameValuePair("pwdOldPW4", (this.pwds.length>3&&!standard)?this.pwds[3]:""));
+				nvps.add(new BasicNameValuePair("pwdOldPW4",
+						(this.pwds.length > 3 && !standard) ? this.pwds[3] : ""));
 				nvps.add(new BasicNameValuePair("pwdHOldPW5", ""));
 				nvps.add(new BasicNameValuePair("txtOldPW5", ""));
-				nvps.add(new BasicNameValuePair("pwdOldPW5", (this.pwds.length>4&&!standard)?this.pwds[4]:""));
+				nvps.add(new BasicNameValuePair("pwdOldPW5",
+						(this.pwds.length > 4 && !standard) ? this.pwds[4] : ""));
 				nvps.add(new BasicNameValuePair("pwdHOldPW6", ""));
 				nvps.add(new BasicNameValuePair("txtOldPW6", ""));
-				nvps.add(new BasicNameValuePair("pwdOldPW6", (this.pwds.length>5&&!standard)?this.pwds[5]:""));
-				
+				nvps.add(new BasicNameValuePair("pwdOldPW6",
+						(this.pwds.length > 5 && !standard) ? this.pwds[5] : ""));
+
 				nvps.add(new BasicNameValuePair("ddlLoginLocCountry1", "0"));
-				nvps.add(new BasicNameValuePair("ddlLoginLocProvince1", String.valueOf(Integer.parseInt(configuration.getProperty("P1"))-1)));
-				nvps.add(new BasicNameValuePair("ddlLoginLocCity1", Integer.parseInt(configuration.getProperty("C1"))==0?"-1":configuration.getProperty("C1")));
+				nvps.add(new BasicNameValuePair("ddlLoginLocProvince1", String
+						.valueOf(Integer.parseInt(configuration
+								.getProperty("P1")) - 1)));
+				nvps.add(new BasicNameValuePair("ddlLoginLocCity1", Integer
+						.parseInt(configuration.getProperty("C1")) == 0 ? "-1"
+						: configuration.getProperty("C1")));
 				nvps.add(new BasicNameValuePair("txtLoginLocCountry1", "国家"));
 				nvps.add(new BasicNameValuePair("txtLoginLocProvince1", "省份"));
 				nvps.add(new BasicNameValuePair("txtLoginLocCity1", "城市"));
 				nvps.add(new BasicNameValuePair("txtHLoginLocCountry1", "0"));
-				nvps.add(new BasicNameValuePair("txtHLoginLocProvince1", String.valueOf(Integer.parseInt(configuration.getProperty("P1"))-1)));
-				nvps.add(new BasicNameValuePair("txtHLoginLocCity1", Integer.parseInt(configuration.getProperty("C1"))==0?"-1":configuration.getProperty("C1")));
-				
+				nvps.add(new BasicNameValuePair("txtHLoginLocProvince1", String
+						.valueOf(Integer.parseInt(configuration
+								.getProperty("P1")) - 1)));
+				nvps.add(new BasicNameValuePair("txtHLoginLocCity1", Integer
+						.parseInt(configuration.getProperty("C1")) == 0 ? "-1"
+						: configuration.getProperty("C1")));
+
 				nvps.add(new BasicNameValuePair("ddlLoginLocCountry2", "0"));
-				nvps.add(new BasicNameValuePair("ddlLoginLocProvince2", String.valueOf(Integer.parseInt(configuration.getProperty("P2"))-1)));
-				nvps.add(new BasicNameValuePair("ddlLoginLocCity2", Integer.parseInt(configuration.getProperty("C2"))==0?"-1":configuration.getProperty("C2")));
+				nvps.add(new BasicNameValuePair("ddlLoginLocProvince2", String
+						.valueOf(Integer.parseInt(configuration
+								.getProperty("P2")) - 1)));
+				nvps.add(new BasicNameValuePair("ddlLoginLocCity2", Integer
+						.parseInt(configuration.getProperty("C2")) == 0 ? "-1"
+						: configuration.getProperty("C2")));
 				nvps.add(new BasicNameValuePair("txtLoginLocCountry2", "国家"));
 				nvps.add(new BasicNameValuePair("txtLoginLocProvince2", "省份"));
 				nvps.add(new BasicNameValuePair("txtLoginLocCity2", "城市"));
 				nvps.add(new BasicNameValuePair("txtHLoginLocCountry2", "0"));
-				nvps.add(new BasicNameValuePair("txtHLoginLocProvince2", String.valueOf(Integer.parseInt(configuration.getProperty("P2"))-1)));
-				nvps.add(new BasicNameValuePair("txtHLoginLocCity2", Integer.parseInt(configuration.getProperty("C2"))==0?"-1":configuration.getProperty("C2")));
-			
+				nvps.add(new BasicNameValuePair("txtHLoginLocProvince2", String
+						.valueOf(Integer.parseInt(configuration
+								.getProperty("P2")) - 1)));
+				nvps.add(new BasicNameValuePair("txtHLoginLocCity2", Integer
+						.parseInt(configuration.getProperty("C2")) == 0 ? "-1"
+						: configuration.getProperty("C2")));
+
 				nvps.add(new BasicNameValuePair("ddlLoginLocCountry3", "0"));
-				nvps.add(new BasicNameValuePair("ddlLoginLocProvince3", String.valueOf(Integer.parseInt(configuration.getProperty("P3"))-1)));
-				nvps.add(new BasicNameValuePair("ddlLoginLocCity3", Integer.parseInt(configuration.getProperty("C3"))==0?"-1":configuration.getProperty("C3")));
+				nvps.add(new BasicNameValuePair("ddlLoginLocProvince3", String
+						.valueOf(Integer.parseInt(configuration
+								.getProperty("P3")) - 1)));
+				nvps.add(new BasicNameValuePair("ddlLoginLocCity3", Integer
+						.parseInt(configuration.getProperty("C3")) == 0 ? "-1"
+						: configuration.getProperty("C3")));
 				nvps.add(new BasicNameValuePair("txtLoginLocCountry3", "国家"));
 				nvps.add(new BasicNameValuePair("txtLoginLocProvince3", "省份"));
 				nvps.add(new BasicNameValuePair("txtLoginLocCity3", "城市"));
 				nvps.add(new BasicNameValuePair("txtHLoginLocCountry2", "0"));
-				nvps.add(new BasicNameValuePair("txtHLoginLocProvince3", String.valueOf(Integer.parseInt(configuration.getProperty("P3"))-1)));
-				nvps.add(new BasicNameValuePair("txtHLoginLocCity3", Integer.parseInt(configuration.getProperty("C3"))==0?"-1":configuration.getProperty("C3")));
-				
+				nvps.add(new BasicNameValuePair("txtHLoginLocProvince3", String
+						.valueOf(Integer.parseInt(configuration
+								.getProperty("P3")) - 1)));
+				nvps.add(new BasicNameValuePair("txtHLoginLocCity3", Integer
+						.parseInt(configuration.getProperty("C3")) == 0 ? "-1"
+						: configuration.getProperty("C3")));
+
 				nvps.add(new BasicNameValuePair("ddlLocYear4", ""));
 				nvps.add(new BasicNameValuePair("txtHLoginLocCountry4", "0"));
 				nvps.add(new BasicNameValuePair("txtHLoginLocProvince4", "-1"));
@@ -907,7 +936,7 @@ public class Task implements Runnable, Observer {
 				nvps.add(new BasicNameValuePair("txtLoginLocCountry4", "国家"));
 				nvps.add(new BasicNameValuePair("txtLoginLocProvince4", "省份"));
 				nvps.add(new BasicNameValuePair("txtLoginLocCity4", "城市"));
-				
+
 				nvps.add(new BasicNameValuePair("ddlRegType", "0"));
 				nvps.add(new BasicNameValuePair("ddlRegYear", ""));
 				nvps.add(new BasicNameValuePair("ddlRegMonth", ""));
@@ -920,22 +949,22 @@ public class Task implements Runnable, Observer {
 				nvps.add(new BasicNameValuePair("txtRegMobile", ""));
 				nvps.add(new BasicNameValuePair("ddlRegPayMode", "0"));
 				nvps.add(new BasicNameValuePair("txtRegPayAccount", ""));
-				
+
 				nvps.add(new BasicNameValuePair("txtHLoginLocYear1", ""));
-				nvps.add(new BasicNameValuePair("txtHLoginLocYear2", ""));				
+				nvps.add(new BasicNameValuePair("txtHLoginLocYear2", ""));
 				nvps.add(new BasicNameValuePair("txtHLoginLocYear3", ""));
 				nvps.add(new BasicNameValuePair("txtHLoginLocYear4", ""));
-				
+
 				nvps.add(new BasicNameValuePair("txtHRegType", "0"));
-				nvps.add(new BasicNameValuePair("txtHRegTimeYear", ""));				
+				nvps.add(new BasicNameValuePair("txtHRegTimeYear", ""));
 				nvps.add(new BasicNameValuePair("txtHRegTimeMonth", ""));
 				nvps.add(new BasicNameValuePair("txtHRegPayType", "0"));
 				nvps.add(new BasicNameValuePair("txtHRegPayAccount", ""));
-				nvps.add(new BasicNameValuePair("txtHRegMobile", ""));				
+				nvps.add(new BasicNameValuePair("txtHRegMobile", ""));
 				nvps.add(new BasicNameValuePair("txtHRegLocationProvince", "-1"));
 				nvps.add(new BasicNameValuePair("txtHRegLocationCountry", "0"));
 				nvps.add(new BasicNameValuePair("txtHRegLocationCity", "-1"));
-				
+
 				post.setEntity(new UrlEncodedFormEntity(nvps));
 
 				response = client.execute(post);
@@ -943,7 +972,7 @@ public class Task implements Runnable, Observer {
 
 				line = EntityUtils.toString(entity);
 
-//				System.err.println(line);
+				// System.err.println(line);
 
 				idx++;
 			} catch (Exception e) {
@@ -964,8 +993,8 @@ public class Task implements Runnable, Observer {
 				response = client.execute(get);
 				entity = response.getEntity();
 
-//				line = EntityUtils.toString(entity);
-//				System.err.println(line);
+				// line = EntityUtils.toString(entity);
+				// System.err.println(line);
 
 				idx++;
 			} catch (Exception e) {
@@ -986,7 +1015,7 @@ public class Task implements Runnable, Observer {
 				post.setHeader("Accept", "text/html, */*");
 				post.setHeader("Referer",
 						"http://aq.qq.com/cn2/appeal/appeal_mb2verify");
-						
+
 				nvps = new ArrayList<NameValuePair>();
 				nvps.add(new BasicNameValuePair("txtUserChoice", "2"));
 				nvps.add(new BasicNameValuePair("txtOldDNAEmailSuffix", ""));
@@ -998,7 +1027,7 @@ public class Task implements Runnable, Observer {
 				nvps.add(new BasicNameValuePair("OldDNAMobile", ""));
 				nvps.add(new BasicNameValuePair("OldDNAEmail", ""));
 				nvps.add(new BasicNameValuePair("OldDNACertCardID", ""));
-				
+
 				post.setEntity(new UrlEncodedFormEntity(nvps));
 
 				response = client.execute(post);
@@ -1017,8 +1046,7 @@ public class Task implements Runnable, Observer {
 		case 14:
 			info("填写好友辅助");
 			try {
-				post = new HttpPost(
-						"http://aq.qq.com/cn2/appeal/appeal_end");
+				post = new HttpPost("http://aq.qq.com/cn2/appeal/appeal_end");
 
 				post.setHeader("Connection", "keep-alive");
 				post.setHeader("User-Agent", UAG);
@@ -1027,7 +1055,7 @@ public class Task implements Runnable, Observer {
 				post.setHeader("Accept", "text/html, */*");
 				post.setHeader("Referer",
 						"http://aq.qq.com/cn2/appeal/appeal_invite_friend");
-					
+
 				nvps = new ArrayList<NameValuePair>();
 				nvps.add(new BasicNameValuePair("txtPcMgr", "1"));
 				nvps.add(new BasicNameValuePair("txtUserPPSType", "1"));
@@ -1035,19 +1063,20 @@ public class Task implements Runnable, Observer {
 				nvps.add(new BasicNameValuePair("txtBackToInfo", "1"));
 				nvps.add(new BasicNameValuePair("usernum", this.account));
 				int i = 0;
-				for(;i<friends.size();i++){
+				for (; i < friends.size(); i++) {
 					fs = friends.get(i).split("----");
-					nvps.add(new BasicNameValuePair("FriendQQNum"+(i+1), fs[0]));	
+					nvps.add(new BasicNameValuePair("FriendQQNum" + (i + 1),
+							fs[0]));
 				}
-				for(;i<7;i++){
-					nvps.add(new BasicNameValuePair("FriendQQNum"+(i+1), ""));
+				for (; i < 7; i++) {
+					nvps.add(new BasicNameValuePair("FriendQQNum" + (i + 1), ""));
 				}
-//				nvps.add(new BasicNameValuePair("FriendQQNum2", ""));
-//				nvps.add(new BasicNameValuePair("FriendQQNum3", ""));
-//				nvps.add(new BasicNameValuePair("FriendQQNum4", ""));
-//				nvps.add(new BasicNameValuePair("FriendQQNum5", ""));
-//				nvps.add(new BasicNameValuePair("FriendQQNum6", ""));
-//				nvps.add(new BasicNameValuePair("FriendQQNum7", ""));
+				// nvps.add(new BasicNameValuePair("FriendQQNum2", ""));
+				// nvps.add(new BasicNameValuePair("FriendQQNum3", ""));
+				// nvps.add(new BasicNameValuePair("FriendQQNum4", ""));
+				// nvps.add(new BasicNameValuePair("FriendQQNum5", ""));
+				// nvps.add(new BasicNameValuePair("FriendQQNum6", ""));
+				// nvps.add(new BasicNameValuePair("FriendQQNum7", ""));
 
 				post.setEntity(new UrlEncodedFormEntity(nvps));
 
@@ -1056,110 +1085,115 @@ public class Task implements Runnable, Observer {
 
 				line = EntityUtils.toString(entity);
 
-				//System.err.println(line);
+				// System.err.println(line);
 				idx++;
 			} catch (Exception e) {
 				e.printStackTrace();
 				fb = true;
 			}
-			
+
 			break;
 		case 15:
-			//获取回执编号			
-			info("等待"+itv+"秒，接收邮件[回执]");
+			// 获取回执编号
+			info("等待" + itv + "秒，接收邮件[回执]");
 			try {
-				try{
-					Thread.sleep(1000*itv);
-				}catch(Exception e){
+				try {
+					Thread.sleep(1000 * itv);
+				} catch (Exception e) {
 					sf = true;
-					Thread.sleep(1000*4); //意外中断，继续等待
+					Thread.sleep(1000 * 4); // 意外中断，继续等待
 				}
-				
+
 				Properties props = new Properties();
-//				props.setProperty("mail.store.protocol", "pop3");
-//				props.setProperty("mail.pop3.host", "pop3.163.com");
-				props.put("mail.imap.host", "imap.163.com");	            
-	            props.put("mail.imap.auth.plain.disable", "true");
-	             
+				// props.setProperty("mail.store.protocol", "pop3");
+				// props.setProperty("mail.pop3.host", "pop3.163.com");
+				props.put("mail.imap.host", "imap.163.com");
+				props.put("mail.imap.auth.plain.disable", "true");
+
 				Session session = Session.getDefaultInstance(props);
-				session.setDebug(false); 
-				IMAPStore store = (IMAPStore)session.getStore("imap");
+				session.setDebug(false);
+				IMAPStore store = (IMAPStore) session.getStore("imap");
 				store.connect(this.mail, this.mpwd);
-				IMAPFolder folder = (IMAPFolder)store.getFolder("INBOX");
+				IMAPFolder folder = (IMAPFolder) store.getFolder("INBOX");
 				folder.open(Folder.READ_WRITE);
 
 				// 全部邮件
 				Message[] messages = folder.getMessages();
-				
+
 				boolean seen = true;
-				//System.err.println(messages.length);
-				for (int i = messages.length-1; i >=0; i--) {
+				// System.err.println(messages.length);
+				for (int i = messages.length - 1; i >= 0; i--) {
 					seen = true;
 					Message message = messages[i];
 					// 删除邮件
 					// message.setFlag(Flags.Flag.DELETED,true);
 
-					Flags flags = message.getFlags();    
-					if (flags.contains(Flags.Flag.SEEN)){
-						seen = true;    
-					} else {    
-						seen = false;    
+					Flags flags = message.getFlags();
+					if (flags.contains(Flags.Flag.SEEN)) {
+						seen = true;
+					} else {
+						seen = false;
 					}
-		               
-					if(!seen&&message.getSubject().startsWith("QQ号码申诉单已受理")){
-						
-//						boolean isold = false;      
-//				        Flags flags = message.getFlags();      
-//				        Flags.Flag[] flag = flags.getSystemFlags();      
-//				        
-//				        for (int ix = 0; ix< flag.length; ix++) {      
-//				            if (flag[ix] == Flags.Flag.SEEN) {      
-//				            	isold = true;
-//				                break;
-//				            }
-//				        }
 
-						String ssct = (String)message.getContent();
+					if (!seen && message.getSubject().startsWith("QQ号码申诉单已受理")) {
+
+						// boolean isold = false;
+						// Flags flags = message.getFlags();
+						// Flags.Flag[] flag = flags.getSystemFlags();
+						//
+						// for (int ix = 0; ix< flag.length; ix++) {
+						// if (flag[ix] == Flags.Flag.SEEN) {
+						// isold = true;
+						// break;
+						// }
+						// }
+
+						String ssct = (String) message.getContent();
 						message.setFlag(Flags.Flag.SEEN, false);
-						if(ssct.contains("[<b>"+account.substring(0, 1))&&ssct.contains(account.substring(account.length()-1)+"</b>]")){
-				        //if(!isold){
-							message.setFlag(Flags.Flag.SEEN, true);	// 标记为已读
-							rcl = ssct.substring(ssct.indexOf("<b class=\"red\">")+15, ssct.indexOf("<b class=\"red\">")+25);
-							
+						if (ssct.contains("[<b>" + account.substring(0, 1))
+								&& ssct.contains(account.substring(account
+										.length() - 1) + "</b>]")) {
+							// if(!isold){
+							message.setFlag(Flags.Flag.SEEN, true); // 标记为已读
+							rcl = ssct.substring(
+									ssct.indexOf("<b class=\"red\">") + 15,
+									ssct.indexOf("<b class=\"red\">") + 25);
+
 							System.err.println(rcl);
 							break;
-						} 
-//						else {
-//							message.setFlag(Flags.Flag.SEEN, false);
-////							message.getFlags().remove(Flags.Flag.SEEN);
-//						}
-				        //}
-					}else{
-//						if(!seen){
-//							message.setFlag(Flags.Flag.SEEN, false);
-//							//message.getFlags().remove(Flags.Flag.SEEN);
-//						}
+						}
+						// else {
+						// message.setFlag(Flags.Flag.SEEN, false);
+						// // message.getFlags().remove(Flags.Flag.SEEN);
+						// }
+						// }
+					} else {
+						// if(!seen){
+						// message.setFlag(Flags.Flag.SEEN, false);
+						// //message.getFlags().remove(Flags.Flag.SEEN);
+						// }
 					}
 				}
 				folder.close(true);
 				store.close();
-				
-				if(rcl==null){					
-					tcback++;					
+
+				if (rcl == null) {
+					tcback++;
 					idx = 15;
-					if(tcback==3){
-						info("找不到邮件[回执]，退出("+tcback+")->"+this.mail+"----"+this.mpwd);
+					if (tcback == 3) {
+						info("找不到邮件[回执]，退出(" + tcback + ")->" + this.mail
+								+ "----" + this.mpwd);
 						this.run = false;
-					}else{
-						info("找不到邮件[回执]，继续尝试("+tcback+")");
+					} else {
+						info("找不到邮件[回执]，继续尝试(" + tcback + ")");
 					}
-				}else{
+				} else {
 					info("找到邮件[回执]");
 					idx++;
 					info("进入好友辅助申诉");
-					//this.finish = true; 
-					//info("申诉成功");
-					//this.run = false; //结束运行
+					// this.finish = true;
+					// info("申诉成功");
+					// this.run = false; //结束运行
 				}
 			} catch (Exception e) {
 				info("连接邮箱失败");
@@ -1170,23 +1204,26 @@ public class Task implements Runnable, Observer {
 			break;
 		case 16:
 			try {
-				info("正在登录好友["+helpcount+"]");
-				fs = friends.get(helpcount).split("----"); //当前好友信息
-				
-				client.getCookieStore().clear();//清空cookie
+				info("正在登录好友[" + helpcount + "]");
+				fs = friends.get(helpcount).split("----"); // 当前好友信息
+
+				client.getCookieStore().clear();// 清空cookie
 				get = new HttpGet(
 						"https://ui.ptlogin2.qq.com/cgi-bin/login?appid=2001601&no_verifyimg=1&f_url=loginerroralert&lang=0&target=top&hide_title_bar=1&s_url=http%3A//aq.qq.com/cn2/index&qlogin_jumpname=aqjump&qlogin_param=aqdest%3Dhttp%253A//aq.qq.com/cn2/index&css=https%3A//aq.qq.com/v2/css/login.css");
 
-//				get.setHeader("User-Agent", UAG);
-//				get.setHeader("Content-Type", "text/html");
-//				get.setHeader("Accept", "text/html, */*");
+				// get.setHeader("User-Agent", UAG);
+				// get.setHeader("Content-Type", "text/html");
+				// get.setHeader("Accept", "text/html, */*");
 
 				response = client.execute(get);
-				entity = response.getEntity();				
+				entity = response.getEntity();
 				line = EntityUtils.toString(entity);
-				
-				loginsig = line.substring(line.indexOf("var g_login_sig=encodeURIComponent") + 36).substring(0, 64);
-				
+
+				loginsig = line
+						.substring(
+								line.indexOf("var g_login_sig=encodeURIComponent") + 36)
+						.substring(0, 64);
+
 				idx++;
 			} catch (Exception e) {
 				info("好友辅助申诉失败");
@@ -1196,36 +1233,37 @@ public class Task implements Runnable, Observer {
 			break;
 		case 17:
 			try {
-				info("检查帐号["+helpcount+"]");
-				get = new HttpGet("https://ssl.ptlogin2.qq.com/check?uin=" + fs[0] + "&appid=2001601&js_ver=" + VERSION + "&js_type=0&login_sig=" + loginsig + "&u1=http%3A%2F%2Faq.qq.com%2Fcn2%2Findex&r=" + Math.random());
+				info("检查帐号[" + helpcount + "]");
+				get = new HttpGet("https://ssl.ptlogin2.qq.com/check?uin="
+						+ fs[0] + "&appid=2001601&js_ver=" + VERSION
+						+ "&js_type=0&login_sig=" + loginsig
+						+ "&u1=http%3A%2F%2Faq.qq.com%2Fcn2%2Findex&r="
+						+ Math.random());
 
-//				get.setHeader("User-Agent", UAG);
-//				get.setHeader("Content-Type", "text/html");
-//				get.setHeader("Accept", "text/html, */*");
+				// get.setHeader("User-Agent", UAG);
+				// get.setHeader("Content-Type", "text/html");
+				// get.setHeader("Accept", "text/html, */*");
 
 				response = client.execute(get);
-				entity = response.getEntity();				
+				entity = response.getEntity();
 				line = EntityUtils.toString(entity);
-				System.out.println("XXK:"+line);
-				
+				System.out.println("XXK:" + line);
+
 				boolean nvc = line.charAt(14) == '1' ? true : false;
-                 //没有做RSAKEY检查，默认是应该有KEY，用getEncryption；否则用getRSAEncryption
+				// 没有做RSAKEY检查，默认是应该有KEY，用getEncryption；否则用getRSAEncryption
 
-                 int fidx = line.indexOf(",");
-                 int lidx = line.lastIndexOf(",");
+				int fidx = line.indexOf(",");
+				int lidx = line.lastIndexOf(",");
 
-                 vcode = line.substring(fidx + 2, fidx + 6);
-                 salt = line.substring(lidx + 2, lidx + 34);
+				vcode = line.substring(fidx + 2, fidx + 6);
+				salt = line.substring(lidx + 2, lidx + 34);
 
-                 if (nvc)
-                 {
-                     //Encryption.getRSAEncryption(K, G)
-                     idx++; //进入下一步验证码
-                 }
-                 else
-                 {
-                     idx += 5;
-                 }
+				if (nvc) {
+					// Encryption.getRSAEncryption(K, G)
+					idx++; // 进入下一步验证码
+				} else {
+					idx += 5;
+				}
 			} catch (Exception e) {
 				e.printStackTrace();
 				fb = true;
@@ -1234,11 +1272,13 @@ public class Task implements Runnable, Observer {
 		case 18:
 			try {
 				info("下载验证码");
-				get = new HttpGet("https://ssl.captcha.qq.com/getimage?aid=2001601&" + Math.random() + "&uin=" + fs[0]);
+				get = new HttpGet(
+						"https://ssl.captcha.qq.com/getimage?aid=2001601&"
+								+ Math.random() + "&uin=" + fs[0]);
 
-//				get.setHeader("User-Agent", UAG);
-//				get.setHeader("Content-Type", "text/html");
-//				get.setHeader("Accept", "text/html, */*");
+				// get.setHeader("User-Agent", UAG);
+				// get.setHeader("Content-Type", "text/html");
+				// get.setHeader("Accept", "text/html, */*");
 
 				response = client.execute(get);
 				entity = response.getEntity();
@@ -1271,63 +1311,63 @@ public class Task implements Runnable, Observer {
 			try {
 				byte[] by = baos.toByteArray();
 				byte[] resultByte = new byte[30]; // 为识别结果申请内存空间
-//				StringBuffer rsb = new StringBuffer(30);
-				String rsb = "0000";
+				// StringBuffer rsb = new StringBuffer(30);
+				String rsb = "00000";
 				resultByte = rsb.getBytes();
 
-				if(Engine.getInstance().getCptType()==0){
-					codeID = YDM.INSTANCE.YDM_DecodeByBytes(by, by.length, 1004, resultByte);//result byte
-//					result = "xxxx";
-//					for(int i=0;i<resultByte.length;i++){
-//						System.out.println(resultByte[i]);
-//					}
-//					System.out.println("TTT:"+codeID);
+				if (Engine.getInstance().getCptType() == 0) {
+					codeID = YDM.INSTANCE.YDM_DecodeByBytes(by, by.length,
+							1005, resultByte);// result byte
+					// result = "xxxx";
+					// for(int i=0;i<resultByte.length;i++){
+					// System.out.println(resultByte[i]);
+					// }
+					// System.out.println("TTT:"+codeID);
 					result = new String(resultByte, "UTF-8").trim();
-				}else{
+				} else {
 					codeID = DM.INSTANCE.uu_recognizeByCodeTypeAndBytesA(by,
-							by.length, 1, resultByte); // 调用识别函数,resultBtye为识别结果
+							by.length, 1005, resultByte); // 调用识别函数,resultBtye为识别结果
 					result = new String(resultByte, "UTF-8").trim();
 				}
-				
-				
-				
-				//result = rsb.toString();
-				//System.out.println("---"+result);
 
-				idx++;
+				// result = rsb.toString();
+				// System.out.println("---"+result);
+
+				//idx++;
+				vcode = result;
+				idx += 3;
 			} catch (Exception e) {
 				e.printStackTrace();
 				fb = true;
 			}
 			break;
-		case 20:
+		case 20://不用
 			try {
 				info("提交验证码");
-				get = new HttpGet("https://aq.qq.com/cn2/ajax/check_verifycode?session_type=on_rand&verify_code=" + result);
+				get = new HttpGet(
+						"https://aq.qq.com/cn2/ajax/check_verifycode?session_type=on_rand&verify_code="
+								+ result);
 
-//				get.setHeader("User-Agent", UAG);
-//				get.setHeader("Content-Type", "text/html");
-//				get.setHeader("Accept", "text/html, */*");
+				// get.setHeader("User-Agent", UAG);
+				// get.setHeader("Content-Type", "text/html");
+				// get.setHeader("Accept", "text/html, */*");
 
 				response = client.execute(get);
-				entity = response.getEntity();				
+				entity = response.getEntity();
 				line = EntityUtils.toString(entity);
-				
+
 				json = new JSONObject(line);
 
 				System.err.println(result);
-				System.err.println("json="+line);
-				 if ("0".equals(json.getString("Err")))
-                 {
-                     info("验证码正确");
-                     vcode = result;
-                     idx += 2;
-                 }
-                 else
-                 {
-                     info("验证码错误");
-                     idx++;
-                 }
+				System.err.println("json=" + line);
+				if ("0".equals(json.getString("Err"))) {
+					info("验证码正确");
+					vcode = result;
+					idx += 2;
+				} else {
+					info("验证码错误");
+					idx++;
+				}
 			} catch (Exception e) {
 				e.printStackTrace();
 				fb = true;
@@ -1338,117 +1378,116 @@ public class Task implements Runnable, Observer {
 			try {
 				//
 				int reportErrorResult = -1;
-				if(Engine.getInstance().getCptType()==0){
+				if (Engine.getInstance().getCptType() == 0) {
 					reportErrorResult = YDM.INSTANCE.YDM_Report(codeID, false);
-				}else{
+				} else {
 					reportErrorResult = DM.INSTANCE.uu_reportError(codeID);
 				}
 				System.err.println(reportErrorResult);
-				
-				idx = 16; // 重新开始登录 
+
+				idx = 16; // 重新开始登录
 			} catch (Exception e) {
 				e.printStackTrace();
 				fb = true;
 			}
 			break;
 		case 22:
-			try{
-				info("提交登录请求"); 
-				
-				//"password=" + this.password + "&salt=" + this.salt + "&vcode="+this.vcode;
-				
-				//generate ECP
+			try {
+				info("提交登录请求");
+
+				// "password=" + this.password + "&salt=" + this.salt +
+				// "&vcode="+this.vcode;
+
+				// generate ECP
 				byte[] rsx = Converts.MD5Encode(fs[1].getBytes());
 				int psz = rsx.length;
-	
+
 				byte[] rsb = new byte[psz + 8];
 				for (int i = 0; i < psz; i++) {
 					rsb[i] = rsx[i];
 				}
-	
+
 				salt = salt.substring(2);
-	
+
 				String[] salts = salt.split("\\\\x");
-	
+
 				for (int i = 0; i < salts.length; i++) {
 					rsb[psz + i] = (byte) Integer.parseInt(salts[i], 16);
 				}
-	
+
 				rsx = Converts.MD5Encode(rsb);
 				String ecp = Converts.bytesToHexString(rsx).toUpperCase();
-				rsx = Converts.MD5Encode((ecp + vcode.toUpperCase())
-						.getBytes());
-	
-				ecp = Converts.bytesToHexString(rsx).toUpperCase();
-				//gen ECP end
-				
-				get = new HttpGet("https://ssl.ptlogin2.qq.com/login?u=" + fs[0] + "&p=" + ecp + "&verifycode=" + vcode + "&aid=2001601&u1=http%3A%2F%2Faq.qq.com%2Fcn2%2Findex&h=1&ptredirect=1&ptlang=2052&from_ui=1&dumy=&fp=loginerroralert&action=4-14-" + System.currentTimeMillis() + "&mibao_css=&t=1&g=1&js_type=0&js_ver=" + VERSION + "&login_sig=" + loginsig);
+				rsx = Converts
+						.MD5Encode((ecp + vcode.toUpperCase()).getBytes());
 
-//				get.setHeader("User-Agent", UAG);
-//				get.setHeader("Content-Type", "text/html");
-//				get.setHeader("Accept", "text/html, */*");
+				ecp = Converts.bytesToHexString(rsx).toUpperCase();
+				// gen ECP end
+
+				get = new HttpGet(
+						"https://ssl.ptlogin2.qq.com/login?u="
+								+ fs[0]
+								+ "&p="
+								+ ecp
+								+ "&verifycode="
+								+ vcode
+								+ "&aid=2001601&u1=http%3A%2F%2Faq.qq.com%2Fcn2%2Findex&h=1&ptredirect=1&ptlang=2052&from_ui=1&dumy=&fp=loginerroralert&action=4-14-"
+								+ System.currentTimeMillis()
+								+ "&mibao_css=&t=1&g=1&js_type=0&js_ver="
+								+ VERSION + "&login_sig=" + loginsig);
+
+				// get.setHeader("User-Agent", UAG);
+				// get.setHeader("Content-Type", "text/html");
+				// get.setHeader("Accept", "text/html, */*");
 
 				response = client.execute(get);
-				entity = response.getEntity();				
+				entity = response.getEntity();
 				line = EntityUtils.toString(entity);
-				
-				if (line.startsWith("ptuiCB('4'"))
-                { //验证码错误
-                    info("验证码错误");
-                    idx = 16;
-                }
-                else if (line.startsWith("ptuiCB('0'"))
-                { //成功登录
-                    if (line.indexOf("haoma") != -1)
-                    {
-                        info("需要激活靓号");
-                        run = false;
-                    }
-                    else
-                    {
-                        info("登录成功");
-                        idx++;
-                    }
-                }
-                else if (line.startsWith("ptuiCB('3'"))
-                { //您输入的帐号或密码不正确，请重新输入
-                    //finish = 2;
-                    info("帐号或密码不正确, 退出任务");
-                    run = false;
-                }
-                else if (line.startsWith("ptuiCB('19'"))
-                { //帐号冻结，提示暂时无法登录
-                    //finish = 3;
-                    info("帐号冻结");
-                    run = false;
-                }
-                else
-                {
-                    // ptuiCB('19' 暂停使用
-                    // ptuiCB('7' 网络连接异常
-                    info("帐号异常, 退出任务");
-                    run = false;
-                }
-				
-			}catch (Exception e) {
+
+				if (line.startsWith("ptuiCB('4'")) { // 验证码错误
+					info("验证码错误");
+					//idx = 16;
+					idx = 21;
+				} else if (line.startsWith("ptuiCB('0'")) { // 成功登录
+					if (line.indexOf("haoma") != -1) {
+						info("需要激活靓号");
+						run = false;
+					} else {
+						info("登录成功");
+						idx++;
+					}
+				} else if (line.startsWith("ptuiCB('3'")) { // 您输入的帐号或密码不正确，请重新输入
+															// finish = 2;
+					info("帐号或密码不正确, 退出任务");
+					run = false;
+				} else if (line.startsWith("ptuiCB('19'")) { // 帐号冻结，提示暂时无法登录
+																// finish = 3;
+					info("帐号冻结");
+					run = false;
+				} else {
+					// ptuiCB('19' 暂停使用
+					// ptuiCB('7' 网络连接异常
+					info("帐号异常, 退出任务");
+					run = false;
+				}
+
+			} catch (Exception e) {
 				e.printStackTrace();
 				fb = true;
 			}
 			break;
 		case 23:
 			try {
-				info("打开辅助申诉页面["+helpcount+"]");
-				get = new HttpGet(
-						"http://aq.qq.com/cn2/appeal/appeal_fdappro");
+				info("打开辅助申诉页面[" + helpcount + "]");
+				get = new HttpGet("http://aq.qq.com/cn2/appeal/appeal_fdappro");
 
-//				get.setHeader("User-Agent", UAG);
-//				get.setHeader("Content-Type", "text/html");
-//				get.setHeader("Accept", "text/html, */*");
+				// get.setHeader("User-Agent", UAG);
+				// get.setHeader("Content-Type", "text/html");
+				// get.setHeader("Accept", "text/html, */*");
 
 				response = client.execute(get);
-				entity = response.getEntity();				
-				//line = EntityUtils.toString(entity);
-								
+				entity = response.getEntity();
+				// line = EntityUtils.toString(entity);
+
 				idx++;
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -1457,14 +1496,14 @@ public class Task implements Runnable, Observer {
 			break;
 		case 24:
 			try {
-				info("填写回执编号["+helpcount+"]");
+				info("填写回执编号[" + helpcount + "]");
 				post = new HttpPost(
 						"http://aq.qq.com/cn2/appeal/appeal_fdappro_end");
 
 				post.setHeader("User-Agent", UAG);
 				post.setHeader("Content-Type",
 						"application/x-www-form-urlencoded");
-//				post.setHeader("Accept", "text/html, */*");
+				// post.setHeader("Accept", "text/html, */*");
 				post.setHeader("Referer",
 						"http://aq.qq.com/cn2/appeal/appeal_fdappro");
 
@@ -1477,20 +1516,25 @@ public class Task implements Runnable, Observer {
 
 				response = client.execute(post);
 				entity = response.getEntity();
-				
+
 				line = EntityUtils.toString(entity);
-				if(line.indexOf("好友辅助申诉提交成功")!=-1){
-					System.err.println("success:"+helpcount);
-				}else{
-					System.err.println("fail:"+helpcount);
-					run = false;//没有必要继续辅助
-				}
 				
-				if(helpcount<friends.size()){//继续辅助申诉
+				//if (line.indexOf("好友辅助申诉提交成功") != -1) {//乱码
+				if (line.indexOf("succeed3") != -1) {					
+					System.err.println("success:" + helpcount);
+				} else {
+					System.err.println("fail:" + helpcount);
+					run = false;// 没有必要继续辅助
+				}
+				//System.err.println(line);
+				
+				if (helpcount == friends.size()-1) {// 继续辅助申诉
+					finish = true;
+					run = false;
+					info("申诉成功");
+				} else {
 					helpcount++;
 					idx = 16;
-				}else{
-					idx++;
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -1502,56 +1546,58 @@ public class Task implements Runnable, Observer {
 		}
 	}
 
-	private void info(String info){
+	private void info(String info) {
 		message = new EngineMessage();
 		message.setTid(this.id);
 		message.setType(EngineMessageType.IM_INFO);
 		message.setData(info);
 
-		DateFormat format = new java.text.SimpleDateFormat("yyyy/MM/dd hh:mm:ss");
+		DateFormat format = new java.text.SimpleDateFormat(
+				"yyyy/MM/dd hh:mm:ss");
 		String tm = format.format(new Date());
-		
-		System.err.println("["+this.account+"]"+info+"("+tm+")");
+
+		System.err.println("[" + this.account + "]" + info + "(" + tm + ")");
 		Engine.getInstance().fire(message);
 	}
-	
+
 	@Override
 	public void update(Observable obj, Object arg) {
 		final EngineMessage msg = (EngineMessage) arg;
 
-		if (msg.getTid() == this.id || msg.getTid()==-1) { //-1, all tasks message
+		if (msg.getTid() == this.id || msg.getTid() == -1) { // -1, all tasks
+																// message
 			int type = msg.getType();
 
 			switch (type) {
 			case EngineMessageType.OM_REQUIRE_MAIL:
-				if(msg.getData()!=null){
+				if (msg.getData() != null) {
 					String[] ms = (String[]) msg.getData();
 					System.err.println(ms[0] + "/" + ms[1] + "/" + ms[2]);
 					this.mid = ms[0];
 					this.mail = ms[1];
 					this.mpwd = ms[2];
-				}else {
+				} else {
 					info("没有可用邮箱, 退出任务");
 					this.run = false;
-					
-					//通知引擎
+
+					// 通知引擎
 					EngineMessage message = new EngineMessage();
-					//message.setTid(this.id);
+					// message.setTid(this.id);
 					message.setType(EngineMessageType.IM_NO_EMAILS);
 					// message.setData(obj);
 					Engine.getInstance().fire(message);
 				}
 				break;
-			case EngineMessageType.OM_RECONN: //系统准备重拨
-				//System.err.println("TASK RECEIVED RECONN:"+rec);
+			case EngineMessageType.OM_RECONN: // 系统准备重拨
+				// System.err.println("TASK RECEIVED RECONN:"+rec);
 				rec = !rec;
 				break;
-			case EngineMessageType.OM_NP: //系统准备暂停
-				//System.err.println("TASK RECEIVED RECONN:"+rec);
+			case EngineMessageType.OM_NP: // 系统准备暂停
+				// System.err.println("TASK RECEIVED RECONN:"+rec);
 				np = !np;
 				break;
 			case EngineMessageType.OM_PAUSE:
-				pause  = !pause;
+				pause = !pause;
 				break;
 			default:
 				break;
