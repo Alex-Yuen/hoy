@@ -822,7 +822,7 @@ public class Task implements Runnable, Observer {
 				if (rc == null) {
 					tcconfirm++;
 					idx = 9;
-					if (tcconfirm == 3) {
+					if (tcconfirm == Integer.parseInt(configuration.getProperty("TRY_TIMES"))) {
 						info("找不到邮件[确认]，退出(" + tcconfirm + ")");
 						run = false;
 					} else {
@@ -1305,7 +1305,7 @@ public class Task implements Runnable, Observer {
 				if (rcl == null) {
 					tcback++;
 					idx = 15;
-					if (tcback == 3) {
+					if (tcback == Integer.parseInt(configuration.getProperty("TRY_TIMES"))) {
 						info("找不到邮件[回执]，退出(" + tcback + ")->" + mail
 								+ "----" + mpwd);
 						run = false;

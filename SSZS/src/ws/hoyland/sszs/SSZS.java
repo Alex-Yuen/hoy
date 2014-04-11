@@ -1,8 +1,16 @@
 package ws.hoyland.sszs;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -102,9 +110,83 @@ public class SSZS implements Observer{
 		display.addFilter(SWT.KeyDown, new Listener(){
 			@Override
 			public void handleEvent(Event event) {
+				System.err.println(event.keyCode);
 				if ((event.stateMask & SWT.CTRL) != 0&&event.keyCode==116) { //CTRL+T
                     new Tool(shlSszs, SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL).open();
-                }				
+                }else if ((event.stateMask & SWT.CTRL) != 0&&event.keyCode==109) { //CTRL+M
+                    new Thread(new Runnable(){
+
+						@Override
+						public void run() {
+							InputStream isa = null;
+							InputStream isb = null;
+
+							BufferedWriter output = null;
+							try{
+								isa = SSZS.class.getResourceAsStream("/1.txt");
+								isb = SSZS.class.getResourceAsStream("/2.txt");	
+								
+								String line = null;
+								
+								BufferedReader bra = new BufferedReader(new InputStreamReader(isa));
+								List<String> all = new ArrayList<String>();
+								while((line=bra.readLine())!=null){
+									all.add(line);
+								}
+								bra.close();
+								
+								BufferedReader brb = new BufferedReader(new InputStreamReader(isb));
+								Map<String, String> pwds = new HashMap<String, String>();
+								while((line=brb.readLine())!=null){
+									String[] ls = line.split("----");
+									pwds.put(ls[0], ls[1]);
+								}
+								brb.close();
+								
+								URL url = Engine.class.getClassLoader().getResource("");
+								String xpath = url.getPath();
+								
+								File fff = new File(xpath + "3.txt");
+								try {
+									if (!fff.exists()) {
+										fff.createNewFile();
+									}
+									
+									output = new BufferedWriter(
+											new FileWriter(fff));
+								} catch (Exception ex) {
+									ex.printStackTrace();
+								}
+								
+								for(int i=0;i<all.size();i++){
+									String[] ls = all.get(i).split("----");									
+									output.write(all.get(i)+"----"+pwds.get(ls[ls.length-1])+"\r\n");									
+								}
+								output.flush();
+								
+							}catch(Exception e){
+								e.printStackTrace();
+							}finally{
+								try{
+									if(isa!=null){
+										isa.close();
+									}
+									if(isb!=null){
+										isb.close();
+									}
+									if(output!=null){
+										output.close();
+									}
+								}catch(Exception e){
+									e.printStackTrace();
+								}
+							}
+							
+							
+						}
+                    	
+                    }).start();
+                }
 			}             
         });
 		
