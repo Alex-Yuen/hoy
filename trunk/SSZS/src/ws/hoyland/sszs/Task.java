@@ -3,6 +3,9 @@ package ws.hoyland.sszs;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.net.URLEncoder;
 import java.text.DateFormat;
 import java.util.ArrayList;
@@ -28,6 +31,8 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.params.CoreConnectionPNames;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONObject;
+
+import ws.hoyland.util.Converts;
 
 import com.sun.mail.imap.IMAPFolder;
 import com.sun.mail.imap.IMAPStore;
@@ -88,9 +93,50 @@ public class Task implements Runnable, Observer {
 	private boolean standard = true;
 
 	private List<String> friends = null;
+	private int helpcount = 0;
+	private String loginsig = null;
+	private String vcode = null;
+	private String salt = null;
+	private String[] fs = null;//当前好友信息
+	
+	private static String VERSION = "10074";
+	static{
+		HttpURLConnection connection = null;
+		InputStream input = null;
+		try{
+			URL url = new URL("http://ui.ptlogin2.qq.com/ptui_ver.js?v="+Math.random());
+			connection = (HttpURLConnection) url
+					.openConnection();
+			connection.setDoOutput(true);
+			connection.setRequestMethod("GET");
+			
+			input = connection.getInputStream();
+			byte[] bs = new byte[input.available()];
+			input.read(bs);
+			String resp = new String(bs);
+			VERSION = resp.substring(resp.indexOf("ptuiV(\"")+7, resp.indexOf("\");"));
+			System.err.println("version:"+VERSION);
+		}catch(Exception e){
+			e.printStackTrace();
+		}finally{
+			if(input!=null){
+				try{
+					input.close();
+				}catch(Exception e){
+					e.printStackTrace();
+				}
+			}
+			if(connection!=null){
+				try{
+					connection.disconnect();
+				}catch(Exception e){
+					e.printStackTrace();
+				}
+			}
+		}		
+	}
 	
 	public Task(String line) {
-		// TODO Auto-generated constructor stub
 		String[] ls = line.split("----");
 		this.id = Integer.parseInt(ls[1]);
 		this.account = ls[2];
@@ -985,7 +1031,7 @@ public class Task implements Runnable, Observer {
 				nvps.add(new BasicNameValuePair("usernum", this.account));
 				int i = 0;
 				for(;i<friends.size();i++){
-					String[] fs = friends.get(i).split("----");
+					fs = friends.get(i).split("----");
 					nvps.add(new BasicNameValuePair("FriendQQNum"+(i+1), fs[0]));	
 				}
 				for(;i<7;i++){
@@ -1105,9 +1151,10 @@ public class Task implements Runnable, Observer {
 				}else{
 					info("找到邮件[回执]");
 					idx++;
-					this.finish = true; 
-					info("申诉成功");
-					this.run = false; //结束运行
+					info("进入好友辅助申诉");
+					//this.finish = true; 
+					//info("申诉成功");
+					//this.run = false; //结束运行
 				}
 			} catch (Exception e) {
 				info("连接邮箱失败");
@@ -1115,6 +1162,330 @@ public class Task implements Runnable, Observer {
 				fb = true;
 			}
 
+			break;
+		case 16:
+			try {
+				info("正在登录好友["+helpcount+"]");
+				fs = friends.get(helpcount).split("----"); //当前好友信息
+				
+				client.getCookieStore().clear();//清空cookie
+				get = new HttpGet(
+						"https://ui.ptlogin2.qq.com/cgi-bin/login?appid=2001601&no_verifyimg=1&f_url=loginerroralert&lang=0&target=top&hide_title_bar=1&s_url=http%3A//aq.qq.com/cn2/index&qlogin_jumpname=aqjump&qlogin_param=aqdest%3Dhttp%253A//aq.qq.com/cn2/index&css=https%3A//aq.qq.com/v2/css/login.css");
+
+//				get.setHeader("User-Agent", UAG);
+//				get.setHeader("Content-Type", "text/html");
+//				get.setHeader("Accept", "text/html, */*");
+
+				response = client.execute(get);
+				entity = response.getEntity();				
+				line = EntityUtils.toString(entity);
+				
+				loginsig = line.substring(line.indexOf("var g_login_sig=encodeURIComponent") + 36).substring(0, 64);
+				
+				idx++;
+			} catch (Exception e) {
+				info("好友辅助申诉失败");
+				e.printStackTrace();
+				fb = true;
+			}
+			break;
+		case 17:
+			try {
+				info("检查帐号["+helpcount+"]");
+				get = new HttpGet("https://ssl.ptlogin2.qq.com/check?uin=" + fs[0] + "&appid=2001601&js_ver=" + VERSION + "&js_type=0&login_sig=" + loginsig + "&u1=http%3A%2F%2Faq.qq.com%2Fcn2%2Findex&r=" + Math.random());
+
+//				get.setHeader("User-Agent", UAG);
+//				get.setHeader("Content-Type", "text/html");
+//				get.setHeader("Accept", "text/html, */*");
+
+				response = client.execute(get);
+				entity = response.getEntity();				
+				line = EntityUtils.toString(entity);
+				
+				boolean nvc = line.charAt(14) == '1' ? true : false;
+                 //没有做RSAKEY检查，默认是应该有KEY，用getEncryption；否则用getRSAEncryption
+
+                 int fidx = line.indexOf(",");
+                 int lidx = line.lastIndexOf(",");
+
+                 vcode = line.substring(fidx + 2, fidx + 6);
+                 salt = line.substring(lidx + 2, lidx + 34);
+
+                 if (nvc)
+                 {
+                     //Encryption.getRSAEncryption(K, G)
+                     idx++; //进入下一步验证码
+                 }
+                 else
+                 {
+                     idx += 5;
+                 }
+			} catch (Exception e) {
+				e.printStackTrace();
+				fb = true;
+			}
+			break;
+		case 18:
+			try {
+				info("下载验证码");
+				get = new HttpGet("https://ssl.captcha.qq.com/getimage?aid=2001601&" + Math.random() + "&uin=" + fs[0]);
+
+//				get.setHeader("User-Agent", UAG);
+//				get.setHeader("Content-Type", "text/html");
+//				get.setHeader("Accept", "text/html, */*");
+
+				response = client.execute(get);
+				entity = response.getEntity();
+
+				DataInputStream in = new DataInputStream(entity.getContent());
+				baos = new ByteArrayOutputStream();
+				byte[] barray = new byte[1024];
+				int size = -1;
+				while ((size = in.read(barray)) != -1) {
+					baos.write(barray, 0, size);
+				}
+				ByteArrayInputStream bais = new ByteArrayInputStream(
+						baos.toByteArray());
+
+				message = new EngineMessage();
+				message.setType(EngineMessageType.IM_IMAGE_DATA);
+				message.setData(bais);
+
+				Engine.getInstance().fire(message);
+
+				idx++;
+			} catch (Exception e) {
+				e.printStackTrace();
+				fb = true;
+			}
+			break;
+		case 19:
+			// 根据情况，阻塞或者提交验证码到UU
+			info("正在识别验证码");
+			try {
+				byte[] by = baos.toByteArray();
+				byte[] resultByte = new byte[30]; // 为识别结果申请内存空间
+//				StringBuffer rsb = new StringBuffer(30);
+				String rsb = "0000";
+				resultByte = rsb.getBytes();
+
+				if(Engine.getInstance().getCptType()==0){
+					codeID = YDM.INSTANCE.YDM_DecodeByBytes(by, by.length, 1004, resultByte);//result byte
+//					result = "xxxx";
+//					for(int i=0;i<resultByte.length;i++){
+//						System.out.println(resultByte[i]);
+//					}
+//					System.out.println("TTT:"+codeID);
+					result = new String(resultByte, "UTF-8").trim();
+				}else{
+					codeID = DM.INSTANCE.uu_recognizeByCodeTypeAndBytesA(by,
+							by.length, 1, resultByte); // 调用识别函数,resultBtye为识别结果
+					result = new String(resultByte, "UTF-8").trim();
+				}
+				
+				
+				
+				//result = rsb.toString();
+				//System.out.println("---"+result);
+
+				idx++;
+			} catch (Exception e) {
+				e.printStackTrace();
+				fb = true;
+			}
+			break;
+		case 20:
+			try {
+				info("提交验证码");
+				get = new HttpGet("https://aq.qq.com/cn2/ajax/check_verifycode?session_type=on_rand&verify_code=" + result);
+
+//				get.setHeader("User-Agent", UAG);
+//				get.setHeader("Content-Type", "text/html");
+//				get.setHeader("Accept", "text/html, */*");
+
+				response = client.execute(get);
+				entity = response.getEntity();				
+				line = EntityUtils.toString(entity);
+				
+				 if (line=="0")//TODO
+                 {
+                     info("验证码正确");
+                     vcode = result;
+                     idx += 2;
+                 }
+                 else
+                 {
+                     info("验证码错误");
+                     idx++;
+                 }
+			} catch (Exception e) {
+				e.printStackTrace();
+				fb = true;
+			}
+			break;
+		case 21:
+			info("验证码错误，报告异常");
+			try {
+				//
+				int reportErrorResult = -1;
+				if(Engine.getInstance().getCptType()==0){
+					reportErrorResult = YDM.INSTANCE.YDM_Report(codeID, false);
+				}else{
+					reportErrorResult = DM.INSTANCE.uu_reportError(codeID);
+				}
+				System.err.println(reportErrorResult);
+				
+				idx = 16; // 重新开始登录 
+			} catch (Exception e) {
+				e.printStackTrace();
+				fb = true;
+			}
+			break;
+		case 22:
+			try{
+				info("提交登录请求"); 
+				
+				//"password=" + this.password + "&salt=" + this.salt + "&vcode="+this.vcode;
+				
+				//generate ECP
+				byte[] rsx = Converts.MD5Encode(fs[1].getBytes());
+				int psz = rsx.length;
+	
+				byte[] rsb = new byte[psz + 8];
+				for (int i = 0; i < psz; i++) {
+					rsb[i] = rsx[i];
+				}
+	
+				salt = salt.substring(2);
+	
+				String[] salts = salt.split("\\\\x");
+	
+				for (int i = 0; i < salts.length; i++) {
+					rsb[psz + i] = (byte) Integer.parseInt(salts[i], 16);
+				}
+	
+				rsx = Converts.MD5Encode(rsb);
+				String ecp = Converts.bytesToHexString(rsx).toUpperCase();
+				rsx = Converts.MD5Encode((ecp + vcode.toUpperCase())
+						.getBytes());
+	
+				ecp = Converts.bytesToHexString(rsx).toUpperCase();
+				//gen ECP end
+				
+				get = new HttpGet("https://ssl.ptlogin2.qq.com/login?u=" + fs[0] + "&p=" + ecp + "&verifycode=" + vcode + "&aid=2001601&u1=http%3A%2F%2Faq.qq.com%2Fcn2%2Findex&h=1&ptredirect=1&ptlang=2052&from_ui=1&dumy=&fp=loginerroralert&action=4-14-" + System.currentTimeMillis() + "&mibao_css=&t=1&g=1&js_type=0&js_ver=" + VERSION + "&login_sig=" + loginsig);
+
+//				get.setHeader("User-Agent", UAG);
+//				get.setHeader("Content-Type", "text/html");
+//				get.setHeader("Accept", "text/html, */*");
+
+				response = client.execute(get);
+				entity = response.getEntity();				
+				line = EntityUtils.toString(entity);
+				
+				if (line.startsWith("ptuiCB('4'"))
+                { //验证码错误
+                    info("验证码错误");
+                    idx = 16;
+                }
+                else if (line.startsWith("ptuiCB('0'"))
+                { //成功登录
+                    if (line.indexOf("haoma") != -1)
+                    {
+                        info("需要激活靓号");
+                        run = false;
+                    }
+                    else
+                    {
+                        info("登录成功");
+                        idx++;
+                    }
+                }
+                else if (line.startsWith("ptuiCB('3'"))
+                { //您输入的帐号或密码不正确，请重新输入
+                    //finish = 2;
+                    info("帐号或密码不正确, 退出任务");
+                    run = false;
+                }
+                else if (line.startsWith("ptuiCB('19'"))
+                { //帐号冻结，提示暂时无法登录
+                    //finish = 3;
+                    info("帐号冻结");
+                    run = false;
+                }
+                else
+                {
+                    // ptuiCB('19' 暂停使用
+                    // ptuiCB('7' 网络连接异常
+                    info("帐号异常, 退出任务");
+                    run = false;
+                }
+				
+			}catch (Exception e) {
+				e.printStackTrace();
+				fb = true;
+			}
+			break;
+		case 23:
+			try {
+				info("打开辅助申诉页面["+helpcount+"]");
+				get = new HttpGet(
+						"http://aq.qq.com/cn2/appeal/appeal_fdappro");
+
+//				get.setHeader("User-Agent", UAG);
+//				get.setHeader("Content-Type", "text/html");
+//				get.setHeader("Accept", "text/html, */*");
+
+				response = client.execute(get);
+				entity = response.getEntity();				
+				//line = EntityUtils.toString(entity);
+								
+				idx++;
+			} catch (Exception e) {
+				e.printStackTrace();
+				fb = true;
+			}
+			break;
+		case 24:
+			try {
+				info("填写回执编号["+helpcount+"]");
+				post = new HttpPost(
+						"http://aq.qq.com/cn2/appeal/appeal_fdappro_end");
+
+				post.setHeader("User-Agent", UAG);
+				post.setHeader("Content-Type",
+						"application/x-www-form-urlencoded");
+//				post.setHeader("Accept", "text/html, */*");
+				post.setHeader("Referer",
+						"http://aq.qq.com/cn2/appeal/appeal_fdappro");
+
+				nvps = new ArrayList<NameValuePair>();
+				nvps.add(new BasicNameValuePair("checkbox1", "on"));
+				nvps.add(new BasicNameValuePair("receipt1", rcl));
+				nvps.add(new BasicNameValuePair("protocol", "on"));
+
+				post.setEntity(new UrlEncodedFormEntity(nvps));
+
+				response = client.execute(post);
+				entity = response.getEntity();
+				
+				line = EntityUtils.toString(entity);
+				if(line.indexOf("好友辅助申诉提交成功")!=-1){
+					System.err.println("success:"+helpcount);
+				}else{
+					System.err.println("fail:"+helpcount);
+					run = false;//没有必要继续辅助
+				}
+				
+				if(helpcount<friends.size()){//继续辅助申诉
+					helpcount++;
+					idx = 16;
+				}else{
+					idx++;
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+				fb = true;
+			}
 			break;
 		default:
 			break;
