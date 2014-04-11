@@ -33,6 +33,7 @@ import org.apache.http.util.EntityUtils;
 import org.json.JSONObject;
 
 import ws.hoyland.util.Converts;
+import ws.hoyland.util.IdentificationCardCodeUtil;
 
 import com.sun.mail.imap.IMAPFolder;
 import com.sun.mail.imap.IMAPStore;
@@ -531,6 +532,10 @@ public class Task implements Runnable, Observer {
 		case 8:
 			info("提交申诉资料");
 			try {
+				String code = IdentificationCardCodeUtil.getRandomAreaCode() + IdentificationCardCodeUtil.getRandomBirthdayCode(1980, 2000)
+						+ IdentificationCardCodeUtil.getRandomSequenceCode();
+				String randomCardCode = code + IdentificationCardCodeUtil.calculateVerifyCode(code);
+				
 				post = new HttpPost(
 						"http://aq.qq.com/cn2/appeal/appeal_contact_confirm");
 
@@ -547,7 +552,7 @@ public class Task implements Runnable, Observer {
 				nvps.add(new BasicNameValuePair("txtName", Names.getInstance()
 						.getName()));
 				nvps.add(new BasicNameValuePair("txtAddress", ""));
-				nvps.add(new BasicNameValuePair("txtIDCard", ""));
+				nvps.add(new BasicNameValuePair("txtIDCard", randomCardCode));
 				nvps.add(new BasicNameValuePair("txtContactQQ", ""));
 				nvps.add(new BasicNameValuePair("txtContactQQPW", ""));
 				nvps.add(new BasicNameValuePair("txtContactQQPW2", ""));
