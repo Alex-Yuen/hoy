@@ -1314,6 +1314,8 @@ public class Task implements Runnable, Observer {
 				
 				json = new JSONObject(line);
 
+				System.err.println(result);
+				System.err.println("json="+line);
 				 if ("0".equals(json.getString("Err")))
                  {
                      info("验证码正确");
