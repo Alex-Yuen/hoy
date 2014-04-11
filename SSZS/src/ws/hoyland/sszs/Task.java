@@ -1206,6 +1206,7 @@ public class Task implements Runnable, Observer {
 				response = client.execute(get);
 				entity = response.getEntity();				
 				line = EntityUtils.toString(entity);
+				System.out.println("XXK:"+line);
 				
 				boolean nvc = line.charAt(14) == '1' ? true : false;
                  //没有做RSAKEY检查，默认是应该有KEY，用getEncryption；否则用getRSAEncryption
