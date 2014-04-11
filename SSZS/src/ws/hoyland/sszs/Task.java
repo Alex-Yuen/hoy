@@ -1307,7 +1307,9 @@ public class Task implements Runnable, Observer {
 				entity = response.getEntity();				
 				line = EntityUtils.toString(entity);
 				
-				 if (line=="0")//TODO
+				json = new JSONObject(line);
+
+				 if ("0".equals(json.getString("Err")))
                  {
                      info("验证码正确");
                      vcode = result;
