@@ -145,7 +145,8 @@ public class Engine extends Observable {
 							String[] lnsprep = line.split("----");
 							lns.add(lnsprep[1]);
 							lns.add(lnsprep[2]);
-							if("A".equals(paths[0])){//无密码带地区申诉
+							//显示密码的处理
+							if("NPAF".equals(paths[0])){//无密码带地区申诉
 								lns.add("-");
 							}else{
 								lns.add(lnsprep[3]);
