@@ -437,7 +437,8 @@ public class Engine extends Observable {
 						};
 					}else{//失败
 						try{
-							output[1].write(dt[1]+"----"+dt[2]+ "\r\n");
+//							output[1].write(dt[1]+"----"+dt[2]+ "\r\n");
+							output[1].write(dt[1]+"\r\n");
 							output[1].flush();
 						}catch(Exception e){
 							e.printStackTrace();
@@ -808,8 +809,13 @@ public class Engine extends Observable {
 				//if(lastTid!=-1){
 				if(output[2]!=null){
 					for(int i=lastTid;i<accounts.size();i++){
-						String[] accl = accounts.get(i).split("----");
-						output[2].write(accl[1]+"----"+accl[2]+ "\r\n");
+//						String[] accl = accounts.get(i).split("----");
+//						output[2].write(accl[1]+"----"+accl[2]+ "\r\n");
+						
+						String acc = accounts.get(i);
+						acc = acc.substring(acc.indexOf("----")+4);
+						acc = acc.substring(acc.indexOf("----")+4);
+						output[2].write(acc+"\r\n");
 						output[2].flush();
 					}
 				}
