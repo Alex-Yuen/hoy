@@ -249,17 +249,18 @@ public class Task implements Runnable, Observer {
 				friends.add(ls[i] + "----" + ls[i + 1]);
 			}
 		} else if("HF".equals(ls[0])){ // 带历史密码好友辅助导入
-			password = ls[3];
+			//password = ls[3];
 			
 			ls = line.split("#--#");
 			String[] lsh = ls[0].split("----");
 			String[] lst = ls[1].split("----");
-			pwds = new String[lsh.length - 3];
+			password = lsh[3];
+			pwds = new String[lsh.length - 4];
 			for (int i = 0; i < pwds.length; i++) {
-				pwds[i] = lsh[i + 3];
+				pwds[i] = lsh[i + 4];
 			}
 
-			for (int i = 4; i < lst.length; i += 2) {
+			for (int i = 0; i < lst.length; i += 2) {
 				friends.add(lst[i] + "----" + lst[i + 1]);
 			}
 		}
@@ -309,8 +310,8 @@ public class Task implements Runnable, Observer {
 
 		client = new DefaultHttpClient();
 		client.getParams().setParameter(
-				CoreConnectionPNames.CONNECTION_TIMEOUT, 5000);
-		client.getParams().setParameter(CoreConnectionPNames.SO_TIMEOUT, 5000);
+				CoreConnectionPNames.CONNECTION_TIMEOUT, 6000);
+		client.getParams().setParameter(CoreConnectionPNames.SO_TIMEOUT, 6000);
 
 		//setting proxy
 //		HttpHost proxy = new HttpHost("127.0.0.1", 8888);
@@ -384,7 +385,7 @@ public class Task implements Runnable, Observer {
 			Engine.getInstance().fire(message);
 		}
 
-		// System.err.println(line);
+		// System.err.println(resp);
 		while (run && !sf) { // 正常运行，以及未收到停止信号
 			if (fb) {
 				info("系统异常，任务退出");
@@ -427,11 +428,18 @@ public class Task implements Runnable, Observer {
 		String[] dt = new String[6];
 
 		dt[0] = "0";
-		dt[1] = account;
-		dt[2] = password;
+//		dt[1] = account;
+//		dt[2] = password;
+		
+		String acc = this.line;
+		acc = acc.substring(acc.indexOf("----")+4);
+		acc = acc.substring(acc.indexOf("----")+4);
+		dt[1] = acc;
 
 		if (finish) {
 			dt[0] = "1";
+			dt[1] = account;
+			dt[2] = password;
 			dt[3] = rcl;
 			dt[4] = mail;
 			dt[5] = mpwd;
@@ -468,8 +476,8 @@ public class Task implements Runnable, Observer {
 				response = client.execute(get);
 				entity = response.getEntity();
 
-				line = EntityUtils.toString(entity);
-				sig = line.substring(20, line.indexOf(";    "));
+				String resp = EntityUtils.toString(entity);
+				sig = resp.substring(20, resp.indexOf(";    "));
 				// System.err.println(sig);
 
 				idx++;
@@ -558,8 +566,8 @@ public class Task implements Runnable, Observer {
 				response = client.execute(get);
 				entity = response.getEntity();
 
-				// line = EntityUtils.toString(entity);
-				// System.err.println(line);
+				// resp = EntityUtils.toString(entity);
+				// System.err.println(resp);
 
 				idx++;
 			} catch (Exception e) {
@@ -583,8 +591,8 @@ public class Task implements Runnable, Observer {
 				response = client.execute(get);
 				entity = response.getEntity();
 
-				// line = EntityUtils.toString(entity);
-				// System.err.println(line);
+				// resp = EntityUtils.toString(entity);
+				// System.err.println(resp);
 
 				idx++;
 			} catch (Exception e) {
@@ -609,17 +617,17 @@ public class Task implements Runnable, Observer {
 				response = client.execute(get);
 				entity = response.getEntity();
 
-				line = EntityUtils.toString(entity);
-				json = new JSONObject(line);
+				String resp = EntityUtils.toString(entity);
+				json = new JSONObject(resp);
 
-				// System.err.println(line);
+				// System.err.println(resp);
 				if ("0".equals(json.getString("Err"))) {
 					idx += 2;
 				} else {
 					// 报错
 					idx++;
 				}
-				// System.err.println(line);
+				// System.err.println(resp);
 
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -667,9 +675,9 @@ public class Task implements Runnable, Observer {
 				response = client.execute(post);
 				entity = response.getEntity();
 
-				// line = EntityUtils.toString(entity);
+				// resp = EntityUtils.toString(entity);
 
-				// System.err.println(line);
+				// System.err.println(resp);
 
 				// 发送消息，提示Engine，需要邮箱
 				// obj = new TaskObject();
@@ -726,9 +734,9 @@ public class Task implements Runnable, Observer {
 				response = client.execute(post);
 				entity = response.getEntity();
 
-				line = EntityUtils.toString(entity);
+				String resp = EntityUtils.toString(entity);
 
-				if (line.contains("申诉过于频繁")) {
+				if (resp.contains("申诉过于频繁")) {
 					info("申诉过于频繁");
 					// 通知出现申诉频繁
 					EngineMessage message = new EngineMessage();
@@ -740,7 +748,7 @@ public class Task implements Runnable, Observer {
 					break;
 				}
 
-				// System.err.println(line);
+				// System.err.println(resp);
 
 				idx++;
 			} catch (Exception e) {
@@ -763,6 +771,11 @@ public class Task implements Runnable, Observer {
 				// props.setProperty("mail.pop3.host", "pop3.163.com");
 				props.put("mail.imap.host", "imap.163.com");
 				props.put("mail.imap.auth.plain.disable", "true");
+				
+				props.put("mail.imap.connectiontimeout", "6000");
+				props.put("mail.imap.timeout", "6000");
+				props.put("mail.imaps.connectiontimeout", "6000");
+				props.put("mail.imaps.timeout", "6000");
 
 				Session session = Session.getDefaultInstance(props);
 				session.setDebug(false);
@@ -878,10 +891,10 @@ public class Task implements Runnable, Observer {
 				response = client.execute(get);
 				entity = response.getEntity();
 
-				line = EntityUtils.toString(entity);
-				json = new JSONObject(line);
+				String resp = EntityUtils.toString(entity);
+				json = new JSONObject(resp);
 
-				System.err.println(line);
+				System.err.println(resp);
 				if ("1".equals(json.getString("ret_code"))) {
 					// 验证成功
 					info("继续申诉成功");
@@ -899,7 +912,7 @@ public class Task implements Runnable, Observer {
 					// }
 					break;
 				}
-				// System.err.println(line);
+				// System.err.println(resp);
 
 				idx++;
 			} catch (Exception e) {
@@ -970,23 +983,23 @@ public class Task implements Runnable, Observer {
 				nvps.add(new BasicNameValuePair("pwdHOldPW2", ""));
 				nvps.add(new BasicNameValuePair("txtOldPW2", ""));
 				nvps.add(new BasicNameValuePair("pwdOldPW2",
-						(pwds.length > 1 && itype.indexOf("H")!=-1) ? pwds[1] : ""));
+						(pwds!=null&&pwds.length > 1 && itype.indexOf("H")!=-1) ? pwds[1] : ""));
 				nvps.add(new BasicNameValuePair("pwdHOldPW3", ""));
 				nvps.add(new BasicNameValuePair("txtOldPW3", ""));
 				nvps.add(new BasicNameValuePair("pwdOldPW3",
-						(pwds.length > 2 && itype.indexOf("H")!=-1) ? pwds[2] : ""));
+						(pwds!=null&&pwds.length > 2 && itype.indexOf("H")!=-1) ? pwds[2] : ""));
 				nvps.add(new BasicNameValuePair("pwdHOldPW4", ""));
 				nvps.add(new BasicNameValuePair("txtOldPW4", ""));
 				nvps.add(new BasicNameValuePair("pwdOldPW4",
-						(pwds.length > 3 && itype.indexOf("H")!=-1) ? pwds[3] : ""));
+						(pwds!=null&&pwds.length > 3 && itype.indexOf("H")!=-1) ? pwds[3] : ""));
 				nvps.add(new BasicNameValuePair("pwdHOldPW5", ""));
 				nvps.add(new BasicNameValuePair("txtOldPW5", ""));
 				nvps.add(new BasicNameValuePair("pwdOldPW5",
-						(pwds.length > 4 && itype.indexOf("H")!=-1) ? pwds[4] : ""));
+						(pwds!=null&&pwds.length > 4 && itype.indexOf("H")!=-1) ? pwds[4] : ""));
 				nvps.add(new BasicNameValuePair("pwdHOldPW6", ""));
 				nvps.add(new BasicNameValuePair("txtOldPW6", ""));
 				nvps.add(new BasicNameValuePair("pwdOldPW6",
-						(pwds.length > 5 && itype.indexOf("H")!=-1) ? pwds[5] : ""));
+						(pwds!=null&&pwds.length > 5 && itype.indexOf("H")!=-1) ? pwds[5] : ""));
 
 				nvps.add(new BasicNameValuePair("ddlLoginLocCountry1", "0"));
 				
@@ -1118,9 +1131,9 @@ public class Task implements Runnable, Observer {
 				response = client.execute(post);
 				entity = response.getEntity();
 
-				line = EntityUtils.toString(entity);
+//				String resp = EntityUtils.toString(entity);
 
-				// System.err.println(line);
+				// System.err.println(resp);
 
 				idx++;
 			} catch (Exception e) {
@@ -1141,8 +1154,8 @@ public class Task implements Runnable, Observer {
 				response = client.execute(get);
 				entity = response.getEntity();
 
-				// line = EntityUtils.toString(entity);
-				// System.err.println(line);
+				// resp = EntityUtils.toString(entity);
+				// System.err.println(resp);
 
 				idx++;
 			} catch (Exception e) {
@@ -1181,9 +1194,9 @@ public class Task implements Runnable, Observer {
 				response = client.execute(post);
 				entity = response.getEntity();
 
-				// line = EntityUtils.toString(entity);
+				// resp = EntityUtils.toString(entity);
 
-				// System.err.println(line);
+				// System.err.println(resp);
 
 				idx++;
 			} catch (Exception e) {
@@ -1231,9 +1244,9 @@ public class Task implements Runnable, Observer {
 				response = client.execute(post);
 				entity = response.getEntity();
 
-				line = EntityUtils.toString(entity);
+//				String resp = EntityUtils.toString(entity);
 
-				// System.err.println(line);
+				// System.err.println(resp);
 				idx++;
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -1369,18 +1382,23 @@ public class Task implements Runnable, Observer {
 
 				response = client.execute(get);
 				entity = response.getEntity();
-				line = EntityUtils.toString(entity);
+				String resp = EntityUtils.toString(entity);
 
-				loginsig = line
+				loginsig = resp
 						.substring(
-								line.indexOf("var g_login_sig=encodeURIComponent") + 36)
+								resp.indexOf("var g_login_sig=encodeURIComponent") + 36)
 						.substring(0, 64);
 
 				idx++;
 			} catch (Exception e) {
-				info("好友辅助申诉失败");
-				e.printStackTrace();
-				fb = true;
+				if(e.getMessage().indexOf("timed out")!=-1){
+					info("连接超时，重试");
+					idx =16;
+				}else{
+					info("好友辅助申诉失败");
+					e.printStackTrace();
+					fb = true;
+				}
 			}
 			break;
 		case 17:
@@ -1398,17 +1416,17 @@ public class Task implements Runnable, Observer {
 
 				response = client.execute(get);
 				entity = response.getEntity();
-				line = EntityUtils.toString(entity);
-				System.out.println("XXK:" + line);
+				String resp = EntityUtils.toString(entity);
+				System.out.println("XXK:" + resp);
 
-				boolean nvc = line.charAt(14) == '1' ? true : false;
+				boolean nvc = resp.charAt(14) == '1' ? true : false;
 				// 没有做RSAKEY检查，默认是应该有KEY，用getEncryption；否则用getRSAEncryption
 
-				int fidx = line.indexOf(",");
-				int lidx = line.lastIndexOf(",");
+				int fidx = resp.indexOf(",");
+				int lidx = resp.lastIndexOf(",");
 
-				vcode = line.substring(fidx + 2, fidx + 6);
-				salt = line.substring(lidx + 2, lidx + 34);
+				vcode = resp.substring(fidx + 2, fidx + 6);
+				salt = resp.substring(lidx + 2, lidx + 34);
 
 				if (nvc) {
 					// Encryption.getRSAEncryption(K, G)
@@ -1506,12 +1524,12 @@ public class Task implements Runnable, Observer {
 
 				response = client.execute(get);
 				entity = response.getEntity();
-				line = EntityUtils.toString(entity);
+				String resp = EntityUtils.toString(entity);
 
-				json = new JSONObject(line);
+				json = new JSONObject(resp);
 
 				System.err.println(result);
-				System.err.println("json=" + line);
+				System.err.println("json=" + resp);
 				if ("0".equals(json.getString("Err"))) {
 					info("验证码正确");
 					vcode = result;
@@ -1593,25 +1611,25 @@ public class Task implements Runnable, Observer {
 
 				response = client.execute(get);
 				entity = response.getEntity();
-				line = EntityUtils.toString(entity);
+				String resp = EntityUtils.toString(entity);
 
-				if (line.startsWith("ptuiCB('4'")) { // 验证码错误
+				if (resp.startsWith("ptuiCB('4'")) { // 验证码错误
 					info("验证码错误");
 					//idx = 16;
 					idx = 21;
-				} else if (line.startsWith("ptuiCB('0'")) { // 成功登录
-					if (line.indexOf("haoma") != -1) {
+				} else if (resp.startsWith("ptuiCB('0'")) { // 成功登录
+					if (resp.indexOf("haoma") != -1) {
 						info("需要激活靓号");
 						run = false;
 					} else {
 						info("登录成功");
 						idx++;
 					}
-				} else if (line.startsWith("ptuiCB('3'")) { // 您输入的帐号或密码不正确，请重新输入
+				} else if (resp.startsWith("ptuiCB('3'")) { // 您输入的帐号或密码不正确，请重新输入
 															// finish = 2;
 					info("帐号或密码不正确, 退出任务");
 					run = false;
-				} else if (line.startsWith("ptuiCB('19'")) { // 帐号冻结，提示暂时无法登录
+				} else if (resp.startsWith("ptuiCB('19'")) { // 帐号冻结，提示暂时无法登录
 																// finish = 3;
 					info("帐号冻结");
 					run = false;
@@ -1638,7 +1656,7 @@ public class Task implements Runnable, Observer {
 
 				response = client.execute(get);
 				entity = response.getEntity();
-				// line = EntityUtils.toString(entity);
+				// resp = EntityUtils.toString(entity);
 
 				idx++;
 			} catch (Exception e) {
@@ -1669,16 +1687,16 @@ public class Task implements Runnable, Observer {
 				response = client.execute(post);
 				entity = response.getEntity();
 
-				line = EntityUtils.toString(entity);
+				String resp = EntityUtils.toString(entity);
 				
-				//if (line.indexOf("好友辅助申诉提交成功") != -1) {//乱码
-				if (line.indexOf("succeed3") != -1) {					
+				//if (resp.indexOf("好友辅助申诉提交成功") != -1) {//乱码
+				if (resp.indexOf("succeed3") != -1) {					
 					System.err.println("success:" + helpcount);
 				} else {
 					System.err.println("fail:" + helpcount);
 					run = false;// 没有必要继续辅助
 				}
-				//System.err.println(line);
+				//System.err.println(resp);
 				
 				if (helpcount == friends.size()-1) {// 继续辅助申诉
 					finish = true;
