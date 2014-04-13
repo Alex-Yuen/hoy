@@ -365,6 +365,7 @@ public class Task implements Runnable, Observer {
 		// System.err.println(line);
 		while (run && !sf) { // 正常运行，以及未收到停止信号
 			if (fb) {
+				info("系统异常，任务退出");
 				break;
 			}
 			// if (fc) {
@@ -1697,7 +1698,11 @@ public class Task implements Runnable, Observer {
 			case EngineMessageType.OM_REQUIRE_MAIL:
 				if (msg.getData() != null) {
 					String[] ms = (String[]) msg.getData();
+					try{
 					System.err.println(ms[0] + "/" + ms[1] + "/" + ms[2]);
+					}catch(Exception e){
+						info("邮箱格式错误:"+ms[0]+", 任务退出");
+					}
 					mid = ms[0];
 					mail = ms[1];
 					mpwd = ms[2];
