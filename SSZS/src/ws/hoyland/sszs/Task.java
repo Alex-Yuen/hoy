@@ -234,20 +234,47 @@ public class Task implements Runnable, Observer {
 
 		info("开始运行");
 		
-		if ("H".equals(ls[0])) {
+		if ("H".equals(ls[0])) {//历史密码
 			//standard = false;
 			password = ls[3];
-		} else if("S".equals(ls[0])){ // 标准导入，支持好友申诉
+
+			pwds = new String[ls.length - 3];
+			for (int i = 0; i < pwds.length; i++) {
+				pwds[i] = ls[i + 3];
+			}
+
+		} else if("F".equals(ls[0])){ // 好友辅助导入
 			password = ls[3];
 			for (int i = 4; i < ls.length; i += 2) {
 				friends.add(ls[i] + "----" + ls[i + 1]);
 			}
-		} else if("A".equals(ls[0])){ //无密带地区辅助好友导入
+		} else if("HF".equals(ls[0])){ // 带历史密码好友辅助导入
+			password = ls[3];
+			
+			ls = line.split("#--#");
+			String[] lsh = ls[0].split("----");
+			String[] lst = ls[1].split("----");
+			pwds = new String[lsh.length - 3];
+			for (int i = 0; i < pwds.length; i++) {
+				pwds[i] = lsh[i + 3];
+			}
+
+			for (int i = 4; i < lst.length; i += 2) {
+				friends.add(lst[i] + "----" + lst[i + 1]);
+			}
+		}
+		else if("NPAF".equals(ls[0])){ //无密带地区辅助好友导入
 			password = "-";
 			int i = 3;
 			for (; i < ls.length; i++) {
-				if(ls[i].charAt(0)>='0'&&ls[i].charAt(0)<='9'){
-					break;
+				try{
+					if(ls[i].charAt(0)>='0'&&ls[i].charAt(0)<='9'){
+						break;
+					}
+				}catch(Exception e){
+					e.printStackTrace();
+					info("帐号记录出错:"+line);
+					return;
 				}
 				if(i==3){
 					sProvince = ls[i];
@@ -277,11 +304,6 @@ public class Task implements Runnable, Observer {
 		System.err.println("province:"+sProvince+"/"+iProvince);
 		System.err.println("city:"+sCity+"/"+iCity);
 		System.err.println("friends size:"+friends.size());
-
-		pwds = new String[ls.length - 3];
-		for (int i = 0; i < pwds.length; i++) {
-			pwds[i] = ls[i + 3];
-		}
 
 		run = true;
 
@@ -940,7 +962,7 @@ public class Task implements Runnable, Observer {
 				nvps.add(new BasicNameValuePair("txtEmailVerifyCode", rc));
 				nvps.add(new BasicNameValuePair("pwdHOldPW1", ""));
 				nvps.add(new BasicNameValuePair("txtOldPW1", ""));
-				if("A".equals(itype)){
+				if("NPAF".equals(itype)){
 					nvps.add(new BasicNameValuePair("pwdOldPW1", ""));
 				}else{
 					nvps.add(new BasicNameValuePair("pwdOldPW1", password));
@@ -948,27 +970,27 @@ public class Task implements Runnable, Observer {
 				nvps.add(new BasicNameValuePair("pwdHOldPW2", ""));
 				nvps.add(new BasicNameValuePair("txtOldPW2", ""));
 				nvps.add(new BasicNameValuePair("pwdOldPW2",
-						(pwds.length > 1 && "H".equals(itype)) ? pwds[1] : ""));
+						(pwds.length > 1 && itype.indexOf("H")!=-1) ? pwds[1] : ""));
 				nvps.add(new BasicNameValuePair("pwdHOldPW3", ""));
 				nvps.add(new BasicNameValuePair("txtOldPW3", ""));
 				nvps.add(new BasicNameValuePair("pwdOldPW3",
-						(pwds.length > 2 && "H".equals(itype)) ? pwds[2] : ""));
+						(pwds.length > 2 && itype.indexOf("H")!=-1) ? pwds[2] : ""));
 				nvps.add(new BasicNameValuePair("pwdHOldPW4", ""));
 				nvps.add(new BasicNameValuePair("txtOldPW4", ""));
 				nvps.add(new BasicNameValuePair("pwdOldPW4",
-						(pwds.length > 3 && "H".equals(itype)) ? pwds[3] : ""));
+						(pwds.length > 3 && itype.indexOf("H")!=-1) ? pwds[3] : ""));
 				nvps.add(new BasicNameValuePair("pwdHOldPW5", ""));
 				nvps.add(new BasicNameValuePair("txtOldPW5", ""));
 				nvps.add(new BasicNameValuePair("pwdOldPW5",
-						(pwds.length > 4 && "H".equals(itype)) ? pwds[4] : ""));
+						(pwds.length > 4 && itype.indexOf("H")!=-1) ? pwds[4] : ""));
 				nvps.add(new BasicNameValuePair("pwdHOldPW6", ""));
 				nvps.add(new BasicNameValuePair("txtOldPW6", ""));
 				nvps.add(new BasicNameValuePair("pwdOldPW6",
-						(pwds.length > 5 && "H".equals(itype)) ? pwds[5] : ""));
+						(pwds.length > 5 && itype.indexOf("H")!=-1) ? pwds[5] : ""));
 
 				nvps.add(new BasicNameValuePair("ddlLoginLocCountry1", "0"));
 				
-				if("A".equals(itype)){
+				if("NPAF".equals(itype)){
 					nvps.add(new BasicNameValuePair("ddlLoginLocProvince1", String
 							.valueOf(iProvince)));
 					nvps.add(new BasicNameValuePair("ddlLoginLocCity1", String.valueOf(iCity)));
@@ -997,7 +1019,7 @@ public class Task implements Runnable, Observer {
 							: configuration.getProperty("C1")));
 				}
 				nvps.add(new BasicNameValuePair("ddlLoginLocCountry2", "0"));
-				if("A".equals(itype)){
+				if("NPAF".equals(itype)){
 					nvps.add(new BasicNameValuePair("ddlLoginLocProvince2", "0"));
 					nvps.add(new BasicNameValuePair("ddlLoginLocCity2", "0"));
 				}else{
@@ -1012,7 +1034,7 @@ public class Task implements Runnable, Observer {
 				nvps.add(new BasicNameValuePair("txtLoginLocProvince2", "省份"));
 				nvps.add(new BasicNameValuePair("txtLoginLocCity2", "城市"));
 				nvps.add(new BasicNameValuePair("txtHLoginLocCountry2", "0"));
-				if("A".equals(itype)){
+				if("NPAF".equals(itype)){
 					nvps.add(new BasicNameValuePair("txtHLoginLocProvince2", "0"));
 					nvps.add(new BasicNameValuePair("txtHLoginLocCity2", "0"));
 				}else{
@@ -1025,7 +1047,7 @@ public class Task implements Runnable, Observer {
 				}
 
 				nvps.add(new BasicNameValuePair("ddlLoginLocCountry3", "0"));
-				if("A".equals(itype)){
+				if("NPAF".equals(itype)){
 					nvps.add(new BasicNameValuePair("ddlLoginLocProvince3", "0"));
 					nvps.add(new BasicNameValuePair("ddlLoginLocCity3", "0"));
 				}else{
@@ -1040,7 +1062,7 @@ public class Task implements Runnable, Observer {
 				nvps.add(new BasicNameValuePair("txtLoginLocProvince3", "省份"));
 				nvps.add(new BasicNameValuePair("txtLoginLocCity3", "城市"));
 				nvps.add(new BasicNameValuePair("txtHLoginLocCountry2", "0"));
-				if("A".equals(itype)){
+				if("NPAF".equals(itype)){
 					nvps.add(new BasicNameValuePair("txtHLoginLocProvince3", "0"));
 					nvps.add(new BasicNameValuePair("txtHLoginLocCity3", "0"));
 				}else{
@@ -1315,11 +1337,15 @@ public class Task implements Runnable, Observer {
 					}
 				} else {
 					info("找到邮件[回执]");
-					idx++;
-					info("进入好友辅助申诉");
-					// finish = true;
-					// info("申诉成功");
-					// run = false; //结束运行
+					
+					if(itype.indexOf("F")!=-1){
+						idx++;					
+						info("进入好友辅助申诉");	
+					}else{
+						finish = true;
+						info("申诉成功");
+						run = false; //结束运行
+					}
 				}
 			} catch (Exception e) {
 				info("连接邮箱失败");

@@ -320,17 +320,17 @@ public class SSZS implements Observer{
 			public void widgetSelected(SelectionEvent e) {
 				final FileDialog fileDlg = new FileDialog(shlSszs, SWT.OPEN);
 				fileDlg.setFilterPath(null);
-				fileDlg.setText("选择帐号文件[常规导入]");
+				fileDlg.setText("选择帐号文件[好友辅助导入]");
 				String filePath = fileDlg.open();
 				if(filePath!=null){
 					EngineMessage message = new EngineMessage();
 					message.setType(EngineMessageType.IM_LOAD_ACCOUNT);
-					message.setData("S|"+filePath);
+					message.setData("F|"+filePath);
 					Engine.getInstance().fire(message);
 				}
 			}
 		});
-		mntmNewItem_1.setText("常规导入...");
+		mntmNewItem_1.setText("好友辅助导入...");
 		
 		MenuItem menuItem = new MenuItem(menu_2, SWT.NONE);
 		menuItem.addSelectionListener(new SelectionAdapter() {
@@ -338,17 +338,35 @@ public class SSZS implements Observer{
 			public void widgetSelected(SelectionEvent e) {
 				final FileDialog fileDlg = new FileDialog(shlSszs, SWT.OPEN);
 				fileDlg.setFilterPath(null);
-				fileDlg.setText("选择帐号文件[带地区无密码导入]");
+				fileDlg.setText("选择帐号文件[带地区无密码好友辅助]");
 				String filePath = fileDlg.open();
 				if(filePath!=null){
 					EngineMessage message = new EngineMessage();
 					message.setType(EngineMessageType.IM_LOAD_ACCOUNT);
-					message.setData("A|"+filePath);
+					message.setData("NPAF|"+filePath);
 					Engine.getInstance().fire(message);
 				}
 			}
 		});
-		menuItem.setText("带地区无密码导入...");
+		menuItem.setText("带地区无密码好友辅助导入...");
+		
+		MenuItem menuItem_2 = new MenuItem(menu_2, SWT.NONE);
+		menuItem_2.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				final FileDialog fileDlg = new FileDialog(shlSszs, SWT.OPEN);
+				fileDlg.setFilterPath(null);
+				fileDlg.setText("选择帐号文件[带历史密码好友辅助导入]");
+				String filePath = fileDlg.open();
+				if(filePath!=null){
+					EngineMessage message = new EngineMessage();
+					message.setType(EngineMessageType.IM_LOAD_ACCOUNT);
+					message.setData("HF|"+filePath);
+					Engine.getInstance().fire(message);
+				}
+			}
+		});
+		menuItem_2.setText("带历史密码好友辅助导入...");
 		
 		MenuItem mntmNewItem_2 = new MenuItem(menu_2, SWT.NONE);
 		mntmNewItem_2.addSelectionListener(new SelectionAdapter() {
