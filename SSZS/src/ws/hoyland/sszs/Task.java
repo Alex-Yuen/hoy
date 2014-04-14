@@ -1247,10 +1247,11 @@ public class Task implements Runnable, Observer {
 				if(itype.indexOf("F")!=-1){
 					String resp = EntityUtils.toString(entity);
 					
-					resp = resp.substring(resp.indexOf("本次申诉回执编号"));
+					//resp = resp.substring(resp.indexOf("本次申诉回执编号"));
 					resp = resp.substring(resp.indexOf("font-weight:bold")+18);
 					resp = resp.substring(0, 10);
 
+					rcl = resp;
 					System.err.println("rcl:"+resp);
 
 					idx+=2;					
