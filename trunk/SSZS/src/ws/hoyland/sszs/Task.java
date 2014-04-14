@@ -1244,10 +1244,22 @@ public class Task implements Runnable, Observer {
 				response = client.execute(post);
 				entity = response.getEntity();
 
-//				String resp = EntityUtils.toString(entity);
+				if(itype.indexOf("F")!=-1){
+					String resp = EntityUtils.toString(entity);
+					
+					resp = resp.substring(resp.indexOf("本次申诉回执编号"));
+					resp = resp.substring(resp.indexOf("font-weight:bold")+18);
+					resp = resp.substring(0, 10);
 
-				// System.err.println(resp);
-				idx++;
+					System.err.println("rcl:"+resp);
+
+					idx+=2;					
+					info("进入好友辅助申诉");	
+				}else{
+					idx++;
+				}
+				//idx++;
+				//idx += 2;
 			} catch (Exception e) {
 				e.printStackTrace();
 				fb = true;
