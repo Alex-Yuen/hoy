@@ -27,7 +27,6 @@ import javax.net.ssl.X509TrustManager;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.conn.ClientConnectionManager;
@@ -41,6 +40,7 @@ import org.apache.http.util.EntityUtils;
 import org.json.JSONObject;
 
 import ws.hoyland.util.Converts;
+import ws.hoyland.util.EntityUtil;
 import ws.hoyland.util.IdentificationCardCodeUtil;
 
 import com.sun.mail.imap.IMAPFolder;
@@ -670,7 +670,7 @@ public class Task implements Runnable, Observer {
 				nvps.add(new BasicNameValuePair("verifycode2", result));
 				nvps.add(new BasicNameValuePair("CaptchaSig", sig));
 
-				post.setEntity(new UrlEncodedFormEntity(nvps));
+				post.setEntity(EntityUtil.getEntity(nvps));
 
 				response = client.execute(post);
 				entity = response.getEntity();
@@ -729,7 +729,7 @@ public class Task implements Runnable, Observer {
 				nvps.add(new BasicNameValuePair("txtContactEmail", mail));
 				nvps.add(new BasicNameValuePair("txtContactMobile", "请填写您的常用手机"));
 
-				post.setEntity(new UrlEncodedFormEntity(nvps));
+				post.setEntity(EntityUtil.getEntity(nvps));
 
 				response = client.execute(post);
 				entity = response.getEntity();
@@ -1019,7 +1019,7 @@ public class Task implements Runnable, Observer {
 				nvps.add(new BasicNameValuePair("txtLoginLocProvince1", "省份"));
 				nvps.add(new BasicNameValuePair("txtLoginLocCity1", "城市"));
 				nvps.add(new BasicNameValuePair("txtHLoginLocCountry1", "0"));
-				if("A".equals(itype)){
+				if("NPAF".equals(itype)){
 					nvps.add(new BasicNameValuePair("txtHLoginLocProvince1", String
 							.valueOf(iProvince)));
 					nvps.add(new BasicNameValuePair("txtHLoginLocCity1", String.valueOf(iCity)));
@@ -1033,8 +1033,8 @@ public class Task implements Runnable, Observer {
 				}
 				nvps.add(new BasicNameValuePair("ddlLoginLocCountry2", "0"));
 				if("NPAF".equals(itype)){
-					nvps.add(new BasicNameValuePair("ddlLoginLocProvince2", "0"));
-					nvps.add(new BasicNameValuePair("ddlLoginLocCity2", "0"));
+					nvps.add(new BasicNameValuePair("ddlLoginLocProvince2", "-1"));
+					nvps.add(new BasicNameValuePair("ddlLoginLocCity2", "-1"));
 				}else{
 					nvps.add(new BasicNameValuePair("ddlLoginLocProvince2", String
 							.valueOf(Integer.parseInt(configuration
@@ -1048,8 +1048,8 @@ public class Task implements Runnable, Observer {
 				nvps.add(new BasicNameValuePair("txtLoginLocCity2", "城市"));
 				nvps.add(new BasicNameValuePair("txtHLoginLocCountry2", "0"));
 				if("NPAF".equals(itype)){
-					nvps.add(new BasicNameValuePair("txtHLoginLocProvince2", "0"));
-					nvps.add(new BasicNameValuePair("txtHLoginLocCity2", "0"));
+					nvps.add(new BasicNameValuePair("txtHLoginLocProvince2", "-1"));
+					nvps.add(new BasicNameValuePair("txtHLoginLocCity2", "-1"));
 				}else{
 					nvps.add(new BasicNameValuePair("txtHLoginLocProvince2", String
 							.valueOf(Integer.parseInt(configuration
@@ -1061,8 +1061,8 @@ public class Task implements Runnable, Observer {
 
 				nvps.add(new BasicNameValuePair("ddlLoginLocCountry3", "0"));
 				if("NPAF".equals(itype)){
-					nvps.add(new BasicNameValuePair("ddlLoginLocProvince3", "0"));
-					nvps.add(new BasicNameValuePair("ddlLoginLocCity3", "0"));
+					nvps.add(new BasicNameValuePair("ddlLoginLocProvince3", "-1"));
+					nvps.add(new BasicNameValuePair("ddlLoginLocCity3", "-1"));
 				}else{
 					nvps.add(new BasicNameValuePair("ddlLoginLocProvince3", String
 							.valueOf(Integer.parseInt(configuration
@@ -1076,8 +1076,8 @@ public class Task implements Runnable, Observer {
 				nvps.add(new BasicNameValuePair("txtLoginLocCity3", "城市"));
 				nvps.add(new BasicNameValuePair("txtHLoginLocCountry2", "0"));
 				if("NPAF".equals(itype)){
-					nvps.add(new BasicNameValuePair("txtHLoginLocProvince3", "0"));
-					nvps.add(new BasicNameValuePair("txtHLoginLocCity3", "0"));
+					nvps.add(new BasicNameValuePair("txtHLoginLocProvince3", "-1"));
+					nvps.add(new BasicNameValuePair("txtHLoginLocCity3", "-1"));
 				}else{
 					nvps.add(new BasicNameValuePair("txtHLoginLocProvince3", String
 							.valueOf(Integer.parseInt(configuration
@@ -1126,7 +1126,7 @@ public class Task implements Runnable, Observer {
 				nvps.add(new BasicNameValuePair("txtHRegLocationCountry", "0"));
 				nvps.add(new BasicNameValuePair("txtHRegLocationCity", "-1"));
 
-				post.setEntity(new UrlEncodedFormEntity(nvps));
+				post.setEntity(EntityUtil.getEntity(nvps));
 
 				response = client.execute(post);
 				entity = response.getEntity();
@@ -1179,7 +1179,7 @@ public class Task implements Runnable, Observer {
 
 				nvps = new ArrayList<NameValuePair>();
 				nvps.add(new BasicNameValuePair("txtUserChoice", "2"));
-				nvps.add(new BasicNameValuePair("txtOldDNAEmailSuffix", ""));
+				nvps.add(new BasicNameValuePair("txtOldDNAEmailSuffix", "@126"));//TODO
 				nvps.add(new BasicNameValuePair("txtOldDNAAnswer3", ""));
 				nvps.add(new BasicNameValuePair("txtOldDNAAnswer2", ""));
 				nvps.add(new BasicNameValuePair("txtOldDNAAnswer1", ""));
@@ -1189,7 +1189,7 @@ public class Task implements Runnable, Observer {
 				nvps.add(new BasicNameValuePair("OldDNAEmail", ""));
 				nvps.add(new BasicNameValuePair("OldDNACertCardID", ""));
 
-				post.setEntity(new UrlEncodedFormEntity(nvps));
+				post.setEntity(EntityUtil.getEntity(nvps));
 
 				response = client.execute(post);
 				entity = response.getEntity();
@@ -1239,7 +1239,7 @@ public class Task implements Runnable, Observer {
 				// nvps.add(new BasicNameValuePair("FriendQQNum6", ""));
 				// nvps.add(new BasicNameValuePair("FriendQQNum7", ""));
 
-				post.setEntity(new UrlEncodedFormEntity(nvps));
+				post.setEntity(EntityUtil.getEntity(nvps));
 
 				response = client.execute(post);
 				entity = response.getEntity();
@@ -1695,7 +1695,7 @@ public class Task implements Runnable, Observer {
 				nvps.add(new BasicNameValuePair("receipt1", rcl));
 				nvps.add(new BasicNameValuePair("protocol", "on"));
 
-				post.setEntity(new UrlEncodedFormEntity(nvps));
+				post.setEntity(EntityUtil.getEntity(nvps));
 
 				response = client.execute(post);
 				entity = response.getEntity();

@@ -1,7 +1,21 @@
 package ws.hoyland.sszs;
 
 import java.io.BufferedReader;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.http.HttpEntity;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.utils.URLEncodedUtils;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.protocol.HTTP;
+
+import ws.hoyland.util.EntityUtil;
 
 
 public class Test {
@@ -109,26 +123,26 @@ public class Test {
 //			e.printStackTrace();
 //		}
 		
-		try{
-		String result = new Test().execute("ipconfig");
-		//result = result.substring(result.indexOf("宽带连接"));
-		if(result.indexOf("IP Address")!=-1){
-			result = result.substring(result.indexOf("IP Address"));
-		}
-		if(result.indexOf("IPv4 地址")!=-1){
-			result = result.substring(result.indexOf("IPv4 地址"));
-		}
-		//System.out.println(result);
-		result = result.substring(result.indexOf(":")+2);
-		//System.out.println(result);
-		result = result.substring(0, result.indexOf("\n "));
-		System.out.println(result);
-		System.out.println("*");
-		//System.out.println(result+"*");
-		System.out.println(result.substring(0, result.lastIndexOf("."))+"*");
-		}catch(Exception e){
-			e.printStackTrace();
-		}
+//		try{
+//		String result = new Test().execute("ipconfig");
+//		//result = result.substring(result.indexOf("宽带连接"));
+//		if(result.indexOf("IP Address")!=-1){
+//			result = result.substring(result.indexOf("IP Address"));
+//		}
+//		if(result.indexOf("IPv4 地址")!=-1){
+//			result = result.substring(result.indexOf("IPv4 地址"));
+//		}
+//		//System.out.println(result);
+//		result = result.substring(result.indexOf(":")+2);
+//		//System.out.println(result);
+//		result = result.substring(0, result.indexOf("\n "));
+//		System.out.println(result);
+//		System.out.println("*");
+//		//System.out.println(result+"*");
+//		System.out.println(result.substring(0, result.lastIndexOf("."))+"*");
+//		}catch(Exception e){
+//			e.printStackTrace();
+//		}
 //		
 //		try{
 //			String UAG = "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1; QQDownload 734; Maxthon; .NET CLR 2.0.50727; .NET4.0C; .NET4.0E)";
@@ -173,6 +187,8 @@ public class Test {
 //		DecimalFormat df2  = new DecimalFormat("0.00");  
 //		System.out.println(i*100/k);
 //		System.out.println(df2.format(i*100/k));
+		
+		t3();
 	}
 
 	public String execute(String cmd) throws Exception {
@@ -185,5 +201,35 @@ public class Test {
 			result.append(line + "\n");
 		}
 		return result.toString();
+	}
+	
+	public static void t3(){
+		try{
+			List<NameValuePair> nvps = new ArrayList<NameValuePair>();
+			nvps.add(new BasicNameValuePair("txtUserChoice", "-1"));
+			nvps.add(new BasicNameValuePair("txtOldDNAEmailSuffix", "@126.com"));//TODO
+			nvps.add(new BasicNameValuePair("txtOldDNAAnswer3", "省份"));
+			
+			
+//			String entityValue = URLEncodedUtils.format(nvps, "UTF-8");
+//			// Do your replacement here in entityValue
+//			
+////			entityValue = URLEncoder.encode(entityValue, "UTF-8"); 
+//			entityValue = entityValue.replaceAll("-", "%2D");
+//			entityValue = entityValue.replaceAll("\\+", "%20");
+//			StringEntity entity = new StringEntity(entityValue, "UTF-8");
+//			entity.setContentType(URLEncodedUtils.CONTENT_TYPE);
+//			
+			HttpEntity entity = EntityUtil.getEntity(nvps);
+			//HttpEntity entity = new UrlEncodedFormEntity(nvps, "UTF-8");
+			InputStream is = entity.getContent();
+			BufferedReader br = new BufferedReader(new InputStreamReader(is));
+			String line = null;
+			while((line=br.readLine())!=null){
+				System.out.println(line);
+			}
+		}catch(Exception e){
+			e.printStackTrace();
+		}
 	}
 }
