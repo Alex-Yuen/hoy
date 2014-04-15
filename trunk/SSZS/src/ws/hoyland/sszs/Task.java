@@ -973,30 +973,30 @@ public class Task implements Runnable, Observer {
 				nvps.add(new BasicNameValuePair("txtUin", account));
 				nvps.add(new BasicNameValuePair("txtBackFromFd", ""));
 				nvps.add(new BasicNameValuePair("txtEmailVerifyCode", rc));
-				nvps.add(new BasicNameValuePair("pwdHOldPW1", ""));
+				//nvps.add(new BasicNameValuePair("pwdHOldPW1", ""));
 				nvps.add(new BasicNameValuePair("txtOldPW1", ""));
 				if("NPAF".equals(itype)){
 					nvps.add(new BasicNameValuePair("pwdOldPW1", ""));
 				}else{
 					nvps.add(new BasicNameValuePair("pwdOldPW1", password));
 				}
-				nvps.add(new BasicNameValuePair("pwdHOldPW2", ""));
+				//nvps.add(new BasicNameValuePair("pwdHOldPW2", ""));
 				nvps.add(new BasicNameValuePair("txtOldPW2", ""));
 				nvps.add(new BasicNameValuePair("pwdOldPW2",
 						(pwds!=null&&pwds.length > 1 && itype.indexOf("H")!=-1) ? pwds[1] : ""));
-				nvps.add(new BasicNameValuePair("pwdHOldPW3", ""));
+//				nvps.add(new BasicNameValuePair("pwdHOldPW3", ""));
 				nvps.add(new BasicNameValuePair("txtOldPW3", ""));
 				nvps.add(new BasicNameValuePair("pwdOldPW3",
 						(pwds!=null&&pwds.length > 2 && itype.indexOf("H")!=-1) ? pwds[2] : ""));
-				nvps.add(new BasicNameValuePair("pwdHOldPW4", ""));
+//				nvps.add(new BasicNameValuePair("pwdHOldPW4", ""));
 				nvps.add(new BasicNameValuePair("txtOldPW4", ""));
 				nvps.add(new BasicNameValuePair("pwdOldPW4",
 						(pwds!=null&&pwds.length > 3 && itype.indexOf("H")!=-1) ? pwds[3] : ""));
-				nvps.add(new BasicNameValuePair("pwdHOldPW5", ""));
+//				nvps.add(new BasicNameValuePair("pwdHOldPW5", ""));
 				nvps.add(new BasicNameValuePair("txtOldPW5", ""));
 				nvps.add(new BasicNameValuePair("pwdOldPW5",
 						(pwds!=null&&pwds.length > 4 && itype.indexOf("H")!=-1) ? pwds[4] : ""));
-				nvps.add(new BasicNameValuePair("pwdHOldPW6", ""));
+//				nvps.add(new BasicNameValuePair("pwdHOldPW6", ""));
 				nvps.add(new BasicNameValuePair("txtOldPW6", ""));
 				nvps.add(new BasicNameValuePair("pwdOldPW6",
 						(pwds!=null&&pwds.length > 5 && itype.indexOf("H")!=-1) ? pwds[5] : ""));
@@ -1018,23 +1018,24 @@ public class Task implements Runnable, Observer {
 				nvps.add(new BasicNameValuePair("txtLoginLocCountry1", "国家"));
 				nvps.add(new BasicNameValuePair("txtLoginLocProvince1", "省份"));
 				nvps.add(new BasicNameValuePair("txtLoginLocCity1", "城市"));
-				nvps.add(new BasicNameValuePair("txtHLoginLocCountry1", "0"));
-				if("NPAF".equals(itype)){
-					nvps.add(new BasicNameValuePair("txtHLoginLocProvince1", String
-							.valueOf(iProvince)));
-					nvps.add(new BasicNameValuePair("txtHLoginLocCity1", String.valueOf(iCity)));
-				}else{
-					nvps.add(new BasicNameValuePair("txtHLoginLocProvince1", String
-							.valueOf(Integer.parseInt(configuration
-									.getProperty("P1")) - 1)));
-					nvps.add(new BasicNameValuePair("txtHLoginLocCity1", Integer
-							.parseInt(configuration.getProperty("C1")) == 0 ? "-1"
-							: configuration.getProperty("C1")));
-				}
+//				nvps.add(new BasicNameValuePair("txtHLoginLocCountry1", "0"));
+//				if("NPAF".equals(itype)){
+//					nvps.add(new BasicNameValuePair("txtHLoginLocProvince1", String
+//							.valueOf(iProvince)));
+//					nvps.add(new BasicNameValuePair("txtHLoginLocCity1", String.valueOf(iCity)));
+//				}else{
+//					nvps.add(new BasicNameValuePair("txtHLoginLocProvince1", String
+//							.valueOf(Integer.parseInt(configuration
+//									.getProperty("P1")) - 1)));
+//					nvps.add(new BasicNameValuePair("txtHLoginLocCity1", Integer
+//							.parseInt(configuration.getProperty("C1")) == 0 ? "-1"
+//							: configuration.getProperty("C1")));
+//				}
 				nvps.add(new BasicNameValuePair("ddlLoginLocCountry2", "0"));
 				if("NPAF".equals(itype)){
-					nvps.add(new BasicNameValuePair("ddlLoginLocProvince2", "-1"));
-					nvps.add(new BasicNameValuePair("ddlLoginLocCity2", "-1"));
+					nvps.add(new BasicNameValuePair("ddlLoginLocProvince1", String
+							.valueOf(iProvince)));
+					nvps.add(new BasicNameValuePair("ddlLoginLocCity1", String.valueOf(iCity)));
 				}else{
 					nvps.add(new BasicNameValuePair("ddlLoginLocProvince2", String
 							.valueOf(Integer.parseInt(configuration
@@ -1046,23 +1047,24 @@ public class Task implements Runnable, Observer {
 				nvps.add(new BasicNameValuePair("txtLoginLocCountry2", "国家"));
 				nvps.add(new BasicNameValuePair("txtLoginLocProvince2", "省份"));
 				nvps.add(new BasicNameValuePair("txtLoginLocCity2", "城市"));
-				nvps.add(new BasicNameValuePair("txtHLoginLocCountry2", "0"));
-				if("NPAF".equals(itype)){
-					nvps.add(new BasicNameValuePair("txtHLoginLocProvince2", "-1"));
-					nvps.add(new BasicNameValuePair("txtHLoginLocCity2", "-1"));
-				}else{
-					nvps.add(new BasicNameValuePair("txtHLoginLocProvince2", String
-							.valueOf(Integer.parseInt(configuration
-									.getProperty("P2")) - 1)));
-					nvps.add(new BasicNameValuePair("txtHLoginLocCity2", Integer
-							.parseInt(configuration.getProperty("C2")) == 0 ? "-1"
-							: configuration.getProperty("C2")));
-				}
+//				nvps.add(new BasicNameValuePair("txtHLoginLocCountry2", "0"));
+//				if("NPAF".equals(itype)){
+//					nvps.add(new BasicNameValuePair("txtHLoginLocProvince2", "-1"));
+//					nvps.add(new BasicNameValuePair("txtHLoginLocCity2", "-1"));
+//				}else{
+//					nvps.add(new BasicNameValuePair("txtHLoginLocProvince2", String
+//							.valueOf(Integer.parseInt(configuration
+//									.getProperty("P2")) - 1)));
+//					nvps.add(new BasicNameValuePair("txtHLoginLocCity2", Integer
+//							.parseInt(configuration.getProperty("C2")) == 0 ? "-1"
+//							: configuration.getProperty("C2")));
+//				}
 
 				nvps.add(new BasicNameValuePair("ddlLoginLocCountry3", "0"));
 				if("NPAF".equals(itype)){
-					nvps.add(new BasicNameValuePair("ddlLoginLocProvince3", "-1"));
-					nvps.add(new BasicNameValuePair("ddlLoginLocCity3", "-1"));
+					nvps.add(new BasicNameValuePair("ddlLoginLocProvince1", String
+							.valueOf(iProvince)));
+					nvps.add(new BasicNameValuePair("ddlLoginLocCity1", String.valueOf(iCity)));
 				}else{
 					nvps.add(new BasicNameValuePair("ddlLoginLocProvince3", String
 							.valueOf(Integer.parseInt(configuration
@@ -1074,23 +1076,23 @@ public class Task implements Runnable, Observer {
 				nvps.add(new BasicNameValuePair("txtLoginLocCountry3", "国家"));
 				nvps.add(new BasicNameValuePair("txtLoginLocProvince3", "省份"));
 				nvps.add(new BasicNameValuePair("txtLoginLocCity3", "城市"));
-				nvps.add(new BasicNameValuePair("txtHLoginLocCountry2", "0"));
-				if("NPAF".equals(itype)){
-					nvps.add(new BasicNameValuePair("txtHLoginLocProvince3", "-1"));
-					nvps.add(new BasicNameValuePair("txtHLoginLocCity3", "-1"));
-				}else{
-					nvps.add(new BasicNameValuePair("txtHLoginLocProvince3", String
-							.valueOf(Integer.parseInt(configuration
-									.getProperty("P3")) - 1)));
-					nvps.add(new BasicNameValuePair("txtHLoginLocCity3", Integer
-							.parseInt(configuration.getProperty("C3")) == 0 ? "-1"
-							: configuration.getProperty("C3")));
-				}
+//				nvps.add(new BasicNameValuePair("txtHLoginLocCountry2", "0"));
+//				if("NPAF".equals(itype)){
+//					nvps.add(new BasicNameValuePair("txtHLoginLocProvince3", "-1"));
+//					nvps.add(new BasicNameValuePair("txtHLoginLocCity3", "-1"));
+//				}else{
+//					nvps.add(new BasicNameValuePair("txtHLoginLocProvince3", String
+//							.valueOf(Integer.parseInt(configuration
+//									.getProperty("P3")) - 1)));
+//					nvps.add(new BasicNameValuePair("txtHLoginLocCity3", Integer
+//							.parseInt(configuration.getProperty("C3")) == 0 ? "-1"
+//							: configuration.getProperty("C3")));
+//				}
 
 				nvps.add(new BasicNameValuePair("ddlLocYear4", ""));
-				nvps.add(new BasicNameValuePair("txtHLoginLocCountry4", "0"));
-				nvps.add(new BasicNameValuePair("txtHLoginLocProvince4", "-1"));
-				nvps.add(new BasicNameValuePair("txtHLoginLocCity4", "-1"));
+//				nvps.add(new BasicNameValuePair("txtHLoginLocCountry4", "0"));
+//				nvps.add(new BasicNameValuePair("txtHLoginLocProvince4", "-1"));
+//				nvps.add(new BasicNameValuePair("txtHLoginLocCity4", "-1"));
 				nvps.add(new BasicNameValuePair("ddlLoginLocCountry4", "0"));
 				nvps.add(new BasicNameValuePair("ddlLoginLocProvince4", "-1"));
 				nvps.add(new BasicNameValuePair("ddlLoginLocCity4", "-1"));
@@ -1111,20 +1113,20 @@ public class Task implements Runnable, Observer {
 				nvps.add(new BasicNameValuePair("ddlRegPayMode", "0"));
 				nvps.add(new BasicNameValuePair("txtRegPayAccount", ""));
 
-				nvps.add(new BasicNameValuePair("txtHLoginLocYear1", ""));
-				nvps.add(new BasicNameValuePair("txtHLoginLocYear2", ""));
-				nvps.add(new BasicNameValuePair("txtHLoginLocYear3", ""));
-				nvps.add(new BasicNameValuePair("txtHLoginLocYear4", ""));
+//				nvps.add(new BasicNameValuePair("txtHLoginLocYear1", ""));
+//				nvps.add(new BasicNameValuePair("txtHLoginLocYear2", ""));
+//				nvps.add(new BasicNameValuePair("txtHLoginLocYear3", ""));
+//				nvps.add(new BasicNameValuePair("txtHLoginLocYear4", ""));
 
-				nvps.add(new BasicNameValuePair("txtHRegType", "0"));
-				nvps.add(new BasicNameValuePair("txtHRegTimeYear", ""));
-				nvps.add(new BasicNameValuePair("txtHRegTimeMonth", ""));
-				nvps.add(new BasicNameValuePair("txtHRegPayType", "0"));
-				nvps.add(new BasicNameValuePair("txtHRegPayAccount", ""));
-				nvps.add(new BasicNameValuePair("txtHRegMobile", ""));
-				nvps.add(new BasicNameValuePair("txtHRegLocationProvince", "-1"));
-				nvps.add(new BasicNameValuePair("txtHRegLocationCountry", "0"));
-				nvps.add(new BasicNameValuePair("txtHRegLocationCity", "-1"));
+//				nvps.add(new BasicNameValuePair("txtHRegType", "0"));
+//				nvps.add(new BasicNameValuePair("txtHRegTimeYear", ""));
+//				nvps.add(new BasicNameValuePair("txtHRegTimeMonth", ""));
+//				nvps.add(new BasicNameValuePair("txtHRegPayType", "0"));
+//				nvps.add(new BasicNameValuePair("txtHRegPayAccount", ""));
+//				nvps.add(new BasicNameValuePair("txtHRegMobile", ""));
+//				nvps.add(new BasicNameValuePair("txtHRegLocationProvince", "-1"));
+//				nvps.add(new BasicNameValuePair("txtHRegLocationCountry", "0"));
+//				nvps.add(new BasicNameValuePair("txtHRegLocationCity", "-1"));
 
 				post.setEntity(EntityUtil.getEntity(nvps));
 
