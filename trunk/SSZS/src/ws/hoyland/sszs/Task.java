@@ -25,11 +25,13 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
 import org.apache.http.HttpEntity;
+import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.conn.ClientConnectionManager;
+import org.apache.http.conn.params.ConnRouteParams;
 import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.scheme.SchemeRegistry;
 import org.apache.http.conn.ssl.SSLSocketFactory;
@@ -228,6 +230,7 @@ public class Task implements Runnable, Observer {
 		String[] ls = line.split("----");
 		id = Integer.parseInt(ls[1]);
 		account = ls[2];
+		
 		friends = new ArrayList<String>();
 
 		itype = ls[0];
@@ -314,9 +317,9 @@ public class Task implements Runnable, Observer {
 		client.getParams().setParameter(CoreConnectionPNames.SO_TIMEOUT, 6000);
 
 		//setting proxy
-//		HttpHost proxy = new HttpHost("127.0.0.1", 8888);
-//		client.getParams().setParameter(ConnRouteParams.DEFAULT_PROXY,
-//				proxy);
+		HttpHost proxy = new HttpHost("127.0.0.1", 8888);
+		client.getParams().setParameter(ConnRouteParams.DEFAULT_PROXY,
+				proxy);
 		
 		try {
 			SSLContext sslcontext = SSLContext.getInstance("SSL");
@@ -477,7 +480,7 @@ public class Task implements Runnable, Observer {
 				entity = response.getEntity();
 
 				String resp = EntityUtils.toString(entity);
-				sig = resp.substring(20, resp.indexOf(";    "));
+				sig = resp.substring(20, resp.indexOf("\";    "));
 				// System.err.println(sig);
 
 				idx++;
@@ -578,6 +581,8 @@ public class Task implements Runnable, Observer {
 		case 4:
 			info("检查申诉帐号");
 			try {
+//				System.out.println("http://aq.qq.com/cn2/appeal/appeal_check_assist_account?UserAccount="
+//								+ account);
 				get = new HttpGet(
 						"http://aq.qq.com/cn2/appeal/appeal_check_assist_account?UserAccount="
 								+ account);
@@ -1221,7 +1226,7 @@ public class Task implements Runnable, Observer {
 
 				nvps = new ArrayList<NameValuePair>();
 				nvps.add(new BasicNameValuePair("txtPcMgr", "1"));
-				nvps.add(new BasicNameValuePair("txtUserPPSType", "1"));
+				nvps.add(new BasicNameValuePair("txtUserPPSType", "2"));//1
 				nvps.add(new BasicNameValuePair("txtBackFromFd", "1"));
 				nvps.add(new BasicNameValuePair("txtBackToInfo", "1"));
 				nvps.add(new BasicNameValuePair("usernum", account));
