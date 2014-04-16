@@ -16,8 +16,8 @@ public class EntityUtil {
 			// Do your replacement here in entityValue
 			
 //			entityValue = URLEncoder.encode(entityValue, "UTF-8"); 
-			entityValue = entityValue.replaceAll("-", "%2D");
-			entityValue = entityValue.replaceAll("\\+", "%20");
+//			entityValue = entityValue.replaceAll("-", "%2D");
+//			entityValue = entityValue.replaceAll("\\+", "%20");
 			entity = new StringEntity(entityValue, "UTF-8");
 			entity.setContentType(URLEncodedUtils.CONTENT_TYPE);
 		}catch(Exception e){
