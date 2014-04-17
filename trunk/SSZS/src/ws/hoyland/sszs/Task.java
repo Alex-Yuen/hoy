@@ -6,6 +6,7 @@ import java.io.DataInputStream;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.security.cert.CertificateException;
 import java.text.DateFormat;
 import java.util.ArrayList;
@@ -484,7 +485,7 @@ public class Task implements Runnable, Observer {
 
 				get.setHeader("User-Agent", UAG);
 				get.setHeader("Referer",
-						"http://aq.qq.com/cn2/appeal/appeal_index");
+						"https://aq.qq.com/cn2/appeal/appeal_index");
 				get.setHeader("Content-Type", "text/html");
 				get.setHeader("Accept", "text/html, */*");
 
@@ -573,7 +574,7 @@ public class Task implements Runnable, Observer {
 		case 3:
 			info("开始申诉");
 			try {
-				get = new HttpGet("http://aq.qq.com/cn2/appeal/appeal_index");
+				get = new HttpGet("https://aq.qq.com/cn2/appeal/appeal_index");
 
 				get.setHeader("User-Agent", UAG);
 				get.setHeader("Content-Type", "text/html");
@@ -616,7 +617,7 @@ public class Task implements Runnable, Observer {
 				//cookie.setExpiryDate(new Date(Sun, 18 Jan 2038 00:00:00 GMT;))
 				cs.addCookie(cookie);
 				
-				cookie = new BasicClientCookie("ts_last", "aq.qq.com/cn2/appeal/appeal_index");
+				cookie = new BasicClientCookie("ts_last", "aq.qq.com/");//cn2/appeal/appeal_index
 				cookie.setDomain("aq.qq.com");
 				cookie.setPath("/");
 				cs.addCookie(cookie);
@@ -635,7 +636,7 @@ public class Task implements Runnable, Observer {
 //				System.out.println("http://aq.qq.com/cn2/appeal/appeal_check_assist_account?UserAccount="
 //								+ account);
 				get = new HttpGet(
-						"http://aq.qq.com/cn2/appeal/appeal_check_assist_account?UserAccount="
+						"https://aq.qq.com/cn2/appeal/appeal_check_assist_account?UserAccount="
 								+ account);
 
 				//get.removeHeaders("Cookie2");
@@ -643,7 +644,7 @@ public class Task implements Runnable, Observer {
 				get.setHeader("Content-Type", "text/html");
 				get.setHeader("Accept", "text/html, */*");
 				get.setHeader("Referer",
-						"http://aq.qq.com/cn2/appeal/appeal_index");
+						"https://aq.qq.com/cn2/appeal/appeal_index");
 				get.setHeader("X-Requested-With", "XMLHttpRequest");
 
 				response = client.execute(get);
@@ -662,7 +663,7 @@ public class Task implements Runnable, Observer {
 			info("正在验证");
 			try {
 				get = new HttpGet(
-						"http://aq.qq.com/cn2/ajax/check_verifycode?session_type=on_rand&verify_code="
+						"https://aq.qq.com/cn2/ajax/check_verifycode?session_type=on_rand&verify_code="
 								+ result + "&appid=523005413&CaptchaSig="
 								+ sig
 								//+ URLEncoder.encode(sig, "UTF-8")
@@ -672,7 +673,7 @@ public class Task implements Runnable, Observer {
 				get.setHeader("Content-Type", "text/html");
 				get.setHeader("Accept", "text/html, */*");
 				get.setHeader("Referer",
-						"http://aq.qq.com/cn2/appeal/appeal_index");
+						"https://aq.qq.com/cn2/appeal/appeal_index");
 				get.setHeader("X-Requested-With", "XMLHttpRequest");
 
 				response = client.execute(get);
@@ -721,7 +722,7 @@ public class Task implements Runnable, Observer {
 				
 				
 				post = new HttpPost(
-						"http://aq.qq.com/cn2/appeal/appeal_contact");
+						"https://aq.qq.com/cn2/appeal/appeal_contact");
 
 				post.setHeader("User-Agent", UAG);
 				post.setHeader("Content-Type",
@@ -729,8 +730,9 @@ public class Task implements Runnable, Observer {
 				post.setHeader("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
 				post.setHeader("Accept-Encoding", "gzip, deflate");
 				post.setHeader("Accept-Language", "zh-cn,zh;q=0.8,en-us;q=0.5,en;q=0.3");
+				post.setHeader("Cache-Control", "no-cache");
 				post.setHeader("Referer",
-						"http://aq.qq.com/cn2/appeal/appeal_index");
+						"https://aq.qq.com/cn2/appeal/appeal_index");
 
 				nvps = new ArrayList<NameValuePair>();
 				nvps.add(new BasicNameValuePair("qqnum", account));
@@ -773,15 +775,16 @@ public class Task implements Runnable, Observer {
 						+ IdentificationCardCodeUtil.calculateVerifyCode(code);
 
 				post = new HttpPost(
-						"http://aq.qq.com/cn2/appeal/appeal_contact_confirm");
+						"https://aq.qq.com/cn2/appeal/appeal_contact_confirm");
 
 				post.setHeader("User-Agent", UAG);
 				post.setHeader("Content-Type",
 						"application/x-www-form-urlencoded");
 				post.setHeader("Accept", "text/html, */*");
 				post.setHeader("Referer",
-						"http://aq.qq.com/cn2/appeal/appeal_contact");
-
+						"https://aq.qq.com/cn2/appeal/appeal_contact");
+				post.setHeader("Cache-Control", "no-cache");
+				
 				nvps = new ArrayList<NameValuePair>();
 				nvps.add(new BasicNameValuePair("txtLoginUin", account));
 				nvps.add(new BasicNameValuePair("txtCtCheckBox", "0"));
@@ -954,15 +957,16 @@ public class Task implements Runnable, Observer {
 			info("使用激活码继续申诉");
 			try {
 				get = new HttpGet(
-						"http://aq.qq.com/cn2/appeal/appeal_mail_code_verify?VerifyType=0&VerifyCode="
+						"https://aq.qq.com/cn2/appeal/appeal_mail_code_verify?VerifyType=0&VerifyCode="
 								+ rc);
 
 				get.setHeader("User-Agent", UAG);
 				get.setHeader("Content-Type", "text/html");
 				get.setHeader("Accept", "text/html, */*");
 				get.setHeader("Referer",
-						"http://aq.qq.com/cn2/appeal/appeal_contact_confirm");
-
+						"https://aq.qq.com/cn2/appeal/appeal_contact_confirm");
+				get.setHeader("X-Requested-With", "XMLHttpRequest");
+				
 				response = client.execute(get);
 				entity = response.getEntity();
 
@@ -999,7 +1003,7 @@ public class Task implements Runnable, Observer {
 			info("提交原始密码和地区");
 			try {
 				post = new HttpPost(
-						"http://aq.qq.com/cn2/appeal/appeal_historyinfo_judge");
+						"https://aq.qq.com/cn2/appeal/appeal_historyinfo_judge");
 
 				post.setHeader("Connection", "keep-alive");
 				post.setHeader("User-Agent", UAG);
@@ -1007,8 +1011,9 @@ public class Task implements Runnable, Observer {
 						"application/x-www-form-urlencoded");
 				post.setHeader("Accept", "text/html, */*");
 				post.setHeader("Referer",
-						"http://aq.qq.com/cn2/appeal/appeal_contact_confirm");
-
+						"https://aq.qq.com/cn2/appeal/appeal_contact_confirm");
+				post.setHeader("Cache-Control", "no-cache");
+				
 				/**
 				 * txtUin: 1079066920 txtRegProvince: 省份 txtRegPayAccount:
 				 * txtRegMobile: txtRegCountry: 国家 txtRegCity: 城市 txtOldPW6:
@@ -1222,7 +1227,7 @@ public class Task implements Runnable, Observer {
 			info("正在转向");
 			try {
 				get = new HttpGet(
-						"http://aq.qq.com/cn2/appeal/appeal_mb2verify");
+						"https://aq.qq.com/cn2/appeal/appeal_mb2verify");
 
 				get.setHeader("User-Agent", UAG);
 				get.setHeader("Content-Type", "text/html");
@@ -1244,7 +1249,7 @@ public class Task implements Runnable, Observer {
 			info("选择好友辅助");
 			try {
 				post = new HttpPost(
-						"http://aq.qq.com/cn2/appeal/appeal_invite_friend");
+						"https://aq.qq.com/cn2/appeal/appeal_invite_friend");
 
 				post.setHeader("Connection", "keep-alive");
 				post.setHeader("User-Agent", UAG);
@@ -1252,29 +1257,69 @@ public class Task implements Runnable, Observer {
 						"application/x-www-form-urlencoded");
 				post.setHeader("Accept", "text/html, */*");
 				post.setHeader("Referer",
-						"http://aq.qq.com/cn2/appeal/appeal_mb2verify");
-
+						"https://aq.qq.com/cn2/appeal/appeal_mb2verify");
+				post.setHeader("Cache-Control", "no-cache");
+				
 				nvps = new ArrayList<NameValuePair>();
 				nvps.add(new BasicNameValuePair("txtUserChoice", "2"));
-				nvps.add(new BasicNameValuePair("txtOldDNAEmailSuffix", "@qq.com"));//TODO@126
+//				nvps.add(new BasicNameValuePair("txtOldDNAEmailSuffix", "@qq.com"));//TODO@126
 				nvps.add(new BasicNameValuePair("txtOldDNAAnswer3", ""));
 				nvps.add(new BasicNameValuePair("txtOldDNAAnswer2", ""));
 				nvps.add(new BasicNameValuePair("txtOldDNAAnswer1", ""));
 				nvps.add(new BasicNameValuePair("txtBackToInfo", "1"));
 				nvps.add(new BasicNameValuePair("txtBackFromFd", ""));
-				//nvps.add(new BasicNameValuePair("OldDNAMobile", ""));
-				nvps.add(new BasicNameValuePair("OldDNAEmail", ""));
+				nvps.add(new BasicNameValuePair("OldDNAMobile", ""));
+//				nvps.add(new BasicNameValuePair("OldDNAEmail", ""));
 				//nvps.add(new BasicNameValuePair("OldDNACertCardID", ""));
 
 				post.setEntity(EntityUtil.getEntity(nvps));
 
 				response = client.execute(post);
-				entity = response.getEntity();
-
+				//entity = response.getEntity();
+				if(post!=null){
+					post.releaseConnection();
+				}
 				// resp = EntityUtils.toString(entity);
 
 				// System.err.println(resp);
 
+				get = new HttpGet(
+						"https://aq.qq.com/cn2/appeal/appeal_check_customer?qqnum="+account);
+
+				get.setHeader("User-Agent", UAG);
+				get.setHeader("Referer", "https://aq.qq.com/cn2/appeal/appeal_invite_friend");
+				get.setHeader("Accept", "application/json, text/javascript, */*");
+				get.setHeader("x-requested-with", "XMLHttpRequest");
+				get.setHeader("Accept-Encoding", "gzip, deflate");
+				get.setHeader("Accept-Language", "zh-cn");
+
+				response = client.execute(get);
+				
+				if(get!=null){
+					get.releaseConnection();
+				}
+				
+				String ful = "";
+				for(int i=0;i<friends.size();i++){
+					fs = friends.get(i).split("----");
+					ful += fs[0]+",";
+				}
+				
+				get = new HttpGet(
+						"https://aq.qq.com/cn2/appeal/appeal_check189type?FriendUinList="+URLEncoder.encode(ful, "UTF-8")+"&Type=FriendQQ");
+
+				get.setHeader("User-Agent", UAG);
+				get.setHeader("Referer", "https://aq.qq.com/cn2/appeal/appeal_invite_friend###");
+				get.setHeader("Accept", "application/json, text/javascript, */*");
+				get.setHeader("x-requested-with", "XMLHttpRequest");
+				get.setHeader("Accept-Encoding", "gzip, deflate");
+				get.setHeader("Accept-Language", "zh-cn");
+
+				response = client.execute(get);
+				
+				if(get!=null){
+					get.releaseConnection();
+				}
 				idx++;
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -1284,7 +1329,12 @@ public class Task implements Runnable, Observer {
 		case 14:
 			info("填写好友辅助");
 			try {
-				post = new HttpPost("http://aq.qq.com/cn2/appeal/appeal_end");
+				try{
+					Thread.sleep(10000);
+				}catch(Exception e){
+					e.printStackTrace();
+				}
+				post = new HttpPost("https://aq.qq.com/cn2/appeal/appeal_end");
 
 				post.setHeader("Connection", "keep-alive");
 				post.setHeader("User-Agent", UAG);
@@ -1292,8 +1342,9 @@ public class Task implements Runnable, Observer {
 						"application/x-www-form-urlencoded");
 				post.setHeader("Accept", "text/html, */*");
 				post.setHeader("Referer",
-						"http://aq.qq.com/cn2/appeal/appeal_invite_friend");
-
+						"https://aq.qq.com/cn2/appeal/appeal_invite_friend");
+				post.setHeader("Cache-Control", "no-cache");
+				
 				nvps = new ArrayList<NameValuePair>();
 				nvps.add(new BasicNameValuePair("txtPcMgr", "1"));
 				nvps.add(new BasicNameValuePair("txtUserPPSType", "2"));//1
