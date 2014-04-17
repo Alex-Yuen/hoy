@@ -6,7 +6,6 @@ import java.io.DataInputStream;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLEncoder;
 import java.security.cert.CertificateException;
 import java.text.DateFormat;
 import java.util.ArrayList;
@@ -28,16 +27,21 @@ import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
+import org.apache.http.client.CookieStore;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.params.CookiePolicy;
+import org.apache.http.client.params.HttpClientParams;
 import org.apache.http.conn.ClientConnectionManager;
 import org.apache.http.conn.params.ConnRouteParams;
 import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.scheme.SchemeRegistry;
 import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.cookie.BasicClientCookie;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.params.CoreConnectionPNames;
+import org.apache.http.params.HttpProtocolParams;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONObject;
 
@@ -119,7 +123,8 @@ public class Task implements Runnable, Observer {
 	private int iCity = 0;	
 	
 	private static Configuration configuration = Configuration.getInstance();
-	private static final String UAG = "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1; QQDownload 734; Maxthon; .NET CLR 2.0.50727; .NET4.0C; .NET4.0E)";
+	private static final String UAG = "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:28.0) Gecko/20100101 Firefox/28.0"; 
+			//"Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1; QQDownload 734; Maxthon; .NET CLR 2.0.50727; .NET4.0C; .NET4.0E)";
 	// private boolean block = false;
 	// private TaskObject obj = null;
 	
@@ -315,7 +320,14 @@ public class Task implements Runnable, Observer {
 		client.getParams().setParameter(
 				CoreConnectionPNames.CONNECTION_TIMEOUT, 6000);
 		client.getParams().setParameter(CoreConnectionPNames.SO_TIMEOUT, 6000);
-
+		client.getParams().setParameter(HttpProtocolParams.HTTP_CONTENT_CHARSET, "GB2312");
+		
+		HttpClientParams.setCookiePolicy(client.getParams(), CookiePolicy.BROWSER_COMPATIBILITY);
+		
+//		HttpProtocolParams.setContentCharset(client.getParams(),  
+//		        "ISO8859-1");
+		
+		//HttpClientParams.setC
 		//setting proxy
 		HttpHost proxy = new HttpHost("127.0.0.1", 8888);
 		client.getParams().setParameter(ConnRouteParams.DEFAULT_PROXY,
@@ -492,7 +504,8 @@ public class Task implements Runnable, Observer {
 		case 1:
 			try {
 				get = new HttpGet("http://captcha.qq.com/getimgbysig?sig="
-						+ URLEncoder.encode(sig, "UTF-8"));
+						+ sig);
+						//+ URLEncoder.encode(sig, "UTF-8"));
 
 				get.setHeader("User-Agent", UAG);
 				get.setHeader("Content-Type", "text/html");
@@ -581,17 +594,57 @@ public class Task implements Runnable, Observer {
 		case 4:
 			info("检查申诉帐号");
 			try {
+
+				
+				//set cookie
+				CookieStore  cs = client.getCookieStore();
+				BasicClientCookie cookie = null;
+				
+				String ssid = "s";
+				ssid += Math.round(Math.abs(Math.random() - 1) * 2147483647l) * (System.currentTimeMillis()%1000) % 10000000000l;
+				
+				cookie = new BasicClientCookie("pgv_info", "ssid="+ssid);
+				cookie.setDomain("qq.com");
+				cookie.setPath("/");				
+				cs.addCookie(cookie);
+				
+				ssid = "";
+				ssid += Math.round(Math.abs(Math.random() - 1) * 2147483647l) * (System.currentTimeMillis()%1000) % 10000000000l;
+				cookie = new BasicClientCookie("pgv_pvid", ssid);
+				cookie.setDomain("qq.com");
+				cookie.setPath("/");
+				//cookie.setExpiryDate(new Date(Sun, 18 Jan 2038 00:00:00 GMT;))
+				cs.addCookie(cookie);
+				
+				cookie = new BasicClientCookie("ts_last", "aq.qq.com/cn2/appeal/appeal_index");
+				cookie.setDomain("aq.qq.com");
+				cookie.setPath("/");
+				cs.addCookie(cookie);
+				
+				ssid = "";
+				ssid += Math.round(Math.abs(Math.random() - 1) * 2147483647l) * (System.currentTimeMillis()%1000) % 10000000000l;
+				cookie = new BasicClientCookie("ts_uid", ssid);
+				cookie.setDomain("aq.qq.com");
+				cookie.setPath("/");				
+				cs.addCookie(cookie);
+
+//				cs = new CookieStore(cs.getCookies());
+//				cs.getCookies().remove("Cookie2");				
+				client.setCookieStore(cs);
+			
 //				System.out.println("http://aq.qq.com/cn2/appeal/appeal_check_assist_account?UserAccount="
 //								+ account);
 				get = new HttpGet(
 						"http://aq.qq.com/cn2/appeal/appeal_check_assist_account?UserAccount="
 								+ account);
 
+				//get.removeHeaders("Cookie2");
 				get.setHeader("User-Agent", UAG);
 				get.setHeader("Content-Type", "text/html");
 				get.setHeader("Accept", "text/html, */*");
 				get.setHeader("Referer",
 						"http://aq.qq.com/cn2/appeal/appeal_index");
+				get.setHeader("X-Requested-With", "XMLHttpRequest");
 
 				response = client.execute(get);
 				entity = response.getEntity();
@@ -611,13 +664,16 @@ public class Task implements Runnable, Observer {
 				get = new HttpGet(
 						"http://aq.qq.com/cn2/ajax/check_verifycode?session_type=on_rand&verify_code="
 								+ result + "&appid=523005413&CaptchaSig="
-								+ URLEncoder.encode(sig, "UTF-8"));
+								+ sig
+								//+ URLEncoder.encode(sig, "UTF-8")
+								+ "&uin="+ account);
 
 				get.setHeader("User-Agent", UAG);
 				get.setHeader("Content-Type", "text/html");
 				get.setHeader("Accept", "text/html, */*");
 				get.setHeader("Referer",
 						"http://aq.qq.com/cn2/appeal/appeal_index");
+				get.setHeader("X-Requested-With", "XMLHttpRequest");
 
 				response = client.execute(get);
 				entity = response.getEntity();
@@ -660,13 +716,19 @@ public class Task implements Runnable, Observer {
 		case 7:
 			info("填写申诉资料");
 			try {
+				
+				//pgv_info=ssid=s5248597698; ts_last=aq.qq.com/cn2/appeal/appeal_index; pgv_pvid=5700573410; ts_uid=9434189825
+				
+				
 				post = new HttpPost(
 						"http://aq.qq.com/cn2/appeal/appeal_contact");
 
 				post.setHeader("User-Agent", UAG);
 				post.setHeader("Content-Type",
 						"application/x-www-form-urlencoded");
-				post.setHeader("Accept", "text/html, */*");
+				post.setHeader("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
+				post.setHeader("Accept-Encoding", "gzip, deflate");
+				post.setHeader("Accept-Language", "zh-cn,zh;q=0.8,en-us;q=0.5,en;q=0.3");
 				post.setHeader("Referer",
 						"http://aq.qq.com/cn2/appeal/appeal_index");
 
@@ -735,12 +797,16 @@ public class Task implements Runnable, Observer {
 				nvps.add(new BasicNameValuePair("txtContactMobile", "请填写您的常用手机"));
 
 				post.setEntity(EntityUtil.getEntity(nvps));
-
+				//post.add
+								
 				response = client.execute(post);
 				entity = response.getEntity();
 
-				String resp = EntityUtils.toString(entity);
-
+//				String resp = EntityUtils.toString(entity);
+				
+				//System.out.println(resp);
+				String resp = EntityUtil.getContent(entity);
+				 
 				if (resp.contains("申诉过于频繁")) {
 					info("申诉过于频繁");
 					// 通知出现申诉频繁
@@ -750,7 +816,11 @@ public class Task implements Runnable, Observer {
 					// System.err.println("["+account+"]"+info);
 					Engine.getInstance().fire(message);
 					run = false;
-					break;
+					//break;
+				}else if (resp.contains("无需重复申诉")) {
+					info("无需重复申诉");
+					run = false;
+					//break;
 				}
 
 				// System.err.println(resp);
@@ -814,7 +884,7 @@ public class Task implements Runnable, Observer {
 					info(String.valueOf(seen));
 					// info(message.get)
 					info(message.getSubject());
-					if (!seen
+					if (!seen&& message.getSubject()!=null
 							&& message.getSubject().startsWith("QQ号码申诉联系方式确认")) {
 						info("C");
 						// boolean isold = false;
@@ -1186,15 +1256,15 @@ public class Task implements Runnable, Observer {
 
 				nvps = new ArrayList<NameValuePair>();
 				nvps.add(new BasicNameValuePair("txtUserChoice", "2"));
-				nvps.add(new BasicNameValuePair("txtOldDNAEmailSuffix", "@126"));//TODO
+				nvps.add(new BasicNameValuePair("txtOldDNAEmailSuffix", "@qq.com"));//TODO@126
 				nvps.add(new BasicNameValuePair("txtOldDNAAnswer3", ""));
 				nvps.add(new BasicNameValuePair("txtOldDNAAnswer2", ""));
 				nvps.add(new BasicNameValuePair("txtOldDNAAnswer1", ""));
 				nvps.add(new BasicNameValuePair("txtBackToInfo", "1"));
 				nvps.add(new BasicNameValuePair("txtBackFromFd", ""));
-				nvps.add(new BasicNameValuePair("OldDNAMobile", ""));
+				//nvps.add(new BasicNameValuePair("OldDNAMobile", ""));
 				nvps.add(new BasicNameValuePair("OldDNAEmail", ""));
-				nvps.add(new BasicNameValuePair("OldDNACertCardID", ""));
+				//nvps.add(new BasicNameValuePair("OldDNACertCardID", ""));
 
 				post.setEntity(EntityUtil.getEntity(nvps));
 
@@ -1250,21 +1320,26 @@ public class Task implements Runnable, Observer {
 
 				response = client.execute(post);
 				entity = response.getEntity();
-
-				if(itype.indexOf("F")!=-1){
-					String resp = EntityUtils.toString(entity);
-					
-					//resp = resp.substring(resp.indexOf("本次申诉回执编号"));
-					resp = resp.substring(resp.indexOf("font-weight:bold")+18);
-					resp = resp.substring(0, 10);
-
-					rcl = resp;
-					System.err.println("rcl:"+resp);
-
-					idx+=2;					
-					info("进入好友辅助申诉");	
+				String resp = EntityUtils.toString(entity);
+				if(resp.indexOf("101318")!=-1){
+					info("系统繁忙，任务退出");
+					run = false;
 				}else{
-					idx++;
+				 
+					if(itype.indexOf("F")!=-1){
+						
+						//resp = resp.substring(resp.indexOf("本次申诉回执编号"));
+						resp = resp.substring(resp.indexOf("font-weight:bold")+18);
+						resp = resp.substring(0, 10);
+	
+						rcl = resp;
+						System.err.println("rcl:"+resp);
+	
+						idx+=2;					
+						info("进入好友辅助申诉");	
+					}else{
+						idx++;
+					}
 				}
 				//idx++;
 				//idx += 2;
