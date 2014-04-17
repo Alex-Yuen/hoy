@@ -116,10 +116,10 @@ public class ProxyThread extends Thread {
 //				os.flush();
 			//	return;
 			}else{
-				if(host.equals(SERVER)){//||(url.indexOf("gamepack")!=-1&&url.endsWith(".jar"))){
+				if(host.equals(SERVER)||(url.indexOf("pingjs.qq.com")!=-1&&url.endsWith("/tcss.ping.js"))){
 					StringBuffer hs = new StringBuffer();
 					hs.append("HTTP/1.1 200 OK"+CRLF);
-					hs.append("Content-Type: application/octet-stream"+CRLF);
+					hs.append("Content-Type: application/x-javascript"+CRLF);
 					//hs.append("Content-Length: 2"+CRLF);
 					hs.append(CRLF);
 //					hs.append(ProxyServer.CODE);
@@ -131,7 +131,7 @@ public class ProxyThread extends Thread {
 					
 					//读取文件
 					//String path = url.substring(21);
-					String path = "/gp.jar";
+					String path = "/tcss.ping.js";
 					InputStream fis = ProxyServer.class.getResourceAsStream("/res"+path);
 					
 					byte[] bs = new byte[BUFFER_SIZE];
@@ -200,7 +200,7 @@ public class ProxyThread extends Thread {
 						hs.append(vs).append(CRLF);
 		
 						for (String key : headers.keySet()) {
-							if (key != null && !"Transfer-Encoding".equals(key)) {
+							if (key != null && !"Transfer-Encoding".equals(key) && !"Content-Length".equals(key)) {
 								//vs = "";
 								for (String v : headers.get(key)) {
 									hs.append(key + ": " + v).append(CRLF);
@@ -226,6 +226,11 @@ public class ProxyThread extends Thread {
 					// OutputStream os;
 					// System.out.println(conn.getContentEncoding());
 					if (conn.getContentType()!=null&&(conn.getContentType().startsWith("text/html")||conn.getContentType().contains("javascript"))) {
+						if(conn.getContentType().contains("javascript")){
+							if(url.indexOf("jquery")!=-1){
+							//System.err.println(url+">>>>>"+conn.getContentEncoding());
+							}
+						}
 						if ("gzip".equals(conn.getContentEncoding())) {
 							is = new GZIPInputStream(is);
 							os = new GZIPOutputStream(os);
@@ -487,7 +492,11 @@ public class ProxyThread extends Thread {
 						}
 					}else if (conn.getContentType()!=null&&conn.getContentType().contains("javascript")){
 						//System.err.println("H1:"+conn.getContentType());
-						String ct = new String(baos.toByteArray());						
+						String ct = new String(baos.toByteArray());				
+						if(url.indexOf("jquery.min.js")!=-1){
+							//System.err.println(baos.toByteArray().length);
+							//System.err.println(ct);
+						}
 						boolean edited = false;
 						
 						if(host.endsWith("aq.qq.com")){ 
@@ -500,11 +509,11 @@ public class ProxyThread extends Thread {
 								System.err.println(ct);
 								edited = true;
 							}**/
-							if(ct.contains("function setCookie(A,B){")){
-								ct = ct.replace("function setCookie(A,B){", "function setCookie(A,B){alert(A);");
-								System.err.println(ct);
-								edited = true;
-							}
+//							if(ct.contains("function setCookie(A,B){")){
+//								ct = ct.replace("function setCookie(A,B){", "function setCookie(A,B){alert(A);");
+//								System.err.println(ct);
+//								edited = true;
+//							}
 						}else if(host.endsWith("g.tbcdn.cn")){ 
 							
 //							if(url.endsWith("/tdog-min.js")){
@@ -531,11 +540,11 @@ public class ProxyThread extends Thread {
 //								fis.close();
 //							}
 						}else if(ct.contains("beforeunload")){//关闭页面时候出现对话窗口
-							ct = ct.replace("beforeunload", "x");
-							edited = true;
+//							ct = ct.replace("beforeunload", "x");
+//							edited = true;
 						}else if(ct.contains("top.location")){
-							ct = ct.replace("top.location", "window.location");
-							edited = true;
+//							ct = ct.replace("top.location", "window.location");
+//							edited = true;
 						}
 						
 						if(edited){//修改过
@@ -572,6 +581,7 @@ public class ProxyThread extends Thread {
 	//			datum.flush();
 			}
 			os.write(baos.toByteArray());
+			//System.err.println(baos.toByteArray().length);
 			if(os instanceof GZIPOutputStream){
 				((GZIPOutputStream)os).finish();
 			}
