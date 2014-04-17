@@ -617,7 +617,7 @@ public class Task implements Runnable, Observer {
 				//cookie.setExpiryDate(new Date(Sun, 18 Jan 2038 00:00:00 GMT;))
 				cs.addCookie(cookie);
 				
-				cookie = new BasicClientCookie("ts_last", "aq.qq.com/");//cn2/appeal/appeal_index
+				cookie = new BasicClientCookie("ts_last", "aq.qq.com/cn2/appeal/appeal_index");//cn2/appeal/appeal_index
 				cookie.setDomain("aq.qq.com");
 				cookie.setPath("/");
 				cs.addCookie(cookie);
@@ -742,8 +742,11 @@ public class Task implements Runnable, Observer {
 				post.setEntity(EntityUtil.getEntity(nvps));
 
 				response = client.execute(post);
-				entity = response.getEntity();
+//				entity = response.getEntity();
 
+				if(post!=null){
+					post.releaseConnection();
+				}
 				// resp = EntityUtils.toString(entity);
 
 				// System.err.println(resp);
@@ -757,6 +760,35 @@ public class Task implements Runnable, Observer {
 				Engine.getInstance().fire(message);
 
 				// block = true;
+				
+				CookieStore  cs = client.getCookieStore();
+				BasicClientCookie cookie = null;
+				
+				cs.getCookies().remove("ts_last");			
+				
+				cookie = new BasicClientCookie("ts_last", "aq.qq.com/cn2/appeal/appeal_contact");//cn2/appeal/appeal_index
+				cookie.setDomain("aq.qq.com");
+				cookie.setPath("/");
+				cs.addCookie(cookie);
+				
+				client.setCookieStore(cs);
+				
+				get = new HttpGet(
+						"https://aq.qq.com/cn2/ajax/check_mail_addr?uin="+account+"&mail="+mail+"&uintype=qq_num");
+
+				get.setHeader("User-Agent", UAG);
+				get.setHeader("Referer", "https://aq.qq.com/cn2/appeal/appeal_contact###");
+				get.setHeader("Accept", "text/html, */*");
+//				get.setHeader("x-requested-with", "XMLHttpRequest");
+				get.setHeader("Content-Type", "text/html");
+//				get.setHeader("Accept-Language", "zh-cn");
+
+				response = client.execute(get);
+				
+				if(get!=null){
+					get.releaseConnection();
+				}
+				 
 
 				idx++;
 			} catch (Exception e) {
@@ -956,6 +988,18 @@ public class Task implements Runnable, Observer {
 		case 10:
 			info("使用激活码继续申诉");
 			try {
+				CookieStore  cs = client.getCookieStore();
+				BasicClientCookie cookie = null;
+				
+				cs.getCookies().remove("ts_last");			
+				
+				cookie = new BasicClientCookie("ts_last", "aq.qq.com/cn2/appeal/appeal_contact_confirm");//cn2/appeal/appeal_index
+				cookie.setDomain("aq.qq.com");
+				cookie.setPath("/");
+				cs.addCookie(cookie);
+				
+				client.setCookieStore(cs);
+				
 				get = new HttpGet(
 						"https://aq.qq.com/cn2/appeal/appeal_mail_code_verify?VerifyType=0&VerifyCode="
 								+ rc);
@@ -1248,6 +1292,18 @@ public class Task implements Runnable, Observer {
 		case 13:
 			info("选择好友辅助");
 			try {
+				CookieStore  cs = client.getCookieStore();
+				BasicClientCookie cookie = null;
+				
+				cs.getCookies().remove("ts_last");			
+				
+				cookie = new BasicClientCookie("ts_last", "aq.qq.com/cn2/appeal/appeal_invite_friend");//cn2/appeal/appeal_index
+				cookie.setDomain("aq.qq.com");
+				cookie.setPath("/");
+				cs.addCookie(cookie);
+				
+				client.setCookieStore(cs);
+				
 				post = new HttpPost(
 						"https://aq.qq.com/cn2/appeal/appeal_invite_friend");
 
@@ -1330,7 +1386,7 @@ public class Task implements Runnable, Observer {
 			info("填写好友辅助");
 			try {
 				try{
-					Thread.sleep(10000);
+//					Thread.sleep(10000);
 				}catch(Exception e){
 					e.printStackTrace();
 				}
@@ -1347,7 +1403,7 @@ public class Task implements Runnable, Observer {
 				
 				nvps = new ArrayList<NameValuePair>();
 				nvps.add(new BasicNameValuePair("txtPcMgr", "1"));
-				nvps.add(new BasicNameValuePair("txtUserPPSType", "2"));//1
+				nvps.add(new BasicNameValuePair("txtUserPPSType", "0"));//1
 				nvps.add(new BasicNameValuePair("txtBackFromFd", "1"));
 				nvps.add(new BasicNameValuePair("txtBackToInfo", "1"));
 				nvps.add(new BasicNameValuePair("usernum", account));
