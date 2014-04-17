@@ -1108,9 +1108,9 @@ public class Task implements Runnable, Observer {
 //				}
 				nvps.add(new BasicNameValuePair("ddlLoginLocCountry2", "0"));
 				if("NPAF".equals(itype)){
-					nvps.add(new BasicNameValuePair("ddlLoginLocProvince1", String
+					nvps.add(new BasicNameValuePair("ddlLoginLocProvince2", String
 							.valueOf(iProvince)));
-					nvps.add(new BasicNameValuePair("ddlLoginLocCity1", String.valueOf(iCity)));
+					nvps.add(new BasicNameValuePair("ddlLoginLocCity2", String.valueOf(iCity)));
 				}else{
 					nvps.add(new BasicNameValuePair("ddlLoginLocProvince2", String
 							.valueOf(Integer.parseInt(configuration
@@ -1137,9 +1137,9 @@ public class Task implements Runnable, Observer {
 
 				nvps.add(new BasicNameValuePair("ddlLoginLocCountry3", "0"));
 				if("NPAF".equals(itype)){
-					nvps.add(new BasicNameValuePair("ddlLoginLocProvince1", String
+					nvps.add(new BasicNameValuePair("ddlLoginLocProvince3", String
 							.valueOf(iProvince)));
-					nvps.add(new BasicNameValuePair("ddlLoginLocCity1", String.valueOf(iCity)));
+					nvps.add(new BasicNameValuePair("ddlLoginLocCity3", String.valueOf(iCity)));
 				}else{
 					nvps.add(new BasicNameValuePair("ddlLoginLocProvince3", String
 							.valueOf(Integer.parseInt(configuration
