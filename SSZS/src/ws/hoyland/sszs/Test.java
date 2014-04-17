@@ -6,6 +6,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.security.cert.CertificateException;
 import java.util.ArrayList;
@@ -49,6 +50,12 @@ public class Test {
 	 * @param args
 	 */
 	public static void main(String[] args) {
+		try {
+			System.out.println(URLEncoder.encode("234234,", "UTF-8"));
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		// TODO Auto-generated method stub
 		//System.out.println("test");
 //		for(int i=0;i<10;i++){
