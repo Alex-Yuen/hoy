@@ -1,6 +1,9 @@
 package ws.hoyland.sszs;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URLEncoder;
@@ -32,9 +35,11 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.cookie.BasicClientCookie;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.params.CoreConnectionPNames;
+import org.apache.http.params.HttpProtocolParams;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
 
+import ws.hoyland.util.Converts;
 import ws.hoyland.util.EntityUtil;
 
 
@@ -208,7 +213,7 @@ public class Test {
 //		System.out.println(i*100/k);
 //		System.out.println(df2.format(i*100/k));
 		
-		t4();
+		t6();
 	}
 
 	public String execute(String cmd) throws Exception {
@@ -344,6 +349,123 @@ public class Test {
 
 				String resp = EntityUtils.toString(entity);
 				System.err.println(resp);
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+	}
+	
+	public static void t5(){
+		try{
+			String i = "s";
+			long s = System.currentTimeMillis()%1000;
+			i += Math.round(Math.abs(Math.random() - 1) * 2147483647l) * s % 10000000000l;
+			System.out.println(i);
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+	}
+	
+	public static void t6(){
+		try{
+			//https://mail.qq.com/cgi-bin/login?vt=passport&vm=wsk&delegate_url=
+
+			DefaultHttpClient client = new DefaultHttpClient();
+				client.getParams().setParameter(
+						CoreConnectionPNames.CONNECTION_TIMEOUT, 6000);
+				client.getParams().setParameter(CoreConnectionPNames.SO_TIMEOUT, 6000);
+				
+				try {
+					SSLContext sslcontext = SSLContext.getInstance("SSL");
+					sslcontext.init(null, new TrustManager[]{tm}, null);
+			        SSLSocketFactory ssf = new    SSLSocketFactory(sslcontext, SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
+			        ClientConnectionManager ccm = client.getConnectionManager();
+			        SchemeRegistry sr = ccm.getSchemeRegistry();
+			        sr.register(new Scheme("https", 443, ssf));
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				
+				HttpHost proxy = new HttpHost("127.0.0.1", 8888);
+				client.getParams().setParameter(ConnRouteParams.DEFAULT_PROXY,
+						proxy);
+				
+				client.getParams().setParameter(HttpProtocolParams.HTTP_CONTENT_CHARSET, "GBK");
+				
+				//about:/cgi-bin/laddr_list?sid=4n-NUUym5no2TyBz&operate=view&t=contact&view=normal&loc=frame_html,,,23
+				HttpGet get = new HttpGet(
+						//"http://mail.qq.com");
+						"http://aq.qq.com/cn2/appeal/appeal_index");
+
+				get.setHeader("User-Agent", "Opera/9.25 (Windows NT 6.0; U; en)");
+				//1696195841----sw360100----pt2gguin=o1696195841; uin=o1696195841; skey=@AIhN7K0s4; ETK=; superuin=o1696195841; superkey=2O4VH82tu3wNKKLh3zs*YTERLw159XoZz9nFgLz9rLw_; supertoken=1512671834; ptisp=ctc; RK=TeXO02CBe3; ptuserinfo=e4b880e4ba8ce4b889; ptcz=8b10fd2ce893905d7dedff0af7452fc0040c9de336dede894c396a3c98c7e678; ptcz=; airkey=; ptwebqq=6a8cce7c33974d34778f4a199b4db563dbc894f0d40807f36154c6091934ee14; 
+				
+//				CookieStore  cs = client.getCookieStore();
+//				//
+//				//String[] cks = "pt2gguin=o1696195841; uin=o1696195841; skey=@AIhN7K0s4; ETK=; superuin=o1696195841; superkey=2O4VH82tu3wNKKLh3zs*YTERLw159XoZz9nFgLz9rLw_; supertoken=1512671834; ptisp=ctc; RK=TeXO02CBe3; ptuserinfo=e4b880e4ba8ce4b889; ptcz=8b10fd2ce893905d7dedff0af7452fc0040c9de336dede894c396a3c98c7e678; ptcz=; airkey=; ptwebqq=6a8cce7c33974d34778f4a199b4db563dbc894f0d40807f36154c6091934ee14;".split(" ");
+//				String[] cks = "ptisp=ctc; pt2gguin=o1872502173; uin=o1872502173; skey=@z5a02kjuK; ptcz=6ab48b1a91d6d4acc5ab62f402129cbd7e1ca811a9e2f4b5e728d240374b2214; ptui_loginuin=1872502173@qq.com; p_uin=o1872502173; p_skey=llhVfKku8UDg5-Z6c1r0bwDoezmERcTQxpHxQftVjSA_; pt4_token=f4QyE9jBAmc7r1rlNAPZGA__; wimrefreshrun=0&; qm_antisky=1872502173&92105358a6c16d1f49bea86c89a1b3c9a1be56ba906e1976492e5176bc066d5b; qm_flag=0; qqmail_alias=1872502173@qq.com; sid=1872502173&ce68810810ca42f8410297401924b414,qbGxoVmZLa3U4VURnNS1aNmMxcjBid0RvZXptRVJjVFF4cEh4UWZ0VmpTQV8.; qm_username=1872502173; new_mail_num=1872502173&0; qm_sid=ce68810810ca42f8410297401924b414,qbGxoVmZLa3U4VURnNS1aNmMxcjBid0RvZXptRVJjVFF4cEh4UWZ0VmpTQV8.; qm_domain=http://mail.qq.com; qm_ptsk=1872502173&@z5a02kjuK; CCSHOW=000031; foxacc=1872502173&0; ssl_edition=mail.qq.com; edition=mail.qq.com; username=1872502173&1872502173".split(" ");
+//				for(int i=0;i<cks.length;i++){
+//					String[] ls = cks[i].substring(0, cks[i].length()-1).split("=");
+//					//System.out.println(cks[i]+"/"+ls.length);
+//					BasicClientCookie cookie = null;
+//					if(ls.length==1){
+//						cookie = new BasicClientCookie(ls[0], "");
+//					}else{
+//						System.err.println(ls[0]+"="+ls[1]);
+////						System.err.println(ls[1]);
+//						cookie = new BasicClientCookie(ls[0], ls[1]);
+//					}
+//					cookie.setDomain("mail.qq.com");
+//					cookie.setPath("/");
+//					
+//					cs.addCookie(cookie);
+//				}
+//				client.setCookieStore(cs);
+				//BasicClientCookie cookie = new BasicClientCookie("JSESSIONID", getSessionId());
+				//cookie.setDomain("your domain");cookie.setPath("/");
+				
+				//List<Cookie> cookies = new ArrayList<Cookie>();
+//				CookieStore  cs = client.getCookieStore();
+//				cs.addCookie(new Cookie("", ""))
+//				client.setCookieStore(cs);
+//				 Domain=mail.qq.com; Path=/
+
+//				get.setHeader("User-Agent", UAG);
+//				get.setHeader("Referer",
+//						"http://aq.qq.com/cn2/appeal/appeal_index");
+//				get.setHeader("Content-Type", "text/html");
+//				get.setHeader("Accept", "text/html, */*");
+
+				HttpResponse response = client.execute(get);
+				HttpEntity entity = response.getEntity();
+
+				System.out.println(EntityUtil.getContent(entity));
+				
+//				BufferedReader br = new BufferedReader(new InputStreamReader(entity.getContent(), "UTF-8"));
+//				StringBuffer sbf = new StringBuffer();
+//				String line = null;
+//				while ((line = br.readLine()) != null)
+//				{
+//				sbf.append(line+"\r\n");
+//				}
+//				
+//				System.err.println(sbf.toString());
+//				DataInputStream in = new DataInputStream(entity.getContent());
+//				baos = new ByteArrayOutputStream();
+//				byte[] barray = new byte[1024];
+//				int size = -1;
+//				while ((size = in.read(barray)) != -1) {
+//					baos.write(barray, 0, size);
+//				}
+//				ByteArrayInputStream bais = new ByteArrayInputStream(
+//						baos.toByteArray());
+//				
+//				String resp = EntityUtils.toString(entity);
+//				byte[] bs = resp.getBytes();
+//				System.out.println(Converts.bytesToHexString(new byte[]{bs[0], bs[1], bs[2]}));
+//				System.out.println(bs[1]);
+//				System.out.println(bs[2]);
+//				resp = new String(resp.getBytes(), "GBK");
+//				System.err.println(resp);
 		}catch(Exception e){
 			e.printStackTrace();
 		}
