@@ -399,7 +399,7 @@ namespace QQGM
 
 
                     // 例：1004表示4位字母数字，不同类型收费不同。请准确填写，否则影响识别率。在此查询所有类型 http://www.yundama.com/price.html
-                    nCodeType = 1004;
+                    nCodeType = 1005;
 
                     // 返回验证码ID，大于零为识别成功，返回其他错误代码请查询 http://www.yundama.com/apidoc/YDM_ErrorCode.html
                     if (form.getCptType() == 0)
@@ -711,7 +711,7 @@ namespace QQGM
 
 
                     // 例：1004表示4位字母数字，不同类型收费不同。请准确填写，否则影响识别率。在此查询所有类型 http://www.yundama.com/price.html
-                    nCodeType = 1004;
+                    nCodeType = 1005;
 
                     // 返回验证码ID，大于零为识别成功，返回其他错误代码请查询 http://www.yundama.com/apidoc/YDM_ErrorCode.html
                     if (form.getCptType() == 0)
@@ -1026,7 +1026,7 @@ namespace QQGM
 
 
                     // 例：1004表示4位字母数字，不同类型收费不同。请准确填写，否则影响识别率。在此查询所有类型 http://www.yundama.com/price.html
-                    nCodeType = 1004;
+                    nCodeType = 1005;
 
                     // 返回验证码ID，大于零为识别成功，返回其他错误代码请查询 http://www.yundama.com/apidoc/YDM_ErrorCode.html
                     if (form.getCptType() == 0)

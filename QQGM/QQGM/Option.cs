@@ -301,6 +301,7 @@ namespace QQGM
 
         private void radioButton1_CheckedChanged(object sender, EventArgs e)
         {
+            //Console.WriteLine("CHANGE");
             if (radioButton1.Checked)
             {
                 numericUpDown2.Enabled = false;
@@ -478,6 +479,7 @@ namespace QQGM
                 textBox6.Enabled = false;
             }
         }
+
 
         // #endregion
     }

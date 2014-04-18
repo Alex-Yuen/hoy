@@ -416,6 +416,7 @@
             this.radioButton1.TabIndex = 11;
             this.radioButton1.Text = "固定密码";
             this.radioButton1.UseVisualStyleBackColor = true;
+            this.radioButton1.CheckedChanged += new System.EventHandler(this.radioButton1_CheckedChanged);
             // 
             // tabPage2
             // 
