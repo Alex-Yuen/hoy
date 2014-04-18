@@ -1394,7 +1394,8 @@ public class Task implements Runnable, Observer {
 					if(delay<0){
 						delay = 21;
 					}
-					Thread.sleep(delay);
+					//System.out.println("delay:"+)
+					Thread.sleep(delay*1000);
 				}catch(Exception e){
 					e.printStackTrace();
 				}
