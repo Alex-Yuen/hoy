@@ -332,9 +332,9 @@ public class Task implements Runnable, Observer {
 		
 		//HttpClientParams.setC
 		//setting proxy
-		HttpHost proxy = new HttpHost("127.0.0.1", 8888);
-		client.getParams().setParameter(ConnRouteParams.DEFAULT_PROXY,
-				proxy);
+//		HttpHost proxy = new HttpHost("127.0.0.1", 8888);
+//		client.getParams().setParameter(ConnRouteParams.DEFAULT_PROXY,
+//				proxy);
 		
 		try {
 			SSLContext sslcontext = SSLContext.getInstance("SSL");
