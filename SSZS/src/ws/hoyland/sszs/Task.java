@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Properties;
+import java.util.Random;
 
 import javax.mail.Flags;
 import javax.mail.Folder;
@@ -123,6 +124,7 @@ public class Task implements Runnable, Observer {
 	private int iProvince = 0;
 	private int iCity = 0;	
 	
+	private static Random RANDOM = new Random();
 	private static Configuration configuration = Configuration.getInstance();
 	private static final String UAG = "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:28.0) Gecko/20100101 Firefox/28.0"; 
 			//"Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1; QQDownload 734; Maxthon; .NET CLR 2.0.50727; .NET4.0C; .NET4.0E)";
@@ -1386,7 +1388,13 @@ public class Task implements Runnable, Observer {
 			info("填写好友辅助");
 			try {
 				try{
-//					Thread.sleep(10000);
+					int delaymin = Integer.parseInt(configuration.getProperty("APPEAL_DELAY_MIN"));
+					int delaymax = Integer.parseInt(configuration.getProperty("APPEAL_DELAY_MAX"));
+					int delay = RANDOM.nextInt((delaymax-delaymin>0)?(delaymax-delaymin):10)+delaymin;
+					if(delay<0){
+						delay = 21;
+					}
+					Thread.sleep(delay);
 				}catch(Exception e){
 					e.printStackTrace();
 				}

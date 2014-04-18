@@ -91,6 +91,8 @@ public class Option extends Dialog implements Observer {
 	private Spinner spinner_11;
 	private Spinner spinner_8;
 	private Spinner spinner_12;
+	private Spinner spinner_13;
+	private Spinner spinner_14;
 	/**
 	 * Create the dialog.
 	 * @param parent
@@ -125,6 +127,9 @@ public class Option extends Dialog implements Observer {
 				
 				spinner.setSelection(Integer.parseInt(this.configuration.getProperty("EMAIL_TIMES")));
 				spinner_12.setSelection(Integer.parseInt(this.configuration.getProperty("TRY_TIMES")));		
+				spinner_13.setSelection(Integer.parseInt(this.configuration.getProperty("APPEAL_DELAY_MIN")));
+				spinner_14.setSelection(Integer.parseInt(this.configuration.getProperty("APPEAL_DELAY_MAX")));
+				
 				//spinner_1.setSelection(Integer.parseInt(this.configuration.getProperty("TOKEN_QUANTITY")));
 //				if(Integer.parseInt(this.configuration.getProperty("RECONN_GROUP_QUANTITY_FLAG"))==1){
 //					btnCheckButton.setSelection(true);
@@ -205,6 +210,13 @@ public class Option extends Dialog implements Observer {
 	private void save(){
 		this.configuration.put("EMAIL_TIMES", spinner.getText());
 		this.configuration.put("TRY_TIMES", spinner_12.getText());
+		
+		this.configuration.put("APPEAL_DELAY_MIN", spinner_13.getText());
+		this.configuration.put("APPEAL_DELAY_MAX", spinner_14.getText());
+		
+//		spinner_13.setSelection(Integer.parseInt(this.configuration.getProperty("")));
+//		spinner_14.setSelection(Integer.parseInt(this.configuration.getProperty("")));
+		
 //		this.configuration.put("RECONN_GROUP_QUANTITY_FLAG", btnCheckButton.getSelection()?"1":"0");
 //		this.configuration.put("RECONN_GROUP_QUANTITY", spinner_2.getText());
 //		this.configuration.put("RECONN_ACCOUNT_QUANTITY_FLAG", btnCheckButton_1.getSelection()?"1":"0");
@@ -568,6 +580,24 @@ public class Option extends Dialog implements Observer {
 		Label label_14 = new Label(composite_1, SWT.NONE);
 		label_14.setText(".");
 		label_14.setBounds(347, 99, 8, 17);
+		
+		Label label_16 = new Label(composite_1, SWT.NONE);
+		label_16.setText("提交延迟:");
+		label_16.setBounds(235, 155, 61, 17);
+		
+		spinner_13 = new Spinner(composite_1, SWT.BORDER);
+		spinner_13.setMaximum(600);
+		spinner_13.setSelection(21);
+		spinner_13.setBounds(296, 152, 37, 23);
+		
+		Label label_17 = new Label(composite_1, SWT.NONE);
+		label_17.setBounds(339, 155, 10, 17);
+		label_17.setText("-");
+		
+		spinner_14 = new Spinner(composite_1, SWT.BORDER);
+		spinner_14.setMaximum(600);
+		spinner_14.setSelection(30);
+		spinner_14.setBounds(349, 152, 37, 23);
 		
 		Button btnNewButton = new Button(shell, SWT.NONE);
 		btnNewButton.addSelectionListener(new SelectionAdapter() {
