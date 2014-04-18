@@ -213,4 +213,33 @@ public final class Converts {
 		}
 
 	}
+	
+	private static String b64map = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+	private static char b64pad = '=';
+	
+	public static String hexStringToB64(String hex){
+		int i = 0;
+	    int c = 0;
+	    String ret = "";
+	    for (i = 0; i + 3 <= hex.length(); i += 3) {
+	        c = Integer.parseInt(hex.substring(i, i + 3), 16);
+	        //System.out.println("c1="+(c>>6));
+	        //System.out.println("c2="+(c&63));
+	        //System.out.println(b64map.charAt(c >> 6));
+	        ret += b64map.charAt(c >> 6);
+	        ret += b64map.charAt(c & 63);
+	        //System.out.println(ret);
+	    }
+	    if (i + 1 == hex.length()) {
+	        c = Integer.parseInt(hex.substring(i, i + 1), 16);
+	        //System.out.println(c<<2);
+	        ret += b64map.charAt(c << 2);
+	    } 
+	    else if (i + 2 == hex.length()) {
+	        c = Integer.parseInt(hex.substring(i, i + 2), 16);
+	        ret += b64map.charAt(c >> 2) + b64map.charAt((c & 3) << 4);
+	    }
+	    while ((ret.length() & 3) > 0) ret += b64pad;
+	    return ret;
+	}
 }
