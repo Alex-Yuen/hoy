@@ -29,6 +29,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.CookieStore;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.params.ClientPNames;
 import org.apache.http.client.params.CookiePolicy;
 import org.apache.http.client.params.HttpClientParams;
 import org.apache.http.conn.ClientConnectionManager;
@@ -224,6 +225,7 @@ public class Task implements Runnable {//, Observer {
 					CoreConnectionPNames.SO_TIMEOUT,
 					1000 * Integer.parseInt(CONFIGURATION
 							.getProperty("TIMEOUT")));
+			client.getParams().setParameter(ClientPNames.HANDLE_REDIRECTS, false);  
 			
 			HttpClientParams.setCookiePolicy(client.getParams(), CookiePolicy.BROWSER_COMPATIBILITY);
 			
