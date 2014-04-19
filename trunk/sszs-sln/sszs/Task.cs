@@ -598,7 +598,9 @@ namespace ws.hoyland.sszs
                         }
                         else
                         {
+                            //Console.WriteLine("A1:" + getECP());
                             string ecp = Convert.ToBase64String(Util.hexStringToByte(getECP()));
+                            //Console.WriteLine("A2:" + ecp);
                             content = "device=&ts=" + ts + "&p=" + Util.UrlEncode(ecp) + "&f=xhtml&delegate_url=&action=&https=true&tfcont=&uin=" + this.mail + "&aliastype=%40qq.com&pwd=&mss=1&btlogin=+%E7%99%BB%E5%BD%95+";
                         }
 
