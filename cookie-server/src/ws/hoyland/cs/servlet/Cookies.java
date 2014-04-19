@@ -33,7 +33,11 @@ public class Cookies extends ArrayList<String> {
 	}
 
 	public synchronized String peek(){
-		int idx = random.nextInt(size());
-		return this.get(idx);
+		if(size()>0){
+			int idx = random.nextInt(size());
+			return this.get(idx);
+		}else{
+			return null;
+		}
 	}	
 }

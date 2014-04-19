@@ -43,23 +43,28 @@ public class InitServlet extends GenericServlet {
 
 	protected boolean flag = false;
 	private Timer timer = null;
-	private DefaultHttpClient client = new DefaultHttpClient();	
+	private DefaultHttpClient client = new DefaultHttpClient();
 
 	private static final long serialVersionUID = 407060459247815226L;
 	private static String UAG = "Mozilla/5.0 (Linux; U; Android 2.3.3; en-us; sdk Build/GRI34) AppleWebKit/533.1 (KHTML, like Gecko) Version/4.0 Mobile Safari/533.1";
-	
+
 	public InitServlet() {
+	}
+
+	@Override
+	public void init() {
+		System.out.println("Servlet 初始化(1).");
 		timer = new Timer();
-		
+
 		// 加载cookie
-		new Thread(new Runnable(){
+		new Thread(new Runnable() {
 			@Override
 			public void run() {
-				
+				System.out.println("Servlet 初始化(2).");
 				InputStream is = null;
 				BufferedReader br = null;
-				
-				//导入
+
+				// 导入
 				try {
 					URL url = this.getClass().getClassLoader().getResource("");
 					String xpath = url.getPath();
@@ -72,112 +77,128 @@ public class InitServlet extends GenericServlet {
 					br = new BufferedReader(new InputStreamReader(is));
 					String line = null;
 					while ((line = br.readLine()) != null) {
-						synchronized(Cookies.getInstance()){
+						synchronized (Cookies.getInstance()) {
 							Cookies.getInstance().add(line);
 						}
+						System.out.println("adding cookies:" + line);
 					}
 				} catch (Exception e) {
 					e.printStackTrace();
-				}				
+				}
 
-				//初始化client
-				try{
+				// 初始化client
+				try {
 					client = new DefaultHttpClient();
 					client.getParams().setParameter(
-							CoreConnectionPNames.CONNECTION_TIMEOUT,
-							4000);
+							CoreConnectionPNames.CONNECTION_TIMEOUT, 4000);
 					client.getParams().setParameter(
-							CoreConnectionPNames.SO_TIMEOUT,
-							4000);
-					client.getParams().setParameter(ClientPNames.HANDLE_REDIRECTS, false);					
-					HttpClientParams.setCookiePolicy(client.getParams(), CookiePolicy.BROWSER_COMPATIBILITY);
-					
+							CoreConnectionPNames.SO_TIMEOUT, 4000);
+					client.getParams().setParameter(
+							ClientPNames.HANDLE_REDIRECTS, false);
+					HttpClientParams.setCookiePolicy(client.getParams(),
+							CookiePolicy.BROWSER_COMPATIBILITY);
+
 					SSLContext sslcontext = SSLContext.getInstance("SSL");
-					sslcontext.init(null, new TrustManager[]{
-							new X509TrustManager() {
-			
+					sslcontext.init(null,
+							new TrustManager[] { new X509TrustManager() {
+
 								public void checkClientTrusted(
-										java.security.cert.X509Certificate[] arg0, String arg1)
+										java.security.cert.X509Certificate[] arg0,
+										String arg1)
 										throws CertificateException {
 								}
-			
+
 								public void checkServerTrusted(
-										java.security.cert.X509Certificate[] arg0, String arg1)
+										java.security.cert.X509Certificate[] arg0,
+										String arg1)
 										throws CertificateException {
 								}
-			
+
 								public java.security.cert.X509Certificate[] getAcceptedIssuers() {
 									return null;
 								}
-							}
-					}, null);
-					
-			        SSLSocketFactory ssf = new    SSLSocketFactory(sslcontext, SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
-			        ClientConnectionManager ccm = client.getConnectionManager();
-			        SchemeRegistry sr = ccm.getSchemeRegistry();
-			        sr.register(new Scheme("https", 443, ssf));
-				}catch(Exception e){
+							} }, null);
+
+					SSLSocketFactory ssf = new SSLSocketFactory(sslcontext,
+							SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
+					ClientConnectionManager ccm = client.getConnectionManager();
+					SchemeRegistry sr = ccm.getSchemeRegistry();
+					sr.register(new Scheme("https", 443, ssf));
+				} catch (Exception e) {
 					e.printStackTrace();
 				}
 
 				flag = true;
+
+				System.out.println("Servlet 初始化结束");
 				
 				// 启动维护线程
 				timer = new Timer();
 				timer.schedule(new TimerTask() {
 					private HttpGet request = null;
-					private HttpResponse response =null;
+					private HttpResponse response = null;
 					private HttpEntity entity = null;
 					private String resp = null;
-					
+
 					@Override
 					public void run() {
 						try {
 							Iterator<String> it = null;
-							synchronized(Cookies.getInstance()) {
-								it = new CopiedIterator(Cookies.getInstance().iterator());
+							synchronized (Cookies.getInstance()) {
+								it = new CopiedIterator(Cookies.getInstance()
+										.iterator());
 							}
-							
-							while(it.hasNext()){
-								String line = (String)it.next();
-								try{
-								//验证
-									request = new HttpGet("https://mail.qq.com/cgi-bin/login?vt=passport&vm=wsk&delegate_url=");
-			
+
+							while (it.hasNext()) {
+								String line = (String) it.next();
+								try {
+									// 验证
+									request = new HttpGet(
+											"https://mail.qq.com/cgi-bin/login?vt=passport&vm=wsk&delegate_url=");
+
 									request.setHeader("User-Agent", UAG);
-									request.setHeader("Content-Type", "text/html");
-									request.setHeader("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
-									request.setHeader("Accept-Language", "zh-cn,zh;q=0.8,en-us;q=0.5,en;q=0.3");
-									request.setHeader("Accept-Encoding", "gzip, deflate");
-									request.setHeader("Referer", "https://mail.qq.com/cgi-bin/loginpage");
-									request.setHeader("Connection", "keep-alive");				
-			
-									CookieStore  cs = client.getCookieStore();
+									request.setHeader("Content-Type",
+											"text/html");
+									request.setHeader("Accept",
+											"text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
+									request.setHeader("Accept-Language",
+											"zh-cn,zh;q=0.8,en-us;q=0.5,en;q=0.3");
+									request.setHeader("Accept-Encoding",
+											"gzip, deflate");
+									request.setHeader("Referer",
+											"https://mail.qq.com/cgi-bin/loginpage");
+									request.setHeader("Connection",
+											"keep-alive");
+
+									CookieStore cs = client.getCookieStore();
 
 									String[] cks = line.split(" ");
-									for(int i=0;i<cks.length;i++){
-										String[] lsx = cks[i].substring(0, cks[i].length()-1).split("=");
-										//System.out.println(cks[i]+"/"+ls.length);
+									for (int i = 0; i < cks.length; i++) {
+										String[] lsx = cks[i].substring(0,
+												cks[i].length() - 1).split("=");
+										// System.out.println(cks[i]+"/"+ls.length);
 										BasicClientCookie cookie = null;
-										if(lsx.length==1){
-											cookie = new BasicClientCookie(lsx[0], "");
-										}else{
-											//System.err.println(lsx[0]+"="+lsx[1]);
-											//System.err.println(lsx[1]);
-											cookie = new BasicClientCookie(lsx[0], lsx[1]);
+										if (lsx.length == 1) {
+											cookie = new BasicClientCookie(
+													lsx[0], "");
+										} else {
+											// System.err.println(lsx[0]+"="+lsx[1]);
+											// System.err.println(lsx[1]);
+											cookie = new BasicClientCookie(
+													lsx[0], lsx[1]);
 										}
 										cookie.setDomain("mail.qq.com");
 										cookie.setPath("/");
-										
+
 										cs.addCookie(cookie);
 									}
 									client.setCookieStore(cs);
-									
+
 									response = client.execute(request);
 									entity = response.getEntity();
-			
+
 									resp = EntityUtils.toString(entity);
-									
+
 									try {
 										if (entity != null) {
 											EntityUtils.consume(entity);
@@ -189,13 +210,15 @@ public class InitServlet extends GenericServlet {
 										request.releaseConnection();
 										request.abort();
 									}
-			
-									if(resp.indexOf("frame_html?sid=")==-1){
-										synchronized(Cookies.getInstance()){
+
+									if (resp.indexOf("frame_html?sid=") == -1) {
+										synchronized (Cookies.getInstance()) {
 											Cookies.getInstance().remove(line);
 										}
+										System.out.println("removing cookies:"
+												+ line);
 									}
-								}catch(Exception e){
+								} catch (Exception e) {
 									e.printStackTrace();
 								}
 							}
@@ -203,7 +226,7 @@ public class InitServlet extends GenericServlet {
 							e.printStackTrace();
 						}
 					}
-				}, 0, 60 * 1000 * 10); //10分钟维持并验证一次
+				}, 0, 60 * 1000 * 10); // 10分钟维持并验证一次
 			}
 		}).start();
 	}
