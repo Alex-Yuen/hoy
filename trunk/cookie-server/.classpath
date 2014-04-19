@@ -11,6 +11,5 @@
 	<classpathentry kind="lib" path="lib/commons-codec-1.9.jar"/>
 	<classpathentry kind="lib" path="lib/jna.jar"/>
 	<classpathentry kind="lib" path="lib/JNative.jar"/>
-	<classpathentry kind="lib" path="lib/yundamaAPI.dll"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

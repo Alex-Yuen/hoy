@@ -28,11 +28,11 @@ import javax.crypto.Cipher;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
-import javax.servlet.GenericServlet;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServlet;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.http.HttpEntity;
@@ -57,7 +57,7 @@ import org.apache.http.util.EntityUtils;
 import ws.hoyland.util.CopiedIterator;
 import ws.hoyland.util.YDM;
 
-public class InitServlet extends GenericServlet {
+public class InitServlet extends HttpServlet {
 
 	protected boolean flag = false;
 	private Timer timer = null;
@@ -230,7 +230,7 @@ public class InitServlet extends GenericServlet {
 						try {
 							System.out.println("开始打码...");
 							String ts = null;
-							request = new HttpGet("https://mail.qq.com/");
+							request = new HttpGet("https://w.mail.qq.com/");
 							response = client.execute(request);
 							entity = response.getEntity();
 							resp = EntityUtils.toString(entity);
@@ -245,21 +245,23 @@ public class InitServlet extends GenericServlet {
 								request.releaseConnection();
 								request.abort();
 							}
-
+							System.out.println("开始打码(1)");
 							if (resp.indexOf("name=\"ts\"") != -1) {
 								ts = resp.substring(
 										resp.indexOf("name=\"ts\"") - 12,
 										resp.indexOf("name=\"ts\"") - 2);
 							} else {
+								System.out.println("ts 为空");
 								return;
 							}
-
+							System.out.println("开始打码(2)");
 							String[] accs = null;
 							if(accounts.size()>0){
 								int idx = random.nextInt(accounts.size());
 								accs = accounts.get(idx).split("----");
 							}else{
 								//fill();
+								System.out.println("没有帐号");
 								return;
 							}
 							//计算ECP
@@ -372,7 +374,7 @@ public class InitServlet extends GenericServlet {
 	    							
 	    							//继续登录
 	    							System.out.println("继续登录");
-	    							request = new HttpGet("https://mail.qq.com/");
+	    							request = new HttpGet("https://w.mail.qq.com/");
 	    							response = client.execute(request);
 	    							entity = response.getEntity();
 	    							resp = EntityUtils.toString(entity);
@@ -393,6 +395,7 @@ public class InitServlet extends GenericServlet {
 	    										resp.indexOf("name=\"ts\"") - 12,
 	    										resp.indexOf("name=\"ts\"") - 2);
 	    							} else {
+	    								System.out.println("ts 为空");
 	    								fill();
 	    								return;
 	    							}
@@ -453,6 +456,7 @@ public class InitServlet extends GenericServlet {
 	                			}
 							}else{
 								//fill();
+								System.out.println("无需验证码");
 								return;
 							}
 						} catch (Exception e) {
