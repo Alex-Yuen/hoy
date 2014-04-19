@@ -29,12 +29,14 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServlet;
 
 import org.apache.http.HttpEntity;
+import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.CookieStore;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.params.CookiePolicy;
 import org.apache.http.client.params.HttpClientParams;
 import org.apache.http.conn.ClientConnectionManager;
+import org.apache.http.conn.params.ConnRouteParams;
 import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.scheme.SchemeRegistry;
 import org.apache.http.conn.ssl.SSLSocketFactory;
@@ -206,6 +208,12 @@ public class InitServlet extends HttpServlet {
 					HttpClientParams.setCookiePolicy(client.getParams(),
 							CookiePolicy.BROWSER_COMPATIBILITY);
 
+					HttpHost proxy = new HttpHost("127.0.0.1", 8888);
+
+					
+					client.getParams().setParameter(ConnRouteParams.DEFAULT_PROXY,
+							proxy);
+					
 					SSLContext sslcontext = SSLContext.getInstance("SSL");
 					sslcontext.init(null,
 							new TrustManager[] { new X509TrustManager() {
@@ -464,6 +472,8 @@ public class InitServlet extends HttpServlet {
 
 							if(resp.indexOf("frame_html?sid=")==-1){
 								System.out.println("验证码错误");
+								fill();
+								return;
 							}
 							
 							String sid = resp.substring(
