@@ -28,23 +28,24 @@ public class Test {
 	public static void main(String[] args) {
 		//System.out.println( System.currentTimeMillis() / 1000);
 		
-		String resp = "({						acctid : \"0\",				percent : +\"\",		status : 0,		errcode : 0,	errmsg : \"\"})";
+//		
+//		String resp = "({						acctid : \"0\",				percent : +\"\",		status : 0,		errcode : 0,	errmsg : \"\"})";
+////		if(resp.startsWith("(")){
+////			resp = resp.substring(1, resp.length()-1);
+////		}
+////		System.out.println(resp);
+//		
 //		if(resp.startsWith("(")){
 //			resp = resp.substring(1, resp.length()-1);
 //		}
-//		System.out.println(resp);
-		
-		if(resp.startsWith("(")){
-			resp = resp.substring(1, resp.length()-1);
-		}
-		
-		try {
-			System.out.println(resp.substring(36));
-			JSONObject json = new JSONObject(resp);
-		} catch (JSONException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+//		
+//		try {
+//			System.out.println(resp.substring(36));
+//			JSONObject json = new JSONObject(resp);
+//		} catch (JSONException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 		
 		
 		//System.out.println(Converts.hexStringToB64("1e395b2f6e5eb556c0d08c64f73be3ad7a08826fd2d0d55d839196ae142d0cb6b610d4fc4b5769d283a868f5f78a1068ee2946a753bc5462d6d41342dea265121c6d2e7d2f19bc9b688d2301a185da7855e19271a9d903da4deb275d4ed3e5f48c626b18eab7eb19d6ae7b3377663a2896b7c901fb41022dbc011d5076f8af1c"));
