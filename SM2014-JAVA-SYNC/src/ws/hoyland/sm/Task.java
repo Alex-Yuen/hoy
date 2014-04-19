@@ -283,7 +283,7 @@ public class Task implements Runnable {//, Observer {
 			}finally{
 				input.close();
 			}
-			
+			//cl = "tinfo=1397895904.0000*; wimrefreshrun=0&; qm_antisky=1627389787&7ee3dcfb9ac087e01a10b9c6a2bd8a72824757e54a0674f8a81758f39acd395f; autologin=; qm_flag=0; qqmail_alias=1627389787@qq.com; qm_domain=; qm_verifyimagesession=; qm_authimgs_id=; qm_sk=; pcache=; device=; qm_ssum=; qm_qz_key=; sid=1627389787&c71f6000f0d174c4c1ea9c88d614896b,qenhrMUIyeXY2OUE2N04tbUJmTkV5OW5VMmFhT3dCS2J1bms5MFVCcGdZRV8.; qm_username=1627389787; qm_lg=qm_lg; new_mail_num=1627389787&0; qm_username=; qm_sid=c71f6000f0d174c4c1ea9c88d614896b,qenhrMUIyeXY2OUE2N04tbUJmTkV5OW5VMmFhT3dCS2J1bms5MFVCcGdZRV8.; qm_domain=http://mail.qq.com; qm_ptsk=1627389787&@thfOVARet; CCSHOW=0000; foxacc=1627389787&0; ssl_edition=mail.qq.com; edition=mail.qq.com; username=1627389787&1627389787;";
 			/**
 			byte[] bs = null;
 //			HttpURLConnection connection = null;
