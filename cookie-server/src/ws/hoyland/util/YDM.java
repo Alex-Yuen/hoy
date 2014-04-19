@@ -1,10 +1,9 @@
 package ws.hoyland.util;
 
 import com.sun.jna.Library;
-import com.sun.jna.Native;
 
 public interface YDM extends Library {
-	YDM INSTANCE = (YDM) Native.loadLibrary("lib\\yundamaAPI", YDM.class);
+	YDM INSTANCE = (YDM)JNALoader.load("/WEB-INF/lib/yundamaAPI.dll", YDM.class);
 
 	public void YDM_SetAppInfo(int nAppId, String lpAppKey);
 
