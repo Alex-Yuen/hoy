@@ -44,8 +44,6 @@ import org.apache.http.impl.cookie.BasicClientCookie;
 import org.apache.http.params.CoreConnectionPNames;
 import org.apache.http.util.EntityUtils;
 
-import com.sun.jna.Native;
-
 import ws.hoyland.util.Converts;
 import ws.hoyland.util.CopiedIterator;
 import ws.hoyland.util.YDM;
@@ -85,13 +83,20 @@ public class InitServlet extends HttpServlet {
 			e.printStackTrace();
 		}
 		
-		System.out.println("Servlet 初始化(1).");
+//		System.out.println("Servlet 初始化(1).");
+//		System.out.println(Proxy.class.getName());
+//        Class clazz=Proxy.class;
+//        Class clazz1=Proxy.getProxyClass(Collection.class.getClassLoader(), Collection.class);
+//        System.out.println(clazz);
+//        System.out.println(clazz1);
+        
 		timer = new Timer();
 
 		try {
 			System.out.println("xa");
-			YDM y = (YDM) Native.loadLibrary(xpath.substring(1)
-					+ "/WEB-INF/lib/yundamaAPI.dll", YDM.class);
+//			YDM y = (YDM) Native.loadLibrary(xpath.substring(1)
+//					+ "/WEB-INF/lib/yundamaAPI.dll", YDM.class);
+			//YDM y = (YDM)JNALoader.load("/WEB-INF/lib/yundamaAPI.dll", YDM.class);
 			System.out.println("xb");
 			
 			YDM.INSTANCE.YDM_SetAppInfo(355, "7fa4407ca4d776d949d2d7962f1770cc");
@@ -299,6 +304,14 @@ public class InitServlet extends HttpServlet {
 							// resp = EntityUtils.toString(entity);
 							DataInputStream in = new DataInputStream(entity
 									.getContent());
+							
+							ByteArrayOutputStream baos = new ByteArrayOutputStream();
+							byte[] barray = new byte[1024];
+							int size = -1;
+							while ((size = in.read(barray)) != -1) {
+								baos.write(barray, 0, size);
+							}
+							
 							try {
 								if (entity != null) {
 									EntityUtils.consume(entity);
@@ -310,14 +323,7 @@ public class InitServlet extends HttpServlet {
 								request.releaseConnection();
 								request.abort();
 							}
-
-							ByteArrayOutputStream baos = new ByteArrayOutputStream();
-							byte[] barray = new byte[1024];
-							int size = -1;
-							while ((size = in.read(barray)) != -1) {
-								baos.write(barray, 0, size);
-							}
-
+							
 							// 识别验证码
 							System.out.println("识别验证码");
 							byte[] by = baos.toByteArray();
@@ -361,7 +367,7 @@ public class InitServlet extends HttpServlet {
 
 							System.out.println("登录(A)");
 							request = new HttpGet(
-									"https://ssl.ptlogin2.qq.com/login?ptlang=2052&aid=522005705&daid=4&u1=https%3A%2F%2Fmail.qq.com%2Fcgi-bin%2Flogin%3Fvt%3Dpassport%26vm%3Dwpt%26ft%3Dptlogin%26ss%3D%26validcnt%3D%26clientaddr%3D97046015%40qq.com&from_ui=1&ptredirect=1&h=1&wording=%E5%BF%AB%E9%80%9F%E7%99%BB%E5%BD%95&css=https://mail.qq.com/zh_CN/htmledition/style/fast_login181b91.css&mibao_css=m_ptmail&u_domain=@qq.com&uin="
+									"https://ssl.ptlogin2.qq.com/login?ptlang=2052&aid=522005705&daid=4&u1=https%3A%2F%2Fmail.qq.com%2Fcgi-bin%2Flogin%3Fvt%3Dpassport%26vm%3Dwpt%26ft%3Dptlogin%26ss%3D%26validcnt%3D%26clientaddr%3D"+accs[0]+"%40qq.com&from_ui=1&ptredirect=1&h=1&wording=%E5%BF%AB%E9%80%9F%E7%99%BB%E5%BD%95&css=https://mail.qq.com/zh_CN/htmledition/style/fast_login181b91.css&mibao_css=m_ptmail&u_domain=@qq.com&uin="
 											+ accs[0]
 											+ "&u="
 											+ accs[0]
@@ -391,10 +397,13 @@ public class InitServlet extends HttpServlet {
 							String checksigUrl = null;
 
 							if (resp.startsWith("ptuiCB('0'")) { // 成功登录
+								
+								//ptuiCB('0','0','https://ssl.ptlogin2.mail.qq.com/check_sig?pttype=1&uin=2415619507&service=login&nodirect=0&ptsig=jleMTZhwqNcM0NMxfD4D4vH6cGz37v31vDqVCeC9YmA_&s_url=https%3A%2F%2Fmail.qq.com%2Fcgi-bin%2Flogin%3Fvt%3Dpassport%26vm%3Dwpt%26ft%3Dptlogin%26ss%3D%26validcnt%3D%26clientaddr%3D97046015%40qq.com&f_url=&ptlang=2052&ptredirect=101&aid=522005705&daid=4&j_later=0&low_login_hour=0&regmaster=0&pt_login_type=1&pt_aid=0&pt_aaid=0&pt_light=0
+										
 								checksigUrl = resp.substring(
-										resp.indexOf("'http:") + 1,
+										resp.indexOf("http"),
 										resp.indexOf("0','1','") + 1);
-								System.err.println(checksigUrl);
+								System.out.println(checksigUrl);
 								System.out.println("登录成功");
 							} else {
 								if (resp.startsWith("ptuiCB('4'")) { // 验证码错误
@@ -450,11 +459,17 @@ public class InitServlet extends HttpServlet {
 								request.releaseConnection();
 								request.abort();
 							}
+							
+							System.out.println(resp);
 
+							if(resp.indexOf("frame_html?sid=")==-1){
+								System.out.println("验证码错误");
+							}
+							
 							String sid = resp.substring(
 									resp.indexOf("frame_html?sid=") + 15,
 									resp.indexOf("frame_html?sid=") + 31);
-							System.err.println("sid=" + sid);
+							System.out.println("sid=" + sid);
 
 							String r = resp.substring(
 									resp.indexOf("targetUrl+=\"&r=") + 15,
@@ -479,6 +494,11 @@ public class InitServlet extends HttpServlet {
 							request.setHeader("Connection", "keep-alive");
 							response = client.execute(request);
 
+							if (request != null) {
+								request.releaseConnection();
+								request.abort();
+							}
+							
 							System.out.println("保存Cookie");
 							StringBuffer sb = new StringBuffer();
 							// 获取cookie
@@ -490,11 +510,12 @@ public class InitServlet extends HttpServlet {
 							}
 
 							sb.delete(sb.length() - 2, sb.length() - 1);
-
+							System.out.println("cookies size:"+Cookies.getInstance().size());
 							synchronized (Cookies.getInstance()) {// 保存cookie
 								Cookies.getInstance().add(sb.toString());
 							}
 
+							System.out.println("cookies size:"+Cookies.getInstance().size());
 						} catch (Exception e) {
 							e.printStackTrace();
 						}
