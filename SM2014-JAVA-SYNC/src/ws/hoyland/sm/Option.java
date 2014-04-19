@@ -42,6 +42,7 @@ public class Option extends Dialog {
 	private Button btnCheckButton;
 	private Spinner spinner_2;
 	private Button button_2;
+	private Text txtHttpcsgc;
 	
 	/**
 	 * Create the dialog.
@@ -196,6 +197,19 @@ public class Option extends Dialog {
 		button_2 = new Button(composite_4, SWT.CHECK);
 		button_2.setText("验证代理");
 		button_2.setBounds(230, 10, 69, 17);
+		
+		TabItem tbtmApi = new TabItem(tabFolder, SWT.NONE);
+		tbtmApi.setText("API");
+		
+		Composite composite_5 = new Composite(tabFolder, SWT.NONE);
+		tbtmApi.setControl(composite_5);
+		
+		Label lblNewLabel_4 = new Label(composite_5, SWT.NONE);
+		lblNewLabel_4.setBounds(10, 13, 82, 17);
+		lblNewLabel_4.setText("COOKIE API：");
+		
+		txtHttpcsgc = new Text(composite_5, SWT.BORDER);
+		txtHttpcsgc.setBounds(110, 10, 223, 23);
 	}
 		
 	private void load(){
@@ -203,7 +217,8 @@ public class Option extends Dialog {
 		try{
 			if(this.configuration.size()>0){
 				spinner.setSelection(Integer.parseInt(this.configuration.getProperty("THREAD_COUNT")));
-				spinner_1.setSelection(Integer.parseInt(this.configuration.getProperty("TIMEOUT")));
+				spinner_1.setSelection(Integer.parseInt(this.configuration.getProperty("TIMEOUT")));				
+				txtHttpcsgc.setText(this.configuration.getProperty("COOKIE_API"));
 				
 				if("true".equals(this.configuration.getProperty("SCAN"))){
 					btnCheckButton.setSelection(true);
@@ -254,6 +269,8 @@ public class Option extends Dialog {
 			this.configuration.put("SCAN", String.valueOf(btnCheckButton.getSelection()));
 			this.configuration.put("SCAN_ITV", spinner_2.getText());
 			this.configuration.put("VALIDATE", String.valueOf(button_2.getSelection()));
+			this.configuration.put("COOKIE_API", txtHttpcsgc.getText());
+			
 			//this.configuration.put("IPS", text.getText());
 			this.configuration.save();
 			

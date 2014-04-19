@@ -1,14 +1,10 @@
 package ws.hoyland.sm;
 
 //import java.io.ByteArrayOutputStream;
-//import java.io.DataInputStream;
-//import java.math.BigInteger;
-//import java.security.KeyFactory;
-//import java.security.PublicKey;
-//import java.security.spec.RSAPublicKeySpec;
-//import java.util.Observable;
-//import java.util.Observer;
+import java.io.InputStream;
 import java.math.BigInteger;
+import java.net.HttpURLConnection;
+import java.net.URL;
 //import java.net.URLEncoder;
 import java.security.KeyFactory;
 import java.security.PublicKey;
@@ -241,6 +237,52 @@ public class Task implements Runnable {//, Observer {
 			}
 			//client.getConnectionManager().closeIdleConnections(4000, TimeUnit.MILLISECONDS);
 			
+			//获取cookie
+			byte[] bs = null;
+			HttpURLConnection connection = null;
+			InputStream input = null;
+			boolean getit = false;
+			
+			String cl = null;//cookie line
+			try {
+				URL url = new URL(CONFIGURATION.getProperty("COOKIE_API"));
+				
+				connection = (HttpURLConnection) url
+						.openConnection();
+				connection.setDoOutput(true);// 允许连接提交信息
+				connection.setRequestMethod("GET");// 网页提交方式“GET”、“POST”
+				// connection.setRequestProperty("User-Agent",
+				// "Mozilla/4.7 [en] (Win98; I)");
+				connection.setRequestProperty("Content-Type",
+						"text/plain; charset=UTF-8");
+				connection.setRequestProperty("Connection",
+						"close");
+//				StringBuffer sb = new StringBuffer();
+//				sb.append(header);
+//				sb.append(Converts.bytesToHexString(encrypted));
+//				os = connection.getOutputStream();
+//				os.write(sb.toString().getBytes());
+//				os.flush();
+//				os.close();
+
+				input = connection.getInputStream();
+				bs = new byte[input.available()];
+				input.read(bs);
+				
+				
+				cl = new String(bs);
+				if("null".equals(cl)){
+					getit = false;
+				}else{
+					getit = true;
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+				getit = false;
+			}finally{
+				input.close();
+			}
+			
 			/**
 			byte[] bs = null;
 //			HttpURLConnection connection = null;
@@ -354,10 +396,9 @@ public class Task implements Runnable {//, Observer {
 				}				
 			}
 			**/
-			boolean getit = true;
 			String sid = null;
 			if(getit){
-
+				Engine.getInstance().info(account + " -> " + "Got Cookie");
 				
 				String px = Engine.getInstance().getProxy();
 				// if(px==null){
@@ -387,22 +428,31 @@ public class Task implements Runnable {//, Observer {
 				CookieStore  cs = client.getCookieStore();
 				//
 				//String[] cks = "pt2gguin=o1696195841; uin=o1696195841; skey=@AIhN7K0s4; ETK=; superuin=o1696195841; superkey=2O4VH82tu3wNKKLh3zs*YTERLw159XoZz9nFgLz9rLw_; supertoken=1512671834; ptisp=ctc; RK=TeXO02CBe3; ptuserinfo=e4b880e4ba8ce4b889; ptcz=8b10fd2ce893905d7dedff0af7452fc0040c9de336dede894c396a3c98c7e678; ptcz=; airkey=; ptwebqq=6a8cce7c33974d34778f4a199b4db563dbc894f0d40807f36154c6091934ee14;".split(" ");
-				String[] cks = "pgv_info=ssid=s805283833; pgv_pvid=2966307264; ptisp=ctc; verifysession=h02rC7b2e0FO_foDcblp7_lm-JykS7oNpyvT_6T3CGaplc8BKGkAywTzJFH9iw870VRcDLYJRRMIG_A-CKULdyfHQ**; pt2gguin=o0068159276; uin=o0068159276; skey=@2TrMcpyaM; ptcz=75e4e055325d5f66f0ac1e63182b9e3847d3d3c188954d84a06f27157551e3be; p_uin=o0068159276; p_skey=otGoXg-ef**EA7kYziKCRaT1iPPBvUJ-oEPJWQ0h9rw_; pt4_token=zn66YCwi7VyLqdFIEBj1rw__; wimrefreshrun=0&; qm_flag=0; qqmail_alias=68159276@qq.com; sid=68159276&468a23dfb223657ef3ec2deb082b7e6c,qb3RHb1hnLWVmKipFQTdrWXppS0NSYVQxaVBQQnZVSi1vRVBKV1EwaDlyd18.; qm_username=68159276; new_mail_num=68159276&0; qm_sid=468a23dfb223657ef3ec2deb082b7e6c,qb3RHb1hnLWVmKipFQTdrWXppS0NSYVQxaVBQQnZVSi1vRVBKV1EwaDlyd18.; qm_domain=http://mail.qq.com; qm_ptsk=68159276&@2TrMcpyaM; CCSHOW=000031; foxacc=68159276&0; ssl_edition=mail.qq.com; edition=mail.qq.com; username=68159276&68159276; reader_mail_cur_page=stattime%3D1397794144385".split(" ");
+				
+				//获取cookie
+				
+				String[] cks = cl.split(" ");
 				for(int i=0;i<cks.length;i++){
-					String[] lsx = cks[i].substring(0, cks[i].length()-1).split("=");
-					//System.out.println(cks[i]+"/"+ls.length);
-					BasicClientCookie cookie = null;
-					if(lsx.length==1){
-						cookie = new BasicClientCookie(lsx[0], "");
-					}else{
-						//System.err.println(lsx[0]+"="+lsx[1]);
-//						System.err.println(lsx[1]);
-						cookie = new BasicClientCookie(lsx[0], lsx[1]);
+					try{
+						String[] lsx = cks[i].substring(0, cks[i].length()-1).split("=");
+						//System.out.println(cks[i]+"/"+ls.length);
+						BasicClientCookie cookie = null;
+						if(lsx.length==1){
+							cookie = new BasicClientCookie(lsx[0], "");
+						}else{
+//							System.err.println(lsx[0]+"="+lsx[1]);
+	//						System.err.println(lsx[1]);
+							cookie = new BasicClientCookie(lsx[0], lsx[1]);
+						}
+						cookie.setDomain("mail.qq.com");
+						cookie.setPath("/");
+						
+						cs.addCookie(cookie);
+					}catch(Exception e){
+//						System.out.println(cks[i]);
+//						System.out.println(cks[i].length());
+						e.printStackTrace();
 					}
-					cookie.setDomain("mail.qq.com");
-					cookie.setPath("/");
-					
-					cs.addCookie(cookie);
 				}
 				client.setCookieStore(cs);
 				
@@ -423,6 +473,10 @@ public class Task implements Runnable {//, Observer {
 					request.abort();
 				}
 
+				if(resp.indexOf("frame_html?sid=")==-1){
+					Engine.getInstance().info(account + " -> " + "Cookie 超时");
+					return;
+				}
 				
 				//frame_html?sid=
 				//",clienti
@@ -666,6 +720,10 @@ public class Task implements Runnable {//, Observer {
 //						// Engine.getInstance().removeProxy(proxy.getHostName()+":"+proxy.getPort());
 //					}
 //				}
+			}else{
+				//DO Nothing
+				Engine.getInstance().info(account + " -> " + "Can't get any Cookie");
+				Engine.getInstance().addTask(line);
 			}
 		}
 		// catch(NoProxyException e){
