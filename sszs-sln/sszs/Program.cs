@@ -16,6 +16,8 @@ namespace ws.hoyland.sszs
         [STAThread]
         static void Main()
         {
+            Console.WriteLine(Convert.ToBase64String(Util.hexStringToByte("1234")));
+
             AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
