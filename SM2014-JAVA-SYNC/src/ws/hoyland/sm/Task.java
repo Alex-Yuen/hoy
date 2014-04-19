@@ -271,6 +271,7 @@ public class Task implements Runnable {//, Observer {
 				
 				
 				cl = new String(bs);
+				cl = cl.substring(0, cl.indexOf("\n"));
 				if("null".equals(cl)){
 					getit = false;
 				}else{
