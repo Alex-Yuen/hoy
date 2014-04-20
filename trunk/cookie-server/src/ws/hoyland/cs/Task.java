@@ -12,14 +12,12 @@ import javax.net.ssl.X509TrustManager;
 
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
-import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.params.ClientPNames;
 import org.apache.http.client.params.CookiePolicy;
 import org.apache.http.client.params.HttpClientParams;
 import org.apache.http.conn.ClientConnectionManager;
-import org.apache.http.conn.params.ConnRouteParams;
 import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.scheme.SchemeRegistry;
 import org.apache.http.conn.ssl.SSLSocketFactory;
@@ -386,11 +384,13 @@ public class Task implements Runnable {
 			}
 
 			sb.delete(sb.length() - 2, sb.length() - 1);
-			System.out.println("cookies size:" + Cookies.getInstance().size());
+			System.out.println("cookies size 1:" + Cookies.getInstance().size());
 			synchronized (Cookies.getInstance()) {// 保存cookie
-				Cookies.getInstance().add(sb.toString());
+				if(!Cookies.getInstance().containsKey(accs[0])){
+					Cookies.getInstance().put(accs[0], sb.toString());
+				}
 			}
-			System.out.println("cookies size:" + Cookies.getInstance().size());
+			System.out.println("cookies size 2:" + Cookies.getInstance().size());
 			System.out.println("打码结束");
 		} catch (Exception e) {
 			servlet.fill();

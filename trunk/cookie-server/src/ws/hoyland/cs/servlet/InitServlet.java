@@ -14,7 +14,6 @@ import java.security.cert.CertificateException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -34,7 +33,6 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServlet;
 
 import org.apache.http.HttpEntity;
-import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.CookieStore;
 import org.apache.http.client.methods.HttpGet;
@@ -42,7 +40,6 @@ import org.apache.http.client.params.ClientPNames;
 import org.apache.http.client.params.CookiePolicy;
 import org.apache.http.client.params.HttpClientParams;
 import org.apache.http.conn.ClientConnectionManager;
-import org.apache.http.conn.params.ConnRouteParams;
 import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.scheme.SchemeRegistry;
 import org.apache.http.conn.ssl.SSLSocketFactory;
@@ -66,10 +63,11 @@ public class InitServlet extends HttpServlet {
 
 	private static final long serialVersionUID = 407060459247815226L;
 	private static String UAG = "Mozilla/5.0 (Linux; U; Android 2.3.3; en-us; sdk Build/GRI34) AppleWebKit/533.1 (KHTML, like Gecko) Version/4.0 Mobile Safari/533.1";
-	private static Random random = new Random();
+//	private static Random random = new Random();
 	private ThreadPoolExecutor pool = null;
 	private int size;//需维护的数量
 	private boolean tmflag = false;
+	private int aidx = -1;
 
 	public InitServlet() {
 	}
@@ -215,8 +213,13 @@ public class InitServlet extends HttpServlet {
 					br = new BufferedReader(new InputStreamReader(is));
 					String line = null;
 					while ((line = br.readLine()) != null) {
+						String acc = line.substring(line.indexOf("pt2gguin")+11);
+						acc = acc.substring(0, acc.indexOf(";"));
+//						System.out.println("acc="+acc);						
 						synchronized (Cookies.getInstance()) {
-							Cookies.getInstance().add(line);
+							if(!Cookies.getInstance().containsKey(acc)){
+								Cookies.getInstance().put(acc, line);
+							}
 						}
 						// System.out.println("adding cookies:" + line);
 					}
@@ -279,7 +282,7 @@ public class InitServlet extends HttpServlet {
 
 				//如果小于既定个数，则加入Task
 				int csize = Cookies.getInstance().size();
-				System.out.println("csize:"+csize);
+				System.out.println("current size:"+csize);
 				if (csize < size) {
 					for (int i = 0; i < size - csize; i++) {						
 						fill();
@@ -313,7 +316,7 @@ public class InitServlet extends HttpServlet {
 							System.out.println("维护线程:正在验证Cookie...");
 							Iterator<String> it = null;
 							synchronized (Cookies.getInstance()) {
-								it = new CopiedIterator(Cookies.getInstance()
+								it = new CopiedIterator(Cookies.getInstance().values()
 										.iterator());
 							}
 
@@ -433,7 +436,7 @@ public class InitServlet extends HttpServlet {
 			output = new BufferedWriter(new FileWriter(new File(xpath
 					+ "/WEB-INF/cookies.txt")));
 
-			for(String cookie:Cookies.getInstance()){
+			for(String cookie:Cookies.getInstance().values()){
 				output.write(cookie+"\r\n");
 			}
 			
@@ -453,10 +456,22 @@ public class InitServlet extends HttpServlet {
 	
 	public void fill(){
 		try{			
+			//System.out.println("fill");
 			int csize = Cookies.getInstance().size();
 			if(csize<size){
-				int idx = random.nextInt(accounts.size());
-				String account = accounts.get(idx);
+				String account = null;
+				String[] accs = null;
+				do{
+					aidx++;
+					if(aidx==accounts.size()){
+						aidx = 0;
+					}
+					account = accounts.get(aidx);
+					accs = account.split("----");
+					//System.out.println(aidx+"="+accs[0]);
+				}while(Cookies.getInstance().containsKey(accs[0]));
+				
+				//System.out.println("run");
 				Task task = new Task(this, account);
 				pool.execute(task);
 			}//否则，无需再次打码获取Cookie			

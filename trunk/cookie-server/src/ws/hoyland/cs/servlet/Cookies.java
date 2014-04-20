@@ -1,18 +1,16 @@
 package ws.hoyland.cs.servlet;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Random;
+import java.util.LinkedHashMap;
 
-public class Cookies extends ArrayList<String> {
+public class Cookies extends LinkedHashMap<String, String> {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -829780747705919217L;
 	private static Cookies instance;
-	private static Random random = new Random();
-	private int idx = 0;
+//	private static Random random = new Random();
+	private int idx = -1;
 	
 	private Cookies() {
 		
@@ -29,19 +27,16 @@ public class Cookies extends ArrayList<String> {
 		super(arg0);
 	}
 
-	public Cookies(Collection<? extends String> arg0) {
-		super(arg0);
-	}
-
 	public synchronized String peek(){
 		idx++;
-		if(idx==size()){
+		if(idx>=size()){
 			idx = 0;
 		}
 		
 		if(size()>0){
 			//int idx = random.nextInt(size());
-			return this.get(idx);
+			String[] cks = this.values().toArray(new String[0]);
+			return cks[idx];
 		}else{
 			return null;
 		}
