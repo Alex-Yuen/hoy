@@ -121,7 +121,7 @@ public class About extends Dialog {
 		lblNewLabel_3.setText("微风晒密(代理版)");
 		
 		Label lblNewLabel_2 = new Label(composite_5, SWT.NONE);
-		lblNewLabel_2.setText("1.0");
+		lblNewLabel_2.setText("1.1");
 		
 		Label lblNewLabel_4 = new Label(composite_5, SWT.NONE);
 		lblNewLabel_4.setText("Copyright © 2014");

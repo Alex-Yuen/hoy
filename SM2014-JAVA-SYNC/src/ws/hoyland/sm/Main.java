@@ -136,7 +136,7 @@ public class Main implements Observer {
 		});
 		shell.setImage(SWTResourceManager.getImage(Main.class, "/logo.ico"));
 		shell.setSize(601, 380);
-		shell.setText("微风晒密(代理版) 1.0");
+		shell.setText("微风晒密(代理版) 1.1");
 		shell.setLayout(new BorderLayout(0, 0));
 		
 		Rectangle bounds = Display.getDefault().getPrimaryMonitor().getBounds();
