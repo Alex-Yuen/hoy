@@ -1,10 +1,12 @@
 package ws.hoyland.cs.servlet;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -28,11 +30,13 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServlet;
 
+import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.CookieStore;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.params.ClientPNames;
 import org.apache.http.client.params.CookiePolicy;
 import org.apache.http.client.params.HttpClientParams;
 import org.apache.http.conn.ClientConnectionManager;
@@ -203,8 +207,8 @@ public class InitServlet extends HttpServlet {
 							CoreConnectionPNames.CONNECTION_TIMEOUT, 4000);
 					client.getParams().setParameter(
 							CoreConnectionPNames.SO_TIMEOUT, 4000);
-					// client.getParams().setParameter(
-					// ClientPNames.HANDLE_REDIRECTS, false);
+					client.getParams().setParameter(
+							ClientPNames.HANDLE_REDIRECTS, false);
 					HttpClientParams.setCookiePolicy(client.getParams(),
 							CookiePolicy.BROWSER_COMPATIBILITY);
 
@@ -260,6 +264,7 @@ public class InitServlet extends HttpServlet {
 
 					private void fill() {
 						try {
+							client.getCookieStore().clear();
 							System.out.println("开始打码...");
 
 							String[] accs = null;
@@ -292,7 +297,9 @@ public class InitServlet extends HttpServlet {
 								request.releaseConnection();
 								request.abort();
 							}
-
+							boolean nvc = resp.charAt(14)=='1'?true:false;
+							int codeID = -1;
+							
 							int fidx = resp.indexOf(",");
 							int lidx = resp.lastIndexOf(",");
 
@@ -300,49 +307,57 @@ public class InitServlet extends HttpServlet {
 							System.out.println(vcode);
 							String salt = resp.substring(lidx + 2, lidx + 34);
 							System.out.println(salt);
-
-							System.out.println("请求验证码");
-							request = new HttpGet(
-									"https://ssl.captcha.qq.com/getimage?aid=522005705&r="
-											+ Math.random() + "&uin=" + accs[0]
-											+ "@qq.com");
-
-							response = client.execute(request);
-							entity = response.getEntity();
-							// resp = EntityUtils.toString(entity);
-							DataInputStream in = new DataInputStream(entity
-									.getContent());
 							
-							ByteArrayOutputStream baos = new ByteArrayOutputStream();
-							byte[] barray = new byte[1024];
-							int size = -1;
-							while ((size = in.read(barray)) != -1) {
-								baos.write(barray, 0, size);
-							}
-							
-							try {
-								if (entity != null) {
-									EntityUtils.consume(entity);
+							if(nvc){
+								System.out.println("需验证码");
+	
+								System.out.println("请求验证码");
+								request = new HttpGet(
+										"https://ssl.captcha.qq.com/getimage?aid=522005705&r="
+												+ Math.random() + "&uin=" + accs[0]
+												+ "@qq.com");
+	
+								response = client.execute(request);
+								entity = response.getEntity();
+								// resp = EntityUtils.toString(entity);
+								DataInputStream in = new DataInputStream(entity
+										.getContent());
+								
+								ByteArrayOutputStream baos = new ByteArrayOutputStream();
+								byte[] barray = new byte[1024];
+								int size = -1;
+								while ((size = in.read(barray)) != -1) {
+									baos.write(barray, 0, size);
 								}
-							} catch (Exception e) {
-								e.printStackTrace();
-							}
-							if (request != null) {
-								request.releaseConnection();
-								request.abort();
+								
+								try {
+									if (entity != null) {
+										EntityUtils.consume(entity);
+									}
+								} catch (Exception e) {
+									e.printStackTrace();
+								}
+								if (request != null) {
+									request.releaseConnection();
+									request.abort();
+								}
+								
+								// 识别验证码
+								System.out.println("识别验证码");
+								byte[] by = baos.toByteArray();
+								byte[] resultByte = new byte[30]; // 为识别结果申请内存空间
+								// StringBuffer rsb = new StringBuffer(30);
+								String rsb = "0000";
+								resultByte = rsb.getBytes();
+	
+								codeID = YDM.INSTANCE.YDM_DecodeByBytes(by,
+										by.length, 1004, resultByte);// result byte
+								vcode = new String(resultByte, "UTF-8").trim();
+	
+							}else{
+								System.out.println("不需验证码");
 							}
 							
-							// 识别验证码
-							System.out.println("识别验证码");
-							byte[] by = baos.toByteArray();
-							byte[] resultByte = new byte[30]; // 为识别结果申请内存空间
-							// StringBuffer rsb = new StringBuffer(30);
-							String rsb = "0000";
-							resultByte = rsb.getBytes();
-
-							int codeID = YDM.INSTANCE.YDM_DecodeByBytes(by,
-									by.length, 1004, resultByte);// result byte
-							vcode = new String(resultByte, "UTF-8").trim();
 
 							// 计算ECP
 							MessageDigest md = MessageDigest.getInstance("MD5");
@@ -432,6 +447,7 @@ public class InitServlet extends HttpServlet {
 									System.out.println("帐号异常");
 								}
 								fill();
+								return;
 							}
 
 							System.out.println("登录(B)");
@@ -452,10 +468,43 @@ public class InitServlet extends HttpServlet {
 
 							// get.removeHeaders("Cookie2");
 
-							// 自动重定向
+							
 							response = client.execute(request);
+							//entity = response.getEntity();
+							Header[] hs = response.getHeaders("Location");
+							System.out.println("Location="+hs[0].getValue());
+							try {
+								if (entity != null) {
+									EntityUtils.consume(entity);
+								}
+							} catch (Exception e) {
+								e.printStackTrace();
+							}
+							if (request != null) {
+								request.releaseConnection();
+								request.abort();
+							}
+							
+							//302
+							request = new HttpGet(hs[0].getValue());
+							request.setHeader("User-Agent", UAG);
+							// get.setHeader("Content-Type", "text/html");
+							request.setHeader("Accept",
+									"text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
+							request.setHeader("Accept-Language",
+									"zh-cn,zh;q=0.8,en-us;q=0.5,en;q=0.3");
+							request.setHeader("Accept-Encoding",
+									"gzip, deflate");
+							request.setHeader("Referer",
+									"https://mail.qq.com/cgi-bin/loginpage");
+							request.setHeader("Connection", "keep-alive");
+							
+							response = client.execute(request);		
 							entity = response.getEntity();
+//							hs = response.getHeaders("Location");
+//							System.out.println("Location="+hs[0].getValue());							
 							resp = EntityUtils.toString(entity);
+							
 							try {
 								if (entity != null) {
 									EntityUtils.consume(entity);
@@ -471,7 +520,8 @@ public class InitServlet extends HttpServlet {
 							System.out.println(resp);
 
 							if(resp.indexOf("frame_html?sid=")==-1){
-								System.out.println("验证码错误");
+								//System.out.println(resp.substring(resp.indexOf("errtype="), resp.indexOf("errtype=")+8));
+								System.out.println("无法跳转");
 								fill();
 								return;
 							}
@@ -620,6 +670,8 @@ public class InitServlet extends HttpServlet {
 							int csize = Cookies.getInstance().size();
 							int size = Integer.parseInt(config
 									.getInitParameter("size"));
+							System.out.println("csize:"+csize);
+							System.out.println("size:"+size);
 							if (csize < size) {
 								for (int i = 0; i < size - csize; i++) {
 									fill();
@@ -648,5 +700,26 @@ public class InitServlet extends HttpServlet {
 		}
 		// TODO
 		// 保存cookie
+		BufferedWriter output = null;
+		try{		
+			output = new BufferedWriter(new FileWriter(new File(xpath
+					+ "/WEB-INF/cookies.txt")));
+
+			for(String cookie:Cookies.getInstance()){
+				output.write(cookie+"\r\n");
+			}
+			
+			output.flush();
+		}catch(Exception e){
+			e.printStackTrace();
+		}finally{
+			if(output!=null){
+				try{
+					output.close();
+				}catch(Exception e){
+					e.printStackTrace();
+				}
+			}
+		}
 	}
 }
