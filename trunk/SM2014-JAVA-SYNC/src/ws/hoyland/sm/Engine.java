@@ -183,8 +183,9 @@ public class Engine extends Observable {
 	}
 	
 	public void ready() {
-		if (accounts != null && accounts.size() > 0 && ((proxies != null
-				&& proxies.size() > 0)||("true".equals(configuration.getProperty("SCAN"))&&hasService))) {
+//		if (accounts != null && accounts.size() > 0 && ((proxies != null
+//				&& proxies.size() > 0)||("true".equals(configuration.getProperty("SCAN"))&&hasService))) {
+		if (accounts != null && accounts.size() > 0){
 			EngineMessage msg = new EngineMessage();
 			msg.setType(EngineMessageType.OM_READY);
 			notify(msg);
@@ -448,21 +449,23 @@ public class Engine extends Observable {
 		}
 		
 		String proxy = null;
-		synchronized(proxies){
-			proxy = proxies.get(random.nextInt(proxies.size()));
-			
-//			if(proxies.size()!=0){
-//				proxy = proxies.get(random.nextInt(proxies.size()));
-//			}else{
-//				if(!noproxy){
-//					noproxy = true;
-//					
-//					EngineMessage msg = new EngineMessage();
-//					msg.setType(EngineMessageType.OM_NO_PROXY);
-//					notify(msg);
-//					//shutdown();
-//				}
-//			}
+		if(proxies.size()>0){
+			synchronized(proxies){
+				proxy = proxies.get(random.nextInt(proxies.size()));
+				
+	//			if(proxies.size()!=0){
+	//				proxy = proxies.get(random.nextInt(proxies.size()));
+	//			}else{
+	//				if(!noproxy){
+	//					noproxy = true;
+	//					
+	//					EngineMessage msg = new EngineMessage();
+	//					msg.setType(EngineMessageType.OM_NO_PROXY);
+	//					notify(msg);
+	//					//shutdown();
+	//				}
+	//			}
+			}
 		}
 		return proxy;
 	}
@@ -603,7 +606,7 @@ public class Engine extends Observable {
 			
 			// long tm = System.currentTimeMillis();
 			DateFormat format = new java.text.SimpleDateFormat(
-					"yyyy年MM月dd日 hh时mm分ss秒");
+					"yyyy年MM月dd日 HH时mm分ss秒");
 			String tm = format.format(new Date());
 			for (int i = 0; i < output.length; i++) {
 				try {

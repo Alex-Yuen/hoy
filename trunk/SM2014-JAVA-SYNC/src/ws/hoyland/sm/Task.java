@@ -409,12 +409,13 @@ public class Task implements Runnable {//, Observer {
 					return;
 				}
 				
-				String[] ms = px.split(":");
-				proxy = new HttpHost(ms[0], Integer.parseInt(ms[1]));
-
-				
-				client.getParams().setParameter(ConnRouteParams.DEFAULT_PROXY,
-						proxy);
+				if(px!=null){
+					String[] ms = px.split(":");
+					proxy = new HttpHost(ms[0], Integer.parseInt(ms[1]));
+					
+					client.getParams().setParameter(ConnRouteParams.DEFAULT_PROXY,
+							proxy);
+				}
 				
 				request = new HttpGet("https://mail.qq.com/cgi-bin/login?vt=passport&vm=wsk&delegate_url=");
 
