@@ -1,10 +1,7 @@
 package ws.hoyland.sm;
 
 //import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
 import java.math.BigInteger;
-import java.net.HttpURLConnection;
-import java.net.URL;
 //import java.net.URLEncoder;
 import java.security.KeyFactory;
 import java.security.PublicKey;
@@ -238,12 +235,41 @@ public class Task implements Runnable {//, Observer {
 			//client.getConnectionManager().closeIdleConnections(4000, TimeUnit.MILLISECONDS);
 			
 			//获取cookie
-			byte[] bs = null;
-			HttpURLConnection connection = null;
-			InputStream input = null;
+//			byte[] bs = null;
+//			HttpURLConnection connection = null;
+//			InputStream input = null;
 			boolean getit = false;
 			
-			String cl = null;//cookie line
+			String cl = null;//cookie line			
+			
+			request = new HttpGet(CONFIGURATION.getProperty("COOKIE_API"));
+			request.setHeader("Connection", "close");
+			
+			response = client.execute(request);
+			entity = response.getEntity();
+			resp = EntityUtils.toString(entity);
+			
+			try {
+				if (entity != null) {
+					EntityUtils.consume(entity);
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			if (request != null) {
+				request.releaseConnection();
+				request.abort();
+			}
+			
+			cl = resp.substring(0, resp.indexOf("\n"));
+			if("null".equals(cl)){
+				getit = false;
+			}else{
+				getit = true;
+			}
+			
+			client.getCookieStore().clear();
+			/**
 			try {
 				URL url = new URL(CONFIGURATION.getProperty("COOKIE_API"));
 				
@@ -283,6 +309,7 @@ public class Task implements Runnable {//, Observer {
 			}finally{
 				input.close();
 			}
+			**/
 			//cl = "tinfo=1397895904.0000*; wimrefreshrun=0&; qm_antisky=1627389787&7ee3dcfb9ac087e01a10b9c6a2bd8a72824757e54a0674f8a81758f39acd395f; autologin=; qm_flag=0; qqmail_alias=1627389787@qq.com; qm_domain=; qm_verifyimagesession=; qm_authimgs_id=; qm_sk=; pcache=; device=; qm_ssum=; qm_qz_key=; sid=1627389787&c71f6000f0d174c4c1ea9c88d614896b,qenhrMUIyeXY2OUE2N04tbUJmTkV5OW5VMmFhT3dCS2J1bms5MFVCcGdZRV8.; qm_username=1627389787; qm_lg=qm_lg; new_mail_num=1627389787&0; qm_username=; qm_sid=c71f6000f0d174c4c1ea9c88d614896b,qenhrMUIyeXY2OUE2N04tbUJmTkV5OW5VMmFhT3dCS2J1bms5MFVCcGdZRV8.; qm_domain=http://mail.qq.com; qm_ptsk=1627389787&@thfOVARet; CCSHOW=0000; foxacc=1627389787&0; ssl_edition=mail.qq.com; edition=mail.qq.com; username=1627389787&1627389787;";
 			/**
 			byte[] bs = null;
@@ -425,14 +452,13 @@ public class Task implements Runnable {//, Observer {
 				request.setHeader("Accept-Language", "zh-cn,zh;q=0.8,en-us;q=0.5,en;q=0.3");
 				request.setHeader("Accept-Encoding", "gzip, deflate");
 				request.setHeader("Referer", "https://mail.qq.com/cgi-bin/loginpage");
-				request.setHeader("Connection", "keep-alive");				
+				request.setHeader("Connection", "close");
 
 				CookieStore  cs = client.getCookieStore();
 				//
 				//String[] cks = "pt2gguin=o1696195841; uin=o1696195841; skey=@AIhN7K0s4; ETK=; superuin=o1696195841; superkey=2O4VH82tu3wNKKLh3zs*YTERLw159XoZz9nFgLz9rLw_; supertoken=1512671834; ptisp=ctc; RK=TeXO02CBe3; ptuserinfo=e4b880e4ba8ce4b889; ptcz=8b10fd2ce893905d7dedff0af7452fc0040c9de336dede894c396a3c98c7e678; ptcz=; airkey=; ptwebqq=6a8cce7c33974d34778f4a199b4db563dbc894f0d40807f36154c6091934ee14;".split(" ");
 				
-				//获取cookie
-				
+				//设置cookie				
 				String[] cks = cl.split(" ");
 				for(int i=0;i<cks.length;i++){
 					try{
@@ -504,7 +530,7 @@ public class Task implements Runnable {//, Observer {
 				client.getParams().setParameter(ConnRouteParams.DEFAULT_PROXY,
 						proxy);
 				**/
-				Engine.getInstance().info(account + " -> " + "r="+r);
+				Engine.getInstance().info(account + " -> " + "sid="+sid);
 				HttpPost post = new HttpPost("http://mail.qq.com/cgi-bin/laddr_clone?sid="+sid);
 
 				post.setHeader("User-Agent", UAG);
@@ -513,7 +539,7 @@ public class Task implements Runnable {//, Observer {
 				post.setHeader("Accept-Language", "zh-cn,zh;q=0.8,en-us;q=0.5,en;q=0.3");
 				post.setHeader("Accept-Encoding", "gzip, deflate");
 				post.setHeader("Referer", "http://mail.qq.com/cgi-bin/frame_html?sid="+sid+"&r="+r);
-				post.setHeader("Connection", "keep-alive");				
+				post.setHeader("Connection", "close");				
 				post.setHeader("Pragma", "no-cache");
 				post.setHeader("Cache-Control", "no-cache");
 				
