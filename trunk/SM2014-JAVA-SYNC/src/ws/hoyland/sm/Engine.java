@@ -9,6 +9,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.management.ManagementFactory;
 import java.math.BigInteger;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.rmi.registry.LocateRegistry;
@@ -67,17 +68,18 @@ public class Engine extends Observable {
 	private List<String> accountstodo;
 	private List<String> accounts;
 	private List<String> proxies;
+	private List<String> proxiesOfAPI;
 	private boolean running = false;
 //	private boolean noproxy = false;
 
-	private BufferedWriter[] output = new BufferedWriter[5]; // 成功，失败，未运行
-	private String[] fns = new String[] { "密码正确", "密码错误", "帐号冻结", "独立密码", "未识别"};
+	private BufferedWriter[] output = new BufferedWriter[4]; // 成功，失败，未运行
+	private String[] fns = new String[] { "密码正确", "密码错误", "帐号冻结", "未识别"};//"独立密码", 
 	private URL url = Engine.class.getClassLoader().getResource("");
 	private String xpath = url.getPath();
 	private ThreadPoolExecutor pool;
 	private Configuration configuration = Configuration
 			.getInstance("config.ini");
-	private Integer[] stats = new Integer[4];
+	private Integer[] stats = new Integer[3];
 	private Random random = new Random();
 	//private Base64 base64 = new Base64();
 	private boolean reload = false;
@@ -635,6 +637,96 @@ public class Engine extends Observable {
 			
 			//开启本地JMX，并向扫描服务端注册
 			
+			if("true".equals(configuration.getProperty("USE_PROXY_API"))){//获取proxy api
+				Thread t = new Thread(new Runnable(){
+
+					
+					@Override
+					public void run() {
+						while(running){
+							try{
+								//load from api
+								info("");
+								info("================");
+								info("正在获取API代理");
+								info("================");
+								info("");
+								
+								proxiesOfAPI.clear();								
+								
+								HttpURLConnection connection = null;
+								InputStream input = null;
+								
+								try {
+									URL url = new URL(configuration.getProperty("COOKIE_API"));
+									
+									connection = (HttpURLConnection) url
+											.openConnection();
+									//connection.setDoOutput(true);// 允许连接提交信息
+									connection.setRequestMethod("GET");// 网页提交方式“GET”、“POST”
+									// connection.setRequestProperty("User-Agent",
+									// "Mozilla/4.7 [en] (Win98; I)");
+									connection.setRequestProperty("Content-Type",
+											"text/plain; charset=UTF-8");
+									connection.setRequestProperty("Connection",
+											"close");
+									
+									connection.setConnectTimeout(5000);  
+									connection.setReadTimeout(5000);  
+									
+//									StringBuffer sb = new StringBuffer();
+//									sb.append(header);
+//									sb.append(Converts.bytesToHexString(encrypted));
+//									os = connection.getOutputStream();
+//									os.write(sb.toString().getBytes());
+//									os.flush();
+//									os.close();
+
+									input = connection.getInputStream();
+									BufferedReader br = new BufferedReader(new InputStreamReader(input));
+									String apiline = null;
+									while((apiline=br.readLine())!=null){
+										if(!apiline.equals("")){
+											proxiesOfAPI.add(apiline);
+										}
+									}
+								} catch (Exception e) {
+									e.printStackTrace();
+								}finally{
+									input.close();
+								}
+								
+								info("");
+								info("================");
+								info("获取API代理结束");
+								info("================");
+								info("");
+								
+								new Thread(new Runnable(){
+									@Override
+									public void run() {
+										Engine.getInstance().reloadAPIProxies();//通知本地													
+									}
+								}).start();
+							}catch(Exception e){
+								e.printStackTrace();
+							}
+						}
+						
+						try{
+							//休眠
+							Thread.sleep(1000*60*Integer.parseInt(configuration
+									.getProperty("PROXY_API_ITV")));//休眠一段时间	
+							
+						}catch(Exception e){
+							e.printStackTrace();
+						}
+					}
+					
+				});
+				t.setDaemon(true);
+				t.start();
+			}
 			
 			if("true".equals(configuration.getProperty("SCAN"))&&hasService){
 				//开始扫描的线程
@@ -959,6 +1051,69 @@ public class Engine extends Observable {
 ////		msg.setType(EngineMessageType.OM_RELOAD_PROXIES);
 ////		notify(msg);		
 //	}
+	public void reloadAPIProxies() {
+//		System.err.println("Reloading proxies");
+//		if(!running){
+//			System.err.println("Reloading proxies break");
+//			return;
+//		}
+		System.err.println("reloading api proxies 1");
+		reload = true;
+		info("");
+		info("================");
+		info("正在更新代理");
+		info("================");
+		info("");
+				
+		try {
+			this.proxies = new ArrayList<String>(proxiesOfAPI);  
+//			this.proxies.clear();
+//			for(int i=0;i<proxiesOfAPI.size();i++){
+//				proxies.add(ps[i]);
+//			}
+			
+			System.err.println("reloading api proxies 2:"+proxies.size());
+			//显示代理数量
+			List<String> params = new ArrayList<String>();
+			params.add(String.valueOf(proxies.size()));
+
+			EngineMessage msg = new EngineMessage();
+			msg.setType(EngineMessageType.OM_PROXY_LOADED);
+			msg.setData(params);
+			notify(msg);
+			
+		System.err.println("reloading api proxies 3");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		System.err.println("reloading api proxies 4");
+//		msg = new EngineMessage();
+//		msg.setTid(-1);//通知所有线程
+//		msg.setType(EngineMessageType.OM_RELOAD_PROXIES);
+//		notify(msg);
+//		notify(msg);
+		
+		info("");
+		info("================");
+		info("更新完毕: ["+proxies.size()+"]");
+		info("================");
+		info("");
+
+		System.err.println("reloading api proxies 5");
+		reload = false;
+		
+		synchronized(SyncUtil.RELOAD_PROXY_OBJECT){
+			try{
+				SyncUtil.RELOAD_PROXY_OBJECT.notifyAll();//更新完毕，唤醒线程
+			}catch(Exception e){
+				//
+			}
+		}
+		
+		System.err.println("reloading api proxies 6");
+		ready();
+	}
 	
 	public void reloadProxies() {
 //		System.err.println("Reloading proxies");

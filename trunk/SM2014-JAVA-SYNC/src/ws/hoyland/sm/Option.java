@@ -43,6 +43,9 @@ public class Option extends Dialog {
 	private Spinner spinner_2;
 	private Button button_2;
 	private Text txtHttpcsgc;
+	private Text text_1;
+	private Button btnProxyApi;
+	private Spinner spinner_3;
 	
 	/**
 	 * Create the dialog.
@@ -206,10 +209,40 @@ public class Option extends Dialog {
 		
 		Label lblNewLabel_4 = new Label(composite_5, SWT.NONE);
 		lblNewLabel_4.setBounds(10, 13, 82, 17);
-		lblNewLabel_4.setText("COOKIE API：");
+		lblNewLabel_4.setText("Cookie API：");
 		
 		txtHttpcsgc = new Text(composite_5, SWT.BORDER);
 		txtHttpcsgc.setBounds(110, 10, 223, 23);
+		
+		text_1 = new Text(composite_5, SWT.BORDER);
+		text_1.setEnabled(false);
+		text_1.setBounds(10, 71, 323, 23);
+		
+		btnProxyApi = new Button(composite_5, SWT.CHECK);
+		btnProxyApi.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				if(btnProxyApi.getSelection()){
+					text_1.setEnabled(true);
+					spinner_3.setEnabled(true);
+				}else{
+					text_1.setEnabled(false);
+					spinner_3.setEnabled(true);
+				}
+			}
+		});
+		btnProxyApi.setBounds(10, 45, 112, 17);
+		btnProxyApi.setText("Proxy API，间隔");
+		
+		spinner_3 = new Spinner(composite_5, SWT.BORDER);
+		spinner_3.setMaximum(1500);
+		spinner_3.setMinimum(1);
+		spinner_3.setEnabled(false);
+		spinner_3.setBounds(128, 42, 44, 23);
+		
+		Label label = new Label(composite_5, SWT.NONE);
+		label.setText("分钟");
+		label.setBounds(178, 45, 29, 17);
 	}
 		
 	private void load(){
@@ -217,8 +250,21 @@ public class Option extends Dialog {
 		try{
 			if(this.configuration.size()>0){
 				spinner.setSelection(Integer.parseInt(this.configuration.getProperty("THREAD_COUNT")));
-				spinner_1.setSelection(Integer.parseInt(this.configuration.getProperty("TIMEOUT")));				
+				spinner_1.setSelection(Integer.parseInt(this.configuration.getProperty("TIMEOUT")));
+				spinner_3.setSelection(Integer.parseInt(this.configuration.getProperty("PROXY_API_ITV")));
+				
 				txtHttpcsgc.setText(this.configuration.getProperty("COOKIE_API"));
+				text_1.setText(this.configuration.getProperty("PROXY_API"));
+				
+				if("true".equals(this.configuration.getProperty("USE_PROXY_API"))){
+					btnProxyApi.setSelection(true);
+					text_1.setEnabled(true);
+					spinner_3.setEnabled(true);
+				}else{
+					btnProxyApi.setSelection(false);
+					text_1.setEnabled(false);
+					spinner_3.setEnabled(false);
+				}
 				
 				if("true".equals(this.configuration.getProperty("SCAN"))){
 					btnCheckButton.setSelection(true);
@@ -270,7 +316,10 @@ public class Option extends Dialog {
 			this.configuration.put("SCAN_ITV", spinner_2.getText());
 			this.configuration.put("VALIDATE", String.valueOf(button_2.getSelection()));
 			this.configuration.put("COOKIE_API", txtHttpcsgc.getText());
-			
+			this.configuration.put("PROXY_API", text_1.getText());
+			this.configuration.put("USE_PROXY_API", String.valueOf(btnProxyApi.getSelection()));
+			this.configuration.put("PROXY_API_ITV", spinner_3.getText());
+
 			//this.configuration.put("IPS", text.getText());
 			this.configuration.save();
 			
