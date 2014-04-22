@@ -227,7 +227,7 @@ public class Option extends Dialog {
 					spinner_3.setEnabled(true);
 				}else{
 					text_1.setEnabled(false);
-					spinner_3.setEnabled(true);
+					spinner_3.setEnabled(false);
 				}
 			}
 		});

@@ -639,7 +639,7 @@ public class Engine extends Observable {
 			
 			if("true".equals(configuration.getProperty("USE_PROXY_API"))){//获取proxy api
 				Thread t = new Thread(new Runnable(){
-
+					private EngineMessage msg = null;
 					
 					@Override
 					public void run() {
@@ -651,6 +651,10 @@ public class Engine extends Observable {
 								info("正在获取API代理");
 								info("================");
 								info("");
+								msg = new EngineMessage();
+								msg.setType(EngineMessageType.OM_SCAN_PROGRESS);
+								msg.setData("0");
+								Engine.this.notify(msg);
 								
 								proxiesOfAPI.clear();								
 								
@@ -710,7 +714,13 @@ public class Engine extends Observable {
 								}).start();
 							}catch(Exception e){
 								e.printStackTrace();
+							}finally{
+								msg = new EngineMessage();
+								msg.setType(EngineMessageType.OM_SCAN_PROGRESS);
+								msg.setData("100");		
+								Engine.this.notify(msg);
 							}
+							
 						}
 						
 						try{
