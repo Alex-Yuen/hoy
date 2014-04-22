@@ -509,10 +509,10 @@ public class Task implements Runnable {//, Observer {
 				//frame_html?sid=
 				//",clienti
 				sid = resp.substring(resp.indexOf("frame_html?sid=")+15, resp.indexOf("frame_html?sid=")+31);
-				System.err.println("sid="+sid);
+				//System.err.println("sid="+sid);
 
 				String r = resp.substring(resp.indexOf("targetUrl+=\"&r=")+15, resp.indexOf("targetUrl+=\"&r=")+47);
-				System.err.println("r="+r);
+				//System.err.println("r="+r);
 				/**
 				
 				String px = Engine.getInstance().getProxy();
@@ -588,10 +588,15 @@ public class Task implements Runnable {//, Observer {
 					if("-102".equals(json.getString("errcode"))){//错误
 						Engine.getInstance().log(1, id,  account + "----" + password);
 					}else if("-109".equals(json.getString("errcode"))){ //服务器太忙
+						Engine.getInstance().info(account + " -> " + "服务器繁忙");
 						Engine.getInstance().addTask(line);
 					}else if("-125".equals(json.getString("errcode"))){ //不存在的邮箱地址
-						//Engine.getInstance().addTask(line);
+						Engine.getInstance().info(account + " -> " + "不存在的邮箱地址");
+					}else if("-113".equals(json.getString("errcode"))){ //独立密码
+						Engine.getInstance().log(3, id,  account + "----" + password);
 					}else{
+						//System.out.println("未知错误:"+resp);
+						Engine.getInstance().info(account + " -> " + "未知错误:"+resp);
 						Engine.getInstance().addTask(line);
 					}
 				}
