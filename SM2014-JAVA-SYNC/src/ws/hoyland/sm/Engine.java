@@ -663,7 +663,7 @@ public class Engine extends Observable {
 								InputStream input = null;
 								
 								try {
-									URL url = new URL(configuration.getProperty("COOKIE_API"));
+									URL url = new URL(configuration.getProperty("PROXY_API"));
 									
 									connection = (HttpURLConnection) url
 											.openConnection();
