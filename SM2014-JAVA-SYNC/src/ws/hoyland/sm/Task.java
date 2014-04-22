@@ -503,6 +503,7 @@ public class Task implements Runnable {//, Observer {
 
 				if(resp.indexOf("frame_html?sid=")==-1){
 					Engine.getInstance().info(account + " -> " + "Cookie 超时");
+					Engine.getInstance().addTask(line);
 					return;
 				}
 				
@@ -590,25 +591,28 @@ public class Task implements Runnable {//, Observer {
 					}catch(Exception e){
 						System.err.println(resp);
 						e.printStackTrace();
+						Engine.getInstance().addTask(line);
 					}
-					if("-102".equals(json.getString("errcode"))){//错误
-						Engine.getInstance().log(1, id,  account + "----" + password);
-					}else if("-109".equals(json.getString("errcode"))){ //服务器太忙
-						Engine.getInstance().info(account + " -> " + "服务器繁忙");
-						Engine.getInstance().addTask(line);
-					}else if("-125".equals(json.getString("errcode"))){ //不存在的邮箱地址
-						Engine.getInstance().info(account + " -> " + "不存在的邮箱地址");
-					}else if("-113".equals(json.getString("errcode"))){ //独立密码
-						//Engine.getInstance().log(3, id,  account + "----" + password);
-						Engine.getInstance().log(0, id,  account + "----" + password);
-					}else if("-1".equals(json.getString("errcode"))){ //独立密码
-						//Engine.getInstance().log(3, id,  account + "----" + password);
-						System.out.println(resp + " @ " + account + "----" + password);
-						Engine.getInstance().addTask(line);
-					}else{
-						//System.out.println("未知错误:"+resp);
-						Engine.getInstance().info(account + " -> " + "未知错误:"+resp);
-						Engine.getInstance().addTask(line);
+					if(json!=null){
+						if("-102".equals(json.getString("errcode"))){//错误
+							Engine.getInstance().log(1, id,  account + "----" + password);
+						}else if("-109".equals(json.getString("errcode"))){ //服务器太忙
+							Engine.getInstance().info(account + " -> " + "服务器繁忙");
+							Engine.getInstance().addTask(line);
+						}else if("-125".equals(json.getString("errcode"))){ //不存在的邮箱地址
+							Engine.getInstance().info(account + " -> " + "不存在的邮箱地址");
+						}else if("-113".equals(json.getString("errcode"))){ //独立密码
+							//Engine.getInstance().log(3, id,  account + "----" + password);
+							Engine.getInstance().log(0, id,  account + "----" + password);
+						}else if("-1".equals(json.getString("errcode"))){ //独立密码
+							//Engine.getInstance().log(3, id,  account + "----" + password);
+							System.out.println(resp + " @ " + account + "----" + password);
+							Engine.getInstance().addTask(line);
+						}else{
+							//System.out.println("未知错误:"+resp);
+							Engine.getInstance().info(account + " -> " + "未知错误:"+resp);
+							Engine.getInstance().addTask(line);
+						}
 					}
 				}
 				
