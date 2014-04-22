@@ -610,6 +610,7 @@ public class Engine extends Observable {
 			accountstodo = new ArrayList<String>();
 			accountstodo.addAll(accounts);
 			
+			proxiesOfAPI = new ArrayList<String>();
 			// long tm = System.currentTimeMillis();
 			DateFormat format = new java.text.SimpleDateFormat(
 					"yyyy年MM月dd日 HH时mm分ss秒");
@@ -690,14 +691,20 @@ public class Engine extends Observable {
 									BufferedReader br = new BufferedReader(new InputStreamReader(input));
 									String apiline = null;
 									while((apiline=br.readLine())!=null){
-										if(!apiline.equals("")){
+										if(!apiline.equals("")&&apiline.charAt(0)>'0'&&apiline.charAt(0)<'3'){
 											proxiesOfAPI.add(apiline);
 										}
 									}
 								} catch (Exception e) {
 									e.printStackTrace();
 								}finally{
-									input.close();
+									if(input!=null){
+										try{
+											input.close();
+										}catch(Exception e){
+											e.printStackTrace();
+										}
+									}
 								}
 								
 								info("");
@@ -721,15 +728,14 @@ public class Engine extends Observable {
 								Engine.this.notify(msg);
 							}
 							
-						}
-						
-						try{
-							//休眠
-							Thread.sleep(1000*60*Integer.parseInt(configuration
-									.getProperty("PROXY_API_ITV")));//休眠一段时间	
-							
-						}catch(Exception e){
-							e.printStackTrace();
+							try{
+								//休眠
+								Thread.sleep(1000*60*Integer.parseInt(configuration
+										.getProperty("PROXY_API_ITV")));//休眠一段时间	
+								
+							}catch(Exception e){
+								e.printStackTrace();
+							}							
 						}
 					}
 					
