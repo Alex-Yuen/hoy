@@ -70,14 +70,14 @@ public class Engine extends Observable {
 	private boolean running = false;
 //	private boolean noproxy = false;
 
-	private BufferedWriter[] output = new BufferedWriter[4]; // 成功，失败，未运行
-	private String[] fns = new String[] { "密码正确", "密码错误", "帐号冻结", "未识别" };
+	private BufferedWriter[] output = new BufferedWriter[5]; // 成功，失败，未运行
+	private String[] fns = new String[] { "密码正确", "密码错误", "帐号冻结", "独立密码", "未识别"};
 	private URL url = Engine.class.getClassLoader().getResource("");
 	private String xpath = url.getPath();
 	private ThreadPoolExecutor pool;
 	private Configuration configuration = Configuration
 			.getInstance("config.ini");
-	private Integer[] stats = new Integer[3];
+	private Integer[] stats = new Integer[4];
 	private Random random = new Random();
 	//private Base64 base64 = new Base64();
 	private boolean reload = false;
@@ -376,6 +376,9 @@ public class Engine extends Observable {
 //		System.err.println("1:"+accountstodo.size());
 //		System.err.println("2:"+message);
 		accountstodo.remove(id+"----"+message);
+		
+		System.err.println("accounts to do:"+accountstodo.size());		
+		System.err.println("pool:"+pool.getCompletedTaskCount()+"/"+pool.getActiveCount()+"/"+pool.getQueue().size());
 //		System.err.println("3:"+accountstodo.size());
 		//写文件		
 		try{
@@ -386,6 +389,7 @@ public class Engine extends Observable {
 		}
 		
 		String tm = format.format(new Date());
+		System.err.println((tm + "DETECTED: " + message + " = " + fns[type]));
 		infq.push(tm + "DETECTED: " + message + " = " + type);
 		
 		EngineMessage msg = new EngineMessage();
@@ -397,7 +401,7 @@ public class Engine extends Observable {
 	public synchronized void info(String message){
 //		if(running){
 		String tm = format.format(new Date());
-//		System.err.println("info: "+ tm + message);
+		System.err.println(tm + message);
 //		EngineMessage msg = new EngineMessage();
 //		msg.setType(EngineMessageType.OM_INFO);
 //		msg.setData(message);		
