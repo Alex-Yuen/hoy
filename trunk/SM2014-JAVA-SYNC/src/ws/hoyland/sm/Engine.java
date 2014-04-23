@@ -744,7 +744,7 @@ public class Engine extends Observable {
 				t.start();
 			}
 			
-			if("true".equals(configuration.getProperty("SCAN"))&&hasService){
+			if("true".equals(configuration.getProperty("SCAN"))&&hasService&&"false".equals(configuration.getProperty("USE_PROXY_API"))){
 				//开始扫描的线程
 				Thread t = new Thread(new Runnable(){
 					private EngineMessage msg = null;
