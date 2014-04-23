@@ -17,7 +17,7 @@ public class GCServlet extends HttpServlet {
 			throws ServletException, IOException {
 		String rs = Cookies.getInstance().peek();
 		resp.setContentType("text/html;charset=UTF-8");
-		resp.getOutputStream().print(rs+"\n"+Cookies.getInstance().size());
+		resp.getOutputStream().print(rs+"\n"+Cookies.getInstance().size()+" of " + InitServlet.size);
 		resp.getOutputStream().flush();
 		resp.getOutputStream().close();
 		return;

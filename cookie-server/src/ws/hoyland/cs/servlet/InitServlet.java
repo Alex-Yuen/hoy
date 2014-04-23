@@ -65,7 +65,7 @@ public class InitServlet extends HttpServlet {
 	private static String UAG = "Mozilla/5.0 (Linux; U; Android 2.3.3; en-us; sdk Build/GRI34) AppleWebKit/533.1 (KHTML, like Gecko) Version/4.0 Mobile Safari/533.1";
 //	private static Random random = new Random();
 	private ThreadPoolExecutor pool = null;
-	private int size;//需维护的数量
+	public static int size;//需维护的数量
 	private boolean tmflag = false;
 	private int aidx = -1;
 
