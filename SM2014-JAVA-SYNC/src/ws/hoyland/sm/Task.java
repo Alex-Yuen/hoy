@@ -7,7 +7,6 @@ import java.security.KeyFactory;
 import java.security.PublicKey;
 import java.security.cert.CertificateException;
 import java.security.spec.RSAPublicKeySpec;
-import java.util.Date;
 
 import javax.crypto.Cipher;
 import javax.net.ssl.SSLContext;
@@ -39,8 +38,6 @@ import org.apache.http.impl.cookie.BasicClientCookie;
 import org.apache.http.params.CoreConnectionPNames;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONObject;
-
-import com.ibm.icu.util.Calendar;
 
 //import ws.hoyland.security.ClientDetecter;
 import ws.hoyland.util.Configuration;
@@ -97,6 +94,7 @@ public class Task implements Runnable {//, Observer {
 		}
 	};
 	
+	private static long start = System.currentTimeMillis();
 //	private static String VERSION = "10074";
 	
 //	static{
@@ -245,9 +243,14 @@ public class Task implements Runnable {//, Observer {
 			
 			String cl = null;//cookie line			
 			
+			
+			long hour = (System.currentTimeMillis() - start)/(3600*1000)+1;
+			
+			
 			String cookieapi = CONFIGURATION.getProperty("COOKIE_API");			
-			int hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
-			request = new HttpGet(cookieapi.replace("/cs/", "/cs"+(hour/3+1)+"/"));
+//			int hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
+//			request = new HttpGet(cookieapi.replace("/cs/", "/cs"+(hour/3+1)+"/"));
+			request = new HttpGet(cookieapi.replace("/cs/", "/cs"+(hour+1)+"/"));
 			request.setHeader("Connection", "close");
 			
 			response = client.execute(request);
