@@ -386,11 +386,17 @@ public class InitServlet extends HttpServlet {
 									}
 
 									if (resp.indexOf("frame_html?sid=") == -1) {
+										String acc = line.substring(line.indexOf("pt2gguin")+11);
+										acc = acc.substring(0, acc.indexOf(";"));
+										System.out.println("removing cookies("+Cookies.getInstance().size()+"):"
+												+ acc);
 										synchronized (Cookies.getInstance()) {
-											Cookies.getInstance().remove(line);
+											if(Cookies.getInstance().containsKey(acc)){
+												Cookies.getInstance().remove(acc);
+											}
 										}
-										System.out.println("removing cookies:"
-												+ line);
+										System.out.println("removing cookies("+Cookies.getInstance().size()+"):"
+												+ acc);
 										
 										fill();
 									}
