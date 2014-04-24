@@ -1,7 +1,12 @@
 package ws.hoyland.cs;
 
+import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
+import java.io.File;
+import java.io.FileWriter;
+import java.net.URL;
+import java.net.URLDecoder;
 import java.security.MessageDigest;
 import java.security.cert.CertificateException;
 import java.util.List;
@@ -385,12 +390,43 @@ public class Task implements Runnable {
 
 			sb.delete(sb.length() - 2, sb.length() - 1);
 			System.out.println("cookies size 1:" + Cookies.getInstance().size());
+
+//			//写入Cookies.txt
+//			if(!Cookies.getInstance().containsKey(accs[0])){
+//			}
 			synchronized (Cookies.getInstance()) {// 保存cookie
 				if(!Cookies.getInstance().containsKey(accs[0])){
 					Cookies.getInstance().put(accs[0], sb.toString());
+					
+					BufferedWriter output = null;
+					try {
+						URL url = this.getClass().getClassLoader().getResource("");
+						String xpath = url.getPath();
+		
+						xpath = xpath.substring(0, xpath.indexOf("/WEB-INF/"));
+						xpath = URLDecoder.decode(xpath, "UTF-8");
+						//System.out.println("xpath=" + xpath);
+						
+						output = new BufferedWriter(new FileWriter(new File(xpath
+								+ "/WEB-INF/cookies.txt"), true));
+						output.write(sb.toString()+"\r\n");
+						output.flush();
+					} catch (Exception e) {
+						e.printStackTrace();
+					}finally{
+						if(output!=null){
+							try{
+								output.close();
+							}catch(Exception e){
+								e.printStackTrace();
+							}
+						}
+					}
 				}
 			}
 			System.out.println("cookies size 2:" + Cookies.getInstance().size());
+			
+			
 			System.out.println("打码结束");
 		} catch (Exception e) {
 			servlet.fill();

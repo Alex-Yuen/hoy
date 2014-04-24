@@ -68,6 +68,7 @@ public class InitServlet extends HttpServlet {
 	public static int size;//需维护的数量
 	private boolean tmflag = false;
 	private int aidx = -1;
+	private boolean login = false;
 
 	public InitServlet() {
 	}
@@ -189,6 +190,7 @@ public class InitServlet extends HttpServlet {
 			if (userID < 0) {
 				System.out.println("登录云打码平台失败:" + userID);
 			} else {
+				login = true;
 				System.out.println("登录云打码平台成功:" + userID + "=" + score);
 			}
 		} catch (Exception e) {
@@ -280,6 +282,8 @@ public class InitServlet extends HttpServlet {
 
 				}
 
+				flag = true;
+				
 				//如果小于既定个数，则加入Task
 				int csize = Cookies.getInstance().size();
 				System.out.println("current size:"+csize);
@@ -287,9 +291,7 @@ public class InitServlet extends HttpServlet {
 					for (int i = 0; i < size - csize; i++) {						
 						fill();
 					}
-				}
-				
-				flag = true;
+				}				
 
 				System.out.println("Servlet 初始化结束");
 
@@ -321,7 +323,7 @@ public class InitServlet extends HttpServlet {
 							}
 
 							int idx = 0;
-							while (it.hasNext()) {
+							while (it.hasNext()&&flag) {
 								String line = (String) it.next();
 								try {
 									// 验证
@@ -442,9 +444,12 @@ public class InitServlet extends HttpServlet {
 			output = new BufferedWriter(new FileWriter(new File(xpath
 					+ "/WEB-INF/cookies.txt")));
 
+			System.out.println("Saving...");
 			for(String cookie:Cookies.getInstance().values()){
 				output.write(cookie+"\r\n");
 			}
+			
+			System.out.println("Saved "+Cookies.getInstance().size());
 			
 			output.flush();
 		}catch(Exception e){
@@ -461,6 +466,10 @@ public class InitServlet extends HttpServlet {
 	}
 	
 	public void fill(){
+		if(!flag||!login){
+			return; //已经停止
+		}
+		
 		try{			
 			//System.out.println("fill");
 			int csize = Cookies.getInstance().size();
