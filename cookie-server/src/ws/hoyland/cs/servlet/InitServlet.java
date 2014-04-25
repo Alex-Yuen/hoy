@@ -221,7 +221,10 @@ public class InitServlet extends HttpServlet {
 //						System.out.println("acc="+acc);						
 						synchronized (Cookies.getInstance()) {
 							if(!Cookies.getInstance().containsKey(acc)){
+								System.out.println("导入Cookie:"+acc);
 								Cookies.getInstance().put(acc, line);
+							}else{
+								System.out.println("内存Cookies已经包含:"+acc+", 不再加入");
 							}
 						}
 						// System.out.println("adding cookies:" + line);
