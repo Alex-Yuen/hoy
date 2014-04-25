@@ -471,8 +471,8 @@ public class InitServlet extends HttpServlet {
 		}
 	}
 	
-	public void fill(){
-		if(!flag||!login){
+	public synchronized void fill(){
+		if(!flag||!login||aidx>=accounts.size()-1){
 			return; //已经停止
 		}
 		
@@ -484,8 +484,12 @@ public class InitServlet extends HttpServlet {
 				String[] accs = null;
 				do{
 					aidx++;
-					if(aidx==accounts.size()){
-						aidx = 0;
+//					if(aidx==accounts.size()){
+//						aidx = 0;
+//					}
+					if(aidx>=accounts.size()){
+						System.out.println("帐号用完，不再打码");
+						break;
 					}
 					account = accounts.get(aidx);
 					accs = account.split("----");
@@ -493,8 +497,10 @@ public class InitServlet extends HttpServlet {
 				}while(Cookies.getInstance().containsKey(accs[0]));
 				
 				//System.out.println("run");
-				Task task = new Task(this, account);
-				pool.execute(task);
+				if(account!=null){
+					Task task = new Task(this, account);
+					pool.execute(task);
+				}
 			}//否则，无需再次打码获取Cookie			
 		}catch(Exception e){
 			e.printStackTrace();
