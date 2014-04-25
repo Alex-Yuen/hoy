@@ -69,6 +69,7 @@ public class InitServlet extends HttpServlet {
 	private boolean tmflag = false;
 	private int aidx = -1;
 	private boolean login = false;
+	private boolean writed = false;
 
 	public InitServlet() {
 	}
@@ -399,8 +400,9 @@ public class InitServlet extends HttpServlet {
 										}
 										System.out.println("removing cookies("+Cookies.getInstance().size()+"):"
 												+ acc);
-										
-										fill();
+										if(!writed){
+											fill();//首次维护才会继续打码
+										}
 									}
 								} catch (Exception e) {
 									e.printStackTrace();
@@ -411,6 +413,7 @@ public class InitServlet extends HttpServlet {
 							e.printStackTrace();
 						}finally{
 							tmflag = false;
+							writed = true;
 							System.out.println("维护线程:验证完毕");
 						}
 					}
