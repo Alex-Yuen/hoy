@@ -216,7 +216,7 @@ public class InitServlet extends HttpServlet {
 					br = new BufferedReader(new InputStreamReader(is));
 					String line = null;
 					while ((line = br.readLine()) != null) {
-						String acc = line.substring(line.indexOf("pt2gguin")+11);
+						String acc = line.substring(line.indexOf("qm_username=")+12);
 						acc = acc.substring(0, acc.indexOf(";"));
 //						System.out.println("acc="+acc);						
 						synchronized (Cookies.getInstance()) {
@@ -392,7 +392,7 @@ public class InitServlet extends HttpServlet {
 									}
 
 									if (resp.indexOf("frame_html?sid=") == -1) {
-										String acc = line.substring(line.indexOf("pt2gguin")+11);
+										String acc = line.substring(line.indexOf("qm_username=")+12);
 										acc = acc.substring(0, acc.indexOf(";"));
 										System.out.println("removing cookies("+Cookies.getInstance().size()+"):"
 												+ acc);
