@@ -39,13 +39,14 @@ public class Option extends Dialog {
 	private Spinner spinner;
 	private Spinner spinner_1;
 	private Text text;
-	private Button btnCheckButton;
 	private Spinner spinner_2;
 	private Button button_2;
 	private Text txtHttpcsgc;
 	private Text text_1;
 	private Button btnProxyApi;
+	private Button button_3;
 	private Spinner spinner_3;
+	private Spinner spinner_4;
 	
 	/**
 	 * Create the dialog.
@@ -160,28 +161,11 @@ public class Option extends Dialog {
 		spinner_1.setMinimum(1);
 		spinner_1.setBounds(120, 40, 52, 23);
 		
-		TabItem tabItem = new TabItem(tabFolder, SWT.NONE);
-		tabItem.setText("扫描");
+		TabItem tbtmProxy = new TabItem(tabFolder, SWT.NONE);
+		tbtmProxy.setText("代理");
 		
 		Composite composite_4 = new Composite(tabFolder, SWT.NONE);
-		tabItem.setControl(composite_4);
-		
-		btnCheckButton = new Button(composite_4, SWT.CHECK);
-		btnCheckButton.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent e) {
-				if(btnCheckButton.getSelection()){
-					spinner_2.setEnabled(true);
-					text.setEnabled(true);
-					button_2.setEnabled(true);
-				}else{
-					spinner_2.setEnabled(false);
-					text.setEnabled(false);
-					button_2.setEnabled(false);
-				}
-			}
-		});
-		btnCheckButton.setBounds(10, 10, 129, 17);
-		btnCheckButton.setText("启动自动扫描，间隔");
+		tbtmProxy.setControl(composite_4);
 		
 		spinner_2 = new Spinner(composite_4, SWT.BORDER);
 		spinner_2.setEnabled(false);
@@ -190,59 +174,104 @@ public class Option extends Dialog {
 		spinner_2.setBounds(145, 4, 44, 23);
 		
 		Label lblNewLabel_3 = new Label(composite_4, SWT.NONE);
-		lblNewLabel_3.setBounds(195, 10, 29, 17);
+		lblNewLabel_3.setBounds(195, 7, 29, 17);
 		lblNewLabel_3.setText("分钟");
 		
 		text = new Text(composite_4, SWT.BORDER | SWT.MULTI);
 		text.setEnabled(false);
-		text.setBounds(10, 33, 214, 95);
+		text.setBounds(10, 33, 214, 50);
 		
 		button_2 = new Button(composite_4, SWT.CHECK);
+		button_2.setEnabled(false);
 		button_2.setText("验证代理");
-		button_2.setBounds(230, 10, 69, 17);
+		button_2.setBounds(230, 7, 69, 17);
+		
+		text_1 = new Text(composite_4, SWT.BORDER);
+		text_1.setBounds(10, 115, 323, 23);
+		
+		spinner_3 = new Spinner(composite_4, SWT.BORDER);
+		spinner_3.setMaximum(1500);
+		spinner_3.setMinimum(1);
+		spinner_3.setBounds(128, 86, 44, 23);
+		
+		Label label = new Label(composite_4, SWT.NONE);
+		label.setText("分钟");
+		label.setBounds(178, 89, 29, 17);
+		
+		button_3 = new Button(composite_4, SWT.RADIO);
+		button_3.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				
+				if(button_3.getSelection()){					
+					spinner_2.setEnabled(true);
+					text.setEnabled(true);
+					button_2.setEnabled(true);
+					
+					btnProxyApi.setSelection(false);
+					spinner_3.setEnabled(false);
+					text_1.setEnabled(false);
+				}else{
+					spinner_2.setEnabled(false);
+					text.setEnabled(false);
+					button_2.setEnabled(false);
+					
+					btnProxyApi.setSelection(true);
+					spinner_3.setEnabled(true);
+					text_1.setEnabled(true);
+				}
+			}
+		});
+		button_3.setBounds(10, 7, 129, 17);
+		button_3.setText("启动自动扫描，间隔");
+		
+		btnProxyApi = new Button(composite_4, SWT.RADIO);
+		btnProxyApi.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				if(btnProxyApi.getSelection()){		
+					spinner_2.setEnabled(false);
+					text.setEnabled(false);
+					button_2.setEnabled(false);
+					
+					button_3.setSelection(false);
+					spinner_3.setEnabled(true);
+					text_1.setEnabled(true);
+				}else{
+
+					spinner_2.setEnabled(true);
+					text.setEnabled(true);
+					button_2.setEnabled(true);
+					
+					button_3.setSelection(true);
+					spinner_3.setEnabled(false);
+					text_1.setEnabled(false);
+				}
+			}
+		});
+		btnProxyApi.setSelection(true);
+		btnProxyApi.setBounds(10, 89, 112, 17);
+		btnProxyApi.setText("Proxy API，间隔");
 		
 		TabItem tbtmApi = new TabItem(tabFolder, SWT.NONE);
-		tbtmApi.setText("API");
+		tbtmApi.setText("Cookie");
 		
 		Composite composite_5 = new Composite(tabFolder, SWT.NONE);
 		tbtmApi.setControl(composite_5);
 		
 		Label lblNewLabel_4 = new Label(composite_5, SWT.NONE);
-		lblNewLabel_4.setBounds(10, 13, 82, 17);
-		lblNewLabel_4.setText("Cookie API：");
+		lblNewLabel_4.setBounds(10, 10, 111, 17);
+		lblNewLabel_4.setText("Cookie API： 间隔");
 		
-		txtHttpcsgc = new Text(composite_5, SWT.BORDER);
-		txtHttpcsgc.setBounds(110, 10, 223, 23);
+		txtHttpcsgc = new Text(composite_5, SWT.BORDER | SWT.MULTI);
+		txtHttpcsgc.setBounds(10, 36, 314, 92);
 		
-		text_1 = new Text(composite_5, SWT.BORDER);
-		text_1.setEnabled(false);
-		text_1.setBounds(10, 71, 323, 23);
+		spinner_4 = new Spinner(composite_5, SWT.BORDER);
+		spinner_4.setMaximum(1500);
+		spinner_4.setMinimum(1);
+		spinner_4.setBounds(127, 7, 44, 23);
 		
-		btnProxyApi = new Button(composite_5, SWT.CHECK);
-		btnProxyApi.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				if(btnProxyApi.getSelection()){
-					text_1.setEnabled(true);
-					spinner_3.setEnabled(true);
-				}else{
-					text_1.setEnabled(false);
-					spinner_3.setEnabled(false);
-				}
-			}
-		});
-		btnProxyApi.setBounds(10, 45, 112, 17);
-		btnProxyApi.setText("Proxy API，间隔");
-		
-		spinner_3 = new Spinner(composite_5, SWT.BORDER);
-		spinner_3.setMaximum(1500);
-		spinner_3.setMinimum(1);
-		spinner_3.setEnabled(false);
-		spinner_3.setBounds(128, 42, 44, 23);
-		
-		Label label = new Label(composite_5, SWT.NONE);
-		label.setText("分钟");
-		label.setBounds(178, 45, 29, 17);
+		Label label_1 = new Label(composite_5, SWT.NONE);
+		label_1.setText("分钟");
+		label_1.setBounds(177, 10, 29, 17);
 	}
 		
 	private void load(){
@@ -252,8 +281,9 @@ public class Option extends Dialog {
 				spinner.setSelection(Integer.parseInt(this.configuration.getProperty("THREAD_COUNT")));
 				spinner_1.setSelection(Integer.parseInt(this.configuration.getProperty("TIMEOUT")));
 				spinner_3.setSelection(Integer.parseInt(this.configuration.getProperty("PROXY_API_ITV")));
+				spinner_4.setSelection(Integer.parseInt(this.configuration.getProperty("COOKIE_API_ITV")));
 				
-				txtHttpcsgc.setText(this.configuration.getProperty("COOKIE_API"));
+				txtHttpcsgc.setText(this.configuration.getProperty("COOKIE_API").replace(";", "\r\n"));
 				text_1.setText(this.configuration.getProperty("PROXY_API"));
 				
 				if("true".equals(this.configuration.getProperty("USE_PROXY_API"))){
@@ -267,15 +297,23 @@ public class Option extends Dialog {
 				}
 				
 				if("true".equals(this.configuration.getProperty("SCAN"))){
-					btnCheckButton.setSelection(true);
+					button_3.setSelection(true);					
 					spinner_2.setEnabled(true);
 					text.setEnabled(true);
 					button_2.setEnabled(true);
+					
+					btnProxyApi.setSelection(false);
+					spinner_3.setEnabled(false);
+					text_1.setEnabled(false);
 				}else{
-					btnCheckButton.setSelection(false);
+					button_3.setSelection(false);
 					spinner_2.setEnabled(false);
 					text.setEnabled(false);
 					button_2.setEnabled(false);
+					
+					btnProxyApi.setSelection(true);
+					spinner_3.setEnabled(true);
+					text_1.setEnabled(true);
 				}
 				
 				if("true".equals(this.configuration.getProperty("VALIDATE"))){
@@ -312,13 +350,14 @@ public class Option extends Dialog {
 		try{
 			this.configuration.put("THREAD_COUNT", spinner.getText());
 			this.configuration.put("TIMEOUT", spinner_1.getText());
-			this.configuration.put("SCAN", String.valueOf(btnCheckButton.getSelection()));
+			this.configuration.put("SCAN", String.valueOf(button_3.getSelection()));
 			this.configuration.put("SCAN_ITV", spinner_2.getText());
 			this.configuration.put("VALIDATE", String.valueOf(button_2.getSelection()));
-			this.configuration.put("COOKIE_API", txtHttpcsgc.getText());
+			this.configuration.put("COOKIE_API", txtHttpcsgc.getText().trim().replace("\r\n", ";"));
 			this.configuration.put("PROXY_API", text_1.getText());
 			this.configuration.put("USE_PROXY_API", String.valueOf(btnProxyApi.getSelection()));
 			this.configuration.put("PROXY_API_ITV", spinner_3.getText());
+			this.configuration.put("COOKIE_API_ITV", spinner_4.getText());
 
 			//this.configuration.put("IPS", text.getText());
 			this.configuration.save();

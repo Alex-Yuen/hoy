@@ -85,11 +85,13 @@ public class Engine extends Observable {
 	private boolean reload = false;
 	private boolean hasService = false;
 	private Timer timer = null;
+	private Timer timerx = null;//切换cookie api
 
 	private Registry registry = null;
 
 
 	private Stack<String> infq = null;
+	private int urlidx = -1;
 	//private boolean tf = true;//是否执行timer
 	
 	protected int bc = 0;
@@ -99,7 +101,7 @@ public class Engine extends Observable {
 	private static String expBytes = "010001";
 	private static String modBytes = "C39A51FB1202F75F0E20F691C8E370BCFA7CD2B75FD588CADAC549ADF1F03CFDAACCB9FBA5D7219CA4A3E40F9324121474BE85355CF178E0D3BD0719EDF859D60D24874B105FAC73EF067DEE962F5D12C7DB983039BA5EE0183479923174886A2C45ACFD5441C1B2FCC2083952016C66631884527585FF446BBC4F75606EF87B";
 	private static DateFormat format = new java.text.SimpleDateFormat("[yyyy/MM/dd HH:mm:ss] ");
-	
+	private String[] cookieAPIs = null;
 	
 	private Engine() {
 		System.err.println(xpath);
@@ -121,6 +123,7 @@ public class Engine extends Observable {
 		
 		//开始Timer
 		timer = new Timer();
+		
 		timer.schedule(new TimerTask(){
 			private Stack<String> ts = new Stack<String>();
 			
@@ -221,6 +224,10 @@ public class Engine extends Observable {
 		notify(msg);
 
 		System.err.println("running="+running);
+		
+		if(timerx!=null){
+			timerx.cancel();
+		}
 		
 		try{
 			if(registry!=null){
@@ -599,7 +606,29 @@ public class Engine extends Observable {
 			ec = 0;
 //			noproxy = false;
 			
-			if("true".equals(configuration.getProperty("SCAN"))&&hasService){ //等待扫描完代理
+			cookieAPIs = configuration.getProperty("COOKIE_API").split(";");
+			urlidx = -1;
+			timerx = new Timer();
+			timerx.schedule(new TimerTask(){
+
+				@Override
+				public void run() {
+					urlidx++;
+					if(urlidx==cookieAPIs.length){
+						urlidx = 0;
+					}
+					
+					info("");
+					info("================");
+					info("正在使用Cookie API:"+getCookieAPI());
+					info("================");
+					info("");
+				}
+				//private Stack<String> ts = new Stack<String>();
+				},
+			0, Integer.parseInt(configuration.getProperty("COOKIE_API_ITV"))*60*1000);
+			
+			if("true".equals(configuration.getProperty("SCAN"))&&hasService||"true".equals(configuration.getProperty("USE_PROXY_API"))){ //等待扫描完代理
 				reload = true;
 				synchronized(proxies){
 					proxies.clear();
@@ -662,47 +691,58 @@ public class Engine extends Observable {
 								HttpURLConnection connection = null;
 								InputStream input = null;
 								
-								try {
-									URL url = new URL(configuration.getProperty("PROXY_API"));
-									
-									connection = (HttpURLConnection) url
-											.openConnection();
-									//connection.setDoOutput(true);// 允许连接提交信息
-									connection.setRequestMethod("GET");// 网页提交方式“GET”、“POST”
-									// connection.setRequestProperty("User-Agent",
-									// "Mozilla/4.7 [en] (Win98; I)");
-									connection.setRequestProperty("Content-Type",
-											"text/plain; charset=UTF-8");
-									connection.setRequestProperty("Connection",
-											"close");
-									
-									connection.setConnectTimeout(5000);  
-									connection.setReadTimeout(5000);  
-									
-//									StringBuffer sb = new StringBuffer();
-//									sb.append(header);
-//									sb.append(Converts.bytesToHexString(encrypted));
-//									os = connection.getOutputStream();
-//									os.write(sb.toString().getBytes());
-//									os.flush();
-//									os.close();
-
-									input = connection.getInputStream();
-									BufferedReader br = new BufferedReader(new InputStreamReader(input));
-									String apiline = null;
-									while((apiline=br.readLine())!=null){
-										if(!apiline.equals("")&&apiline.charAt(0)>'0'&&apiline.charAt(0)<'3'){
-											proxiesOfAPI.add(apiline);
+								int count = 0;
+								while(count<3){
+									count++;
+									try {
+										URL url = new URL(configuration.getProperty("PROXY_API"));
+										
+										connection = (HttpURLConnection) url
+												.openConnection();
+										//connection.setDoOutput(true);// 允许连接提交信息
+										connection.setRequestMethod("GET");// 网页提交方式“GET”、“POST”
+										// connection.setRequestProperty("User-Agent",
+										// "Mozilla/4.7 [en] (Win98; I)");
+										connection.setRequestProperty("Content-Type",
+												"text/plain; charset=UTF-8");
+										connection.setRequestProperty("Connection",
+												"close");
+										
+										connection.setConnectTimeout(5000);  
+										connection.setReadTimeout(5000);  
+										
+	//									StringBuffer sb = new StringBuffer();
+	//									sb.append(header);
+	//									sb.append(Converts.bytesToHexString(encrypted));
+	//									os = connection.getOutputStream();
+	//									os.write(sb.toString().getBytes());
+	//									os.flush();
+	//									os.close();
+	
+										input = connection.getInputStream();
+										BufferedReader br = new BufferedReader(new InputStreamReader(input));
+										String apiline = null;
+										while((apiline=br.readLine())!=null){
+											if(!apiline.equals("")&&apiline.charAt(0)>'0'&&apiline.charAt(0)<'3'){
+												proxiesOfAPI.add(apiline);
+											}
 										}
-									}
-								} catch (Exception e) {
-									e.printStackTrace();
-								}finally{
-									if(input!=null){
-										try{
-											input.close();
-										}catch(Exception e){
-											e.printStackTrace();
+									} catch (Exception e) {
+										e.printStackTrace();
+										if(count<3){
+											try{
+												Thread.sleep(5*1000);
+											}catch(Exception ex){
+												ex.printStackTrace();
+											}
+										}
+									}finally{
+										if(input!=null){
+											try{
+												input.close();
+											}catch(Exception e){
+												e.printStackTrace();
+											}
 										}
 									}
 								}
@@ -1226,4 +1266,7 @@ public class Engine extends Observable {
 		return instance;
 	}
 
+	public String getCookieAPI(){
+		return cookieAPIs[urlidx];
+	}
 }
