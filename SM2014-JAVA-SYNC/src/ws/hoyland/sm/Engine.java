@@ -617,6 +617,10 @@ public class Engine extends Observable {
 					if(urlidx==cookieAPIs.length){
 						urlidx = 0;
 					}
+					EngineMessage msg = new EngineMessage();
+					msg.setType(EngineMessageType.OM_CHANGE_URL);
+					msg.setData(getCookieAPI());
+					Engine.this.notify(msg);
 					
 					info("");
 					info("================");
