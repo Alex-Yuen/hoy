@@ -471,6 +471,19 @@ public class InitServlet extends HttpServlet {
 		}
 	}
 	
+	public synchronized void fill(String line){
+		if(!flag||!login||line==null){
+			return;
+		}
+		
+		String[] accs = line.split("----");
+		int csize = Cookies.getInstance().size();
+		if(csize<size&&!Cookies.getInstance().containsKey(accs[0])){
+			Task task = new Task(this, line);
+			pool.execute(task);
+		}
+	}
+	
 	public synchronized void fill(){
 		if(!flag||!login||aidx>=accounts.size()-1){
 			return; //已经停止
