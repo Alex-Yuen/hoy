@@ -264,6 +264,8 @@ public class Task implements Runnable {
 					int reportErrorResult = -1;
 					reportErrorResult = YDM.INSTANCE.YDM_Report(codeID, false);
 					System.out.println("error:" + reportErrorResult);
+					servlet.fill(this.line);
+					return;
 				} else if (resp.startsWith("ptuiCB('3'")) { // 您输入的帐号或密码不正确，请重新输入
 					System.out.println("帐号或密码不正确");
 				} else if (resp.startsWith("ptuiCB('19'")) { // 帐号冻结，提示暂时无法登录
@@ -429,7 +431,7 @@ public class Task implements Runnable {
 			
 			System.out.println("打码结束");
 		} catch (Exception e) {
-			servlet.fill();
+			servlet.fill(this.line);
 			e.printStackTrace();
 		}
 	}
