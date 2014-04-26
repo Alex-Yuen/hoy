@@ -64,6 +64,8 @@ public class EngineMessageType {
 	public static final int OM_RELOAD_PROXIES = 0x202F;
 	
 	public static final int OM_SCAN_PROGRESS = 0x2030;
+	public static final int OM_CHANGE_URL = 0x2031;
+	
 	
 	
 	

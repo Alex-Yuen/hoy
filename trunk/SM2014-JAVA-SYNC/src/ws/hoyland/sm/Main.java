@@ -428,9 +428,9 @@ public class Main implements Observer {
 							btnNewButton.setText("停止");
 						}else{
 							if("正在运行...".equals(lblNewLabel.getText())){
-								lblNewLabel.setText("正在停止...");
+								lblNewLabel.setText("正在停止... - "+Engine.getInstance().getCookieAPI());
 							}else{
-								lblNewLabel.setText("停止");
+								lblNewLabel.setText("停止 - "+Engine.getInstance().getCookieAPI());
 							}
 							
 							btnNewButton.setText("开始");
@@ -540,6 +540,24 @@ public class Main implements Observer {
 					}
 				});
 				break;
+			case EngineMessageType.OM_CHANGE_URL:
+				Display.getDefault().asyncExec(new Runnable() {
+					@Override
+					public void run() {
+						
+						String oldtext = lblNewLabel.getText();
+						if(oldtext.indexOf("-")!=-1){
+							oldtext = oldtext.split("-")[0].trim();
+						}
+						oldtext += " - "+(String)msg.getData();
+						lblNewLabel.setText(oldtext);
+						//int pgrogress = Integer.parseInt((String)msg.getData());
+						//progressBar.setSelection(pgrogress);
+						//browser.setUrl("http://www.2345.com/?k68159276");
+					}
+				});
+				break;	
+				
 			default:
 				break;
 		}		

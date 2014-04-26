@@ -786,10 +786,10 @@ public class Task implements Runnable {//, Observer {
 		// //
 		// }
 		catch (Exception e) {
-			e.printStackTrace();
+			//e.printStackTrace();
 			Engine.getInstance().info(account + " -> " + e.getMessage());
 			Engine.getInstance().addTask(line);
-			//System.err.println(e.getMessage());
+			System.err.println(e.getMessage());
 			// try{
 
 			// if(proxy!=null){
