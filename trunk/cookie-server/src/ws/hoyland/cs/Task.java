@@ -30,6 +30,8 @@ import org.apache.http.cookie.Cookie;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.CoreConnectionPNames;
 import org.apache.http.util.EntityUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import ws.hoyland.cs.servlet.Cookies;
 import ws.hoyland.cs.servlet.InitServlet;
@@ -42,6 +44,7 @@ public class Task implements Runnable {
 	private InitServlet servlet = null;
 	private static String UAG = "Mozilla/5.0 (Linux; U; Android 2.3.3; en-us; sdk Build/GRI34) AppleWebKit/533.1 (KHTML, like Gecko) Version/4.0 Mobile Safari/533.1";
 //	private static Random random = new Random();
+	private static final Logger logger = LogManager.getRootLogger();
 
 	public Task(InitServlet servlet, String account) {
 		this.servlet = servlet;
@@ -106,10 +109,10 @@ public class Task implements Runnable {
 			}
 
 			//client.getCookieStore().clear();
-			System.out.println("开始打码...");
+			logger.info("开始打码...");
 
 			String[] accs = line.split("----");
-			System.out.println("检查帐号");
+			logger.info("检查帐号");
 			request = new HttpGet(
 					"https://ssl.ptlogin2.qq.com/check?uin="
 							+ accs[0]
@@ -137,14 +140,14 @@ public class Task implements Runnable {
 			int lidx = resp.lastIndexOf(",");
 
 			String vcode = resp.substring(fidx + 2, lidx - 1);
-			System.out.println(vcode);
+			logger.info(vcode);
 			String salt = resp.substring(lidx + 2, lidx + 34);
-			System.out.println(salt);
+			logger.info(salt);
 
 			if (nvc) {
-				System.out.println("需验证码");
+				logger.info("需验证码");
 
-				System.out.println("请求验证码");
+				logger.info("请求验证码");
 				request = new HttpGet(
 						"https://ssl.captcha.qq.com/getimage?aid=522005705&r="
 								+ Math.random() + "&uin=" + accs[0] + "@qq.com");
@@ -174,7 +177,7 @@ public class Task implements Runnable {
 				}
 
 				// 识别验证码
-				System.out.println("识别验证码");
+				logger.info("识别验证码");
 				byte[] by = baos.toByteArray();
 				byte[] resultByte = new byte[30]; // 为识别结果申请内存空间
 				// StringBuffer rsb = new StringBuffer(30);
@@ -186,7 +189,7 @@ public class Task implements Runnable {
 				vcode = new String(resultByte, "UTF-8").trim();
 
 			} else {
-				System.out.println("不需验证码");
+				logger.info("不需验证码");
 			}
 
 			// 计算ECP
@@ -200,7 +203,7 @@ public class Task implements Runnable {
 			}
 
 			String[] salts = salt.substring(2).split("\\\\x");
-			// System.out.println(salts.length);
+			// logger.info(salts.length);
 			for (int i = 0; i < salts.length; i++) {
 				rs[psz + i] = (byte) Integer.parseInt(salts[i], 16);
 			}
@@ -213,10 +216,10 @@ public class Task implements Runnable {
 			results = md
 					.digest((resultString + vcode.toUpperCase()).getBytes());
 			resultString = Converts.bytesToHexString(results).toUpperCase();
-			// System.out.println(resultString);
+			// logger.info(resultString);
 			String ecp = resultString;
 
-			System.out.println("登录(A)");
+			logger.info("登录(A)");
 			request = new HttpGet(
 					"https://ssl.ptlogin2.qq.com/login?ptlang=2052&aid=522005705&daid=4&u1=https%3A%2F%2Fmail.qq.com%2Fcgi-bin%2Flogin%3Fvt%3Dpassport%26vm%3Dwpt%26ft%3Dptlogin%26ss%3D%26validcnt%3D%26clientaddr%3D"
 							+ accs[0]
@@ -255,31 +258,31 @@ public class Task implements Runnable {
 
 				checksigUrl = resp.substring(resp.indexOf("http"),
 						resp.indexOf("0','1','") + 1);
-				System.out.println(checksigUrl);
-				System.out.println("登录成功");
+				logger.info(checksigUrl);
+				logger.info("登录成功");
 			} else {
 				if (resp.startsWith("ptuiCB('4'")) { // 验证码错误
 					// 报告验证码错误
-					System.out.println("验证码错误");
+					logger.info("验证码错误");
 					int reportErrorResult = -1;
 					reportErrorResult = YDM.INSTANCE.YDM_Report(codeID, false);
-					System.out.println("error:" + reportErrorResult);
+					logger.info("error:" + reportErrorResult);
 					servlet.fill(this.line);
 					return;
 				} else if (resp.startsWith("ptuiCB('3'")) { // 您输入的帐号或密码不正确，请重新输入
-					System.out.println("帐号或密码不正确");
+					logger.info("帐号或密码不正确");
 				} else if (resp.startsWith("ptuiCB('19'")) { // 帐号冻结，提示暂时无法登录
-					System.out.println("帐号冻结");
+					logger.info("帐号冻结");
 				} else {
 					// ptuiCB('19' 暂停使用
 					// ptuiCB('7' 网络连接异常
-					System.out.println("帐号异常");
+					logger.info("帐号异常");
 				}
 				servlet.fill();
 				return;
 			}
 
-			System.out.println("登录(B)");
+			logger.info("登录(B)");
 			request = new HttpGet(checksigUrl);
 
 			request.setHeader("User-Agent", UAG);
@@ -299,7 +302,7 @@ public class Task implements Runnable {
 			response = client.execute(request);
 			// entity = response.getEntity();
 			Header[] hs = response.getHeaders("Location");
-			System.out.println("Location=" + hs[0].getValue());
+			logger.info("Location=" + hs[0].getValue());
 			try {
 				if (entity != null) {
 					EntityUtils.consume(entity);
@@ -328,7 +331,7 @@ public class Task implements Runnable {
 			response = client.execute(request);
 			entity = response.getEntity();
 			// hs = response.getHeaders("Location");
-			// System.out.println("Location="+hs[0].getValue());
+			// logger.info("Location="+hs[0].getValue());
 			resp = EntityUtils.toString(entity);
 
 			try {
@@ -343,25 +346,25 @@ public class Task implements Runnable {
 				request.abort();
 			}
 
-			System.out.println(resp);
+			logger.info(resp);
 
 			if (resp.indexOf("frame_html?sid=") == -1) {
-				// System.out.println(resp.substring(resp.indexOf("errtype="),
+				// logger.info(resp.substring(resp.indexOf("errtype="),
 				// resp.indexOf("errtype=")+8));
-				System.out.println("无法跳转");
+				logger.info("无法跳转");
 				servlet.fill();
 				return;
 			}
 
 			String sid = resp.substring(resp.indexOf("frame_html?sid=") + 15,
 					resp.indexOf("frame_html?sid=") + 31);
-			System.out.println("sid=" + sid);
+			logger.info("sid=" + sid);
 
 			String r = resp.substring(resp.indexOf("targetUrl+=\"&r=") + 15,
 					resp.indexOf("targetUrl+=\"&r=") + 47);
 			System.err.println("r=" + r);
 
-			System.out.println("登录(C)");
+			logger.info("登录(C)");
 			request = new HttpGet("http://mail.qq.com/cgi-bin/frame_html?sid="
 					+ sid + "&r=" + r);
 
@@ -382,7 +385,7 @@ public class Task implements Runnable {
 				request.abort();
 			}
 
-			System.out.println("保存Cookie");
+			logger.info("保存Cookie");
 			StringBuffer sb = new StringBuffer();
 			// 获取cookie
 			List<Cookie> cs = client.getCookieStore().getCookies();
@@ -391,7 +394,7 @@ public class Task implements Runnable {
 			}
 
 			sb.delete(sb.length() - 2, sb.length() - 1);
-			System.out.println("cookies size 1:" + Cookies.getInstance().size());
+			logger.info("cookies size 1:" + Cookies.getInstance().size());
 
 //			//写入Cookies.txt
 //			if(!Cookies.getInstance().containsKey(accs[0])){
@@ -407,7 +410,7 @@ public class Task implements Runnable {
 		
 						xpath = xpath.substring(0, xpath.indexOf("/WEB-INF/"));
 						xpath = URLDecoder.decode(xpath, "UTF-8");
-						//System.out.println("xpath=" + xpath);
+						//logger.info("xpath=" + xpath);
 						
 						output = new BufferedWriter(new FileWriter(new File(xpath
 								+ "/WEB-INF/cookies.txt"), true));
@@ -426,10 +429,10 @@ public class Task implements Runnable {
 					}
 				}
 			}
-			System.out.println("cookies size 2:" + Cookies.getInstance().size());
+			logger.info("cookies size 2:" + Cookies.getInstance().size());
 			
 			
-			System.out.println("打码结束");
+			logger.info("打码结束");
 		} catch (Exception e) {
 			servlet.fill(this.line);
 			e.printStackTrace();

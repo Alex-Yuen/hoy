@@ -11,5 +11,7 @@
 	<classpathentry kind="lib" path="lib/commons-codec-1.9.jar"/>
 	<classpathentry kind="lib" path="lib/jna.jar"/>
 	<classpathentry kind="lib" path="lib/JNative.jar"/>
+	<classpathentry kind="lib" path="lib/log4j-api-2.0-rc1.jar"/>
+	<classpathentry kind="lib" path="lib/log4j-core-2.0-rc1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+	<!--
+		Licensed to the Apache Software Foundation (ASF) under one or more
+		contributor license agreements. See the NOTICE file distributed with
+		this work for additional information regarding copyright ownership.
+		The ASF licenses this file to You under the Apache License, Version
+		2.0 (the "License"); you may not use this file except in compliance
+		with the License. You may obtain a copy of the License at
+
+		http://www.apache.org/licenses/LICENSE-2.0 Unless required by
+		applicable law or agreed to in writing, software distributed under the
+		License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+		CONDITIONS OF ANY KIND, either express or implied. See the License for
+		the specific language governing permissions and limitations under the
+		License.
+	-->
+
+<web-app xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+	version="2.5">
+
+	<display-name>Welcome to Hoyland's Server</display-name>
+	<description>
+	Welcome to Hoyland's Server
+	</description>
+	
+	<welcome-file-list>
+		<welcome-file>index</welcome-file>
+        	<welcome-file>index.jsp</welcome-file>
+        	<welcome-file>index.html</welcome-file>
+	</welcome-file-list>
+	
+	<listener>
+		<listener-class>ws.hoyland.cs.listener.Log4j2ConfigListener</listener-class>
+	</listener>
+
+	<servlet>
+		<servlet-name>Init Servlet</servlet-name>
+		<servlet-class>ws.hoyland.cs.servlet.InitServlet</servlet-class>
+		<init-param>
+			<param-name>username</param-name>
+			<param-value>msmbp</param-value>
+	        </init-param>
+		<init-param>
+			<param-name>password</param-name>
+			<param-value>zxcvbnm123.</param-value>
+	        </init-param>
+		<init-param>
+			<param-name>threadcount</param-name>
+			<param-value>20</param-value>
+	        </init-param>
+		<init-param>
+			<param-name>size</param-name>
+			<param-value>1</param-value>
+	        </init-param>
+		<load-on-startup>1</load-on-startup>
+	</servlet>    
+	<servlet-mapping>
+		<servlet-name>Init Servlet</servlet-name>
+		<url-pattern>/init</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
+		<servlet-name>Index Servlet</servlet-name>
+		<servlet-class>ws.hoyland.cs.servlet.IndexServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>Index Servlet</servlet-name>
+		<url-pattern>/index</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>GC Servlet</servlet-name>
+		<servlet-class>ws.hoyland.cs.servlet.GCServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>GC Servlet</servlet-name>
+		<url-pattern>/gc</url-pattern>
+	</servlet-mapping>
+	<!--t-->
+</web-app>

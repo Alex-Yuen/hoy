@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration status="debug">
+	<appenders>
+		<File name="file" fileName="${sys:webapp.base}/cookie-server.log" append="false">
+			<PatternLayout
+				pattern="%d{HH:mm:ss.SSS} %level %logger{36} - %msg%n" />
+		</File>
+	</appenders>
+	<loggers>
+		<root level="info">
+			<appender-ref ref="file" />
+		</root>
+	</loggers>
+</configuration>
