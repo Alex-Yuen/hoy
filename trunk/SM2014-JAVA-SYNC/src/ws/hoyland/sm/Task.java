@@ -243,14 +243,13 @@ public class Task implements Runnable {//, Observer {
 			
 			String cl = null;//cookie line			
 			
-			
-			long hour = (System.currentTimeMillis() - start)/(3600*1000)+1;
-			
-			
-			String cookieapi = CONFIGURATION.getProperty("COOKIE_API");			
 //			int hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
 //			request = new HttpGet(cookieapi.replace("/cs/", "/cs"+(hour/3+1)+"/"));
-			request = new HttpGet(cookieapi.replace("/cs/", "/cs"+(hour+1)+"/"));
+			
+//			long hour = (System.currentTimeMillis() - start)/(3600*1000)+1;
+//			String cookieapi = CONFIGURATION.getProperty("COOKIE_API");			
+//			request = new HttpGet(cookieapi.replace("/cs/", "/cs"+(hour+1)+"/"));
+			request = new HttpGet(Engine.getInstance().getCookieAPI());
 			request.setHeader("Connection", "close");
 			
 			response = client.execute(request);
