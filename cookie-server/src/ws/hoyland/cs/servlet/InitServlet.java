@@ -47,6 +47,8 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.cookie.BasicClientCookie;
 import org.apache.http.params.CoreConnectionPNames;
 import org.apache.http.util.EntityUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import ws.hoyland.cs.Task;
 import ws.hoyland.util.CopiedIterator;
@@ -70,13 +72,15 @@ public class InitServlet extends HttpServlet {
 	private int aidx = -1;
 	private boolean login = false;
 	private boolean writed = false;
+	
+	private static final Logger logger = LogManager.getRootLogger();
 
 	public InitServlet() {
 	}
 
 	@Override
 	public void init(final ServletConfig config) {
-		System.out.println("Servlet 初始化(1).");
+		logger.info("Servlet 初始化(1).");
 		try {
 			super.init(config);
 		} catch (Exception e) {
@@ -85,7 +89,7 @@ public class InitServlet extends HttpServlet {
 		
 		size = Integer.parseInt(config
 				.getInitParameter("size"));
-		System.out.println("size:"+size);
+		logger.info("size:"+size);
 		
 		try {
 			URL url = this.getClass().getClassLoader().getResource("");
@@ -93,7 +97,7 @@ public class InitServlet extends HttpServlet {
 
 			xpath = xpath.substring(0, xpath.indexOf("/WEB-INF/"));
 			xpath = URLDecoder.decode(xpath, "UTF-8");
-			System.out.println("xpath=" + xpath);
+			logger.info("xpath=" + xpath);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -165,21 +169,21 @@ public class InitServlet extends HttpServlet {
 			e.printStackTrace();
 		}
 		
-//		System.out.println("Servlet 初始化(1).");
-//		System.out.println(Proxy.class.getName());
+//		logger.info("Servlet 初始化(1).");
+//		logger.info(Proxy.class.getName());
 //        Class clazz=Proxy.class;
 //        Class clazz1=Proxy.getProxyClass(Collection.class.getClassLoader(), Collection.class);
-//        System.out.println(clazz);
-//        System.out.println(clazz1);
+//        logger.info(clazz);
+//        logger.info(clazz1);
         
 		timer = new Timer();
 
 		try {
-//			System.out.println("xa");
+//			logger.info("xa");
 //			YDM y = (YDM) Native.loadLibrary(xpath.substring(1)
 //					+ "/WEB-INF/lib/yundamaAPI.dll", YDM.class);
 			//YDM y = (YDM)JNALoader.load("/WEB-INF/lib/yundamaAPI.dll", YDM.class);
-//			System.out.println("xb");
+//			logger.info("xb");
 			
 			YDM.INSTANCE.YDM_SetAppInfo(355, "7fa4407ca4d776d949d2d7962f1770cc");
 			int userID = YDM.INSTANCE.YDM_Login(
@@ -189,10 +193,10 @@ public class InitServlet extends HttpServlet {
 					config.getInitParameter("username"),
 					config.getInitParameter("password"));
 			if (userID < 0) {
-				System.out.println("登录云打码平台失败:" + userID);
+				logger.info("登录云打码平台失败:" + userID);
 			} else {
 				login = true;
-				System.out.println("登录云打码平台成功:" + userID + "=" + score);
+				logger.info("登录云打码平台成功:" + userID + "=" + score);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -202,7 +206,7 @@ public class InitServlet extends HttpServlet {
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
-				System.out.println("Servlet 初始化(2).");
+				logger.info("Servlet 初始化(2).");
 				InputStream is = null;
 				BufferedReader br = null;
 
@@ -210,7 +214,7 @@ public class InitServlet extends HttpServlet {
 
 				// 加载cookies
 				try {
-					System.out.println("加载cookies.txt...");
+					logger.info("加载cookies.txt...");
 					is = new FileInputStream(new File(xpath
 							+ "/WEB-INF/cookies.txt"));
 					br = new BufferedReader(new InputStreamReader(is));
@@ -218,18 +222,18 @@ public class InitServlet extends HttpServlet {
 					while ((line = br.readLine()) != null) {
 						String acc = line.substring(line.indexOf("qm_username=")+12);
 						acc = acc.substring(0, acc.indexOf(";"));
-//						System.out.println("acc="+acc);						
+//						logger.info("acc="+acc);						
 						synchronized (Cookies.getInstance()) {
 							if(!Cookies.getInstance().containsKey(acc)){
-								System.out.println("导入Cookie:"+acc);
+								logger.info("导入Cookie:"+acc);
 								Cookies.getInstance().put(acc, line);
 							}else{
-								System.out.println("内存Cookies已经包含:"+acc+", 不再加入");
+								logger.info("内存Cookies已经包含:"+acc+", 不再加入");
 							}
 						}
-						// System.out.println("adding cookies:" + line);
+						// logger.info("adding cookies:" + line);
 					}
-					System.out.println("加载cookies.txt...完毕");
+					logger.info("加载cookies.txt...完毕");
 				} catch (Exception e) {
 					e.printStackTrace();
 				} finally {
@@ -253,7 +257,7 @@ public class InitServlet extends HttpServlet {
 
 				// 加载帐号
 				try {
-					System.out.println("加载accounts.txt...");
+					logger.info("加载accounts.txt...");
 					is = new FileInputStream(new File(xpath
 							+ "/WEB-INF/accounts.txt"));
 					br = new BufferedReader(new InputStreamReader(is));
@@ -262,9 +266,9 @@ public class InitServlet extends HttpServlet {
 						synchronized (Cookies.getInstance()) {
 							accounts.add(line);
 						}
-						// System.out.println("adding cookies:" + line);
+						// logger.info("adding cookies:" + line);
 					}
-					System.out.println("加载accounts.txt...完毕");
+					logger.info("加载accounts.txt...完毕");
 				} catch (Exception e) {
 					e.printStackTrace();
 				} finally {
@@ -290,16 +294,16 @@ public class InitServlet extends HttpServlet {
 				
 				//如果小于既定个数，则加入Task
 				int csize = Cookies.getInstance().size();
-				System.out.println("current size:"+csize);
+				logger.info("current size:"+csize);
 				if (csize < size) {
 					for (int i = 0; i < size - csize; i++) {						
 						fill();
 					}
 				}				
 
-				System.out.println("Servlet 初始化结束");
+				logger.info("Servlet 初始化结束");
 
-				System.out.println("启动维护线程");
+				logger.info("启动维护线程");
 				// 启动维护线程
 				timer = new Timer();
 				timer.schedule(new TimerTask() {
@@ -319,7 +323,7 @@ public class InitServlet extends HttpServlet {
 						}
 						
 						try {
-							System.out.println("维护线程:正在验证Cookie...");
+							logger.info("维护线程:正在验证Cookie...");
 							Iterator<String> it = null;
 							synchronized (Cookies.getInstance()) {
 								it = new CopiedIterator(Cookies.getInstance().values()
@@ -331,7 +335,7 @@ public class InitServlet extends HttpServlet {
 								String line = (String) it.next();
 								try {
 									// 验证
-									System.out.println("维护:"+idx);
+									logger.info("维护:"+idx);
 									client.getCookieStore().clear();
 									request = new HttpGet(
 											"https://mail.qq.com/cgi-bin/login?vt=passport&vm=wsk&delegate_url=");
@@ -356,7 +360,7 @@ public class InitServlet extends HttpServlet {
 									for (int i = 0; i < cks.length; i++) {
 										String[] lsx = cks[i].substring(0,
 												cks[i].length() - 1).split("=");
-										// System.out.println(cks[i]+"/"+ls.length);
+										// logger.info(cks[i]+"/"+ls.length);
 										BasicClientCookie cookie = null;
 										if (lsx.length == 1) {
 											cookie = new BasicClientCookie(
@@ -394,14 +398,14 @@ public class InitServlet extends HttpServlet {
 									if (resp.indexOf("frame_html?sid=") == -1) {
 										String acc = line.substring(line.indexOf("qm_username=")+12);
 										acc = acc.substring(0, acc.indexOf(";"));
-										System.out.println("removing cookies("+Cookies.getInstance().size()+"):"
+										logger.info("removing cookies("+Cookies.getInstance().size()+"):"
 												+ acc);
 										synchronized (Cookies.getInstance()) {
 											if(Cookies.getInstance().containsKey(acc)){
 												Cookies.getInstance().remove(acc);
 											}
 										}
-										System.out.println("removing cookies("+Cookies.getInstance().size()+"):"
+										logger.info("removing cookies("+Cookies.getInstance().size()+"):"
 												+ acc);
 										if(!writed){
 											fill();//首次维护才会继续打码
@@ -417,7 +421,7 @@ public class InitServlet extends HttpServlet {
 						}finally{
 							tmflag = false;
 							writed = true;
-							System.out.println("维护线程:验证完毕");
+							logger.info("维护线程:验证完毕");
 						}
 					}
 				}, 0, 60 * 1000 * 10); // 10分钟维持并验证一次
@@ -450,12 +454,12 @@ public class InitServlet extends HttpServlet {
 			output = new BufferedWriter(new FileWriter(new File(xpath
 					+ "/WEB-INF/cookies.txt")));
 
-			System.out.println("Saving...");
+			logger.info("Saving...");
 			for(String cookie:Cookies.getInstance().values()){
 				output.write(cookie+"\r\n");
 			}
 			
-			System.out.println("Saved "+Cookies.getInstance().size());
+			logger.info("Saved "+Cookies.getInstance().size());
 			
 			output.flush();
 		}catch(Exception e){
@@ -490,7 +494,7 @@ public class InitServlet extends HttpServlet {
 		}
 		
 		try{			
-			//System.out.println("fill");
+			//logger.info("fill");
 			int csize = Cookies.getInstance().size();
 			if(csize<size){
 				String account = null;
@@ -501,15 +505,15 @@ public class InitServlet extends HttpServlet {
 //						aidx = 0;
 //					}
 					if(aidx>=accounts.size()){
-						System.out.println("帐号用完，不再打码");
+						logger.info("帐号用完，不再打码");
 						break;
 					}
 					account = accounts.get(aidx);
 					accs = account.split("----");
-					//System.out.println(aidx+"="+accs[0]);
+					//logger.info(aidx+"="+accs[0]);
 				}while(Cookies.getInstance().containsKey(accs[0]));
 				
-				//System.out.println("run");
+				//logger.info("run");
 				if(account!=null){
 					Task task = new Task(this, account);
 					pool.execute(task);
