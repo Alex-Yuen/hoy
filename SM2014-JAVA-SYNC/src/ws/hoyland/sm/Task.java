@@ -94,7 +94,7 @@ public class Task implements Runnable {//, Observer {
 		}
 	};
 	
-	private static long start = System.currentTimeMillis();
+//	private static long start = System.currentTimeMillis();
 //	private static String VERSION = "10074";
 	
 //	static{
