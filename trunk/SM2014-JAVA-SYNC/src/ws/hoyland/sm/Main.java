@@ -13,6 +13,7 @@ import java.util.Observer;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.FileDialog;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Menu;
@@ -84,6 +85,16 @@ public class Main implements Observer {
 	 */
 	public void open() {
 		Display display = Display.getDefault();
+
+		display.addFilter(SWT.KeyDown, new Listener(){
+			@Override
+			public void handleEvent(Event event) {
+				if ((event.stateMask & SWT.CTRL) != 0&&event.keyCode==109) { //
+					text.setText("");
+					Engine.getInstance().memo();
+                }
+			}
+		});
 		createContents();
 		load();
 		shell.open();
