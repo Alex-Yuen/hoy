@@ -66,7 +66,7 @@ public class ProxyService implements ProxyServiceMBean {
 		new Thread(new Runnable(){
 			@Override
 			public void run() {
-				Engine.getInstance().reloadProxies();												
+				Engine.getInstance().reloadProxies(true);												
 			}
 		}).start();		
 	}	
