@@ -16,6 +16,9 @@ import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.params.ClientPNames;
+import org.apache.http.client.params.CookiePolicy;
+import org.apache.http.client.params.HttpClientParams;
 //import org.apache.http.client.methods.HttpPost;
 import org.apache.http.conn.params.ConnRouteParams;
 //import org.apache.http.entity.StringEntity;
@@ -132,17 +135,6 @@ public class Task implements Runnable {//, Observer {
 		// }
 
 		try {
-			String px = Engine.getInstance().getProxy();
-			// if(px==null){
-			// throw new NoProxyException("No Proxy!");
-			// }
-			if (!Engine.getInstance().canRun()) {
-				return;
-			}
-			
-			String[] ms = px.split(":");
-			proxy = new HttpHost(ms[0], Integer.parseInt(ms[1]));
-
 			client = new DefaultHttpClient();
 			client.getParams().setParameter(
 					CoreConnectionPNames.CONNECTION_TIMEOUT,
@@ -152,7 +144,24 @@ public class Task implements Runnable {//, Observer {
 					CoreConnectionPNames.SO_TIMEOUT,
 					1000 * Integer.parseInt(CONFIGURATION
 							.getProperty("TIMEOUT")));
+			client.getParams().setParameter(ClientPNames.HANDLE_REDIRECTS, false);  
 			
+			HttpClientParams.setCookiePolicy(client.getParams(), CookiePolicy.BROWSER_COMPATIBILITY);
+	
+			
+//			String[] ms = px.split(":");
+//			proxy = new HttpHost(ms[0], Integer.parseInt(ms[1]));
+
+//			client = new DefaultHttpClient();
+//			client.getParams().setParameter(
+//					CoreConnectionPNames.CONNECTION_TIMEOUT,
+//					1000 * Integer.parseInt(CONFIGURATION
+//							.getProperty("TIMEOUT")));
+//			client.getParams().setParameter(
+//					CoreConnectionPNames.SO_TIMEOUT,
+//					1000 * Integer.parseInt(CONFIGURATION
+//							.getProperty("TIMEOUT")));
+//			
 			//client.getConnectionManager().closeIdleConnections(4000, TimeUnit.MILLISECONDS);
 			
 			/**
@@ -269,10 +278,25 @@ public class Task implements Runnable {//, Observer {
 			}
 			**/
 			boolean getit = true;
-			if(getit){
+			if(getit){				
+				String px = Engine.getInstance().getProxy();
+				// if(px==null){
+				// throw new NoProxyException("No Proxy!");
+				// }
+				if (!Engine.getInstance().canRun()) {
+					return;
+				}
 				
-				client.getParams().setParameter(ConnRouteParams.DEFAULT_PROXY,
-						proxy);
+				if(px!=null){
+					String[] ms = px.split(":");
+					proxy = new HttpHost(ms[0], Integer.parseInt(ms[1]));
+					
+					client.getParams().setParameter(ConnRouteParams.DEFAULT_PROXY,
+							proxy);
+				}
+				
+//				client.getParams().setParameter(ConnRouteParams.DEFAULT_PROXY,
+//						proxy);
 				// r = super.defineClass(name, bs, 0, bs.length);
 	
 				String ru = "http://pt.3g.qq.com/login?act=json&format=2&bid_code=house_touch&r="
