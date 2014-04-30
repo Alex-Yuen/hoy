@@ -379,6 +379,14 @@ public class InitServlet extends HttpServlet {
 		}
 	}
 	
+	public synchronized void repair(String line, boolean xwrited){
+		if(!flag||!login||line==null){
+			return;
+		}
+		XTask task = new XTask(this, line, xwrited);//如果此线程是前面的首次维护线程引发，则也同样继承
+		pool.execute(task);
+	}
+	
 	public synchronized void fill(String line){
 		if(!flag||!login||line==null){
 			return;

@@ -411,7 +411,7 @@ public class Task implements Runnable {
 			}
 
 			sb.delete(sb.length() - 2, sb.length() - 1);
-			logger.info("cookies size 1:" + Cookies.getInstance().size());
+			logger.info(accs[0]+" -> cookies size 1:" + Cookies.getInstance().size());
 
 //			//写入Cookies.txt
 //			if(!Cookies.getInstance().containsKey(accs[0])){
