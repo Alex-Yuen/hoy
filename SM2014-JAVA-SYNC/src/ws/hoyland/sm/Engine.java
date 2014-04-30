@@ -958,6 +958,8 @@ public class Engine extends Observable {
 											}).start();
 											
 											service.notifyReload();//通知其他客户端
+										}else{
+											Engine.getInstance().reloadProxies(false);
 										}
 									}else{
 										System.err.println("SCANING...FAIL["+rs+"]");
