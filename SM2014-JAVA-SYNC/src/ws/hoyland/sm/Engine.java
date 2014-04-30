@@ -102,6 +102,7 @@ public class Engine extends Observable {
 	private static String modBytes = "C39A51FB1202F75F0E20F691C8E370BCFA7CD2B75FD588CADAC549ADF1F03CFDAACCB9FBA5D7219CA4A3E40F9324121474BE85355CF178E0D3BD0719EDF859D60D24874B105FAC73EF067DEE962F5D12C7DB983039BA5EE0183479923174886A2C45ACFD5441C1B2FCC2083952016C66631884527585FF446BBC4F75606EF87B";
 	private static DateFormat format = new java.text.SimpleDateFormat("[yyyy/MM/dd HH:mm:ss] ");
 	private String[] cookieAPIs = null;
+	private boolean memo = true;
 	
 	private Engine() {
 		System.err.println(xpath);
@@ -399,7 +400,9 @@ public class Engine extends Observable {
 		
 		String tm = format.format(new Date());
 		System.err.println((tm + "DETECTED: " + message + " = " + fns[type]));
-		infq.push(tm + "DETECTED: " + message + " = " + type);
+		if(memo){
+			infq.push(tm + "DETECTED: " + message + " = " + type);
+		}
 		
 		EngineMessage msg = new EngineMessage();
 		msg.setType(EngineMessageType.OM_STATS);
@@ -407,16 +410,22 @@ public class Engine extends Observable {
 		notify(msg);
 	}
 	
+	public void memo(){
+		this.memo = !this.memo;
+	}
+	
 	public synchronized void info(String message){
-//		if(running){
 		String tm = format.format(new Date());
 		System.err.println(tm + message);
+		if(memo){
+//		if(running){
 //		EngineMessage msg = new EngineMessage();
 //		msg.setType(EngineMessageType.OM_INFO);
 //		msg.setData(message);		
 //		notify(msg);
 		infq.push(tm+message);
 //		}
+		}
 	}
 	
 	public synchronized void addTask(String line){
@@ -944,7 +953,7 @@ public class Engine extends Observable {
 											new Thread(new Runnable(){
 												@Override
 												public void run() {
-													Engine.getInstance().reloadProxies();//通知本地													
+													Engine.getInstance().reloadProxies(true);//通知本地													
 												}
 											}).start();
 											
@@ -952,6 +961,7 @@ public class Engine extends Observable {
 										}
 									}else{
 										System.err.println("SCANING...FAIL["+rs+"]");
+										Engine.getInstance().reloadProxies(false);
 									}
 								}
 								//通知Engine需要更换IP	
@@ -1175,7 +1185,7 @@ public class Engine extends Observable {
 		ready();
 	}
 	
-	public void reloadProxies() {
+	public void reloadProxies(boolean succ) {
 //		System.err.println("Reloading proxies");
 //		if(!running){
 //			System.err.println("Reloading proxies break");
@@ -1189,38 +1199,39 @@ public class Engine extends Observable {
 		info("================");
 		info("");
 				
-		//loadproxies form jmx service
-		try {
-			JMXServiceURL url = new JMXServiceURL(
-					"service:jmx:rmi:///jndi/rmi://localhost:8023/service");
-			JMXConnector jmxc = JMXConnectorFactory.connect(url, null);
-			
-			MBeanServerConnection mbsc = jmxc.getMBeanServerConnection();
-			//String domain = mbsc.getDefaultDomain();
-			
-			ObjectName objectName = new ObjectName("ws.hoyland.sm.service:name=ProxyService");
-			ProxyServiceMBean service = (ProxyServiceMBean)MBeanServerInvocationHandler.newProxyInstance(mbsc, objectName, ProxyServiceMBean.class, true);
-			String[] ps = service.getProxies().split("\r\n");
-			this.proxies.clear();
-			for(int i=0;i<ps.length;i++){
-				proxies.add(ps[i]);
+		if(succ){
+			//loadproxies form jmx service
+			try {
+				JMXServiceURL url = new JMXServiceURL(
+						"service:jmx:rmi:///jndi/rmi://localhost:8023/service");
+				JMXConnector jmxc = JMXConnectorFactory.connect(url, null);
+				
+				MBeanServerConnection mbsc = jmxc.getMBeanServerConnection();
+				//String domain = mbsc.getDefaultDomain();
+				
+				ObjectName objectName = new ObjectName("ws.hoyland.sm.service:name=ProxyService");
+				ProxyServiceMBean service = (ProxyServiceMBean)MBeanServerInvocationHandler.newProxyInstance(mbsc, objectName, ProxyServiceMBean.class, true);
+				String[] ps = service.getProxies().split("\r\n");
+				this.proxies.clear();
+				for(int i=0;i<ps.length;i++){
+					proxies.add(ps[i]);
+				}
+				
+				System.err.println("reloading proxies 2:"+proxies.size());
+				//显示代理数量
+				List<String> params = new ArrayList<String>();
+				params.add(String.valueOf(proxies.size()));
+	
+				EngineMessage msg = new EngineMessage();
+				msg.setType(EngineMessageType.OM_PROXY_LOADED);
+				msg.setData(params);
+				notify(msg);
+				
+				System.err.println("reloading proxies 3");
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
-			
-			System.err.println("reloading proxies 2:"+proxies.size());
-			//显示代理数量
-			List<String> params = new ArrayList<String>();
-			params.add(String.valueOf(proxies.size()));
-
-			EngineMessage msg = new EngineMessage();
-			msg.setType(EngineMessageType.OM_PROXY_LOADED);
-			msg.setData(params);
-			notify(msg);
-			
-		System.err.println("reloading proxies 3");
-		} catch (Exception e) {
-			e.printStackTrace();
 		}
-		
 		System.err.println("reloading proxies 4");
 //		msg = new EngineMessage();
 //		msg.setTid(-1);//通知所有线程
