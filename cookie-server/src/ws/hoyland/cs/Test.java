@@ -40,6 +40,8 @@ public class Test {
 		String checksigUrl = resp.substring(resp.indexOf("http"),
 				resp.indexOf("','1','"));
 		System.out.println(checksigUrl);
+		
+		System.out.println(System.currentTimeMillis());
 	}
 
 }
