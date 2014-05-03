@@ -63,6 +63,7 @@ public class InitServlet extends HttpServlet {
 //	private static String UAG = "Mozilla/5.0 (Linux; U; Android 2.3.3; en-us; sdk Build/GRI34) AppleWebKit/533.1 (KHTML, like Gecko) Version/4.0 Mobile Safari/533.1";
 //	private static Random random = new Random();
 	private ThreadPoolExecutor pool = null;
+	private ThreadPoolExecutor poolx = null;
 	public static int size;//需维护的数量
 	private int aidx = -1;
 	private boolean login = false;
@@ -117,6 +118,26 @@ public class InitServlet extends HttpServlet {
 			e.printStackTrace(logger.getStream(Level.INFO));
 		}
 
+		//初始化线程池X
+		try{
+			int tc = Integer.parseInt(config.getInitParameter("threadcountx"));
+			int corePoolSize = tc;// minPoolSize
+			int maxPoolSize = tc;
+			int maxTaskSize = (1024 + 512) * 100 * 40;// 缓冲队列
+			long keepAliveTime = 0L;
+			TimeUnit unit = TimeUnit.MILLISECONDS;
+
+			BlockingQueue<Runnable> workQueue = new ArrayBlockingQueue<Runnable>(
+					maxTaskSize);
+			RejectedExecutionHandler handler = new AbortPolicy();// 饱和处理策略
+
+			// 创建线程池
+			poolx = new ThreadPoolExecutor(corePoolSize, maxPoolSize,
+					keepAliveTime, unit, workQueue, handler);
+		}catch(Exception e){
+			e.printStackTrace(logger.getStream(Level.INFO));
+		}
+		
 		// 初始化client
 		try {
 			client = new DefaultHttpClient();
@@ -316,7 +337,7 @@ public class InitServlet extends HttpServlet {
 								String line = (String) it.next();
 								try {
 									XTask task = new XTask(InitServlet.this, line, writed);
-									pool.execute(task);
+									poolx.execute(task);
 								} catch (Exception e) {
 									e.printStackTrace(logger.getStream(Level.INFO));
 								}
@@ -348,6 +369,12 @@ public class InitServlet extends HttpServlet {
 
 		try{
 			pool.shutdown();
+		}catch(Exception e){
+			e.printStackTrace(logger.getStream(Level.INFO));
+		}
+		
+		try{
+			poolx.shutdown();
 		}catch(Exception e){
 			e.printStackTrace(logger.getStream(Level.INFO));
 		}
@@ -384,7 +411,7 @@ public class InitServlet extends HttpServlet {
 			return;
 		}
 		XTask task = new XTask(this, line, xwrited);//如果此线程是前面的首次维护线程引发，则也同样继承
-		pool.execute(task);
+		poolx.execute(task);
 	}
 	
 	public synchronized void fill(String line){
