@@ -452,10 +452,9 @@ public class Task implements Runnable {
 			
 			logger.info(accs[0]+" -> 打码结束");
 		} catch (Exception e) {
-			if(e.getMessage().indexOf("Read timed out")!=-1){
-				logger.info(accs[0]+" -> \r\n");
-				e.printStackTrace(logger.getStream(Level.INFO));
-			}else{
+			logger.info(accs[0]+" -> \r\n");
+			e.printStackTrace(logger.getStream(Level.INFO));
+			if(e.getMessage().indexOf("Read timed out")==-1){
 				servlet.fill(this.line);
 			}
 		}
