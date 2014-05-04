@@ -181,10 +181,9 @@ public class XTask implements Runnable {
 				}
 			}
 		} catch (Exception e) {
-			if(e.getMessage().indexOf("Read timed out")!=-1){
-				logger.info(acc+" -> \r\n");
-				e.printStackTrace(logger.getStream(Level.INFO));
-			}else{
+			logger.info(acc+" -> \r\n");
+			e.printStackTrace(logger.getStream(Level.INFO));
+			if(e.getMessage().indexOf("Read timed out")==-1){
 				servlet.repair(this.line, writed);
 			}
 		}
