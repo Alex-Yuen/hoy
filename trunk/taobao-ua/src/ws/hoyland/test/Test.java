@@ -15,6 +15,7 @@ public class Test {
 	 * @param args
 	 */
 	public static void main(String[] args) {
+//		System.out.println((0x3e8 % 01701 & 67));
 		// TODO Auto-generated method stub
 		String[][] ss = new String[][]{
 				{"[20,[\"de\",\"2_1201670559\"]]", "[400]"},
@@ -85,8 +86,8 @@ public class Test {
 				ps = ""+prefix;
 			}
 			bj = ps+bj;
-			System.out.println(bj);
 			op--;
+			System.out.println(bj);
 		}
 		
 		
@@ -150,7 +151,7 @@ public class Test {
 					op = ru;
 					mq++;
 				}
-				if ((0x3e8 % 01701 & 67) * mq == q8 + 2) {
+				if (3 * mq == q8 + 2) {
 					ru = w04a^op;
 				}
 			}
