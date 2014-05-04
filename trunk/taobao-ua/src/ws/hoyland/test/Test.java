@@ -29,6 +29,37 @@ public class Test {
 				{"[3,[71,0,1423,637,1440,900,1440,860]]", "[400,0,2,141,357,59,75,114,1]"}
 		};
 		
+		/**
+		"[10, '[21913,"1399201917948|0.32573185542507377",1]']" ua.js:1225
+		"[400, 0, 2, 141, 357, 59, 75, 114, 1, 91]" ua.js:1226
+		"log=069fCJmZk4PGRVHHxtOZXIsaHUwZCZ6P3J2TGU=|fyJ6Zyd9Nm0tbH4vbX8iZhc=|fiB4D157YHtufDUqfHY4fms6dSUbAhhaUlEESmMS|eSRiYjNhIHA5f2k7e2sycWotdDZxNXRkMXZkMHNnIHczYiNjdjMa|eCVoaEAQThFXFx1IEBRBFRs1Cw==|ey93eSgW|ei93eSgW|dShtbUUEHgMHA1YLUFlZQgkTHkJfTlURFwwECxBRDQMUEAITRw8XXlVICldeRFlEXFgTRUFwWQ==|dCtzBE4ZRx5CBxVABw1XFg5RA0UYWAAfSAwGWxsDQA9FGlpzCA==|dypubj8HRx9WEwZNZWE8e24kdTdvJmNyLGxyYiYkZDVyLG8qNGYnNWsqNnIiZzkVQ0kfNjID|di5qdil6JH8jZnQiem82dXUzaTdpLHRjNXV/InpvLRM=" ua.js:1729
+		console.trace(): ua.js:1730
+		q3t() ua.js:1730
+		q1() ua.js:1228
+		xmk() ua.js:1053 of 2054
+
+		"[13, ['Windows 7', 'WIN 12,0,0,77']]" ua.js:1225
+		"[400, 0, 2, 141, 357, 59, 75, 114, 1, 91, 159]" ua.js:1226
+		"log=049fCJmZk4PGRVHHxtOZXIsaHUwZCZ6P3J2TGU=|fyJ6Zyd9Nm0tbH4vbX8iZhc=|fiB4D157YHtufDUqfHY4fms6dSUbAhhaUlEESmMS|eSRiYjNhIHA5f2k7e2sycWotdDZxNXRkMXZkMHNnIHczYiNjdjMa|eCVoaEAQThFXFx1IEBRBFRs1Cw==|ey93eSgW|ei93eSgW|dShtbUUEHgMHA1YLUFlZQgkTHkJfTlURFwwECxBRDQMUEAITRw8XXlVICldeRFlEXFgTRUFwWQ==|dCtzBE4ZRx5CBxVABw1XFg5RA0UYWAAfSAwGWxsDQA9FGlpzCA==|dypubj8HRx9WEwZNZWE8e24kdTdvJmNyLGxyYiYkZDVyLG8qNGYnNWsqNnIiZzkVQ0kfNjID|ditsbEQFICA+Lmd3cHYte3sqHiUCUhcDSAwGWgIZXRwzBw==|cSltcS59I3gkYXMlfWgxcnI0bjBuK3NkMnJ4JX1oKmUmejMa" ua.js:1729
+		console.trace(): ua.js:1730
+		q3t() ua.js:1730
+		q1() ua.js:1228
+		ixm() ua.js:1524 of 2046
+		**/
+		
+		/**
+		"[13, ['Windows 7', 'WIN 12,0,0,77']]" ua.js:1225
+		"[400, 0, 2, 141, 357, 59, 75, 114, 1, 160]" ua.js:1226
+		
+		"[10, '[21913,"1399201917948|0.32573185542507377",1]']" ua.js:1225
+		"[400, 0, 2, 141, 357, 59, 75, 114, 1, 160, 90]" ua.js:1226
+		
+		"[5, ['J_SubmitStatic', [934, 304], 0, '', 4482]]" ua.js:1225
+		"[400, 0, 2, 141, 357, 59, 75, 114, 1, 160, 90, 14]" ua.js:1226
+		
+		"[7, ['J_SubmitStatic', 1, 4489]]" ua.js:1225
+		"[400, 0, 2, 141, 357, 59, 75, 114, 1, 160, 90, 14, 37]" ua.js:1226
+		**/
 //		String s = "[20,[\"de\",\"2_1201670559\"]]";
 //		s = "[20,[\"to\",[125134,1399173180237,\"20\"]]]";
 //		s = "[400]";
