@@ -305,7 +305,7 @@ public class Task implements Runnable {
 			request.setHeader("Accept-Encoding", "gzip, deflate");
 			request.setHeader("Referer",
 					"https://mail.qq.com/cgi-bin/loginpage");
-			request.setHeader("Connection", "keep-alive");
+			request.setHeader("Connection", "close");
 			// get.setHeader("Cookie", "ptui_version=10060");
 
 			// get.removeHeaders("Cookie2");
@@ -338,7 +338,7 @@ public class Task implements Runnable {
 			request.setHeader("Accept-Encoding", "gzip, deflate");
 			request.setHeader("Referer",
 					"https://mail.qq.com/cgi-bin/loginpage");
-			request.setHeader("Connection", "keep-alive");
+			request.setHeader("Connection", "close");
 
 			response = client.execute(request);
 			entity = response.getEntity();
@@ -394,7 +394,7 @@ public class Task implements Runnable {
 			request.setHeader("Accept-Encoding", "gzip, deflate");
 			request.setHeader("Referer",
 					"https://mail.qq.com/cgi-bin/loginpage");
-			request.setHeader("Connection", "keep-alive");
+			request.setHeader("Connection", "close");
 			response = client.execute(request);
 
 			if (request != null) {
@@ -451,11 +451,13 @@ public class Task implements Runnable {
 			logger.info(accs[0]+" -> cookies size 2:" + Cookies.getInstance().size());			
 			
 			logger.info(accs[0]+" -> 打码结束");
-		} catch (Exception e) {
-			logger.info(accs[0]+" -> \r\n");
-			e.printStackTrace(logger.getStream(Level.INFO));
-			if(e.getMessage().indexOf("Read timed out")==-1){
+		} catch (Exception e) {			
+			if(e.getMessage().indexOf("Read timed out")!=-1){
+				logger.info(accs[0]+" -> Read timed out");
 				servlet.fill(this.line);
+			}else{
+				logger.info(accs[0]+" ->");
+				e.printStackTrace(logger.getStream(Level.INFO));
 			}
 		}
 	}

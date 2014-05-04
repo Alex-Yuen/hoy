@@ -123,7 +123,7 @@ public class XTask implements Runnable {
 			request.setHeader("Referer",
 					"https://mail.qq.com/cgi-bin/loginpage");
 			request.setHeader("Connection",
-					"keep-alive");
+					"close");
 
 			CookieStore cs = client.getCookieStore();
 
@@ -181,10 +181,13 @@ public class XTask implements Runnable {
 				}
 			}
 		} catch (Exception e) {
-			logger.info(acc+" -> \r\n");
-			e.printStackTrace(logger.getStream(Level.INFO));
-			if(e.getMessage().indexOf("Read timed out")==-1){
+			//logger.info("get message:"+e.getMessage());
+			if(e.getMessage().indexOf("Read timed out")!=-1){
+				logger.info(acc+" -> Read timed out");
 				servlet.repair(this.line, writed);
+			}else{
+				logger.info(acc+" ->");
+				e.printStackTrace(logger.getStream(Level.INFO));
 			}
 		}
 	}
