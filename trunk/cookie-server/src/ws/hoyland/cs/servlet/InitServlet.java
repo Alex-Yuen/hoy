@@ -349,7 +349,7 @@ public class InitServlet extends HttpServlet {
 							//logger.info("维护线程:验证完毕");
 						}
 					}
-				}, 0, 60 * 1000 * 10); // 10分钟维持并验证一次
+				}, 0, 60 * 1000 * Integer.parseInt(config.getInitParameter("itv"))); // itv分钟维持并验证一次
 			}
 		}).start();
 	}
