@@ -680,7 +680,7 @@ namespace QQGM
                     break;
                 case 2:
                     form.info(id, "下载验证码");
-                    url = "https://ssl.captcha.qq.com/getimage?aid=2001601&" + random.NextDouble() + "&uin=" + account;
+                    url = "https://ssl.captcha.qq.com/getimage?aid=2001601&" + random.NextDouble();// + "&uin=" + account;
                     //Console.WriteLine(url);
                     data = client.OpenRead(url);
 
@@ -711,7 +711,7 @@ namespace QQGM
 
 
                     // 例：1004表示4位字母数字，不同类型收费不同。请准确填写，否则影响识别率。在此查询所有类型 http://www.yundama.com/price.html
-                    nCodeType = 1005;
+                    nCodeType = 1004;
 
                     // 返回验证码ID，大于零为识别成功，返回其他错误代码请查询 http://www.yundama.com/apidoc/YDM_ErrorCode.html
                     if (form.getCptType() == 0)
@@ -975,7 +975,7 @@ namespace QQGM
                     fidx = line.IndexOf(",");
                     lidx = line.LastIndexOf(",");
 
-                    vcode = line.Substring(fidx + 2, 4);
+                    vcode = line.Substring(fidx + 2, 32);
                     salt = line.Substring(lidx + 2, 32);
 
                     if (nvc)
@@ -995,7 +995,7 @@ namespace QQGM
                     break;
                 case 4:
                     form.info(id, "下载验证码");
-                    url = "https://ssl.captcha.qq.com/getimage?aid=2001601&" + random.NextDouble() + "&uin=" + account;
+                    url = "https://ssl.captcha.qq.com/getimage?aid=2001601&r=" + random.NextDouble() + "&uin=" + account + "&cap_cd="+vcode;
                     //Console.WriteLine(url);
                     data = client.OpenRead(url);
 
@@ -1042,7 +1042,9 @@ namespace QQGM
                     //nCaptchaId.ToString();
 
                     //isrun = false;
-                    idx++;
+                    //idx++;
+                    vcode = pCodeResult.ToString();
+                    idx = 8;
                     break;
                 case 6:
                     form.info(id, "提交验证码");
@@ -1108,7 +1110,7 @@ namespace QQGM
                     //计算ECP
                     string ecp = getECP();
 
-                    url = "https://ssl.ptlogin2.qq.com/login?u=" + account + "&p=" + ecp + "&verifycode=" + vcode + "&aid=2001601&u1=http%3A%2F%2Faq.qq.com%2Fcn2%2Findex&h=1&ptredirect=1&ptlang=2052&from_ui=1&dumy=&fp=loginerroralert&action=4-14-" + currentTimeMillis() + "&mibao_css=&t=1&g=1&js_type=0&js_ver=" + version + "&login_sig=" + loginsig;
+                    url = "https://ssl.ptlogin2.qq.com/login?u=" + account + "&p=" + ecp + "&verifycode=" + vcode + "&aid=2001601&u1=http%3A%2F%2Faq.qq.com%2Fcn2%2Findex&h=1&ptredirect=1&ptlang=2052&from_ui=1&dumy=&fp=loginerroralert&action=4-14-" + currentTimeMillis() + "&mibao_css=&t=1&g=1&js_type=0&js_ver=" + version + "&login_sig=" + loginsig+"pt_uistyle=0";
                     data = client.OpenRead(url);
 
                     reader = new StreamReader(data);
