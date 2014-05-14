@@ -1239,11 +1239,11 @@ namespace QQGM
 
                     if (line.IndexOf("my_mb") != -1)
                     {
-                        form.info(id, "需短信验证");
+                        form.info(id, "需要短信验证");
                         isrun = false;
-                        form.log(3, original);//改保失败
-                        form.log(8, original);//密保异常
-                        form.stat(5);//改保失败+1
+                        form.log(1, original);//改保失败
+                        form.log(6, original);//密保异常
+                        form.stat(3);//改保失败+1
                     }
                     else
                     {
