@@ -1110,7 +1110,7 @@ namespace QQGM
                     //计算ECP
                     string ecp = getECP();
 
-                    url = "https://ssl.ptlogin2.qq.com/login?u=" + account + "&p=" + ecp + "&verifycode=" + vcode + "&aid=2001601&u1=http%3A%2F%2Faq.qq.com%2Fcn2%2Findex&h=1&ptredirect=1&ptlang=2052&from_ui=1&dumy=&fp=loginerroralert&action=4-14-" + currentTimeMillis() + "&mibao_css=&t=1&g=1&js_type=0&js_ver=" + version + "&login_sig=" + loginsig+"pt_uistyle=0";
+                    url = "https://ssl.ptlogin2.qq.com/login?u=" + account + "&p=" + ecp + "&verifycode=" + vcode + "&aid=2001601&u1=http%3A%2F%2Faq.qq.com%2Fcn2%2Findex&h=1&ptredirect=1&ptlang=2052&from_ui=1&dumy=&fp=loginerroralert&action=4-14-" + currentTimeMillis() + "&mibao_css=&t=1&g=1&js_type=0&js_ver=" + version + "&login_sig=" + loginsig+"&pt_uistyle=0";
                     data = client.OpenRead(url);
 
                     reader = new StreamReader(data);
@@ -1178,7 +1178,7 @@ namespace QQGM
                     //Console.WriteLine(s);
 
                     data.Close();
-                    reader.Close();
+                    //reader.Close();
 
                     idx++;
                     //isrun = false;
@@ -1189,7 +1189,10 @@ namespace QQGM
                     data = client.OpenRead(url);
                     reader = new StreamReader(data);
                     line = reader.ReadToEnd();
-                    
+
+                    data.Close();
+                    reader.Close();
+
                     if (line.IndexOf("正常使用") != -1) //有保改保
                     {
                         //准备修改
@@ -1226,13 +1229,33 @@ namespace QQGM
                     form.info(id, "打开设置页面");
                     url = "http://aq.qq.com/cn2/manage/upgrade/upgrade_determin?mb_up_from=from_set_question&to=question";
                     data = client.OpenRead(url);
+                    reader = new StreamReader(data);
+                    line = reader.ReadToEnd();
+
                     data.Close();
+                    reader.Close();
+
+                    line = line.Substring(line.IndexOf("url="));
+
+                    if (line.IndexOf("my_mb") != -1)
+                    {
+                        form.info(id, "需短信验证");
+                        isrun = false;
+                        form.log(3, original);//改保失败
+                        form.log(8, original);//密保异常
+                        form.stat(5);//改保失败+1
+                    }
+                    else
+                    {
+                        line = line.Substring(0, line.IndexOf("\""));
+                    }
 
                     idx++;
                     break;
                 case 12:
                     form.info(id, "打开问题列表");
-                    url = "http://aq.qq.com/cn2/manage/question/set_question_sel?mb_flow_type=setdir&outurl=setdir&mb_up_from=from_set_question&";
+                    //url = "http://aq.qq.com/cn2/manage/question/set_question_sel?mb_flow_type=setdir&outurl=setdir&mb_up_from=from_set_question&";
+                    url = "http://aq.qq.com/cn2/manage/upgrade/upgrade_setdir_choose_dna?mb_up_from=from_set_question&to=question";
                     data = client.OpenRead(url);
                     data.Close();                 
                     idx++;
