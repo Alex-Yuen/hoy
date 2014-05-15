@@ -274,16 +274,22 @@ public class Task implements Runnable {
 				if(by!=null){
 					FileOutputStream output = null;
 					try{
+						int i = 0;
 						URL url = this.getClass().getClassLoader().getResource("");
 						String xpath = url.getPath();
 						xpath = xpath.substring(0, xpath.indexOf("/WEB-INF/"));
 						xpath = URLDecoder.decode(xpath, "UTF-8");
-						String path = xpath + "/WEB-INF/captcha/"+vcode+".jpg";					
-						File fff = new File(path);
+						String path = xpath + "/WEB-INF/captcha/"+vcode;					
+						File fff = null;
 						
-						if (!fff.exists()) {
+						do{
+							fff =  new File(path+"-"+i+".jpg");
+							i++;
+						}while(fff.exists());
+						
+						//if (!fff.exists()) {
 							fff.createNewFile();
-						}
+						//}
 		
 						output = new FileOutputStream(fff);
 						output.write(by);
