@@ -4,6 +4,7 @@ import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.net.URL;
 import java.net.URLDecoder;
@@ -146,7 +147,7 @@ public class Task implements Runnable {
 			logger.info(vcode);
 			String salt = resp.substring(lidx + 2, lidx + 34);
 			logger.info(salt);
-
+			byte[] by = null;
 			if (nvc) {
 				logger.info(accs[0]+" -> 需验证码");
 
@@ -182,7 +183,7 @@ public class Task implements Runnable {
 
 				// 识别验证码
 				logger.info(accs[0]+" -> 识别验证码");
-				byte[] by = baos.toByteArray();
+				by = baos.toByteArray();
 				byte[] resultByte = new byte[30]; // 为识别结果申请内存空间
 				// StringBuffer rsb = new StringBuffer(30);
 				String rsb = "0000";
@@ -269,6 +270,37 @@ public class Task implements Runnable {
 					checksigUrl = resp.substring(resp.indexOf("http"),
 							resp.indexOf("','1','"));
 				}
+				//保存验证码
+				if(by!=null){
+					FileOutputStream output = null;
+					try{
+						URL url = this.getClass().getClassLoader().getResource("");
+						String xpath = url.getPath();
+						xpath = xpath.substring(0, xpath.indexOf("/WEB-INF/"));
+						xpath = URLDecoder.decode(xpath, "UTF-8");
+						String path = xpath + "/WEB-INF/captcha/"+vcode+".jpg";					
+						File fff = new File(path);
+						
+						if (!fff.exists()) {
+							fff.createNewFile();
+						}
+		
+						output = new FileOutputStream(fff);
+						output.write(by);
+						output.flush();					
+					}catch(Exception e){
+						e.printStackTrace();
+					}finally{
+						if(output!=null){
+							try{
+								output.close();
+							}catch(Exception e){
+								e.printStackTrace();
+							}
+						}
+					}
+				}
+				
 				logger.info(accs[0]+" -> "+checksigUrl);
 				logger.info(accs[0]+" -> 登录成功");
 			} else {
