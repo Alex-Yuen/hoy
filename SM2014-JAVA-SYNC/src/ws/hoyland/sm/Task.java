@@ -338,44 +338,50 @@ public class Task implements Runnable {//, Observer {
 				 * Class[] { DefaultHttpClient.class}).invoke(null, new
 				 * Object[]{client}));
 				 **/
-	
-				if (resp.indexOf("pt.handleLoginResult") == -1)// 代理异常
-				{
-					Engine.getInstance().addTask(line);
-					// System.out.println("A2");
-					// Engine.getInstance().removeProxy(proxy.getHostName()+":"+proxy.getPort());
-				} else {
-					// System.out.println("A3");
-					// bool ok = false;
-					if (resp.indexOf("," + account + ",0,") != -1) {
-						Engine.getInstance().log(0, id, account + "----" + password);// account
-																					// +
-																					// " / "
-																					// +
-																					// proxy
-						// task.Abort();
-					} else if (resp.indexOf(",0,40010,") != -1) {
-						Engine.getInstance().log(1, id,  account + "----" + password);
-						// task.Abort();
-					} else if (resp.indexOf(",0,40026,") != -1) {
-						Engine.getInstance().log(2, id, account + "----" + password);
-						// task.Abort();
-					} else if (resp.indexOf("," + account + ",40001,") != -1)// 验证码
-					{
-						Engine.getInstance().info(
-						account + " -> 需验证码");
-						//System.err.println("adding "+line);
-						Engine.getInstance().addTask(line);
-	
-						// 不离开当前任务
-						// Thread.Sleep(1000 *
-						// Int32.Parse(cfa.AppSettings.Settings["P_ITV"].Value));//N秒后继续
-					} else // 代理异常
+				if(!Engine.getInstance().getCT()){
+					Engine.getInstance().info(
+							account + " -> 需验证码");
+							//System.err.println("adding "+line);
+							Engine.getInstance().addTask(line);
+				}else{
+					if (resp.indexOf("pt.handleLoginResult") == -1)// 代理异常
 					{
 						Engine.getInstance().addTask(line);
-						// System.out.println("A4");
-						// System.out.println("proxy="+proxy);
+						// System.out.println("A2");
 						// Engine.getInstance().removeProxy(proxy.getHostName()+":"+proxy.getPort());
+					} else {
+						// System.out.println("A3");
+						// bool ok = false;
+						if (resp.indexOf("," + account + ",0,") != -1) {
+							Engine.getInstance().log(0, id, account + "----" + password);// account
+																						// +
+																						// " / "
+																						// +
+																						// proxy
+							// task.Abort();
+						} else if (resp.indexOf(",0,40010,") != -1) {
+							Engine.getInstance().log(1, id,  account + "----" + password);
+							// task.Abort();
+						} else if (resp.indexOf(",0,40026,") != -1) {
+							Engine.getInstance().log(2, id, account + "----" + password);
+							// task.Abort();
+						} else if (resp.indexOf("," + account + ",40001,") != -1)// 验证码
+						{
+							Engine.getInstance().info(
+							account + " -> 需验证码");
+							//System.err.println("adding "+line);
+							Engine.getInstance().addTask(line);
+		
+							// 不离开当前任务
+							// Thread.Sleep(1000 *
+							// Int32.Parse(cfa.AppSettings.Settings["P_ITV"].Value));//N秒后继续
+						} else // 代理异常
+						{
+							Engine.getInstance().addTask(line);
+							// System.out.println("A4");
+							// System.out.println("proxy="+proxy);
+							// Engine.getInstance().removeProxy(proxy.getHostName()+":"+proxy.getPort());
+						}
 					}
 				}
 			}

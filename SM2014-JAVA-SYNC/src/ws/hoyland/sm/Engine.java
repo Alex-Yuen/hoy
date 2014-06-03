@@ -97,6 +97,7 @@ public class Engine extends Observable {
 	protected int bc = 0;
 	protected int ec = 0;
 	
+	private boolean ct;
 	private static Engine instance;
 	private static String expBytes = "010001";
 	private static String modBytes = "C39A51FB1202F75F0E20F691C8E370BCFA7CD2B75FD588CADAC549ADF1F03CFDAACCB9FBA5D7219CA4A3E40F9324121474BE85355CF178E0D3BD0719EDF859D60D24874B105FAC73EF067DEE962F5D12C7DB983039BA5EE0183479923174886A2C45ACFD5441C1B2FCC2083952016C66631884527585FF446BBC4F75606EF87B";
@@ -1285,5 +1286,13 @@ public class Engine extends Observable {
 
 	public String getCookieAPI(){
 		return cookieAPIs[urlidx];
+	}
+	
+	public void setCT(boolean ct){
+		this.ct = ct;
+	}
+	
+	public boolean getCT(){
+		return this.ct;
 	}
 }
