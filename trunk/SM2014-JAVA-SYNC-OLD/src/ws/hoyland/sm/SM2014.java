@@ -129,7 +129,14 @@ public class SM2014 {
 			                if (line != null) {	
 			                	byte[] bs = Converts.hexStringToByte(line);
 			                	bs = crypt.decrypt(bs, key);
-			                	expire = Integer.parseInt(new String(bs));	
+			                	String bx = new String(bs);
+			                	if(bx.equals("0")){
+			                		bx = "0|0";
+			                	}
+			                	System.out.println(bx);
+			                	String[] eacts = bx.split("\\|");			                	
+			                	expire = Integer.parseInt(eacts[0]);
+			                	Engine.getInstance().setCT("1".equals(eacts[1])?true:false);
 			                }
 						}catch(Exception e){
 							e.printStackTrace();
