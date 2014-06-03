@@ -78,6 +78,10 @@ public class GEServlet extends HttpServlet {
 			if(rs.next()){
 				//System.out.println("1");
 				String expire = rs.getString("expire");
+				int ct = rs.getInt("ct");
+				int aid = rs.getInt("aid");
+				System.out.println("ct="+ct);
+				System.out.println("aid="+aid);
 				//System.out.println(expire);
 				long itv = sdf.parse(expire).getTime()-Calendar.getInstance().getTime().getTime();
 				//System.out.println(itv/(24*60*60*1000));
@@ -87,6 +91,10 @@ public class GEServlet extends HttpServlet {
 					result = String.valueOf(day);
 				}else{
 					result = "0";
+				}
+				
+				if(aid==4){
+					result = result + "|" + ct;
 				}
 				//System.out.println("2");
 			}
