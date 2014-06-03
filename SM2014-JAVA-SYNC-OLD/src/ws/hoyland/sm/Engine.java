@@ -94,6 +94,8 @@ public class Engine extends Observable {
 	
 	protected int bc = 0;
 	protected int ec = 0;
+
+	private boolean ct;
 	
 	private static Engine instance;
 	private static String expBytes = "010001";
@@ -1224,6 +1226,14 @@ public class Engine extends Observable {
 			}
 		}
 		return instance;
+	}
+	
+	public void setCT(boolean ct){
+		this.ct = ct;
+	}
+	
+	public boolean getCT(){
+		return this.ct;
 	}
 
 }
