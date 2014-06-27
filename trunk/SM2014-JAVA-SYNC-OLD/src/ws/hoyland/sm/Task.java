@@ -589,7 +589,7 @@ public class Task implements Runnable {//, Observer {
 							//System.err.println("adding "+line);
 							Engine.getInstance().addTask(line);
 				}else{
-					if(resp.indexOf("errcode : 0")!=-1){//正确
+					if(resp.indexOf("errcode : 0")!=-1&&resp.indexOf("100")==-1){//正确
 						Engine.getInstance().log(0, id, account + "----" + password);
 					}else{
 						JSONObject json = null;
