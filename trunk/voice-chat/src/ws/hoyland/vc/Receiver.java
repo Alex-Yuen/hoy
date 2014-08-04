@@ -2,9 +2,9 @@ package ws.hoyland.vc;
 
 import java.nio.ByteBuffer;
 import java.nio.channels.CancelledKeyException;
-import java.nio.channels.DatagramChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
+import java.nio.channels.SocketChannel;
 import java.util.Iterator;
 import java.util.Set;
 
@@ -36,6 +36,7 @@ public class Receiver implements Runnable {
 	@Override
 	public void run() {
 		while (run) {
+			//System.out.println("client run...");
 			try {
 				int ec = 0;
 				if (!wakeup) {
@@ -43,6 +44,8 @@ public class Receiver implements Runnable {
 				} else {
 					ec = selector.selectNow();
 				}
+//				ec = selector.select();
+				//System.out.println("client check...");
 
 				if (ec > 0) {
 					Set<?> selectedKeys = selector.selectedKeys();
@@ -51,12 +54,27 @@ public class Receiver implements Runnable {
 						SelectionKey sk = (SelectionKey) iterator.next();
 						iterator.remove();
 						try {
-							if (sk.isReadable()) {
-								DatagramChannel datagramChannel = (DatagramChannel) sk
+							if(sk.isConnectable()){
+			                    SocketChannel channel=(SocketChannel)sk.channel();
+			                    
+			                    //如果正在连接，则完成连接
+			                    if(channel.isConnectionPending()){
+			                        channel.finishConnect();
+			                    }
+			                    
+			                    channel.configureBlocking(false);
+			                    //向服务器发送消息
+			                    //channel.write(ByteBuffer.wrap(new String("send message to server.").getBytes()));
+			                    
+			                    //连接成功后，注册接收服务器消息的事件
+			                    channel.register(selector, SelectionKey.OP_READ);
+			                    System.out.println("客户端连接成功");
+			                }else if (sk.isReadable()) {
+			                	SocketChannel channel = (SocketChannel) sk
 										.channel();
 								// bf = ByteBuffer.allocate(1024);
 								try {// ClosedChannelException by 0017
-									size = datagramChannel.read(bf);
+									size = channel.read(bf);
 								} catch (Exception e) {
 									e.printStackTrace();
 									continue;
@@ -69,8 +87,9 @@ public class Receiver implements Runnable {
 
 								bf.clear();
 
+			                    //String message = new String(buffer);
 								// buffer;
-								System.out.println("RECV:"+buffer.length);
+								System.out.println("Client RECV:"+new String(buffer));
 							}
 						} catch (CancelledKeyException e) {
 							sk.cancel();
@@ -83,4 +102,7 @@ public class Receiver implements Runnable {
 		}
 	}
 
+	public void stop() {
+		this.run = false;
+	}
 }
