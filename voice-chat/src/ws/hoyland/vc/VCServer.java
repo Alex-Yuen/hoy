@@ -57,7 +57,7 @@ public class VCServer {
 	                    SocketChannel channel = server.accept();
 	                    channel.configureBlocking(false);
 	                    //向客户端发消息
-	                    channel.write(ByteBuffer.wrap(new String("from server").getBytes()));
+	                    //channel.write(ByteBuffer.wrap(new String("from server").getBytes()));
 	                    //在与客户端连接成功后，为客户端通道注册SelectionKey.OP_READ事件。
 	                    channel.register(selector, SelectionKey.OP_READ);
 	                    
