@@ -66,11 +66,14 @@ public class VCServer {
 	                    //获取客户端传输数据可读取消息通道。
 	                    SocketChannel channel = (SocketChannel)key.channel();
 	                    if(channel.isConnected()){
+	                    	
 		                    //创建读取数据缓冲器
 		                    try {// ClosedChannelException by 0017
 								size = channel.read(bf);
+								//System.out.println(channel.isConnectionPending());
 							} catch (Exception e) {
 								e.printStackTrace();
+								channel.close();
 								continue;
 							}
 							bf.flip();
