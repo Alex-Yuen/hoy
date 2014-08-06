@@ -77,6 +77,7 @@ public class Receiver implements Runnable {
 									size = channel.read(bf);
 								} catch (Exception e) {
 									e.printStackTrace();
+									channel.close();
 									continue;
 								}
 								bf.flip();
