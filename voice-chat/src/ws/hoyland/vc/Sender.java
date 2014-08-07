@@ -52,11 +52,11 @@ public class Sender implements Runnable {
 
 		while (run) {
 			try {
-				synchronized (this) {
-					this.wait(100);
-				}
+//				synchronized (this) {
+//					this.wait(100);
+//				}
 
-				numBytesRead = line.read(data, 0, 128);// 取数据（1024）的大小直接关系到传输的速度，一般越小越快，
+				numBytesRead = line.read(data, 0, 1024);// 取数据（1024）的大小直接关系到传输的速度，一般越小越快，
 				try {
 					sc.write(ByteBuffer.wrap(Util.slice(data, 0, numBytesRead)));// 写入网络流
 				} catch (Exception ex) {
