@@ -11,6 +11,8 @@ import java.util.Set;
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.DataLine;
+import javax.sound.sampled.Line;
+import javax.sound.sampled.Mixer;
 import javax.sound.sampled.SourceDataLine;
 
 import ws.hoyland.util.Util;
@@ -35,9 +37,10 @@ public class Receiver implements Runnable {
 		this.run = true;
 		
 		AudioFormat format =new AudioFormat(8000,16,2,true,true);
-		DataLine.Info info = new DataLine.Info(SourceDataLine.class,format);
+		DataLine.Info info = new DataLine.Info(SourceDataLine.class, format);
 		
 		try { 
+			
             line = (SourceDataLine) AudioSystem.getLine(info); //获得与指定 Line.Info 对象中的描述匹配的行
             line.open(format, bufSize); //打开所需系统资源，并使之可操作
         } catch (Exception e) { 
