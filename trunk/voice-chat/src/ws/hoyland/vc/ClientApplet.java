@@ -62,5 +62,5 @@ public class ClientApplet extends Applet {
 				e.printStackTrace();
 			}
 		}
-	}	
+	}
 }
