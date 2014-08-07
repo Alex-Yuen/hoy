@@ -82,8 +82,8 @@ public class VCServer {
 								buffer = Util.slice(bf.array(), 0, size);
 								// System.out.println("RECV:"+buffer.length);
 								// System.out.println(Converts.bytesToHexString(buffer));
-	
-								System.out.println("Server RECV:"+new String(buffer));
+								channel.write(ByteBuffer.wrap(buffer));
+								//System.out.println("Server RECV:"+new String(buffer));
 							}
 							bf.clear();
 	
