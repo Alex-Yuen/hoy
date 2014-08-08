@@ -11,8 +11,6 @@ import java.util.Set;
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.DataLine;
-import javax.sound.sampled.Line;
-import javax.sound.sampled.Mixer;
 import javax.sound.sampled.SourceDataLine;
 
 import ws.hoyland.util.Util;
@@ -26,7 +24,7 @@ public class Receiver implements Runnable {
 	private boolean wakeup = false;
 	private byte[] buffer = null;
 	private int size = -1;
-	
+	private int y = 0;
 //	private byte[] data = new byte[1024]; // 此处的1024可以情况进行调整，应跟下面的1024应保持一致
 //	private int numBytesRead = 0;
 	private SourceDataLine line = null;
@@ -48,6 +46,9 @@ public class Receiver implements Runnable {
             
             linex = (SourceDataLine) AudioSystem.getLine(infox); //获得与指定 Line.Info 对象中的描述匹配的行
             linex.open(format, bufSize); //打开所需系统资源，并使之可操作
+            
+            System.out.println(line);
+            System.out.println(linex);
         } catch (Exception e) { 
         	e.printStackTrace();
         }
@@ -66,7 +67,7 @@ public class Receiver implements Runnable {
 //		 byte[] data = new byte[1024];//此处数组的大小跟实时性关系不大，可根据情况进行调整 
 //         int numBytesRead = 0; 
         line.start();//允许某一  数据行  执行数据 I/O
-
+        linex.start();
          
 		while (run) {
 			//System.out.println("client run...");
@@ -125,8 +126,40 @@ public class Receiver implements Runnable {
 								// buffer;
 								System.out.println("Client RECV:"+new String(buffer));
 								//numBytesRead = playbackInputStream.read(data); 
-				                line.write(buffer, 0, buffer.length);
-				                linex.write(buffer, 0, buffer.length);
+								//if(y%2==0){
+								//System.out.println(line.isRunning());
+								System.out.println(channel.getRemoteAddress().toString());
+								if(channel.getRemoteAddress().toString().startsWith("/127")){
+								//
+									line.write(buffer, 0, buffer.length);
+									System.out.println("from local client");
+								}else{
+									linex.write(buffer, 0, buffer.length);	
+								}
+				                
+								//}else{
+//					           linex.write(new byte[]{1,2,3,4,5,6,7,8,9,10,11,12}, 0, 12);
+//					           linex.write(new byte[]{1,2,3,4,5,6,7,8,9,10,11,12}, 0, 12);
+//					           linex.write(new byte[]{1,2,3,4,5,6,7,8,9,10,11,12}, 0, 12);
+					            //linex.write(buffer, 0, buffer.length);
+					            //linex.write(Util.slice(buffer, 2, 20), 0, 20);
+								//}
+								//y++;
+//				                new Thread(new Runnable(){
+//
+//									@Override
+//									public void run() {
+//										// TODO Auto-generated method stub
+//										try{
+//											//Thread.sleep(500);
+//										}catch(Exception e){
+//											e.printStackTrace();
+//										}
+//						                linex.write(buffer, 0, buffer.length);
+//										
+//									}
+//				                	
+//				                }).start();
 			                }
 						} catch (CancelledKeyException e) {
 							sk.cancel();
