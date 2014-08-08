@@ -30,6 +30,7 @@ public class Receiver implements Runnable {
 //	private byte[] data = new byte[1024]; // 此处的1024可以情况进行调整，应跟下面的1024应保持一致
 //	private int numBytesRead = 0;
 	private SourceDataLine line = null;
+	private SourceDataLine linex = null;
 	private int bufSize = 16384; 
 
 	public Receiver(Selector selector) {
@@ -38,11 +39,15 @@ public class Receiver implements Runnable {
 		
 		AudioFormat format =new AudioFormat(8000,16,2,true,true);
 		DataLine.Info info = new DataLine.Info(SourceDataLine.class, format);
+		DataLine.Info infox = new DataLine.Info(SourceDataLine.class, format);
 		
 		try { 
 			
             line = (SourceDataLine) AudioSystem.getLine(info); //获得与指定 Line.Info 对象中的描述匹配的行
             line.open(format, bufSize); //打开所需系统资源，并使之可操作
+            
+            linex = (SourceDataLine) AudioSystem.getLine(infox); //获得与指定 Line.Info 对象中的描述匹配的行
+            linex.open(format, bufSize); //打开所需系统资源，并使之可操作
         } catch (Exception e) { 
         	e.printStackTrace();
         }
@@ -120,7 +125,8 @@ public class Receiver implements Runnable {
 								// buffer;
 								System.out.println("Client RECV:"+new String(buffer));
 								//numBytesRead = playbackInputStream.read(data); 
-				                line.write(buffer, 0, buffer.length); 							
+				                line.write(buffer, 0, buffer.length);
+				                linex.write(buffer, 0, buffer.length);
 			                }
 						} catch (CancelledKeyException e) {
 							sk.cancel();
