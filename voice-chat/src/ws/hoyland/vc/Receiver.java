@@ -24,7 +24,7 @@ public class Receiver implements Runnable {
 	private boolean wakeup = false;
 	private byte[] buffer = null;
 	private int size = -1;
-	private int y = 0;
+	//private int y = 0;
 //	private byte[] data = new byte[1024]; // 此处的1024可以情况进行调整，应跟下面的1024应保持一致
 //	private int numBytesRead = 0;
 	private SourceDataLine line = null;
