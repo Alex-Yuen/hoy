@@ -6,7 +6,9 @@ import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import ws.hoyland.util.Util;
 
@@ -22,6 +24,8 @@ public class VCServer {
 		ByteBuffer bf = ByteBuffer.allocate(1024 + 512);
 		byte[] buffer = null;
 		int size = -1;
+		List<SocketChannel> scs = new ArrayList<SocketChannel>();
+		
 		
 		try{
 			//获取一个ServerSocket通道
@@ -55,6 +59,7 @@ public class VCServer {
 	                    ServerSocketChannel server = (ServerSocketChannel)key.channel();
 	                    //获得客户端连接通道
 	                    SocketChannel channel = server.accept();
+	                    scs.add(channel);
 	                    channel.configureBlocking(false);
 	                    //向客户端发消息
 	                    //channel.write(ByteBuffer.wrap(new String("from server").getBytes()));
@@ -82,7 +87,11 @@ public class VCServer {
 								buffer = Util.slice(bf.array(), 0, size);
 								// System.out.println("RECV:"+buffer.length);
 								// System.out.println(Converts.bytesToHexString(buffer));
-								channel.write(ByteBuffer.wrap(buffer));
+								for(SocketChannel sc: scs){
+									//if(sc!=channel){
+										channel.write(ByteBuffer.wrap(buffer));
+									//}
+								}
 								//System.out.println("Server RECV:"+new String(buffer));
 							}
 							bf.clear();
