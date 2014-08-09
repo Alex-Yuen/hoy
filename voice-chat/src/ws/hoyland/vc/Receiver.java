@@ -67,7 +67,7 @@ public class Receiver implements Runnable {
 //		 byte[] data = new byte[1024];//此处数组的大小跟实时性关系不大，可根据情况进行调整 
 //         int numBytesRead = 0; 
         line.start();//允许某一  数据行  执行数据 I/O
-        linex.start();
+        //linex.start();
          
 		while (run) {
 			//System.out.println("client run...");
@@ -129,13 +129,15 @@ public class Receiver implements Runnable {
 								//if(y%2==0){
 								//System.out.println(line.isRunning());
 								//System.out.println(channel.getRemoteAddress().toString());
-								if(buffer[0]==0xF&&buffer[1]==0xD){
-									line.write(buffer, 2, buffer.length-2);
-								}else if (buffer[0]==0xF&&buffer[1]==0xE){
-									linex.write(buffer, 2, buffer.length-2);
-								}else{
-									//linex.write(buffer, 0, buffer.length);
-								}
+								//if(buffer[0]==0xF&&buffer[1]==0xD){
+									line.write(buffer, 0, buffer.length);
+								//	System.out.println("FFFFFFFFFFFF");
+//								}else if (buffer[0]==0xF&&buffer[1]==0xE){
+//									linex.write(buffer, 2, buffer.length-2);
+//									System.out.println("AAAAAAAAAAAAA");
+//								}else{
+//									//linex.write(buffer, 0, buffer.length);
+//								}
 //								if(channel.getRemoteAddress().toString().startsWith("/127")){
 //								//
 //									
