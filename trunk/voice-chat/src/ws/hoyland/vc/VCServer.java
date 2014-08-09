@@ -89,7 +89,7 @@ public class VCServer {
 								// System.out.println(Converts.bytesToHexString(buffer));
 								for(SocketChannel sc: scs){
 									//if(sc!=channel){
-										channel.write(ByteBuffer.wrap(buffer));
+									sc.write(ByteBuffer.wrap(buffer));
 									//}
 								}
 								//System.out.println("Server RECV:"+new String(buffer));
