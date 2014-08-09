@@ -128,14 +128,21 @@ public class Receiver implements Runnable {
 								//numBytesRead = playbackInputStream.read(data); 
 								//if(y%2==0){
 								//System.out.println(line.isRunning());
-								System.out.println(channel.getRemoteAddress().toString());
-								if(channel.getRemoteAddress().toString().startsWith("/127")){
-								//
-									line.write(buffer, 0, buffer.length);
-									System.out.println("from local client");
+								//System.out.println(channel.getRemoteAddress().toString());
+								if(buffer[0]==0xF&&buffer[1]==0xD){
+									line.write(buffer, 2, buffer.length-2);
+								}else if (buffer[0]==0xF&&buffer[1]==0xE){
+									linex.write(buffer, 2, buffer.length-2);
 								}else{
-									linex.write(buffer, 0, buffer.length);	
+									//linex.write(buffer, 0, buffer.length);
 								}
+//								if(channel.getRemoteAddress().toString().startsWith("/127")){
+//								//
+//									
+//									System.out.println("from local client");
+//								}else{
+//										
+//								}
 				                
 								//}else{
 //					           linex.write(new byte[]{1,2,3,4,5,6,7,8,9,10,11,12}, 0, 12);
