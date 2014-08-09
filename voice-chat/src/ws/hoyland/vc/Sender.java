@@ -8,8 +8,6 @@ import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.DataLine;
 import javax.sound.sampled.TargetDataLine;
 
-import ws.hoyland.util.Util;
-
 public class Sender implements Runnable {
 
 	private SocketChannel sc;
@@ -57,8 +55,15 @@ public class Sender implements Runnable {
 //				}
 
 				numBytesRead = line.read(data, 0, 1024);// 取数据（1024）的大小直接关系到传输的速度，一般越小越快，
+				byte[] bs = new byte[numBytesRead+2];
+				bs[0] = 0xF;
+				bs[1] = 0xD;
+				for(int i=0;i<numBytesRead;i++){
+					bs[i+2] = data[i];
+				}
 				try {
-					sc.write(ByteBuffer.wrap(Util.slice(data, 0, numBytesRead)));// 写入网络流
+					//sc.write(ByteBuffer.wrap(Util.slice(data, 0, numBytesRead)));// 写入网络流
+					sc.write(ByteBuffer.wrap(bs));// 写入网络流
 				} catch (Exception ex) {
 					break;
 				}
