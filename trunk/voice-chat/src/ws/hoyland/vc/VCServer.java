@@ -18,10 +18,9 @@ public class VCServer {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
 //		System.out.println("OK");
 		Selector selector = null;
-		ByteBuffer bf = ByteBuffer.allocate(1024 + 512);
+		ByteBuffer bf = ByteBuffer.allocate(1024);
 		byte[] buffer = null;
 		int size = -1;
 		List<SocketChannel> scs = new ArrayList<SocketChannel>();
@@ -37,7 +36,7 @@ public class VCServer {
 	        //将通道管理器与通道绑定，并为该通道注册SelectionKey.OP_ACCEPT事件，
 	        //只有当该事件到达时，Selector.select()会返回，否则一直阻塞。
 	        serverChannel.register(selector, SelectionKey.OP_ACCEPT);
-	        System.out.println("服务器端启动成功: 8000");       
+	        System.out.println("Server start on 8000");       
 	    }catch(Exception e){
 			e.printStackTrace();
 		}
@@ -66,18 +65,19 @@ public class VCServer {
 	                    //在与客户端连接成功后，为客户端通道注册SelectionKey.OP_READ事件。
 	                    channel.register(selector, SelectionKey.OP_READ);
 	                    
-	                    System.out.println("客户端请求连接事件");
+	                    System.out.println("Client connected");
 	                }else if(key.isReadable()){//有可读数据事件
 	                    //获取客户端传输数据可读取消息通道。
 	                    SocketChannel channel = (SocketChannel)key.channel();
 	                    if(channel.isConnected()){
-	                    	
+	                    	bf.clear();
 		                    //创建读取数据缓冲器
 		                    try {// ClosedChannelException by 0017
 								size = channel.read(bf);
 								//System.out.println(channel.isConnectionPending());
 							} catch (Exception e) {
 								e.printStackTrace();
+								scs.remove(channel); //断开则删除
 								channel.close();
 								continue;
 							}
@@ -87,14 +87,14 @@ public class VCServer {
 								buffer = Util.slice(bf.array(), 0, size);
 								// System.out.println("RECV:"+buffer.length);
 								// System.out.println(Converts.bytesToHexString(buffer));
-								for(SocketChannel sc: scs){
+								for(SocketChannel sc: scs){ //除本身外，全部转发
 									if(sc!=channel){
 										sc.write(ByteBuffer.wrap(buffer));
 									}
 								}
 								//System.out.println("Server RECV:"+new String(buffer));
 							}
-							bf.clear();
+							//bf.clear();
 	
 		                    //String message = new String(buffer);
 							// buffer;
