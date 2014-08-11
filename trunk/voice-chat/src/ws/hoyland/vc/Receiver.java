@@ -17,7 +17,7 @@ public class Receiver implements Runnable {
 	private Selector selector;
 	private Player player;
 	private boolean run = false;
-	private ByteBuffer bf = ByteBuffer.allocate(1024);
+	private ByteBuffer bf = ByteBuffer.allocate(768+4);
 	private boolean wakeup = false;
 	private byte[] buffer = null;
 	private int size = -1;
@@ -85,7 +85,7 @@ public class Receiver implements Runnable {
 									channel.close();
 									continue;
 								}
-								
+								//System.out.println(size);
 								bf.flip();
 								buffer = Util.slice(bf.array(), 0, size);
 								// System.out.println("RECV:"+buffer.length);
@@ -94,11 +94,12 @@ public class Receiver implements Runnable {
 								//bf.clear();
 								String key = Converts.bytesToHexString(Util.slice(buffer, 0, 4));
 								if(!player.getBuffer().containsKey(key)){									
-									player.getBuffer().put(key, ByteBuffer.allocate(1024));
+									player.getBuffer().put(key, ByteBuffer.allocate(1024*10));
 								}
 								
 								player.getBuffer().get(key).put(Util.slice(buffer, 4, buffer.length-4));
-
+								
+								System.out.println(key+"<-"+size);
 			                    //String message = new String(buffer);
 								// buffer;
 //								System.out.println("Client RECV:"+new String(buffer));

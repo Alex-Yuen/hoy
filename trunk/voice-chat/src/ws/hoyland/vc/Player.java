@@ -35,7 +35,7 @@ public class Player implements Runnable {
 	public void run() {
 		line.start();
 
-		byte[] tb = new byte[1024];
+		byte[] tb = new byte[768];
 		
 		while(run){
 			// mix
