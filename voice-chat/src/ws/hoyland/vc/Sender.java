@@ -8,13 +8,14 @@ import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.DataLine;
 import javax.sound.sampled.TargetDataLine;
 
+import ws.hoyland.util.Converts;
 import ws.hoyland.util.Util;
 
 public class Sender implements Runnable {
 
 	private SocketChannel sc;
 	private boolean run;
-	private byte[] data = new byte[1024]; // 此处的1024可以情况进行调整，应跟下面的1024应保持一致
+	private byte[] data = new byte[768]; // 此处的1024可以情况进行调整，应跟下面的1024应保持一致
 	private int size = 0;
 	private TargetDataLine line = null;
 	private byte[] key = null;
@@ -58,7 +59,7 @@ public class Sender implements Runnable {
 //					this.wait(100);
 //				}
 
-				size = line.read(data, 0, 1024);// 取数据（1024）的大小直接关系到传输的速度，一般越小越快，
+				size = line.read(data, 0, 768);// 取数据（1024）的大小直接关系到传输的速度，一般越小越快，
 				
 				byte[] bs = new byte[size+4];
 //				bs[0] = 0xF;
@@ -73,6 +74,7 @@ public class Sender implements Runnable {
 				
 				try {
 //					sc.write(ByteBuffer.wrap(Util.slice(data, 0, numBytesRead)));// 写入网络流
+					System.out.println(Converts.bytesToHexString(key)+"->"+bs.length);
 					sc.write(ByteBuffer.wrap(bs));// 写入网络流
 				} catch (Exception ex) {
 					break;
