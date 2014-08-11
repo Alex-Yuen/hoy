@@ -8,11 +8,7 @@ import java.nio.channels.SocketChannel;
 import java.util.Iterator;
 import java.util.Set;
 
-import javax.sound.sampled.AudioFormat;
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.DataLine;
-import javax.sound.sampled.SourceDataLine;
-
+import ws.hoyland.util.Converts;
 import ws.hoyland.util.Util;
 
 //接收并存到缓冲区
@@ -21,7 +17,7 @@ public class Receiver implements Runnable {
 	private Selector selector;
 	private Player player;
 	private boolean run = false;
-	private ByteBuffer bf = ByteBuffer.allocate(1024 + 512);
+	private ByteBuffer bf = ByteBuffer.allocate(1024);
 	private boolean wakeup = false;
 	private byte[] buffer = null;
 	private int size = -1;
@@ -76,7 +72,7 @@ public class Receiver implements Runnable {
 			                    
 			                    //连接成功后，注册接收服务器消息的事件
 			                    channel.register(selector, SelectionKey.OP_READ);
-			                    System.out.println("客户端连接成功");
+			                    System.out.println("Connected to server");
 			                }else if (sk.isReadable()) {
 			                	bf.clear();
 			                	SocketChannel channel = (SocketChannel) sk
@@ -96,16 +92,22 @@ public class Receiver implements Runnable {
 								// System.out.println(Converts.bytesToHexString(buffer));
 
 								//bf.clear();
+								String key = Converts.bytesToHexString(Util.slice(buffer, 0, 4));
+								if(!player.getBuffer().containsKey(key)){									
+									player.getBuffer().put(key, ByteBuffer.allocate(1024));
+								}
+								
+								player.getBuffer().get(key).put(Util.slice(buffer, 4, buffer.length-4));
 
 			                    //String message = new String(buffer);
 								// buffer;
-								System.out.println("Client RECV:"+new String(buffer));
+//								System.out.println("Client RECV:"+new String(buffer));
 								//numBytesRead = playbackInputStream.read(data); 
 								//if(y%2==0){
 								//System.out.println(line.isRunning());
 								//System.out.println(channel.getRemoteAddress().toString());
 								//if(buffer[0]==0xF&&buffer[1]==0xD){
-									line.write(buffer, 0, buffer.length);
+//									line.write(buffer, 0, buffer.length);
 								//	System.out.println("FFFFFFFFFFFF");
 //								}else if (buffer[0]==0xF&&buffer[1]==0xE){
 //									linex.write(buffer, 2, buffer.length-2);
