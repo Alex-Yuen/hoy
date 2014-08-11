@@ -34,24 +34,22 @@ public class Player implements Runnable {
 	@Override
 	public void run() {
 		line.start();
+
+		byte[] tb = new byte[1024];
+		
 		while(run){
-//			//caculate mix
-//			for(ByteBuffer bais:buffer.values()){
-//				bais.g
-//				bais.get
-//				
-//				ByteArrayOutputStream
-//				//mix;
-//			}
-//			line.write(buffer, 0, buffer.length);
+			// mix
+			for(ByteBuffer bais:buffer.values()){
+				bais.get(tb);
+				//mix;
+			}
+			line.write(tb, 0, tb.length);
 		}
 		
 		line.drain(); 
         line.stop(); 
         line.close(); 
         line = null; 
-        
-        
 	}
 	
 	public void stop() {

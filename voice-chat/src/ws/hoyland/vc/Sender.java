@@ -46,6 +46,10 @@ public class Sender implements Runnable {
 
 	@Override
 	public void run() {
+		if(line==null){
+			return;
+		}
+		
 		line.start();
 
 		while (run) {
