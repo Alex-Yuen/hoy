@@ -11,7 +11,6 @@ public class ClientApplet extends Applet {
 	public ClientApplet() {
 	}
 
-	private Player player;
 	private Receiver receiver;
 	private Sender sender;
 	private Selector selector;
@@ -26,12 +25,9 @@ public class ClientApplet extends Applet {
 		// TODO Auto-generated method stub
 		super.init();
 		System.out.println("init...");
-		try{
-			player = new Player();
-			new Thread(player).start();
-			
+		try{			
 			selector = Selector.open();
-			receiver = new Receiver(selector, player);
+			receiver = new Receiver(selector);
 			new Thread(receiver).start();
 			
 			SocketAddress sa = new InetSocketAddress("127.0.0.1", 8000);
@@ -59,7 +55,6 @@ public class ClientApplet extends Applet {
 		super.destroy();
 		sender.stop();
 		receiver.stop();
-		player.stop();
 		
 		if(sc!=null){
 			try{
