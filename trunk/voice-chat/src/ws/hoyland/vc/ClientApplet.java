@@ -24,7 +24,7 @@ public class ClientApplet extends Applet {
 	public void init() {
 		// TODO Auto-generated method stub
 		super.init();
-		System.out.println("init...");
+		System.out.println("Init...");
 		try{			
 			selector = Selector.open();
 			receiver = new Receiver(selector);
