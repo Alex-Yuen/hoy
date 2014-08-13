@@ -21,7 +21,15 @@ public class Dispatcher implements Runnable {
 	public void run() {
 
 		byte[] bbs = null;
+		byte[] tbbs = null;
+		int RMS = 0;
+		int maxRMS = 0;
+		
 		while(run){
+			tbbs = null;
+			RMS = 0;
+			maxRMS = 0;
+			
 			//mix and send to all channels
 			for(ByteBuffer bb:bs.values()){
 				synchronized(bb){
@@ -29,15 +37,24 @@ public class Dispatcher implements Runnable {
 					bbs = new byte[bb.position()];
 					bb.flip();
 					bb.get(bbs);
+					
+					if(bbs.length>0){						
+						RMS = calculateRMSLevel(bbs);
+						if(RMS>maxRMS){
+							maxRMS = RMS;
+							tbbs = bbs;
+						}
+					}
+					
 					bb.clear();
 					//System.out.println("R2:"+bb.position());
 				}
 			}
 			
-			if(bbs!=null){
+			if(tbbs!=null){
 				for(SocketChannel sc:scs){
 					try {
-						sc.write(ByteBuffer.wrap(bbs));
+						sc.write(ByteBuffer.wrap(tbbs));
 						//System.out.println(sc.toString()+"D->"+bbs.length);
 					} catch (IOException e) {
 						e.printStackTrace();
@@ -51,5 +68,21 @@ public class Dispatcher implements Runnable {
 	
 	public void stop(){
 		this.run = false;
+	}
+	
+	private int calculateRMSLevel(byte[] audioData)
+	{ // audioData might be buffered data read from a data line
+	    long lSum = 0;
+	    for(int i=0; i<audioData.length; i++)
+	        lSum = lSum + audioData[i];
+
+	    double dAvg = lSum / audioData.length;
+
+	    double sumMeanSquare = 0d;
+	    for(int j=0; j<audioData.length; j++)
+	        sumMeanSquare = sumMeanSquare + Math.pow(audioData[j] - dAvg, 2d);
+
+	    double averageMeanSquare = sumMeanSquare / audioData.length;
+	    return (int)(Math.pow(averageMeanSquare,0.5d) + 0.5);
 	}
 }

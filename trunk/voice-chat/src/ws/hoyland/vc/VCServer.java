@@ -96,8 +96,9 @@ public class VCServer {
 								
 								String sid = channel.toString();
 								if(!bs.containsKey(sid)){									
-									bs.put(sid, ByteBuffer.allocate(1024*10));
+									bs.put(sid, ByteBuffer.allocate(1024*15));
 								}
+																
 //								System.out.println("W01");
 								synchronized(bs.get(sid)){
 									//System.out.println("W1:"+bs.get(sid).position());
@@ -105,8 +106,7 @@ public class VCServer {
 									//System.out.println("W2:"+bs.get(sid).position());
 									//System.out.println(sid+"<-S"+buffer.length);
 								}
-								
-								
+																
 //								for(SocketChannel sc: scs){ //除本身外，全部转发
 //									//if(sc!=channel){
 //										sc.write(ByteBuffer.wrap(buffer));
@@ -130,5 +130,21 @@ public class VCServer {
 		}catch(Exception e){
 			e.printStackTrace();
 		}
+	}
+	
+	protected static int calculateRMSLevel(byte[] audioData)
+	{ // audioData might be buffered data read from a data line
+	    long lSum = 0;
+	    for(int i=0; i<audioData.length; i++)
+	        lSum = lSum + audioData[i];
+
+	    double dAvg = lSum / audioData.length;
+
+	    double sumMeanSquare = 0d;
+	    for(int j=0; j<audioData.length; j++)
+	        sumMeanSquare = sumMeanSquare + Math.pow(audioData[j] - dAvg, 2d);
+
+	    double averageMeanSquare = sumMeanSquare / audioData.length;
+	    return (int)(Math.pow(averageMeanSquare,0.5d) + 0.5);
 	}
 }
