@@ -36,18 +36,17 @@ public class Dispatcher implements Runnable {
 					//System.out.println("R1:"+bb.position());
 					bbs = new byte[bb.position()];
 					bb.flip();
-					bb.get(bbs);
-					
-					if(bbs.length>0){						
-						RMS = calculateRMSLevel(bbs);
-						if(RMS>maxRMS){
-							maxRMS = RMS;
-							tbbs = bbs;
-						}
-					}
-					
+					bb.get(bbs);					
 					bb.clear();
 					//System.out.println("R2:"+bb.position());
+				}
+				
+				if(bbs.length>0){						
+					RMS = calculateRMSLevel(bbs);
+					if(RMS>maxRMS){
+						maxRMS = RMS;
+						tbbs = bbs;
+					}
 				}
 			}
 			
