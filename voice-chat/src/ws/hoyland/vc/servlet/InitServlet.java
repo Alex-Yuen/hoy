@@ -28,12 +28,13 @@ public class InitServlet extends HttpServlet {
 	 * 
 	 */
 	private static final long serialVersionUID = 5742532507382683705L;
-	protected boolean flag = false;
+	protected boolean run = false;
 	private int port;//监听端口
 	private Dispatcher dispatcher = null;
 	private ServerSocketChannel serverChannel = null;
 	
 	public InitServlet() {
+		this.run = true;
 	}
 
 	@Override
@@ -72,7 +73,7 @@ public class InitServlet extends HttpServlet {
 		}
 		
 		try{
-			while(selector!=null){
+			while(selector!=null&&run){
 	            //当有注册的事件到达时，方法返回，否则阻塞。
 	            selector.select();
 	            
@@ -155,6 +156,7 @@ public class InitServlet extends HttpServlet {
 
 	@Override
 	public void destroy() {
+		this.run = false;
 		dispatcher.stop();
 		
 		try {
