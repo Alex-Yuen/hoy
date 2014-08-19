@@ -30,7 +30,10 @@ public class ClientApplet extends Applet {
 			receiver = new Receiver(selector);
 			new Thread(receiver).start();
 			
-			SocketAddress sa = new InetSocketAddress("127.0.0.1", 8000);
+			int port = Integer.parseInt(getParameter("port"));
+			System.out.println("Client parameter<port>: "+port);
+			
+			SocketAddress sa = new InetSocketAddress("127.0.0.1", port);
 			sc = SocketChannel.open();
 			sc.configureBlocking(false);
 			//System.out.println("c1");

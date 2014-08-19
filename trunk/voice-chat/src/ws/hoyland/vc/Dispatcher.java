@@ -30,6 +30,13 @@ public class Dispatcher implements Runnable {
 			RMS = 0;
 			maxRMS = 0;
 			
+			if(bs.size()==0){
+				try{
+					Thread.sleep(100);
+				}catch(Exception e){
+					e.printStackTrace();
+				}
+			}
 			//mix and send to all channels
 			for(ByteBuffer bb:bs.values()){
 				synchronized(bb){
