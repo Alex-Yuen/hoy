@@ -60,6 +60,7 @@ public class Dispatcher implements Runnable {
 			if(tbbs!=null){
 				for(SocketChannel sc:scs){
 					try {
+						System.out.println(sc.toString() + " -> "+tbbs.length);
 						sc.write(ByteBuffer.wrap(tbbs));
 						//System.out.println(sc.toString()+"D->"+bbs.length);
 					} catch (IOException e) {

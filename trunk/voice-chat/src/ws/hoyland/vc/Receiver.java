@@ -105,7 +105,7 @@ public class Receiver implements Runnable {
 
 								bf.flip();
 								buffer = Util.slice(bf.array(), 0, size);
-								//System.out.println(channel.toString()+"<-C"+buffer.length);
+								System.out.println(channel.toString()+" <- "+buffer.length);
 								line.write(buffer, 0, buffer.length);
 			                }
 						} catch (CancelledKeyException e) {

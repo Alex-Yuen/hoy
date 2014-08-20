@@ -81,7 +81,9 @@ public class VCServer implements Runnable {
 							if(size>0){
 								buffer = Util.slice(bf.array(), 0, size);
 								
-								String sid = channel.toString();
+//								String sid = channel.toString();
+								String sid = channel.socket().getRemoteSocketAddress().toString();
+								System.out.println(channel.toString() + " <- "+size);
 								if(!bs.containsKey(sid)){									
 									bs.put(sid, ByteBuffer.allocate(1024*15));
 								}
