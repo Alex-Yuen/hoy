@@ -6,9 +6,16 @@ import java.net.SocketAddress;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
+import java.awt.Color;
+import javax.swing.JLabel;
 
 public class ClientApplet extends Applet {
 	public ClientApplet() {
+		setBackground(Color.BLUE);
+		
+		JLabel lblClientApplet = new JLabel("Client Applet");
+		lblClientApplet.setForeground(Color.WHITE);
+		add(lblClientApplet);
 	}
 
 	private Receiver receiver;
@@ -33,7 +40,7 @@ public class ClientApplet extends Applet {
 			int port = Integer.parseInt(getParameter("port"));
 			System.out.println("Client parameter<port>: "+port);
 			
-			SocketAddress sa = new InetSocketAddress("127.0.0.1", port);
+			SocketAddress sa = new InetSocketAddress("192.168.1.2", port);
 			sc = SocketChannel.open();
 			sc.configureBlocking(false);
 			//System.out.println("c1");
