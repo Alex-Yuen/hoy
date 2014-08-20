@@ -40,7 +40,7 @@ public class ClientApplet extends Applet {
 			int port = Integer.parseInt(getParameter("port"));
 			System.out.println("Client parameter<port>: "+port);
 			
-			SocketAddress sa = new InetSocketAddress("192.168.1.2", port);
+			SocketAddress sa = new InetSocketAddress(getParameter("server"), port);
 			sc = SocketChannel.open();
 			sc.configureBlocking(false);
 			//System.out.println("c1");

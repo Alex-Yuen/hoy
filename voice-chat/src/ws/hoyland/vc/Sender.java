@@ -73,7 +73,7 @@ public class Sender implements Runnable {
 */				
 				try {
 					sc.write(ByteBuffer.wrap(Util.slice(data, 0, size)));// 写入网络流
-					//System.out.println(sc.toString()+"->"+size);
+					System.out.println(sc.toString()+" -> "+size);
 //					sc.write(ByteBuffer.wrap(bs));// 写入网络流
 				} catch (Exception ex) {
 					break;
