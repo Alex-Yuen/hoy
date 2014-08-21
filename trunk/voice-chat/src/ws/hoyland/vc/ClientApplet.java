@@ -20,6 +20,7 @@ public class ClientApplet extends Applet {
 
 	private Receiver receiver;
 	private Sender sender;
+	private Player player;
 	private Selector selector;
 	private SocketChannel sc;
 	/**
@@ -29,12 +30,14 @@ public class ClientApplet extends Applet {
 
 	@Override
 	public void init() {
-		// TODO Auto-generated method stub
 		super.init();
 		System.out.println("Init...");
-		try{			
+		try{
+			player = new Player();
+			new Thread(player).start();
+			
 			selector = Selector.open();
-			receiver = new Receiver(selector);
+			receiver = new Receiver(selector, player);
 			new Thread(receiver).start();
 			
 			int port = Integer.parseInt(getParameter("port"));
@@ -65,6 +68,7 @@ public class ClientApplet extends Applet {
 		super.destroy();
 		sender.stop();
 		receiver.stop();
+		player.stop();
 		
 		if(sc!=null){
 			try{
