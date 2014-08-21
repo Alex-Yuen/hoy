@@ -7,7 +7,6 @@ import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 import ws.hoyland.util.Util;
 
@@ -16,16 +15,16 @@ public class VCServer implements Runnable {
 	private boolean run = false;
 	private Selector selector = null;
 
-	private ByteBuffer bf = ByteBuffer.allocate(1024);
+	private ByteBuffer bf = ByteBuffer.allocate(1024+4);
 	private byte[] buffer = null;
 	private int size = -1;
 	private List<SocketChannel> scs = null;
-	private Map<String, ByteBuffer> bs = null;
+//	private Map<String, ByteBuffer> bs = null;
 	
-	public VCServer(Selector selector, List<SocketChannel> scs, Map<String, ByteBuffer> bs){
+	public VCServer(Selector selector, List<SocketChannel> scs){//, Map<String, ByteBuffer> bs){
 		this.selector = selector;
 		this.scs = scs;
-		this.bs = bs;
+//		this.bs = bs;
 		this.run = true;
 	}
 	
@@ -72,7 +71,7 @@ public class VCServer implements Runnable {
 							} catch (Exception e) {
 								e.printStackTrace();
 								scs.remove(channel); //断开则删除
-								bs.remove(channel.toString());
+//								bs.remove(channel.toString());
 								channel.close();
 								continue;
 							}
@@ -80,7 +79,7 @@ public class VCServer implements Runnable {
 							
 							if(size>0){
 								buffer = Util.slice(bf.array(), 0, size);
-								
+								/**
 //								String sid = channel.toString();
 								String sid = channel.socket().getRemoteSocketAddress().toString();
 								System.out.println(channel.toString() + " <- "+size);
@@ -95,12 +94,14 @@ public class VCServer implements Runnable {
 									//System.out.println("W2:"+bs.get(sid).position());
 									//System.out.println(sid+"<-S"+buffer.length);
 								}
-																
-//								for(SocketChannel sc: scs){ //除本身外，全部转发
-//									//if(sc!=channel){
-//										sc.write(ByteBuffer.wrap(buffer));
-//									//}
-//								}
+													
+								**/
+								System.out.println(channel.toString() + " <-> "+size);
+								for(SocketChannel sc: scs){ //除本身外，全部转发
+									if(sc!=channel){
+										sc.write(ByteBuffer.wrap(buffer));
+									}
+								}
 								//System.out.println("Server RECV:"+new String(buffer));
 							}else{
 //								System.out.println("W02");

@@ -2,15 +2,12 @@ package ws.hoyland.vc.servlet;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -18,7 +15,7 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServlet;
 
-import ws.hoyland.vc.Dispatcher;
+//import ws.hoyland.vc.Dispatcher;
 import ws.hoyland.vc.VCServer;
 
 public class InitServlet extends HttpServlet {
@@ -29,7 +26,7 @@ public class InitServlet extends HttpServlet {
 	private static final long serialVersionUID = 5742532507382683705L;
 	protected boolean run = false;
 	private int port;//监听端口
-	private Dispatcher dispatcher = null;
+//	private Dispatcher dispatcher = null;
 	private ServerSocketChannel serverChannel = null;
 	private VCServer server = null;
 	
@@ -50,9 +47,9 @@ public class InitServlet extends HttpServlet {
 		
 		Selector selector = null;
 		List<SocketChannel> scs = new ArrayList<SocketChannel>();
-		Map<String, ByteBuffer> bs = new HashMap<String, ByteBuffer>();
-		dispatcher = new Dispatcher(scs, bs);
-		new Thread(dispatcher).start();
+//		Map<String, ByteBuffer> bs = new HashMap<String, ByteBuffer>();
+//		dispatcher = new Dispatcher(scs, bs);
+//		new Thread(dispatcher).start();
 		
 		try{
 			//获取一个ServerSocket通道
@@ -69,7 +66,8 @@ public class InitServlet extends HttpServlet {
 			e.printStackTrace();
 		}
 		
-		server = new VCServer(selector, scs, bs);
+//		server = new VCServer(selector, scs, bs);
+		server = new VCServer(selector, scs);
 		new Thread(server).start();
 	}
 
@@ -81,7 +79,7 @@ public class InitServlet extends HttpServlet {
 	@Override
 	public void destroy() {
 		server.stop();
-		dispatcher.stop();
+//		dispatcher.stop();
 		
 		try {
 			serverChannel.close();

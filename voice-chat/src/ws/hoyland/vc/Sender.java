@@ -17,12 +17,12 @@ public class Sender implements Runnable {
 	private byte[] data = new byte[1024]; // 此处的1024可以情况进行调整，应跟下面的1024应保持一致
 	private int size = 0;
 	private TargetDataLine line = null;
-//	private byte[] key = null;
+	private byte[] key = null;
 
 	public Sender(SocketChannel sc) {
 		this.sc = sc;
 		this.run = true;
-//		this.key = Util.genKey(4);
+		this.key = Util.genKey(4);
 
 		// 采集并发送
 		AudioFormat format = new AudioFormat(//AudioFormat.Encoding.PCM_SIGNED,
@@ -59,7 +59,7 @@ public class Sender implements Runnable {
 //				}
 
 				size = line.read(data, 0, 1024);// 取数据（1024）的大小直接关系到传输的速度，一般越小越快，
-/*				
+			
 				byte[] bs = new byte[size+4];
 //				bs[0] = 0xF;
 //				bs[1] = 0xE;
@@ -67,14 +67,14 @@ public class Sender implements Runnable {
 				for(;i<4;i++){
 					bs[i] = key[i];
 				}
-				for(;i<size;i++){
+				for(;i<size+4;i++){
 					bs[i] = data[i];
 				}
-*/				
+				
 				try {
-					sc.write(ByteBuffer.wrap(Util.slice(data, 0, size)));// 写入网络流
-					System.out.println(sc.toString()+" -> "+size);
-//					sc.write(ByteBuffer.wrap(bs));// 写入网络流
+//					sc.write(ByteBuffer.wrap(Util.slice(data, 0, size)));// 写入网络流
+					System.out.println(sc.toString()+" -> "+(size+4));
+					sc.write(ByteBuffer.wrap(bs));// 写入网络流
 				} catch (Exception ex) {
 					break;
 				}
