@@ -8,40 +8,24 @@ import java.nio.channels.SocketChannel;
 import java.util.Iterator;
 import java.util.Set;
 
-import javax.sound.sampled.AudioFormat;
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.DataLine;
-import javax.sound.sampled.SourceDataLine;
-
+import ws.hoyland.util.Converts;
 import ws.hoyland.util.Util;
 
 //接收并存到缓冲区
 public class Receiver implements Runnable {
 
 	private Selector selector;
+	private Player player;
 	private boolean run = false;
 	private ByteBuffer bf = ByteBuffer.allocate(1024+4);
 	private boolean wakeup = false;
 	private byte[] buffer = null;
 	private int size = -1;
 	
-	private SourceDataLine line = null;
-	private int bfsize = 16384;
-
-	public Receiver(Selector selector) {
+	public Receiver(Selector selector, Player player) {
 		this.selector = selector;
+		this.player = player;
 		this.run = true;
-		
-		AudioFormat format = new AudioFormat(8000, 16, 2, true, true);
-		DataLine.Info info = new DataLine.Info(SourceDataLine.class, format);		
-
-		try {
-			line = (SourceDataLine) AudioSystem.getLine(info); // 获得与指定Line.Info对象中的描述匹配的行
-			line.open(format, bfsize); // 打开所需系统资源，并使之可操作
-			//System.out.println(line);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
 	}
 
 	public void wakeup() {
@@ -54,7 +38,6 @@ public class Receiver implements Runnable {
 
 	@Override
 	public void run() {
-		line.start();
 		
 		while (run) {
 			//System.out.println("client run...");
@@ -105,8 +88,18 @@ public class Receiver implements Runnable {
 
 								bf.flip();
 								buffer = Util.slice(bf.array(), 0, size);
-								System.out.println(channel.toString()+" <- "+buffer.length);
-								line.write(buffer, 0, buffer.length);
+								
+								String sid = Converts.bytesToHexString(Util.slice(buffer, 0, 4));
+								if(!player.getBS().containsKey(sid)){
+									player.getBS().put(sid, ByteBuffer.allocate(1024*15));
+								}
+								
+								synchronized(player.getBS().get(sid)){
+									player.getBS().get(sid).put(Util.slice(buffer, 4, buffer.length-4));
+								}
+								
+								System.out.println(sid +" <- "+buffer.length);
+//								line.write(buffer, 0, buffer.length);
 			                }
 						} catch (CancelledKeyException e) {
 							sk.cancel();
