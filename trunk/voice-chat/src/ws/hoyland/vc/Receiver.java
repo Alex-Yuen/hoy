@@ -20,7 +20,7 @@ public class Receiver implements Runnable {
 
 	private Selector selector;
 	private boolean run = false;
-	private ByteBuffer bf = ByteBuffer.allocate(1024);
+	private ByteBuffer bf = ByteBuffer.allocate(1024+4);
 	private boolean wakeup = false;
 	private byte[] buffer = null;
 	private int size = -1;

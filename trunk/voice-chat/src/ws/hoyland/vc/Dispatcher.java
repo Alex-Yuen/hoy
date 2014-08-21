@@ -6,6 +6,7 @@ import java.nio.channels.SocketChannel;
 import java.util.List;
 import java.util.Map;
 
+@Deprecated
 public class Dispatcher implements Runnable {
 	private Map<String, ByteBuffer> bs = null;
 	private List<SocketChannel> scs = null;
