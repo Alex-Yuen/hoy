@@ -71,37 +71,37 @@ public class Test {
 		     in.read(audioData);  
 	  
 		     
-		     File file2 = new File("D:\\3.pcm");  
-		     System.out.println(file2.length());  
-		     //int offset2 = 0;  
-		     int bufferSize2 = Integer.valueOf(String.valueOf(file2.length())) ;  
-		     byte[] audioData2 = new byte[bufferSize2];  
-		     InputStream in2 = new FileInputStream(file2);  
-		     in2.read(audioData2);  
-		     
-		     int max = bufferSize;
-		     if(bufferSize2>bufferSize) max = bufferSize2;
-		     
-		     int min = bufferSize;
-		     if(bufferSize2<bufferSize) min = bufferSize2;
-		     
-		     
-		     byte[] rs = new byte[max];
-		     for(int i=0;i<rs.length;i++){
-		    	 if(i<min){
-		    		 rs[i] = (byte)((audioData[i]+audioData2[i])/2);
-		    	 }else{
-		    		 if(bufferSize<bufferSize2){
-		    			 rs[i] = audioData2[i];
-		    		 }else{
-		    			 rs[i] = audioData[i];
-		    		 }
-		    	 }
-		     }
+//		     File file2 = new File("D:\\3.pcm");  
+//		     System.out.println(file2.length());  
+//		     //int offset2 = 0;  
+//		     int bufferSize2 = Integer.valueOf(String.valueOf(file2.length())) ;  
+//		     byte[] audioData2 = new byte[bufferSize2];  
+//		     InputStream in2 = new FileInputStream(file2);  
+//		     in2.read(audioData2);  
+//		     
+//		     int max = bufferSize;
+//		     if(bufferSize2>bufferSize) max = bufferSize2;
+//		     
+//		     int min = bufferSize;
+//		     if(bufferSize2<bufferSize) min = bufferSize2;
+//		     
+//		     
+//		     byte[] rs = new byte[max];
+//		     for(int i=0;i<rs.length;i++){
+//		    	 if(i<min){
+//		    		 rs[i] = (byte)((audioData[i]+audioData2[i])/2);
+//		    	 }else{
+//		    		 if(bufferSize<bufferSize2){
+//		    			 rs[i] = audioData2[i];
+//		    		 }else{
+//		    			 rs[i] = audioData[i];
+//		    		 }
+//		    	 }
+//		     }
 		     
 	         float sampleRate = 8000;  
 	         int sampleSizeInBits = 16;  
-	         int channels = 1;  
+	         int channels = 2;  
 	         boolean signed = true;  
 	         boolean bigEndian = false;  
 	            // sampleRate - 每秒的样本数  
@@ -111,16 +111,16 @@ public class Test {
 	            // bigEndian - 指示是否以 big-endian 字节顺序存储单个样本中的数据（false 意味着  
 	            // little-endian）。  
 	         AudioFormat af = new AudioFormat(sampleRate, sampleSizeInBits, channels, signed, bigEndian);  
-	         SourceDataLine.Info info = new DataLine.Info(SourceDataLine.class, af, max);//bufferSize  
+	         SourceDataLine.Info info = new DataLine.Info(SourceDataLine.class, af, bufferSize);//bufferSize  
 	         SourceDataLine sdl = (SourceDataLine) AudioSystem.getLine(info);  
 	         sdl.open(af);  
 	         sdl.start();  
-	         while (offset < rs.length) {  
-	        	 offset += sdl.write(rs, offset, max);  
+	         while (offset < audioData.length) {  
+	        	 offset += sdl.write(audioData, offset, bufferSize);  
 	         } 
 	         
 	         in.close();
-	         in2.close();
+	         //in2.close();
 		}catch(Exception e){
 			e.printStackTrace();
 		}

@@ -91,14 +91,19 @@ public class Receiver implements Runnable {
 								
 								String sid = Converts.bytesToHexString(Util.slice(buffer, 0, 4));
 								if(!player.getBS().containsKey(sid)){
-									player.getBS().put(sid, ByteBuffer.allocate(1024*15));
+									player.getBS().put(sid, ByteBuffer.allocate(1024*25));
 								}
 								
 								synchronized(player.getBS().get(sid)){
-									player.getBS().get(sid).put(Util.slice(buffer, 4, buffer.length-4));
+									try{
+										player.getBS().get(sid).put(Util.slice(buffer, 4, buffer.length-4));
+									}catch(Exception e){
+										System.err.println(sid);
+										e.printStackTrace();
+									}
 								}
 								
-								System.out.println(sid +" <- "+buffer.length);
+								System.out.println(player.getBS().size()+"* "+sid +" <- "+buffer.length);
 //								line.write(buffer, 0, buffer.length);
 			                }
 						} catch (CancelledKeyException e) {
