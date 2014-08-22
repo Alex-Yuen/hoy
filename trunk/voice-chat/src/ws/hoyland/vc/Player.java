@@ -19,7 +19,7 @@ public class Player implements Runnable {
 	public Player() {
 		this.run = true;
 		AudioFormat format = new AudioFormat(8000, 16, 2, true, true);
-		DataLine.Info info = new DataLine.Info(SourceDataLine.class, format);		
+		DataLine.Info info = new DataLine.Info(SourceDataLine.class, format);
 		
 		try {
 			line = (SourceDataLine) AudioSystem.getLine(info); // 获得与指定Line.Info对象中的描述匹配的行
@@ -48,8 +48,8 @@ public class Player implements Runnable {
 				break;
 			}
 			
-			if(bbs!=null){
-				System.out.println("Playing... "+bbs.length);
+			if(bbs!=null&&bbs.length>0){
+				System.out.println("Playing...["+bs.size()+"]"+bbs.length);
 				line.write(bbs, 0, bbs.length);
 			}
 		}
