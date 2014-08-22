@@ -8,6 +8,7 @@ import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.DataLine;
 import javax.sound.sampled.TargetDataLine;
 
+import ws.hoyland.util.Converts;
 import ws.hoyland.util.Util;
 
 public class Sender implements Runnable {
@@ -68,13 +69,15 @@ public class Sender implements Runnable {
 					bs[i] = key[i];
 				}
 				for(;i<size+4;i++){
-					bs[i] = data[i];
+					bs[i] = data[i-4];
 				}
 				
 				try {
 //					sc.write(ByteBuffer.wrap(Util.slice(data, 0, size)));// 写入网络流
-					System.out.println(sc.toString()+" -> "+(size+4));
-					sc.write(ByteBuffer.wrap(bs));// 写入网络流
+					//if(calculateRMSLevel(data)>54.0){
+						sc.write(ByteBuffer.wrap(bs));// 写入网络流
+						System.out.println(Converts.bytesToHexString(this.key)+" -> "+bs.length + "["+calculateRMSLevel(data)+"]");
+					//}
 				} catch (Exception ex) {
 					break;
 				}
@@ -90,5 +93,32 @@ public class Sender implements Runnable {
 
 	public void stop() {
 		this.run = false;
+	}
+	
+	private int caculateDB(byte[] buffer){
+		long v = 0;
+		for (int i = 0; i < buffer.length; i++) {
+			v += buffer[i] * buffer[i];
+		}
+		int db = -90;
+		if (v != 0) {
+			db = (int) (20 * Math.log10(Math.sqrt(v/buffer.length) / 32768f));
+		}
+		return db;
+	}
+	private double calculateRMSLevel(byte[] audioData)
+	{ // audioData might be buffered data read from a data line
+	    long lSum = 0;
+	    for(int i=0; i<audioData.length; i++)
+	        lSum = lSum + audioData[i];
+
+	    double dAvg = lSum / audioData.length;
+
+	    double sumMeanSquare = 0d;
+	    for(int j=0; j<audioData.length; j++)
+	        sumMeanSquare = sumMeanSquare + Math.pow(audioData[j] - dAvg, 2d);
+
+	    double averageMeanSquare = sumMeanSquare / audioData.length;
+	    return (Math.pow(averageMeanSquare, 0.5d) + 0.5);
 	}
 }

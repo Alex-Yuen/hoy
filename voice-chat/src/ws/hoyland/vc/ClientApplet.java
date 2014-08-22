@@ -41,6 +41,7 @@ public class ClientApplet extends Applet {
 			new Thread(receiver).start();
 			
 			int port = Integer.parseInt(getParameter("port"));
+			System.out.println("Client parameter<server>: "+getParameter("server"));
 			System.out.println("Client parameter<port>: "+port);
 			
 			SocketAddress sa = new InetSocketAddress(getParameter("server"), port);

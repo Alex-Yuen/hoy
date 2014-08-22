@@ -98,9 +98,9 @@ public class VCServer implements Runnable {
 								**/
 								System.out.println(channel.toString() + " <-> "+size);
 								for(SocketChannel sc: scs){ //除本身外，全部转发
-									if(sc!=channel){
+									//if(sc!=channel){
 										sc.write(ByteBuffer.wrap(buffer));
-									}
+									//}
 								}
 								//System.out.println("Server RECV:"+new String(buffer));
 							}else{
