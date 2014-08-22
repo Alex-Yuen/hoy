@@ -95,17 +95,17 @@ public class Sender implements Runnable {
 		this.run = false;
 	}
 	
-	private int caculateDB(byte[] buffer){
-		long v = 0;
-		for (int i = 0; i < buffer.length; i++) {
-			v += buffer[i] * buffer[i];
-		}
-		int db = -90;
-		if (v != 0) {
-			db = (int) (20 * Math.log10(Math.sqrt(v/buffer.length) / 32768f));
-		}
-		return db;
-	}
+//	private int caculateDB(byte[] buffer){
+//		long v = 0;
+//		for (int i = 0; i < buffer.length; i++) {
+//			v += buffer[i] * buffer[i];
+//		}
+//		int db = -90;
+//		if (v != 0) {
+//			db = (int) (20 * Math.log10(Math.sqrt(v/buffer.length) / 32768f));
+//		}
+//		return db;
+//	}
 	private double calculateRMSLevel(byte[] audioData)
 	{ // audioData might be buffered data read from a data line
 	    long lSum = 0;

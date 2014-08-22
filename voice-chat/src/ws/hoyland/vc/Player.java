@@ -36,7 +36,7 @@ public class Player implements Runnable {
 		
 		while(run){
 			bbs = null;
-			for(ByteBuffer bb:bs.values()){
+			for(ByteBuffer bb:bs.values().iterator()){
 				synchronized(bb){
 					//System.out.println("R1:"+bb.position());
 					bbs = new byte[bb.position()];
@@ -45,7 +45,7 @@ public class Player implements Runnable {
 					bb.clear();
 					//System.out.println("R2:"+bb.position());
 				}
-				break;
+//				break;
 			}
 			
 			if(bbs!=null&&bbs.length>0){
