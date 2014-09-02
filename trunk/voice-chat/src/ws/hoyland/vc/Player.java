@@ -15,9 +15,9 @@ public class Player implements Runnable {
 	private int size = 1024*10;
 	private Map<String, MyByteBuffer> bs = new HashMap<String, MyByteBuffer>();
 //	private byte[] bbs = null;
-	private byte[] bbs = new byte[1024];
+	private byte[] bbx = new byte[1024];
 	private boolean run = false;
-	private boolean nw = false;
+//	private boolean nw = false;
 	
 	public Player() {
 		this.run = true;
@@ -38,34 +38,55 @@ public class Player implements Runnable {
 		line.start();
 		
 		while(run){
-			int i = 0;
-			nw = false;
+//			nw = false;
+			byte[][] bbs = new byte[bs.size()][1024];
 			
-			for(MyByteBuffer bb:bs.values()){
-//				synchronized(bb){
-					//System.out.println("R1:"+bb.position());
-				if(bb.size()>0){
-					nw = true;
-					if(i==0){
-						bb.get(bbs);
-//						bbs = new byte[bb.position()];
-//						bb.flip();
-//						bb.get(bbs);					
-//						bb.clear();
-					}else{
-						bb.get(new byte[1024]);
-//						bb.flip();
-//						bb.clear();
+//			System.out.println("bs size:"+bs.size());
+			System.out.println("Playing: "+bbs.length);
+			if(bbs.length>0){	
+				int i = 0;			
+				for(MyByteBuffer bb:bs.values()){
+//					synchronized(bb){
+						//System.out.println("R1:"+bb.position());
+					if(bb.size()>0){
+//						nw = true;
+//						if(i==0){
+							bb.get(bbs[i]);
+//							bbs = new byte[bb.position()];
+//							bb.flip();
+//							bb.get(bbs);					
+//							bb.clear();
+//						}else{
+//							bb.get(new byte[1024]);
+////							bb.flip();
+////							bb.clear();
+//						}
+						//System.out.println("R2:"+bb.position());
 					}
-					//System.out.println("R2:"+bb.position());
+					i++;
+//					break;
 				}
-				i++;
-//				break;
-			}
+				
+				for(int m=0;m<bbx.length;m++){
+					int total = 0;
+					for(int k=0;k<bbs.length;k++){
+						total += bbs[k][m];
+					}
+					bbx[m] = (byte)(total/bbs.length);
+				}
 			
-			if(nw){
-				System.out.println("Playing...["+bs.size()+"]"+bbs.length);
-				line.write(bbs, 0, bbs.length);
+//			if(nw){
+//				System.out.println("Playing...["+bs.size()+"]"+bbx.length);
+				line.write(bbx, 0, bbx.length);
+//			}
+			}else{
+				try{
+					synchronized(this){
+						this.wait(100);
+					}
+				}catch(Exception e){
+					e.printStackTrace();
+				}
 			}
 		}
 	}

@@ -19,6 +19,9 @@ public class Test {
 	 * @param args
 	 */
 	public static void main(String[] args) {
+		byte[][] x = new byte[2][4];
+		System.out.println(x[0].length);
+		
 		// TODO Auto-generated method stub
 		try{
 //			Mixer.Info[] infos = AudioSystem.getMixerInfo();
