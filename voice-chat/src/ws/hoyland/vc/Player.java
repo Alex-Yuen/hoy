@@ -21,7 +21,7 @@ public class Player implements Runnable {
 	
 	public Player() {
 		this.run = true;
-		AudioFormat format = new AudioFormat(8000, 16, 2, true, false);
+		AudioFormat format = new AudioFormat(8000, 16, 2, true, true);
 		DataLine.Info info = new DataLine.Info(SourceDataLine.class, format);
 		
 		try {

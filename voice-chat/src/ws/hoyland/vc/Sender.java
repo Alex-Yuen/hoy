@@ -31,7 +31,7 @@ public class Sender implements Runnable {
 				16, // sampleSizeInBits
 				2, // channels
 				true,
-				false); // bigEndian
+				true); // bigEndian
 
 		DataLine.Info info = new DataLine.Info(TargetDataLine.class, format);
 
@@ -52,7 +52,13 @@ public class Sender implements Runnable {
 		}
 		
 		line.start();
-
+		
+//		  FloatControl fc=(FloatControl)line.getControl(FloatControl.Type.PAN);
+//          double value=2;
+//          float dB = (float)
+//                (Math.log(value==0.0?0.0001:value)/Math.log(10.0)*20.0);
+//          fc.setValue(dB);
+          
 		while (run) {
 			try {
 //				synchronized (this) {
@@ -74,9 +80,11 @@ public class Sender implements Runnable {
 				
 				try {
 //					sc.write(ByteBuffer.wrap(Util.slice(data, 0, size)));// 写入网络流
-					//if(calculateRMSLevel(data)>54.0){
+					//if(calculateRMSLevel(data)>51.5){
+					if(caculateDB(data)>-28){
 						sc.write(ByteBuffer.wrap(bs));// 写入网络流
-						System.out.println(Converts.bytesToHexString(this.key)+" -> "+bs.length + "["+calculateRMSLevel(data)+"]");
+						System.out.println(Converts.bytesToHexString(this.key)+" -> "+bs.length + "["+caculateDB(data)+"]");
+					}
 					//}
 				} catch (Exception ex) {
 					break;
@@ -95,18 +103,22 @@ public class Sender implements Runnable {
 		this.run = false;
 	}
 	
-//	private int caculateDB(byte[] buffer){
-//		long v = 0;
-//		for (int i = 0; i < buffer.length; i++) {
-//			v += buffer[i] * buffer[i];
-//		}
-//		int db = -90;
-//		if (v != 0) {
-//			db = (int) (20 * Math.log10(Math.sqrt(v/buffer.length) / 32768f));
-//		}
-//		return db;
-//	}
-	private double calculateRMSLevel(byte[] audioData)
+	private int caculateDB(byte[] buffer){
+		long v = 0;
+		short t = 0;
+		for (int i = 0; i < buffer.length; i+=2) {
+			t = (short)(((buffer[i]<<8) & 0xFF00) | (buffer[i+1]&0xFF));
+			//v += buffer[i] * buffer[i];
+			v += t*t;
+		}
+		int db = -90;
+		if (v != 0) {
+			db = (int) (20 * Math.log10(Math.sqrt(v/(buffer.length/2)) / 32768f));
+		}
+		return db;
+	}
+	
+	protected double calculateRMSLevel(byte[] audioData)
 	{ // audioData might be buffered data read from a data line
 	    long lSum = 0;
 	    for(int i=0; i<audioData.length; i++)
