@@ -15,7 +15,7 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServlet;
 
-import ws.hoyland.vc.PCMSender;
+//import ws.hoyland.vc.PCMSender;
 //import ws.hoyland.vc.Dispatcher;
 import ws.hoyland.vc.VCServer;
 
@@ -30,7 +30,7 @@ public class InitServlet extends HttpServlet {
 //	private Dispatcher dispatcher = null;
 	private ServerSocketChannel serverChannel = null;
 	private VCServer server = null;
-	private PCMSender sender = null;
+//	private PCMSender sender = null;
 	
 	public InitServlet() {
 		this.run = true;
@@ -72,8 +72,8 @@ public class InitServlet extends HttpServlet {
 		server = new VCServer(selector, scs);
 		new Thread(server).start();
 		
-		sender = new PCMSender(scs);
-		new Thread(sender).start();
+//		sender = new PCMSender(scs);
+//		new Thread(sender).start();
 	}
 
 	@Override
@@ -83,7 +83,7 @@ public class InitServlet extends HttpServlet {
 
 	@Override
 	public void destroy() {
-		sender.stop();
+//		sender.stop();
 		server.stop();
 //		dispatcher.stop();
 		

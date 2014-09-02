@@ -65,9 +65,10 @@ public class PCMSender implements Runnable {
 				if(offset>=bufferSize) {
 					//Thread.sleep(2000);
 					offset = 0;
-				}//else{
-					Thread.sleep(64);
-				//}
+					Thread.sleep(5000);
+				}else{
+					Thread.sleep(20);
+				}
 				//System.out.println("offset:"+offset);
 				byte[] temp = Util.slice(audioData, offset, 1024);
 				

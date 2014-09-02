@@ -9,6 +9,7 @@ import java.util.Iterator;
 import java.util.Set;
 
 import ws.hoyland.util.Converts;
+import ws.hoyland.util.MyByteBuffer;
 import ws.hoyland.util.Util;
 
 //接收并存到缓冲区
@@ -21,6 +22,8 @@ public class Receiver implements Runnable {
 	private boolean wakeup = false;
 	private byte[] buffer = null;
 	private int size = -1;
+	
+//	private static int RECVBS = 20;//receiver buffer size
 	
 	public Receiver(Selector selector, Player player) {
 		this.selector = selector;
@@ -91,8 +94,10 @@ public class Receiver implements Runnable {
 								
 								String sid = Converts.bytesToHexString(Util.slice(buffer, 0, 4));
 								if(!player.getBS().containsKey(sid)){
-									player.getBS().put(sid, ByteBuffer.allocate(1024*25));
+									//player.getBS().put(sid, ByteBuffer.allocate(1024*RECVBS));
+									player.getBS().put(sid, new MyByteBuffer());
 								}
+								
 								
 								synchronized(player.getBS().get(sid)){
 									try{
@@ -103,7 +108,7 @@ public class Receiver implements Runnable {
 									}
 								}
 								
-								System.out.println(player.getBS().size()+"* "+sid +" <- "+buffer.length);
+								System.out.println(sid +" <- "+buffer.length);//player.getBS().size()+"* "+
 //								line.write(buffer, 0, buffer.length);
 			                }
 						} catch (CancelledKeyException e) {

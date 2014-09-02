@@ -31,7 +31,7 @@ public class Sender implements Runnable {
 				16, // sampleSizeInBits
 				2, // channels
 				true,
-				true); // bigEndian
+				false); // bigEndian
 
 		DataLine.Info info = new DataLine.Info(TargetDataLine.class, format);
 

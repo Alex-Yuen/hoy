@@ -1,6 +1,5 @@
 package ws.hoyland.vc;
 
-import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -9,16 +8,20 @@ import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.DataLine;
 import javax.sound.sampled.SourceDataLine;
 
+import ws.hoyland.util.MyByteBuffer;
+
 public class Player implements Runnable {
 	private SourceDataLine line = null;
 	private int size = 1024*10;
-	private Map<String, ByteBuffer> bs = new HashMap<String, ByteBuffer>();
-	private byte[] bbs = null;
+	private Map<String, MyByteBuffer> bs = new HashMap<String, MyByteBuffer>();
+//	private byte[] bbs = null;
+	private byte[] bbs = new byte[1024];
 	private boolean run = false;
+	private boolean nw = false;
 	
 	public Player() {
 		this.run = true;
-		AudioFormat format = new AudioFormat(8000, 16, 2, true, true);
+		AudioFormat format = new AudioFormat(8000, 16, 2, true, false);
 		DataLine.Info info = new DataLine.Info(SourceDataLine.class, format);
 		
 		try {
@@ -35,27 +38,39 @@ public class Player implements Runnable {
 		line.start();
 		
 		while(run){
-			bbs = null;
-			for(ByteBuffer bb:bs.values().iterator()){
-				synchronized(bb){
+			int i = 0;
+			nw = false;
+			
+			for(MyByteBuffer bb:bs.values()){
+//				synchronized(bb){
 					//System.out.println("R1:"+bb.position());
-					bbs = new byte[bb.position()];
-					bb.flip();
-					bb.get(bbs);					
-					bb.clear();
+				if(bb.size()>0){
+					nw = true;
+					if(i==0){
+						bb.get(bbs);
+//						bbs = new byte[bb.position()];
+//						bb.flip();
+//						bb.get(bbs);					
+//						bb.clear();
+					}else{
+						bb.get(new byte[1024]);
+//						bb.flip();
+//						bb.clear();
+					}
 					//System.out.println("R2:"+bb.position());
 				}
+				i++;
 //				break;
 			}
 			
-			if(bbs!=null&&bbs.length>0){
+			if(nw){
 				System.out.println("Playing...["+bs.size()+"]"+bbs.length);
 				line.write(bbs, 0, bbs.length);
 			}
 		}
 	}
 
-	public Map<String, ByteBuffer> getBS(){
+	public Map<String, MyByteBuffer> getBS(){
 		return this.bs;
 	}
 	
