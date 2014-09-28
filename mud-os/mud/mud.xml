@@ -1,0 +1,10 @@
+<mud>
+    <port>8888</port>
+	<rooms>
+	    <room>
+	        <npcs></npcs>
+	    </room>
+	    
+	</rooms>
+	
+</mud>
