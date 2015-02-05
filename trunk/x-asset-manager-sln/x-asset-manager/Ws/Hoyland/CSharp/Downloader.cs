@@ -67,26 +67,26 @@ namespace Ws.Hoyland.CSharp
                 WebRequest req = WebRequest.Create(u);
                 req.Method = "GET";
                 WebResponse res = req.GetResponse();
-                
+
                 Encoding resEncoding = Encoding.GetEncoding("utf-8");
                 StreamReader reader = new StreamReader(res.GetResponseStream(), resEncoding);
 
                 rv = reader.ReadLine();
-                
+
                 reader.Close();
                 res.Close();
-                
+
                 SetProgress(50);
                 //Console.WriteLine(">>>" + String.Compare(rv, version));
-                if (rv != null && version != null && String.Compare(rv, version)>0)
+                if (rv != null && version != null && String.Compare(rv, version) > 0)
                 {
                     //download
-                    u = url + "/update/"+core_name+".dll";
+                    u = url + "/update/" + core_name + ".dll";
                     string filename = Path.GetDirectoryName(Assembly.GetExecutingAssembly().GetModules()[0].FullyQualifiedName) + "\\" + core_name + ".dll";
                     //Console.WriteLine("...."+filename);
 
                     //this.label1.Text = "0%";
-                                        
+
                     client.DownloadProgressChanged += new DownloadProgressChangedEventHandler(ProgressChanged);
                     client.DownloadFileCompleted += new AsyncCompletedEventHandler(Completed);
                     client.DownloadFileAsync(new Uri(u), filename);
@@ -105,6 +105,7 @@ namespace Ws.Hoyland.CSharp
             }
             catch (Exception e)
             {
+                //throw e;
                 MessageBox.Show(e.Message);
                 //Console.WriteLine(e.Message);
                 //Console.WriteLine(e.StackTrace);
@@ -141,7 +142,7 @@ namespace Ws.Hoyland.CSharp
 
                     //curtime = md5;
 
-                    string u = url+"/logo";
+                    string u = url + "/logo";
 
                     WebRequest req = WebRequest.Create(u);
                     req.Method = "GET";
@@ -184,7 +185,7 @@ namespace Ws.Hoyland.CSharp
                     this.client.DownloadFileAsync(new Uri(u), splashtmp);
                 }
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 //MessageBox.Show(e.Message);
             }
@@ -204,6 +205,7 @@ namespace Ws.Hoyland.CSharp
 
         private void Downloader_Load(object sender, EventArgs e)
         {
+            //处理logo
             try
             {
                 xpath = AppDomain.CurrentDomain.BaseDirectory;
@@ -240,10 +242,15 @@ namespace Ws.Hoyland.CSharp
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
+                Application.Exit();
                 //Console.WriteLine(ex.Message);
                 //Console.WriteLine(ex.StackTrace);
             }
+        }
 
+        private void Downloader_Shown(object sender, EventArgs e)
+        {
+            //获取本地dll版本
             try
             {
                 this.client = new WebClient();
@@ -268,7 +275,7 @@ namespace Ws.Hoyland.CSharp
                         if (File.Exists(sx.XPath + "//" + sx.CN + ".dll"))
                         {
                             FileVersionInfo info = FileVersionInfo.GetVersionInfo(sx.XPath + "//" + sx.CN + ".dll");
-                            
+
                             //Assembly assembly = Assembly.Load(sx.CN);
                             //srv.Version = assembly.FullName.Split(',')[1].Substring(9);
                             srv.Version = info.FileVersion;
@@ -276,7 +283,7 @@ namespace Ws.Hoyland.CSharp
                             //version = assembly.FullName;
                             //SRVersion s = AppDomain.CurrentDomain.GetData("svr") as SRVersion;
                             //assembly.FullName.Split(',')[1].Substring(9);
-                            
+
                             //Console.WriteLine("V1:" + AppDomain.CurrentDomain.FriendlyName.ToString());
                             //AppDomain.CurrentDomain.SetData("srv", srv);
                         }
@@ -324,10 +331,15 @@ namespace Ws.Hoyland.CSharp
                 //Console.WriteLine(ex.Source);
             }
 
+            //Thread.Sleep(5000);
+            //dlg = CheckingUpdate;
+            //this.Invoke(dlg);
+            //this.EndInvoke(delegate { });
             Thread th = new Thread(CheckingUpdate);
             th.Start();
         }
-        
+
+
         private void CloseOnceTime()
         {
             if (cf)
@@ -352,13 +364,13 @@ namespace Ws.Hoyland.CSharp
         {
             try
             {
-                Assembly DllAssembly = Assembly.LoadFrom(core_name+".dll");
+                Assembly DllAssembly = Assembly.LoadFrom(core_name + ".dll");
                 Type[] DllTypes = DllAssembly.GetTypes();
 
                 foreach (Type DllType in DllTypes)
                 {
                     //Console.WriteLine(">>" + Namespace.Substring(Namespace.LastIndexOf(".")));
-                    if (DllType.Namespace == Namespace && DllType.Name == Namespace.Substring(Namespace.LastIndexOf(".")+1))
+                    if (DllType.Namespace == Namespace && DllType.Name == Namespace.Substring(Namespace.LastIndexOf(".") + 1))
                     {
                         form = (Form)(Activator.CreateInstance(DllType, new object[] { this }));
                         //form = (Form)(Activator.CreateInstance(DllType, new object[]{this, this.md5}));
@@ -369,7 +381,7 @@ namespace Ws.Hoyland.CSharp
                 if (form != null)
                 {
                     dlg = delegate()
-                    {                        
+                    {
                         for (int i = 0; i < 100; i++)
                         {
                             this.Opacity -= 0.01;
@@ -385,6 +397,7 @@ namespace Ws.Hoyland.CSharp
             }
             catch (Exception ex)
             {
+                //throw ex;
                 MessageBox.Show(ex.Message, "Error");
                 dlg = delegate()
                 {
@@ -392,10 +405,12 @@ namespace Ws.Hoyland.CSharp
                     {
                         form.Close();
                     }
-                    //this.Close();
+                    this.Close();
                 };
                 this.BeginInvoke(dlg);
+
                 Application.Exit();
+                ////this.Close();
             }
         }
 
@@ -438,5 +453,7 @@ namespace Ws.Hoyland.CSharp
             //button1.FlatAppearance.BorderSize = 0;
             //button1.FlatStyle = FlatStyle.Flat;
         }
+
+
     }
 }

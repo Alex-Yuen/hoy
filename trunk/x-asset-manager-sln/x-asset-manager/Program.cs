@@ -22,18 +22,17 @@ namespace Ws.Hoyland.XAM
             Application.SetCompatibleTextRenderingDefault(false);
 
             Downloader downloader = new Downloader();
-            downloader.Text = "X-Mail";
-            downloader.URL = "http://www.hoyland.ws/x-mail";
-            downloader.CoreName = "x-mail-core";
-            downloader.Namespace = "Ws.Hoyland.XMail";
+            downloader.Text = "X-Asset-Manager";
+            downloader.URL = "http://www.hoyland.ws/x-asset-manager";
+            downloader.CoreName = "x-asset-manager-core";
+            downloader.Namespace = "Ws.Hoyland.XAM";
             Application.Run(downloader);
         }
 
         static void ExceptionHandler(object sender, System.UnhandledExceptionEventArgs e)
         {
-            MessageBox.Show("我们很抱歉，当前应用程序遇到一些问题，该操作已经终止，请进行重试，如果问题继续存在，请联系管理员.", "意外的操作", MessageBoxButtons.OK, MessageBoxIcon.Information);//这里通常需要给用户一些较为友好的提示，并且后续可能的操作
-
-            //e.Handled = true;//使用这一行代码告诉运行时，该异常被处理了，不再作为UnhandledException抛出了。
+            MessageBox.Show("我们很抱歉，当前应用程序遇到一些问题，该操作已经终止，请进行重试，如果问题继续存在，请联系开发商.", "意外的操作", MessageBoxButtons.OK, MessageBoxIcon.Information);//这里通常需要给用户一些较为友好的提示，并且后续可能的操作
+            Application.Exit();
         }
     }
 }
