@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "x-asset-manager-sln", "x-asset-manager-sln\x-asset-manager-sln.csproj", "{093A99AB-7011-4EEB-981B-C4147D0267E1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "x-asset-manager", "x-asset-manager\x-asset-manager.csproj", "{22B08D44-4A43-4069-BE8B-A10847452346}"
 EndProject
 Global
 	GlobalSection(SubversionScc) = preSolution
@@ -13,10 +13,10 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{093A99AB-7011-4EEB-981B-C4147D0267E1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{093A99AB-7011-4EEB-981B-C4147D0267E1}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{093A99AB-7011-4EEB-981B-C4147D0267E1}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{093A99AB-7011-4EEB-981B-C4147D0267E1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{22B08D44-4A43-4069-BE8B-A10847452346}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{22B08D44-4A43-4069-BE8B-A10847452346}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{22B08D44-4A43-4069-BE8B-A10847452346}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{22B08D44-4A43-4069-BE8B-A10847452346}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
