@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace x_asset_manager
+namespace Ws.Hoyland.XAM
 {
     public partial class Form1 : Form
     {
