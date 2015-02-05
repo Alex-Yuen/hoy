@@ -1,4 +1,4 @@
-﻿namespace x_asset_manager
+﻿namespace Ws.Hoyland.XAM
 {
     partial class Form1
     {

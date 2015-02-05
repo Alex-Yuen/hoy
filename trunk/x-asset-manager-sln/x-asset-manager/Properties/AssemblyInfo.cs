@@ -5,13 +5,13 @@ using System.Runtime.InteropServices;
 // 有关程序集的常规信息通过以下
 // 特性集控制。更改这些特性值可修改
 // 与程序集关联的信息。
-[assembly: AssemblyTitle("x-asset-manager")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("X-Asset-Manager")]
+[assembly: AssemblyDescription("http://www.hoyland.ws")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Microsoft")]
-[assembly: AssemblyProduct("x-asset-manager")]
+[assembly: AssemblyCompany("hoyland")]
+[assembly: AssemblyProduct("X-Asset-Manager")]
 [assembly: AssemblyCopyright("Copyright © Microsoft 2015")]
-[assembly: AssemblyTrademark("")]
+[assembly: AssemblyTrademark("X-Product")]
 [assembly: AssemblyCulture("")]
 
 // 将 ComVisible 设置为 false 使此程序集中的类型
