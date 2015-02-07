@@ -53,6 +53,143 @@ namespace Ws.Hoyland.CSharp
             InitializeComponent();
         }
 
+        private void Downloader_Load(object sender, EventArgs e)
+        {
+            //处理logo
+            try
+            {
+                xpath = AppDomain.CurrentDomain.BaseDirectory;
+                string splash = xpath + "//tmp//splash.png";
+                string splashnew = xpath + "//tmp//splash.new";
+                if (File.Exists(splashnew))
+                {
+                    File.Delete(splash);
+                    File.Move(splashnew, splash);
+                }
+
+                if (File.Exists(splash))
+                {
+                    FileStream file = new FileStream(splash, FileMode.Open);
+                    MD5 md5s = new MD5CryptoServiceProvider();
+                    byte[] retVal = md5s.ComputeHash(file);
+                    file.Close();
+                    //Console.WriteLine(this.md5);
+
+                    Image imsp = Image.FromFile(splash);
+                    if (imsp != null)
+                    {
+                        this.BackgroundImage = imsp;
+                    }
+
+                    StringBuilder sb = new StringBuilder();
+                    for (int i = 0; i < retVal.Length; i++)
+                    {
+                        sb.Append(retVal[i].ToString("x2"));
+                    }
+                    this.md5 = sb.ToString();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+                Application.Exit();
+                //Console.WriteLine(ex.Message);
+                //Console.WriteLine(ex.StackTrace);
+            }
+        }
+
+        private void Downloader_Shown(object sender, EventArgs e)
+        {
+            //获取本地dll版本
+            try
+            {
+                this.client = new WebClient();
+                AppDomain od = AppDomain.CreateDomain("TMP-DOMAIN");
+                //od.SetData("srv", srv);
+                SRPath srp = new SRPath();
+                srp.CN = core_name;
+                srp.XPath = xpath;
+
+                od.SetData("srp", srp);
+                //Console.WriteLine(">>> 之前");
+                //CheckAssemblies(AppDomain.CurrentDomain);
+                //CheckAssemblies(od);
+
+                od.DoCallBack(() =>
+                {
+                    try
+                    {
+                        SRPath sx = AppDomain.CurrentDomain.GetData("srp") as SRPath;
+                        SRVersion srv = new SRVersion();
+
+                        if (File.Exists(sx.XPath + "//" + sx.CN + ".dll"))
+                        {
+                            FileVersionInfo info = FileVersionInfo.GetVersionInfo(sx.XPath + "//" + sx.CN + ".dll");
+
+                            //Assembly assembly = Assembly.Load(sx.CN);
+                            //srv.Version = assembly.FullName.Split(',')[1].Substring(9);
+                            srv.Version = info.FileVersion;
+
+                            //version = assembly.FullName;
+                            //SRVersion s = AppDomain.CurrentDomain.GetData("svr") as SRVersion;
+                            //assembly.FullName.Split(',')[1].Substring(9);
+
+                            //Console.WriteLine("V1:" + AppDomain.CurrentDomain.FriendlyName.ToString());
+                            //AppDomain.CurrentDomain.SetData("srv", srv);
+                        }
+                        else
+                        {
+                            srv.Version = "0.0.0.0";
+                        }
+                        //SRVersion s = AppDomain.CurrentDomain.GetData("svr") as SRVersion;
+                        //assembly.FullName.Split(',')[1].Substring(9);
+                        //od.SetData("srv", srv);
+                        //Console.WriteLine("V0:" + od.FriendlyName.ToString());
+                        //Console.WriteLine("V1:"+AppDomain.CurrentDomain.FriendlyName.ToString());
+                        AppDomain.CurrentDomain.SetData("srv", srv);
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(ex.Message);
+                        //Application.Exit();
+                    }
+                    //srv.version = assembly.FullName.Split(',')[1].Substring(9);
+                    //version = assembly.FullName.Split(',')[1].Substring(9);
+                });
+
+                //Console.WriteLine(">>> 之后");
+                //CheckAssemblies(AppDomain.CurrentDomain);
+                //CheckAssemblies(od);
+                //Console.WriteLine("V2:" + od.FriendlyName.ToString());
+                //Console.WriteLine("V3:" + AppDomain.CurrentDomain.FriendlyName.ToString());
+                SRVersion s = od.GetData("srv") as SRVersion;
+                version = s.Version;
+
+                //version = od.GetData("version") as string;
+                //od.SetData("srv", srv);
+                //version = s.version;
+                //Console.WriteLine(s.version);
+
+                AppDomain.Unload(od);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+                Application.Exit();
+                //Console.WriteLine(ex.Message);
+                //Console.WriteLine(ex.StackTrace);
+                //Console.WriteLine(ex.Source);
+            }
+
+            //Thread.Sleep(5000);
+            //dlg = CheckingUpdate;
+            //this.Invoke(dlg);
+            //this.EndInvoke(delegate { });
+            Thread thread = new Thread(CheckingUpdate);
+            thread.Name = "Checking Update Thread";
+            thread.Start();
+        }
+
         private void CheckingUpdate()
         {
             try
@@ -203,141 +340,6 @@ namespace Ws.Hoyland.CSharp
         }
 
 
-        private void Downloader_Load(object sender, EventArgs e)
-        {
-            //处理logo
-            try
-            {
-                xpath = AppDomain.CurrentDomain.BaseDirectory;
-                string splash = xpath + "//tmp//splash.png";
-                string splashnew = xpath + "//tmp//splash.new";
-                if (File.Exists(splashnew))
-                {
-                    File.Delete(splash);
-                    File.Move(splashnew, splash);
-                }
-
-                if (File.Exists(splash))
-                {
-                    FileStream file = new FileStream(splash, FileMode.Open);
-                    MD5 md5s = new MD5CryptoServiceProvider();
-                    byte[] retVal = md5s.ComputeHash(file);
-                    file.Close();
-                    //Console.WriteLine(this.md5);
-
-                    Image imsp = Image.FromFile(splash);
-                    if (imsp != null)
-                    {
-                        this.BackgroundImage = imsp;
-                    }
-
-                    StringBuilder sb = new StringBuilder();
-                    for (int i = 0; i < retVal.Length; i++)
-                    {
-                        sb.Append(retVal[i].ToString("x2"));
-                    }
-                    this.md5 = sb.ToString();
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-                Application.Exit();
-                //Console.WriteLine(ex.Message);
-                //Console.WriteLine(ex.StackTrace);
-            }
-        }
-
-        private void Downloader_Shown(object sender, EventArgs e)
-        {
-            //获取本地dll版本
-            try
-            {
-                this.client = new WebClient();
-                AppDomain od = AppDomain.CreateDomain("TMP-DOMAIN");
-                //od.SetData("srv", srv);
-                SRPath srp = new SRPath();
-                srp.CN = core_name;
-                srp.XPath = xpath;
-
-                od.SetData("srp", srp);
-                //Console.WriteLine(">>> 之前");
-                //CheckAssemblies(AppDomain.CurrentDomain);
-                //CheckAssemblies(od);
-
-                od.DoCallBack(() =>
-                {
-                    try
-                    {
-                        SRPath sx = AppDomain.CurrentDomain.GetData("srp") as SRPath;
-                        SRVersion srv = new SRVersion();
-
-                        if (File.Exists(sx.XPath + "//" + sx.CN + ".dll"))
-                        {
-                            FileVersionInfo info = FileVersionInfo.GetVersionInfo(sx.XPath + "//" + sx.CN + ".dll");
-
-                            //Assembly assembly = Assembly.Load(sx.CN);
-                            //srv.Version = assembly.FullName.Split(',')[1].Substring(9);
-                            srv.Version = info.FileVersion;
-
-                            //version = assembly.FullName;
-                            //SRVersion s = AppDomain.CurrentDomain.GetData("svr") as SRVersion;
-                            //assembly.FullName.Split(',')[1].Substring(9);
-
-                            //Console.WriteLine("V1:" + AppDomain.CurrentDomain.FriendlyName.ToString());
-                            //AppDomain.CurrentDomain.SetData("srv", srv);
-                        }
-                        else
-                        {
-                            srv.Version = "0.0.0.0";
-                        }
-                        //SRVersion s = AppDomain.CurrentDomain.GetData("svr") as SRVersion;
-                        //assembly.FullName.Split(',')[1].Substring(9);
-                        //od.SetData("srv", srv);
-                        //Console.WriteLine("V0:" + od.FriendlyName.ToString());
-                        //Console.WriteLine("V1:"+AppDomain.CurrentDomain.FriendlyName.ToString());
-                        AppDomain.CurrentDomain.SetData("srv", srv);
-                    }
-                    catch (Exception ex)
-                    {
-                        MessageBox.Show(ex.Message);
-                        //Application.Exit();
-                    }
-                    //srv.version = assembly.FullName.Split(',')[1].Substring(9);
-                    //version = assembly.FullName.Split(',')[1].Substring(9);
-                });
-
-                //Console.WriteLine(">>> 之后");
-                //CheckAssemblies(AppDomain.CurrentDomain);
-                //CheckAssemblies(od);
-                //Console.WriteLine("V2:" + od.FriendlyName.ToString());
-                //Console.WriteLine("V3:" + AppDomain.CurrentDomain.FriendlyName.ToString());
-                SRVersion s = od.GetData("srv") as SRVersion;
-                version = s.Version;
-
-                //version = od.GetData("version") as string;
-                //od.SetData("srv", srv);
-                //version = s.version;
-                //Console.WriteLine(s.version);
-
-                AppDomain.Unload(od);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-                Application.Exit();
-                //Console.WriteLine(ex.Message);
-                //Console.WriteLine(ex.StackTrace);
-                //Console.WriteLine(ex.Source);
-            }
-
-            //Thread.Sleep(5000);
-            //dlg = CheckingUpdate;
-            //this.Invoke(dlg);
-            //this.EndInvoke(delegate { });
-            Thread th = new Thread(CheckingUpdate);
-            th.Start();
-        }
 
 
         private void CloseOnceTime()
