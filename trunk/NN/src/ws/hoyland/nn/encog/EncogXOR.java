@@ -1,7 +1,6 @@
 package ws.hoyland.nn.encog;
 
 import org.encog.neural.activation.ActivationSigmoid;
-import org.encog.neural.activation.ActivationTANH;
 import org.encog.neural.data.NeuralData;
 import org.encog.neural.data.NeuralDataPair;
 import org.encog.neural.data.NeuralDataSet;
@@ -11,7 +10,6 @@ import org.encog.neural.networks.layers.BasicLayer;
 import org.encog.neural.networks.logic.FeedforwardLogic;
 import org.encog.neural.networks.training.Train;
 import org.encog.neural.networks.training.lma.LevenbergMarquardtTraining;
-import org.encog.neural.networks.training.propagation.back.Backpropagation;
 import org.encog.neural.networks.training.strategy.RequiredImprovementStrategy;
 import org.encog.util.logging.Logging;
 
@@ -49,14 +47,14 @@ public class EncogXOR {
 			System.out
 					.println("Epoch #" + epoch + " Error:" + train.getError());
 			epoch++;
-		} while(train.getError() > 0.001);
+		} while(train.getError() > 0.01); //0.001
 
 		// test the neural network
 		System.out.println("Neural Network Results:");
 		for(NeuralDataPair pair: trainingSet ) {
 			final NeuralData output = network.compute(pair.getInput());
 			System.out.println(pair.getInput().getData(0) + "," + pair.getInput().getData(1)
-					+ ", actual=" + output.getData(0) + ",ideal=" + pair.getIdeal().getData(0));
+					+ ", actual=" + output.getData(0) + ", ideal=" + pair.getIdeal().getData(0));
 		}
 	}
 }
