@@ -51,9 +51,5 @@ public class NeurophXOR {
 			System.out.println(element.getInput().get(0) + "," + element.getInput().get(1)
 					+ ", actual=" + output.get(0) + ", ideal=" + ste.getDesiredOutput().get(0));
 		}
-
-
     }
-
-
 }
