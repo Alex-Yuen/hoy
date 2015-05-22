@@ -52,8 +52,8 @@ public class NeurophXOR {
             Vector<Double> output = network.getOutput();
             SupervisedTrainingElement ste = (SupervisedTrainingElement)element;
             
-			System.out.println(element.getInput().get(0) + "," + element.getInput().get(0)
-					+ ", actual=" + output.get(0) + ",ideal=" + ste.getDesiredOutput().get(0));
+			System.out.println(element.getInput().get(0) + "," + element.getInput().get(1)
+					+ ", actual=" + output.get(0) + ", ideal=" + ste.getDesiredOutput().get(0));
 		}
 
 
