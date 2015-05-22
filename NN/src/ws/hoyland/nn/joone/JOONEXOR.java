@@ -12,7 +12,7 @@ import org.joone.engine.learning.TeachingSynapse;
 import org.joone.io.MemoryInputSynapse;
 import org.joone.io.MemoryOutputSynapse;
 import org.joone.net.NeuralNet;
-import org.joone.samples.engine.xor.XOR;
+//import org.joone.samples.engine.xor.XOR;
 
 public class JOONEXOR implements NeuralNetListener {
 	private Monitor monitor;
