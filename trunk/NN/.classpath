@@ -10,5 +10,7 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="lib/je-analysis-1.5.3.jar"/>
 	<classpathentry kind="lib" path="lib/lucene-core-2.4.1.jar"/>
+	<classpathentry kind="lib" path="lib/derby.jar"/>
+	<classpathentry kind="lib" path="lib/derbyLocale_zh_CN.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
