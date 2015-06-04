@@ -29,7 +29,7 @@ public class TradingHalt {
 		String line = null;
 		String result = null;
 		try {
-			conn = new URL(url).openConnection();
+			conn = new URL(url).openConnection(); 
 			conn.setRequestProperty("Accept",
 					"text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8");
 			conn.setRequestProperty("Accept-Language", "zh-CN,zh;q=0.8");
