@@ -554,14 +554,14 @@ public class TradingHalt {
 		System.out.println("沪深300市盈率(TTM):");
 		System.out.println("========");
 		// System.out.println("沪市停牌");
-		// printHalting("http://stock.eastmoney.com/news/chstpyl.html", title);
+		printHalting("http://stock.eastmoney.com/news/chstpyl.html", title);
 		// System.out.println("深市停牌");
-		// printHalting("http://stock.eastmoney.com/news/csstpyl.html", title);
+		printHalting("http://stock.eastmoney.com/news/csstpyl.html", title);
 
 		// http://query.sse.com.cn/infodisplay/querySpecialTipsInfoByPage.do?jsonCallBack=jsonpCallback71393&isPagination=true&searchDate=&bgFlag=1&searchDo=1&pageHelp.pageSize=100&_=1433417470230
 		// http://www.szse.cn/szseWeb/FrontController.szse?randnum=0.9035767468158156
 //		printHaltingSSE(responseHandler);
-		printHaltingSZSE(responseHandler);
+//		printHaltingSZSE(responseHandler);
 
 		for (String code : LIST) {
 			System.out.println(code);
