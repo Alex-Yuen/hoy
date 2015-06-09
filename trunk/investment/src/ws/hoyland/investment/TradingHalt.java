@@ -36,7 +36,7 @@ public class TradingHalt {
 		return get(url, null);
 	}
 
-	public static String get(String url, String charset) {
+	private static String get(String url, String charset) {
 		URLConnection conn = null;
 		InputStream in = null;
 		InputStreamReader isr = null;
@@ -82,11 +82,15 @@ public class TradingHalt {
 		return result;
 	}
 
-	public static void printHalting(String url, String date) {
+	private static void printHalting(String url, String date) {
 		String content = null;
 		String link = null;
 		try {
 			content = get(url, "GB2312");
+			if(content.indexOf(date)==-1){
+				System.out.println("当日无数据");
+				return;
+			}
 			content = content.substring(0, content.indexOf(date));
 			content = content.substring(0, content.indexOf("\" title="));
 			link = content.substring(content.lastIndexOf("a href=\"") + 8);
@@ -137,7 +141,7 @@ public class TradingHalt {
 		}
 	}
 
-	public static void printHaltingSSE(ResponseHandler<String> responseHandler) {
+	private static void printHaltingSSE(ResponseHandler<String> responseHandler) {
 		CloseableHttpClient httpclient = HttpClients.createDefault();
 		try {
 			HttpGet httpGet = new HttpGet(
@@ -191,7 +195,7 @@ public class TradingHalt {
 		}
 	}
 
-	public static void printHaltingSZSE(ResponseHandler<String> responseHandler) {
+	private static void printHaltingSZSE(ResponseHandler<String> responseHandler) {
 		List<String> tmpList = new ArrayList<String>();
 		Stack<String> stack = new Stack<String>();
 		List<String> queue = new ArrayList<String>();
@@ -386,9 +390,8 @@ public class TradingHalt {
 			}
 		}
 	}
-
 	
-	public static void printInvestors(String code) {
+	private static void printInvestors(String code) {
 		String content = null;
 		String codex = code.substring(0, code.length()-3);
 		try {
@@ -522,6 +525,42 @@ public class TradingHalt {
 		}
 	}
 
+	private static void printHSIPE(ResponseHandler<String> responseHandler) {
+		CloseableHttpClient httpclient = HttpClients.createDefault();
+		try {
+			HttpGet httpGet = new HttpGet(
+					"http://alphainvestments.hk/en/market.php");
+			httpGet.setHeader("Accept", "*/*");
+			httpGet.setHeader("Accept-Encoding", "gzip, deflate, sdch");
+			httpGet.setHeader("Accept-Language", "zh-CN,zh;q=0.8");
+			httpGet.setHeader("Cache-Control", "max-age=0");
+			httpGet.setHeader("Connection", "keep-alive");
+//			httpGet.setHeader("Referer",
+//					"http://www.sse.com.cn/disclosure/dealinstruc/");
+			httpGet.setHeader(
+					"User-Agent",
+					"Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.93 Safari/537.36");
+
+			String responseBody  = httpclient.execute(httpGet, responseHandler);
+			responseBody = responseBody.substring(responseBody.indexOf("HSI Volatility Index (VHSI)"), responseBody.indexOf(" x</td>"));
+			responseBody = responseBody.substring(responseBody.lastIndexOf(">")+1);
+//			System.out.println("----------------------------------------");
+            System.out.println(responseBody);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (httpclient != null) {
+					httpclient.close();
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		
+	}
+	
 	public static void main(String[] args) {
         ResponseHandler<String> responseHandler = new ResponseHandler<String>() {
             @Override
@@ -551,8 +590,10 @@ public class TradingHalt {
 		Date date = new Date();
 		String title = sdf.format(date);
 		System.out.println(title);
-		System.out.println("沪深300市盈率(TTM):");
-		System.out.println("========");
+		System.out.println("000300 PE Ratio(TTM): ");
+		System.out.print("HSI PE Ratio: ");
+		printHSIPE(responseHandler);
+		System.out.println("========================");
 		// System.out.println("沪市停牌");
 		printHalting("http://stock.eastmoney.com/news/chstpyl.html", title);
 		// System.out.println("深市停牌");
@@ -569,4 +610,5 @@ public class TradingHalt {
 			// break;
 		}
 	}
+
 }
