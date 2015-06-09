@@ -453,6 +453,7 @@ public class TradingHalt {
 					if(!name.contains("*")){ //打印基金的持仓
 						content = get("http://fund.eastmoney.com/f10/FundArchivesDatas.aspx?type=jjcc&code="+name+"&year=2015&month=3&rt="+Math.random(), "GB2312");
 						if(content.indexOf("<table")!=-1){//持仓非空
+//							System.out.println("TT:"+code);
 							content = content.substring(content.indexOf("<table"));
 							content = content.substring(0, content.indexOf("</table>"));
 							if(content.contains(codex)){ //当前基金是否持有大量的停牌股票
