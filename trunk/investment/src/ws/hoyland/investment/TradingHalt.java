@@ -63,7 +63,7 @@ public class TradingHalt {
 			}
 			result = sb.toString();
 		} catch (Exception e) {
-			e.printStackTrace();
+//			e.printStackTrace();
 		} finally {
 			try {
 				if (br != null) {
@@ -397,6 +397,10 @@ public class TradingHalt {
 		try {
 			content = get("http://www.windin.com/home/stock/stock-mh/" + code
 					+ ".shtml");
+			if(content==null){
+				System.err.println("ERROR CONTENT");
+				return;
+			}
 			// System.out.println(content);
 			try{
 			content = content.substring(content
