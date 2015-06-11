@@ -529,7 +529,7 @@ public class TradingHalt {
 			e.printStackTrace();
 		}
 	}
-
+	
 	private static void printHSIPE(ResponseHandler<String> responseHandler) {
 		CloseableHttpClient httpclient = HttpClients.createDefault();
 		try {
@@ -549,6 +549,42 @@ public class TradingHalt {
 			String responseBody  = httpclient.execute(httpGet, responseHandler);
 			responseBody = responseBody.substring(responseBody.indexOf("HSI Volatility Index (VHSI)"), responseBody.indexOf(" x</td>"));
 			responseBody = responseBody.substring(responseBody.lastIndexOf(">")+1);
+//			System.out.println("----------------------------------------");
+            System.out.println(responseBody);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (httpclient != null) {
+					httpclient.close();
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		
+	}
+	
+	private static void printSPXPE(ResponseHandler<String> responseHandler) {
+		CloseableHttpClient httpclient = HttpClients.createDefault();
+		try {
+			HttpGet httpGet = new HttpGet(
+					"http://www.multpl.com/");
+			httpGet.setHeader("Accept", "*/*");
+			httpGet.setHeader("Accept-Encoding", "gzip, deflate, sdch");
+			httpGet.setHeader("Accept-Language", "zh-CN,zh;q=0.8");
+			httpGet.setHeader("Cache-Control", "max-age=0");
+			httpGet.setHeader("Connection", "keep-alive");
+//			httpGet.setHeader("Referer",
+//					"http://www.sse.com.cn/disclosure/dealinstruc/");
+			httpGet.setHeader(
+					"User-Agent",
+					"Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.93 Safari/537.36");
+
+			String responseBody  = httpclient.execute(httpGet, responseHandler);
+			responseBody = responseBody.substring(responseBody.indexOf("Current S&amp;P 500 PE Ratio is ")+32);
+			responseBody = responseBody.substring(0, responseBody.indexOf(","));
 //			System.out.println("----------------------------------------");
             System.out.println(responseBody);
 
@@ -598,6 +634,8 @@ public class TradingHalt {
 		System.out.println("000300 PE Ratio(TTM): ");
 		System.out.print("HSI PE Ratio: ");
 		printHSIPE(responseHandler);
+		System.out.print("SPX PE Ratio: ");
+		printSPXPE(responseHandler);
 		System.out.println("========================");
 		// System.out.println("沪市停牌");
 //		printHalting("http://stock.eastmoney.com/news/chstpyl.html", title);
