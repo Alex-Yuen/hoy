@@ -598,6 +598,43 @@ public class TradingHalt {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
+		}		
+	}
+	
+	private static void printCPI(ResponseHandler<String> responseHandler) {
+		CloseableHttpClient httpclient = HttpClients.createDefault();
+		try {
+			HttpGet httpGet = new HttpGet(
+					"http://data.eastmoney.com/cjsj/consumerpriceindex.aspx?p=1");
+			httpGet.setHeader("Accept", "*/*");
+			httpGet.setHeader("Accept-Encoding", "gzip, deflate, sdch");
+			httpGet.setHeader("Accept-Language", "zh-CN,zh;q=0.8");
+			httpGet.setHeader("Cache-Control", "max-age=0");
+			httpGet.setHeader("Connection", "keep-alive");
+//			httpGet.setHeader("Referer",
+//					"http://www.sse.com.cn/disclosure/dealinstruc/");
+			httpGet.setHeader(
+					"User-Agent",
+					"Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.93 Safari/537.36");
+
+			String responseBody  = httpclient.execute(httpGet, responseHandler);
+			responseBody = responseBody.substring(responseBody.indexOf("secondTr"));
+			responseBody = responseBody.substring(responseBody.indexOf("<span"));
+			responseBody = responseBody.substring(responseBody.indexOf(">")+1);
+			responseBody = responseBody.substring(0, responseBody.indexOf("</span>")).trim();
+//			System.out.println("----------------------------------------");
+            System.out.println(responseBody);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (httpclient != null) {
+					httpclient.close();
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 		
 	}
@@ -631,12 +668,14 @@ public class TradingHalt {
 		Date date = new Date();
 		String title = sdf.format(date);
 		System.out.println(title);
+		System.out.println("==============");
+		System.out.print("CPI: ");
+		printCPI(responseHandler);
 		System.out.println("000300 PE Ratio(TTM): ");
 		System.out.print("HSI PE Ratio: ");
 		printHSIPE(responseHandler);
 		System.out.print("SPX PE Ratio: ");
 		printSPXPE(responseHandler);
-		System.out.println("========================");
 		// System.out.println("沪市停牌");
 //		printHalting("http://stock.eastmoney.com/news/chstpyl.html", title);
 		// System.out.println("深市停牌");
@@ -653,5 +692,4 @@ public class TradingHalt {
 			// break;
 		}
 	}
-
 }
