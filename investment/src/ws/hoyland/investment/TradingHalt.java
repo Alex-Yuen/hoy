@@ -639,6 +639,8 @@ public class TradingHalt {
 		
 	}
 	
+	//TODO
+	//建立股债平衡，多市场指数基金的投资组合，再平衡（动态再平衡策略）之后，尝试根据资金流的策略。
 	public static void main(String[] args) {
         ResponseHandler<String> responseHandler = new ResponseHandler<String>() {
             @Override
