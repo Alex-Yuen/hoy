@@ -671,7 +671,7 @@ public class TradingHalt {
 		System.out.println("==============");
 		System.out.print("CPI: ");
 		printCPI(responseHandler);
-		System.out.println("000300 PE Ratio(TTM): ");
+		System.out.println("CSI PE Ratio: ");
 		System.out.print("HSI PE Ratio: ");
 		printHSIPE(responseHandler);
 		System.out.print("SPX PE Ratio: ");
