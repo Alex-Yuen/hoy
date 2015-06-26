@@ -31,7 +31,7 @@ import org.json.JSONObject;
 public class TradingHalt {
 
 	private static List<String> LIST = new ArrayList<String>();
-	private static double CSIRATIO = (18.1d/5138.831d);
+	private static double CSIRATIO = (17.6d/4907.06d);
 	
 	public static String get(String url) {
 		return get(url, null);
@@ -677,6 +677,44 @@ public class TradingHalt {
 		
 	}
 	
+	private static void printAliPayRate(ResponseHandler<String> responseHandler) {
+		CloseableHttpClient httpclient = HttpClients.createDefault();
+		try {
+			HttpGet httpGet = new HttpGet(
+					"http://www.howbuy.com/fund/000198/index.htm?source=aladdin&HTAG=0.0040010007900000");
+			httpGet.setHeader("Accept", "*/*");
+			httpGet.setHeader("Accept-Encoding", "gzip, deflate, sdch");
+			httpGet.setHeader("Accept-Language", "zh-CN,zh;q=0.8");
+			httpGet.setHeader("Cache-Control", "max-age=0");
+			httpGet.setHeader("Connection", "keep-alive");
+//			httpGet.setHeader("Referer",
+//					"http://www.sse.com.cn/disclosure/dealinstruc/");
+			httpGet.setHeader(
+					"User-Agent",
+					"Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.93 Safari/537.36");
+
+			String responseBody  = httpclient.execute(httpGet, responseHandler);
+			responseBody = responseBody.substring(responseBody.indexOf("<span class=\"cRed\">"));
+			responseBody = responseBody.substring(responseBody.indexOf(">")+1);
+//			responseBody = responseBody.substring(responseBody.indexOf(">")+1);
+			responseBody = responseBody.substring(0, responseBody.indexOf("</span>")).trim();
+//			System.out.println("----------------------------------------");
+            System.out.println(responseBody);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (httpclient != null) {
+					httpclient.close();
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		
+	}
+	
 	//TODO
 	//建立股债平衡，多市场指数基金的投资组合，再平衡（动态再平衡策略）之后，尝试根据资金流的策略。
 	public static void main(String[] args) {
@@ -711,6 +749,8 @@ public class TradingHalt {
 		System.out.println("==============");
 		System.out.print("CPI: ");
 		printCPI(responseHandler);
+		System.out.print("AliPay Yields: ");
+		printAliPayRate(responseHandler);
 		System.out.print("CSI PE Ratio: ");
 		printCSIPE(responseHandler);
 		System.out.print("HSI PE Ratio: ");
