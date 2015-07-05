@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER">
+		<accessrules>
+			<accessrule kind="accessible" pattern="sun/security/ec/NamedCurve"/>
+		</accessrules>
+	</classpathentry>
 	<classpathentry kind="lib" path="lib/jetty-server-7.6.17.v20150415.jar"/>
 	<classpathentry kind="lib" path="lib/jetty-util-7.6.17.v20150415.jar"/>
 	<classpathentry kind="lib" path="lib/jetty-servlet-7.6.17.v20150415.jar"/>
@@ -9,5 +13,6 @@
 	<classpathentry kind="lib" path="lib/jetty-http-7.6.17.v20150415.jar"/>
 	<classpathentry kind="lib" path="lib/jetty-io-7.6.17.v20150415.jar"/>
 	<classpathentry kind="lib" path="lib/jetty-continuation-7.6.17.v20150415.jar"/>
+	<classpathentry kind="lib" path="lib/bcprov-jdk15on-150.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

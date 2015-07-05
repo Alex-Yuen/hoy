@@ -7,15 +7,21 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import net.xland.aqq.service.task.*;
+
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.handler.AbstractHandler;
 
 public class RootHandler extends AbstractHandler {
+	private QQServer server;
+	
+	public RootHandler(QQServer server) {
+		this.server = server;
+	}
 
 	@Override
 	public void handle(String target, Request baseRequest, HttpServletRequest request,
 			HttpServletResponse response) throws IOException, ServletException {
-		// TODO Auto-generated method stub
 		response.setContentType("text/html;charset=utf-8");
 		response.setStatus(HttpServletResponse.SC_OK);
 		baseRequest.setHandled(true);
@@ -29,10 +35,54 @@ public class RootHandler extends AbstractHandler {
 			writer.println("第二步[提交验证码]：<br/>&nbsp;&nbsp;http://127.0.0.1:8084/register?action=code&value=123456&sid=hbwg4ky9pu1ui5hc<br/><br/>");
 			writer.println("第三步[提交昵称]：<br/>&nbsp;&nbsp;http://127.0.0.1:8084/register?action=nick&value=xland&sid=hbwg4ky9pu1ui5hc<br/><br/>");
 		}else if(context.equals("/register")){
-			//mobile, bind, code, nick  
-			String action = request.getQueryString();			
-			writer.println("<h1>Android QQ Service</h1>");
-			writer.println(action);
+			//mobile, code, nick
+			boolean valid = true;
+			String action = request.getParameter("action");
+			String value = request.getParameter("value");
+			String sid = request.getParameter("sid");
+			
+			StringBuffer future = null; //task future
+			
+			if(action!=null){
+				if("mobile".equals(action)){
+					if(value!=null){
+						future = this.server.addTask(new MobileTask(value)); //有任务来就新建线程，组装bytecontent，并交给发送引擎发送
+					}else{
+						valid = false;
+					}
+				}else if("code".equals(action)){
+					if(value!=null&&sid!=null){
+						future = this.server.addTask(new CodeTask(sid, value));
+					}else{
+						valid = false;
+					}
+				}else if("nick".equals(action)){
+					if(value!=null&&sid!=null){
+						future = this.server.addTask(new NickTask(sid, value));
+					}else {
+						valid = false;
+					}
+				}else{
+					valid = false;
+				}
+			}else{
+				valid = false;
+			}
+			
+			if(valid&&future!=null){
+				synchronized(future){
+					try{
+						future.wait();    //等待TCP返回
+					}catch(Exception e){
+						e.printStackTrace();
+					}
+				}
+				//TODO
+				//根据future, 打印不同的结果
+			}else {
+				writer.println("<h1>Android QQ Service</h1>");
+				writer.println("Bad Request");
+			}
 		}else{
 			writer.println("<h1>Android QQ Service</h1>");
 			writer.println("Bad Request");
@@ -42,5 +92,4 @@ public class RootHandler extends AbstractHandler {
 			writer.close();
 		}
 	}
-
 }
