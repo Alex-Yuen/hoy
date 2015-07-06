@@ -70,7 +70,9 @@ public class MobileTask extends Task {
 			
 			byte[] flag =  XLandUtil.genKey(4);
 			byte[] xkey = XLandUtil.genKey(16);
-						
+			
+			System.out.println("sharekey="+Converts.bytesToHexString(sharekey));
+			System.out.println("ecdhkey="+Converts.bytesToHexString(ecdhkey));
 			this.session.put("x-ek", ecdhkey);
 			this.session.put("x-sk", sharekey);
 			this.session.put("x-flag", flag);
