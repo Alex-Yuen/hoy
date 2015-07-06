@@ -6,18 +6,20 @@ import java.security.KeyPairGenerator;
 import java.security.SecureRandom;
 import java.security.Security;
 import java.security.interfaces.ECPublicKey;
+import java.security.spec.ECGenParameterSpec;
 import java.security.spec.ECParameterSpec;
 import java.security.spec.ECPoint;
 import java.security.spec.ECPublicKeySpec;
 
 import javax.crypto.KeyAgreement;
 
+import org.bouncycastle.jcajce.provider.asymmetric.ec.BCECPublicKey;
 import org.bouncycastle.jce.ECPointUtil;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 import net.xland.aqq.service.PacketContent;
 import net.xland.aqq.service.Task;
 import net.xland.util.Converts;
-import net.xland.util.NamedCurveX;
 import net.xland.util.XLandUtil;
 
 public class MobileTask extends Task {
@@ -37,23 +39,29 @@ public class MobileTask extends Task {
 			this.session = this.server.getSession(this.sid);
 			
 			// 保存ECDH share key和public key
-			Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
-			ECParameterSpec spec = NamedCurveX.getECParameterSpec("secp192k1");
+			Security.addProvider(new BouncyCastleProvider());
+			ECGenParameterSpec ecps = new ECGenParameterSpec("secp192k1");
+
+			//ECParameterSpec spec = NamedCurveX.getECParameterSpec("secp192k1");//secp160k1
 			// ECParameterSpec specx =
 			// (ECParameterSpec)ECNamedCurveTable.getParameterSpec("secp192k1");
 			// params.get
 
 			KeyPairGenerator kpg = KeyPairGenerator.getInstance("ECDH", "BC");
-			kpg.initialize(spec, new SecureRandom()); // 公私钥 工厂
+			kpg.initialize(ecps, new SecureRandom()); // 公私钥 工厂
 			KeyPair pair = kpg.generateKeyPair(); // 生成公私钥
 
+//			System.out.println(((ECPublicKey)pair.getPublic()).getEncoded().length);
+						
 			// BC ECDH key
-			org.bouncycastle.jcajce.provider.asymmetric.ec.BCECPublicKey cpk = (org.bouncycastle.jcajce.provider.asymmetric.ec.BCECPublicKey) pair
-					.getPublic();
-			org.bouncycastle.math.ec.ECPoint.Fp cp = (org.bouncycastle.math.ec.ECPoint.Fp) cpk
-					.getQ();
-			byte[] ecdhkey = cp.getEncoded(true); // ECDH key
-
+			BCECPublicKey cpk = (BCECPublicKey) pair.getPublic();
+			ECParameterSpec spec = cpk.getParams();
+//			System.out.println(cpk.getQ().getEncoded(true).length);
+			
+//			org.bouncycastle.math.ec.ECPoint.Fp cp = (org.bouncycastle.math.ec.ECPoint.Fp) cpk
+//					.getQ();
+			byte[] ecdhkey = cpk.getQ().getEncoded(true); // ECDH key
+			System.out.println(ecdhkey.length);
 			// Parse server pub key
 			KeyFactory kf = KeyFactory.getInstance("ECDH", "BC");
 			ECPoint sp = ECPointUtil.decodePoint(spec.getCurve(), bspubk);
@@ -68,11 +76,17 @@ public class MobileTask extends Task {
 			byte[] sharekey = new byte[16]; // share key
 			System.arraycopy(secret, 0, sharekey, 0, sharekey.length);
 			
-			byte[] flag =  XLandUtil.genKey(4);
-			byte[] xkey = XLandUtil.genKey(16);
+			//for debug
+			sharekey = Converts.hexStringToByte("A34589C2E8F78437233C5E3559007B75");//"4EF64FE41459387BD65448BE91A7AA77"
+			ecdhkey = Converts.hexStringToByte("02CAB0D6B926C73887A2822DCB64572AF0EC5705C242F03765");//"03C98A8CFAC34CF168885FC9489D288A1E2D46D3E982FCDDAB"
+			
+			byte[] flag =  XLandUtil.genKey(4); //09 86 B2 6A 	
+			byte[] xkey = XLandUtil.genKey(16); //2F 2D 97 C8 CF E4 9C 1F 38 12 43 C9 4C 0B 29 F6 
 			
 			System.out.println("sharekey="+Converts.bytesToHexString(sharekey));
 			System.out.println("ecdhkey="+Converts.bytesToHexString(ecdhkey));
+			this.session.put("x-cmd", "mobile");
+			this.session.put("x-mobile", this.mobile);
 			this.session.put("x-ek", ecdhkey);
 			this.session.put("x-sk", sharekey);
 			this.session.put("x-flag", flag);
