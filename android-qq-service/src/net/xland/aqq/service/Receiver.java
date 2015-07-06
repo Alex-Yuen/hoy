@@ -32,6 +32,7 @@ public class Receiver implements Runnable {
 		//mobileTask之后，自动添加BindTask
 		//NickTask之后，自动disconnect DC，removeDC
 		//getfuture
+		System.out.println(content.length);
 		this.header = XLandUtil.slice(content, 2, 2);
 //		String strHeader = Converts.bytesToHexString(this.header); 
 		this.body = cryptor.decrypt(XLandUtil.slice(content, 15, content.length-15), outterkey);
@@ -39,9 +40,10 @@ public class Receiver implements Runnable {
 		sseq = Converts.bytesToHexString(xseq);
 		
 		for(Map<String, Object>ts:server.sessions()){
+			System.out.println(ts);
 			if(sseq.equals(ts.get("x-seq"))){
 				this.session = ts;
-				sid = (String)ts.get("sid");
+				sid = (String)ts.get("x-sid");
 				break;
 			}
 		}
