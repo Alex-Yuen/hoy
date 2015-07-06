@@ -1,6 +1,7 @@
 package net.xland.aqq.service;
 
 import java.io.ByteArrayOutputStream;
+import java.util.Map;
 
 import net.xland.util.Cryptor;
 
@@ -9,6 +10,7 @@ public abstract class Task implements Runnable {
 	protected short seq;
 	protected String sid;
 	protected byte[] content;
+	protected Map<String, Object> session;
 	
 	protected ByteArrayOutputStream bos = new ByteArrayOutputStream();
 	
