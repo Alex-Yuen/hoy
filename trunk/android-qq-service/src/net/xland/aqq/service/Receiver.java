@@ -1,6 +1,5 @@
 package net.xland.aqq.service;
 
-import net.xland.util.Converts;
 import net.xland.util.Cryptor;
 import net.xland.util.XLandUtil;
 
@@ -12,10 +11,7 @@ public class Receiver implements Runnable {
 	private byte[] body;
 	
 	private static Cryptor cryptor = new Cryptor();
-	private static byte[] outterKey = new byte[]{
-		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
-		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
-	};
+	private static byte[] outterKey = new byte[16];
 	
 	public Receiver(QQServer server, byte[] content){
 		this.server = server;

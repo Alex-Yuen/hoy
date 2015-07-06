@@ -9,10 +9,7 @@ public abstract class Task implements Runnable {
 	protected byte[] content;
 	
 	protected static Cryptor cryptor = new Cryptor();
-	protected static byte[] outterKey = new byte[]{
-		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
-		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
-	};
+	protected static byte[] outterKey = new byte[16];
 	
 	public void setServer(QQServer server) {
 		this.server = server;		
