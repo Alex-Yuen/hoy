@@ -3,15 +3,22 @@ package net.xland.aqq.service.task;
 import net.xland.aqq.service.Task;
 
 public class BindTask extends Task {
+	private String mobile = null;
+	
+	public BindTask(String sid, String mobile) {
+		this.sid = sid;
+		this.mobile = mobile;
+	}
 
 	@Override
 	public void run() {
 		try{
-			//计算任务，然后交给发送引擎来发送
+			this.session = this.server.getSession(this.sid);
+			this.session.put("x-cmd", "bind");
+			
 			submit();
 		}catch(Exception e){
 			e.printStackTrace();
 		}
 	}
-
 }

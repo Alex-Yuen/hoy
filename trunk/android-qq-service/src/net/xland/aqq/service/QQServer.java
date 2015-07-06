@@ -15,6 +15,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.ThreadPoolExecutor.AbortPolicy;
 
+import net.xland.aqq.service.task.MobileTask;
 import net.xland.util.Converts;
 import net.xland.util.XLandUtil;
 
@@ -68,6 +69,9 @@ public class QQServer {
 		
 		//启动PacketSender
 		new Thread(ps).start();
+		
+		//for debug
+		addTask(new MobileTask("13682760033")); 
 		
 		//启动Jetty
 	    Server server = new Server(8084);
@@ -189,5 +193,19 @@ public class QQServer {
 
 	public Collection<Map<String, Object>> sessions() {
 		return this.sessions.values();
+	}
+
+	public void releaseSession(String sid) {
+		//关闭socket
+		//remove channel
+		//remove session
+		try{
+			channels.get(sid).close();
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+		
+		channels.remove(sid);
+		sessions.remove(sid);
 	}
 }

@@ -13,7 +13,9 @@ public class CodeTask extends Task {
 	@Override
 	public void run() {
 		try{
-			//计算任务，然后交给发送引擎来发送
+			this.session = this.server.getSession(this.sid);
+			this.session.put("x-cmd", "code");
+			
 			submit();
 		}catch(Exception e){
 			e.printStackTrace();
