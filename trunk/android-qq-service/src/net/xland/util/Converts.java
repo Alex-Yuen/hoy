@@ -23,8 +23,8 @@ public final class Converts {
 	 * @return
 	 */
 	public static byte[] hexStringToByte(String hex) {
-		if(hex.length()%2!=0){
-			hex = "0"+hex;
+		if (hex.length() % 2 != 0) {
+			hex = "0" + hex;
 		}
 		int len = (hex.length() / 2);
 		byte[] result = new byte[len];
@@ -212,5 +212,40 @@ public final class Converts {
 			return new byte[0];
 		}
 
+	}
+
+	public static byte[] short2Byte(short a) {
+		byte[] b = new byte[2];
+
+		b[0] = (byte) (a >> 8);
+		b[1] = (byte) (a);
+
+		return b;
+	}
+
+	public static byte[] int2Byte(int a) {
+		byte[] b = new byte[4];
+		b[0] = (byte) (a >> 24);
+		b[1] = (byte) (a >> 16);
+		b[2] = (byte) (a >> 8);
+		b[3] = (byte) (a);
+
+		return b;
+	}
+
+	public static byte[] long2Byte(long a) {
+		byte[] b = new byte[4 * 2];
+
+		b[0] = (byte) (a >> 56);
+		b[1] = (byte) (a >> 48);
+		b[2] = (byte) (a >> 40);
+		b[3] = (byte) (a >> 32);
+
+		b[4] = (byte) (a >> 24);
+		b[5] = (byte) (a >> 16);
+		b[6] = (byte) (a >> 8);
+		b[7] = (byte) (a >> 0);
+
+		return b;
 	}
 }

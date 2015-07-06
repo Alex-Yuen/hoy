@@ -2,6 +2,7 @@ package net.xland.aqq.service;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -41,24 +42,24 @@ public class RootHandler extends AbstractHandler {
 			String value = request.getParameter("value");
 			String sid = request.getParameter("sid");
 			
-			StringBuffer future = null; //task future
+			Map<String, String> session = null; //task future
 			
 			if(action!=null){
 				if("mobile".equals(action)){
 					if(value!=null){
-						future = this.server.addTask(new MobileTask(value)); //有任务来就新建线程，组装bytecontent，并交给发送引擎发送
+						session = this.server.addTask(new MobileTask(value)); //有任务来就新建线程，组装bytecontent，并交给发送引擎发送
 					}else{
 						valid = false;
 					}
 				}else if("code".equals(action)){
 					if(value!=null&&sid!=null){
-						future = this.server.addTask(new CodeTask(sid, value));
+						session = this.server.addTask(new CodeTask(sid, value));
 					}else{
 						valid = false;
 					}
 				}else if("nick".equals(action)){
 					if(value!=null&&sid!=null){
-						future = this.server.addTask(new NickTask(sid, value));
+						session = this.server.addTask(new NickTask(sid, value));
 					}else {
 						valid = false;
 					}
@@ -69,16 +70,16 @@ public class RootHandler extends AbstractHandler {
 				valid = false;
 			}
 			
-			if(valid&&future!=null){
-				synchronized(future){
+			if(valid&&session!=null){
+				synchronized(session){
 					try{
-						future.wait();    //等待TCP返回
+						session.wait();    //等待TCP返回
 					}catch(Exception e){
 						e.printStackTrace();
 					}
 				}
 				//TODO
-				//根据future, 打印不同的结果
+				//根据session, 打印不同的结果
 			}else {
 				writer.println("<h1>Android QQ Service</h1>");
 				writer.println("Bad Request");
