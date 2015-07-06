@@ -72,6 +72,13 @@ public class Test {
 			byte[] sharekey = new byte[16]; // share key
 			System.arraycopy(secret, 0, sharekey, 0, sharekey.length);
 			System.out.println(Converts.bytesToHexString(sharekey));
+			
+			
+			String x = "38 36 2D 31 35 38 33 32 39 39 33 38 33 31".trim();
+			byte[] bs = new PacketContent(x).toByteArray();
+			
+//			byte[] bs = Converts.int2Byte((int)(System.currentTimeMillis()/1000));
+			System.out.println(Converts.bytesToHexString(bs));
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

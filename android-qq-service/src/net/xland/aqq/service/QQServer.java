@@ -6,6 +6,7 @@ import java.nio.channels.DatagramChannel;
 import java.nio.channels.SelectionKey;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.RejectedExecutionHandler;
@@ -20,19 +21,19 @@ import org.eclipse.jetty.server.handler.ContextHandler;
 
 public class QQServer {
 	private BlockingQueue<Packet> queue = null;
-	private HashMap<String, DatagramChannel> channels = null;
-	private HashMap<Integer, StringBuffer> futures = null;
+	private Map<String, DatagramChannel> channels = null;
+	private Map<String, Map<String, String>> sessions = null;
 	private ThreadPoolExecutor pe = null;
 
 	private PacketSender ps = null;
 	private Monitor monitor = null;
 	
 	private static String ip = "202.55.10.141";
-	private int seq = 0x1123;
+	private short seq = 0x1123;
 	
 	public QQServer(){
 		//通知恢复
-		futures =  new LinkedHashMap<Integer, StringBuffer>();
+		sessions =  new LinkedHashMap<String, Map<String, String>>();
 		//待发送数据包的队列
 		queue = new ArrayBlockingQueue<Packet>((1024 + 512) * 100 * 10);
 		
@@ -82,7 +83,7 @@ public class QQServer {
         }
 	}
 	
-	public HashMap<String, DatagramChannel> getChannels(){
+	public Map<String, DatagramChannel> getChannels(){
 		return this.channels;
 	}
 	
@@ -98,34 +99,36 @@ public class QQServer {
 		}
 	}
 	
-	public StringBuffer addTask(Task task) {
+	public Map<String, String> addTask(Task task) {
 		if(seq>=0xFEFE){
 			seq = 0x1123;
 		}
 		seq++;
-		StringBuffer future = new StringBuffer();
+		String sid = task.getSid();
+		Map<String, String> session = null;
+		
+		if(sid==null){
+			sid = XLandUtil.generateSid();
+			session = new HashMap<String, String>();
+			task.setSid(sid);
+			session.put("sid", sid);
+			sessions.put(sid, session);
+		}else{
+			session = sessions.get(task.getSid());
+		}
+		
+		session.put("seq", String.valueOf(seq));
+		
 		try{
 			task.setServer(this);
 			task.setSequence(seq);
 			this.pe.execute(task);
 		}catch(Exception e){
 			e.printStackTrace();
-			future = null; //添加任务失败则result为空，所以没有wait
+			session = null; //添加任务失败则result为空，所以没有wait
 		}
 		
-		if(future!=null){
-			this.futures.put(seq,  future);
-		}
-		
-		return future;
-	}
-
-	public StringBuffer getFuture(int seq){ //用于恢复等待
-		StringBuffer future = this.futures.get(seq);
-//		if(future!=null){
-//			this.futures.remove(seq);
-//		}
-		return future;
+		return session;
 	}
 	
 	//提交发送任务
