@@ -2,8 +2,8 @@ package net.xland.aqq.service;
 
 import java.nio.ByteBuffer;
 import java.nio.channels.CancelledKeyException;
-import java.nio.channels.DatagramChannel;
 import java.nio.channels.SelectionKey;
+import java.nio.channels.SocketChannel;
 import java.util.Iterator;
 import java.util.Set;
 
@@ -44,12 +44,27 @@ public class Monitor implements Runnable {
 						SelectionKey sk = (SelectionKey) iterator.next();
 						iterator.remove();
 						try{
-							if (sk.isReadable()) {
-								DatagramChannel datagramChannel = (DatagramChannel) sk
+							if (sk.isConnectable()) {  
+			                    System.out.println("正在连接");  
+			                    SocketChannel sc = (SocketChannel) sk.channel();  //
+			                    // 判断此通道上是否正在进行连接操作。  
+			                    // 完成套接字通道的连接过程。  
+			                    if (sc.isConnectionPending()) { 
+			                        //完成连接的建立（TCP三次握手）
+			                        sc.finishConnect();  
+			                        System.out.println("完成连接");
+			                    } 
+			                    
+			                    setWakeup(true);
+			    				QQSelector.selector.wakeup();
+			    				sc.register(QQSelector.selector, SelectionKey.OP_READ);
+			    				setWakeup(false);
+							}else if (sk.isReadable()) {
+								SocketChannel sc = (SocketChannel) sk
 										.channel();
 								//bf = ByteBuffer.allocate(1024);
 								try{//ClosedChannelException by 0017
-									size = datagramChannel.read(bf);
+									size = sc.read(bf);
 								}catch(Exception e){								
 									e.printStackTrace();
 									continue;

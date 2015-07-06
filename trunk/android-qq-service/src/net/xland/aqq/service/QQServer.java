@@ -2,8 +2,9 @@ package net.xland.aqq.service;
 
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
-import java.nio.channels.DatagramChannel;
 import java.nio.channels.SelectionKey;
+import java.nio.channels.SocketChannel;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -14,6 +15,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.ThreadPoolExecutor.AbortPolicy;
 
+import net.xland.util.Converts;
 import net.xland.util.XLandUtil;
 
 import org.eclipse.jetty.server.Server;
@@ -21,8 +23,8 @@ import org.eclipse.jetty.server.handler.ContextHandler;
 
 public class QQServer {
 	private BlockingQueue<Packet> queue = null;
-	private Map<String, DatagramChannel> channels = null;
-	private Map<String, Map<String, String>> sessions = null;
+	private Map<String, SocketChannel> channels = null;
+	private Map<String, Map<String, Object>> sessions = null;
 	private ThreadPoolExecutor pe = null;
 
 	private PacketSender ps = null;
@@ -33,12 +35,12 @@ public class QQServer {
 	
 	public QQServer(){
 		//通知恢复
-		sessions =  new LinkedHashMap<String, Map<String, String>>();
+		sessions =  new LinkedHashMap<String, Map<String, Object>>();
 		//待发送数据包的队列
 		queue = new ArrayBlockingQueue<Packet>((1024 + 512) * 100 * 10);
 		
 		//保存socket的队列
-		channels = new LinkedHashMap<String, DatagramChannel>();//HashMap
+		channels = new LinkedHashMap<String, SocketChannel>();//HashMap
 		
 		//线程池，用于发送socket请求
 		int corePoolSize = 200;// 固定200个线程
@@ -65,7 +67,7 @@ public class QQServer {
 		new Thread(monitor).start();;
 		
 		//启动PacketSender
-		new Thread(ps).start();;
+		new Thread(ps).start();
 		
 		//启动Jetty
 	    Server server = new Server(8084);
@@ -83,7 +85,7 @@ public class QQServer {
         }
 	}
 	
-	public Map<String, DatagramChannel> getChannels(){
+	public Map<String, SocketChannel> getChannels(){
 		return this.channels;
 	}
 	
@@ -99,25 +101,44 @@ public class QQServer {
 		}
 	}
 	
-	public Map<String, String> addTask(Task task) {
+	public Map<String, Object> addTask(Task task) {
 		if(seq>=0xFEFE){
 			seq = 0x1123;
 		}
 		seq++;
 		String sid = task.getSid();
-		Map<String, String> session = null;
+		Map<String, Object> session = null;
 		
 		if(sid==null){
-			sid = XLandUtil.generateSid();
-			session = new HashMap<String, String>();
+			while(sid==null||this.channels.containsKey(sid)){  //生成sid
+				sid = XLandUtil.generateSid();
+			}
+			session = new HashMap<String, Object>();
 			task.setSid(sid);
-			session.put("sid", sid);
+			session.put("x-sid", sid);
 			sessions.put(sid, session);
+			
+			try{
+				SocketAddress sa = new InetSocketAddress(ip, 14000);	//新建dc
+				SocketChannel sc = SocketChannel.open();
+				sc.configureBlocking(false);
+//				System.out.println(sc.connect(sa));
+				
+				monitor.setWakeup(true);
+				QQSelector.selector.wakeup();
+				sc.register(QQSelector.selector, SelectionKey.OP_CONNECT);
+				monitor.setWakeup(false);
+				sc.connect(sa);
+				
+				this.channels.put(sid, sc);
+			}catch(Exception e){
+				e.printStackTrace();
+			}
 		}else{
 			session = sessions.get(task.getSid());
 		}
 		
-		session.put("seq", String.valueOf(seq));
+		session.put("x-seq", Converts.bytesToHexString(Converts.short2Byte(seq)));
 		
 		try{
 			task.setServer(this);
@@ -131,10 +152,22 @@ public class QQServer {
 		return session;
 	}
 	
+	public Map<String, Object> getSession(String sid){
+		return this.sessions.get(sid);
+	}
+	
 	//提交发送任务
 	public void submit(String sid, byte[] content) {
 		try {
 			queue.put(new Packet(sid, content));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void submit(Packet packet) {
+		try {
+			queue.put(packet);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -150,32 +183,11 @@ public class QQServer {
 		return packet;
 	}
 
-	public DatagramChannel getDatagramChannel(String sid) {
-		DatagramChannel dc = null;		
-		if(sid==null){
-			try{
-				SocketAddress sa = new InetSocketAddress(ip, 14000);
-				dc = DatagramChannel.open();
-				dc.configureBlocking(false);
-				dc.connect(sa);
-				
-				monitor.setWakeup(true);
-				QQSelector.selector.wakeup();
-				dc.register(QQSelector.selector, SelectionKey.OP_READ);
-				monitor.setWakeup(false);
-				
-				if(dc!=null){
-					while(sid==null||this.channels.containsKey(sid)){
-						sid = XLandUtil.generateSid();
-					}
-					this.channels.put(sid, dc);
-				}
-			}catch(Exception e){
-				e.printStackTrace();
-			}
-		}else{
-			dc = channels.get(sid);
-		}
-		return dc;
+	public SocketChannel getSocketChannel(String sid) {
+		return channels.get(sid);
+	}
+
+	public Collection<Map<String, Object>> sessions() {
+		return this.sessions.values();
 	}
 }

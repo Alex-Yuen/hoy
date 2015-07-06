@@ -33,7 +33,9 @@ public class MobileTask extends Task {
 
 	@Override
 	public void run() {
-		try {			
+		try {
+			this.session = this.server.getSession(this.sid);
+			
 			// 保存ECDH share key和public key
 			Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
 			ECParameterSpec spec = NamedCurveX.getECParameterSpec("secp192k1");
@@ -68,6 +70,11 @@ public class MobileTask extends Task {
 			
 			byte[] flag =  XLandUtil.genKey(4);
 			byte[] xkey = XLandUtil.genKey(16);
+						
+			this.session.put("x-ek", ecdhkey);
+			this.session.put("x-sk", sharekey);
+			this.session.put("x-flag", flag);
+			this.session.put("x-xkey", xkey);  //保存会话的值
 			
 			bos.reset();
 			bos.write(new PacketContent("00 00 25 00 00 00 00 00 00 00 5F 00 00 00").toByteArray());

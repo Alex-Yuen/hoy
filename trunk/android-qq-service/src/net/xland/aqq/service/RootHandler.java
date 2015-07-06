@@ -42,7 +42,7 @@ public class RootHandler extends AbstractHandler {
 			String value = request.getParameter("value");
 			String sid = request.getParameter("sid");
 			
-			Map<String, String> session = null; //task future
+			Map<String, Object> session = null; //task future
 			
 			if(action!=null){
 				if("mobile".equals(action)){
