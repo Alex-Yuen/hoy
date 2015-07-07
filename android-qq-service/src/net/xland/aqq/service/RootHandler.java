@@ -73,19 +73,24 @@ public class RootHandler extends AbstractHandler {
 			if(valid&&session!=null){
 				synchronized(session){
 					try{
-						session.wait();    //等待TCP返回
+						session.wait(5000);    //等待TCP返回
 					}catch(Exception e){
 						e.printStackTrace();
 					}
 				}
 				//根据session, 打印不同的结果
-				writer.println(session.get("x-status"));
-				writer.println(session.get("x-result"));
-				if("0".equals(session.get("x-status"))){
-					if("nick".equals("x-cmd")){
-						writer.println(session.get("x-qqnumber"));
-					}else{
-						writer.println(session.get("x-sid"));
+				if("1".equals(session.get("x-status"))){
+					writer.println(session.get("x-status"));
+					writer.println("send-packet-timeout");
+				}else{
+					writer.println(session.get("x-status"));
+					writer.println(session.get("x-result"));
+					if("0".equals(session.get("x-status"))){
+						if("nick".equals("x-cmd")){
+							writer.println(session.get("x-qqnumber"));
+						}else{
+							writer.println(session.get("x-sid"));
+						}
 					}
 				}
 			}else {
