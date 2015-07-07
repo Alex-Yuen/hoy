@@ -15,7 +15,6 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.ThreadPoolExecutor.AbortPolicy;
 
-import net.xland.aqq.service.task.MobileTask;
 import net.xland.util.Converts;
 import net.xland.util.XLandUtil;
 
@@ -71,7 +70,7 @@ public class QQServer {
 		new Thread(ps).start();
 		
 		//for debug
-		addTask(new MobileTask("13682760033")); 
+		//addTask(new MobileTask("13682760033")); 
 		
 		//启动Jetty
 	    Server server = new Server(8084);
