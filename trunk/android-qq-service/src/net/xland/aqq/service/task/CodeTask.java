@@ -36,9 +36,15 @@ public class CodeTask extends Task {
 			content = cryptor.encrypt(bos.toByteArray(), codekey); //第一次加密
 			
 			bos.reset();
-			bos.write(new PacketContent("00 00 56 00 00 00 00 00 00 00 5F 00 00 00").toByteArray());
+			//bos.write(new PacketContent("00 00 56 00 00 00 00 00 00 00 5F 00 00 00").toByteArray());
+			bos.write(new PacketContent("00").toByteArray());
+			bos.write(Converts.short2Byte((short)(content.length+0x2E)));
+			bos.write(new PacketContent("00 00 00 00 00 00 00 5F 00 00 00").toByteArray());
 			bos.write(Converts.int2Byte((int)(System.currentTimeMillis()/1000)));
-			bos.write(new PacketContent("02 00 52 00 01 00 05 04 00 00 00 00").toByteArray());
+			//bos.write(new PacketContent("02 00 52 00 01 00 05 04 00 00 00 00").toByteArray());
+			bos.write(new PacketContent("02").toByteArray());
+			bos.write(Converts.short2Byte((short)(content.length+0x2A)));
+			bos.write(new PacketContent("00 01 00 05 04 00 00 00 00").toByteArray());
 			bos.write(new PacketContent("1B").toByteArray());
 			bos.write(("86"+mobile).getBytes());
 			bos.write(new PacketContent("2D 38 36 2D").toByteArray());
