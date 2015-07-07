@@ -60,7 +60,7 @@ public class Receiver implements Runnable {
 		boolean nf = false;//notify flag
 		
 		if("mobile".equals(session.get("x-cmd"))){			
-			if(content.length==191){//不通知恢复，而是再次执行BindTask
+			if(content.length==191||content.length==159){//不通知恢复，而是再次执行BindTask
 				session.put("x-status", "0");
 				session.put("x-result", "finish-mobile-task");
 				server.addTask(new BindTask(this.sid));
@@ -69,12 +69,14 @@ public class Receiver implements Runnable {
 				session.put("x-result", "mobile-have-already-bind");
 				server.releaseSession(sid);
 				nf = true;
-			}else if(content.length==159){//请输入短信验证码。为何会出现？
-				session.put("x-status", "-4");
-				session.put("x-result", "mobile-task-unknown-need-input-sms-code");
-				server.releaseSession(sid);
-				nf = true;
-			}else{
+			}
+//			else if(content.length==159){//请输入短信验证码。为何会出现？
+//				session.put("x-status", "-4");
+//				session.put("x-result", "mobile-task-unknown-need-input-sms-code");
+//				server.releaseSession(sid);
+//				nf = true;
+//			}
+			else{
 				session.put("x-status", "-2");
 				session.put("x-result", "can't-process-mobile-task");
 				server.releaseSession(sid);
@@ -108,7 +110,7 @@ public class Receiver implements Runnable {
 					server.releaseSession(sid);
 				}
 			}else if("nick".equals(session.get("x-cmd"))){
-				if(content.length==335){
+				if(content.length==335){ //327
 					byte[] ibody = cryptor.decrypt(XLandUtil.slice(body, 69, body.length-69-1), (byte[])session.get("x-sk"));
 					byte qbodylength = ibody[0x12];
 					byte[] qbody = cryptor.decrypt(XLandUtil.slice(ibody, 0x13, qbodylength), (byte[])session.get("x-ck"));//QQ body

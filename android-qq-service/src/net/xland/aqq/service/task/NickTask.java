@@ -35,9 +35,9 @@ public class NickTask extends Task {
 			bos.write(("86"+mobile).getBytes());
 			bos.write(new PacketContent("2D 38 36 2D").toByteArray());
 			bos.write(bf);
-			bos.write(new PacketContent("10").toByteArray());
+			bos.write((byte)password.length());
 			bos.write(password.getBytes());
-			bos.write(new PacketContent("01 0A 01 0E").toByteArray());
+			bos.write(new PacketContent("05 05 01 0E").toByteArray());
 			bos.write(("86-"+mobile).getBytes());
 			bos.write(new PacketContent("05 0A").toByteArray());
 			bos.write(new PacketContent("71 71 70 61 73 73 70 6F 72 74").toByteArray());
@@ -45,24 +45,16 @@ public class NickTask extends Task {
 			bos.write((byte)this.nick.length());
 			bos.write(this.nick.getBytes());
 			bos.write(new PacketContent("08 01 01 0F 04 00 00 00 00").toByteArray());
-			bos.write(new PacketContent("09 01 01 0A").toByteArray());
-			bos.write(new PacketContent("10").toByteArray());
-			bos.write(new PacketContent("52 84 04 7F 4F FB 4E 04 82 4A 2F D1 D1 F0 CD 62").toByteArray());
-			bos.write(new PacketContent("0B").toByteArray());
-			bos.write(new PacketContent("10").toByteArray());
-			bos.write(password.getBytes());
-			bos.write(new PacketContent("0D").toByteArray());
-			bos.write(new PacketContent("04").toByteArray());
-			bos.write(new PacketContent("20 02 9D EC").toByteArray());
-			bos.write(new PacketContent("0E").toByteArray());
-			bos.write(new PacketContent("14").toByteArray());
-			bos.write(new PacketContent("63 6F 6D 2E 74 65 6E 63 65 6E 74 2E 6D 6F 62 69 6C 65 71 71").toByteArray());
 			content = cryptor.encrypt(bos.toByteArray(), codekey); //第一次加密
 			
 			bos.reset();
-			bos.write(new PacketContent("00 00 DE 00 00 00 00 00 00 00 5F 00 00 00").toByteArray());
+			bos.write(new PacketContent("00").toByteArray());
+			bos.write(Converts.short2Byte((short)(content.length+0x2E)));
+			bos.write(new PacketContent("00 00 00 00 00 00 00 5F 00 00 00").toByteArray());
 			bos.write(Converts.int2Byte((int)(System.currentTimeMillis()/1000)));
-			bos.write(new PacketContent("02 00 DA 00 01 00 06 04 00 00 00 00").toByteArray());
+			bos.write(new PacketContent("02").toByteArray());
+			bos.write(Converts.short2Byte((short)(content.length+0x2A)));
+			bos.write(new PacketContent("00 01 00 06 04 00 00 00 00").toByteArray());
 			bos.write(new PacketContent("1B").toByteArray());
 			bos.write(("86"+mobile).getBytes());
 			bos.write(new PacketContent("2D 38 36 2D").toByteArray());
