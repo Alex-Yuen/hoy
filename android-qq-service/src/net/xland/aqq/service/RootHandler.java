@@ -79,7 +79,7 @@ public class RootHandler extends AbstractHandler {
 					}
 				}
 				//根据session, 打印不同的结果
-				if("1".equals(session.get("x-status"))){
+				if("-1".equals(session.get("x-status"))){
 					writer.println(session.get("x-status"));
 					writer.println("send-packet-timeout");
 				}else{
