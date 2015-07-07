@@ -65,12 +65,12 @@ public class Receiver implements Runnable {
 				session.put("x-result", "finish-mobile-task");
 				server.addTask(new BindTask(this.sid));
 			}else if(content.length==247){//对不起，您输入的手机号已经绑定过号码。
-				session.put("x-status", "-2");
+				session.put("x-status", "-3");
 				session.put("x-result", "mobile-have-already-bind");
 				server.releaseSession(sid);
 				nf = true;
 			}else{
-				session.put("x-status", "-1");
+				session.put("x-status", "-2");
 				session.put("x-result", "can't-process-mobile-task");
 				server.releaseSession(sid);
 				nf = true;
@@ -85,11 +85,11 @@ public class Receiver implements Runnable {
 					session.put("x-status", "0");
 					session.put("x-result", "finish-bind-task");
 				}else if(content.length==207){//需要发短信
-					session.put("x-status", "-2");
+					session.put("x-status", "-3");
 					session.put("x-result", "need-send-sms");
 					server.releaseSession(sid);
 				}else {//其他情况
-					session.put("x-status", "-1");
+					session.put("x-status", "-2");
 					session.put("x-result", "can't-process-bind-task");
 					server.releaseSession(sid);
 				}
@@ -98,7 +98,7 @@ public class Receiver implements Runnable {
 					session.put("x-status", "0");
 					session.put("x-result", "finish-code-task");
 				}else{
-					session.put("x-status", "-1");
+					session.put("x-status", "-2");
 					session.put("x-result", "can't-process-bind-task");
 					server.releaseSession(sid);
 				}
@@ -114,7 +114,7 @@ public class Receiver implements Runnable {
 					session.put("x-result", "finish-nick-task");
 					session.put("x-qqnumber", String.valueOf(qqnumber));
 				}else{
-					session.put("x-status", "-1");
+					session.put("x-status", "-2");
 					session.put("x-result", "can't-process-nick-task");
 				}
 				server.releaseSession(sid);
