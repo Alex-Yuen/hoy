@@ -73,7 +73,7 @@ public class MobileTask extends Task {
 			agreement.doPhase(spubk, true);
 
 			byte[] secret = agreement.generateSecret();
-			byte[] sharekey = new byte[16]; // share key
+			byte[] sharekey = null; // share key
 //			System.arraycopy(secret, 0, sharekey, 0, sharekey.length);			
 			sharekey = Converts.MD5Encode(secret);
 			
@@ -83,6 +83,9 @@ public class MobileTask extends Task {
 			
 			byte[] flag =  XLandUtil.genKey(4); //09 86 B2 6A 	
 			byte[] xkey = XLandUtil.genKey(16); //2F 2D 97 C8 CF E4 9C 1F 38 12 43 C9 4C 0B 29 F6 
+			
+			flag = Converts.hexStringToByte("0986B26A");
+			xkey = Converts.hexStringToByte("2F2D97C8CFE49C1F381243C94C0B29F6");
 			
 			System.out.println("sharekey="+Converts.bytesToHexString(sharekey));
 			System.out.println("ecdhkey="+Converts.bytesToHexString(ecdhkey));
@@ -119,9 +122,9 @@ public class MobileTask extends Task {
 			bos.write(new PacketContent("7C 33 31 30 32 36 30 30 30 30 30 30 30 30 30 30").toByteArray());
 			bos.write(new PacketContent("7C 41 35 2E 37 2E 32 2E 31 34 38 33 32 31").toByteArray());
 			bos.write(new PacketContent("00 00").toByteArray());
-			bos.write((short)(content.length+0x50));
+			bos.write(Converts.short2Byte((short)(content.length+0x50)));
 			bos.write(new PacketContent("02").toByteArray());
-			bos.write((short)(content.length+0x4C));
+			bos.write(Converts.short2Byte((short)(content.length+0x4C)));
 			bos.write(new PacketContent("1F 41 08 12").toByteArray());
 			bos.write(new PacketContent("00 01").toByteArray());
 			bos.write(new PacketContent("00 00 00 00").toByteArray());

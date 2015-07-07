@@ -65,9 +65,9 @@ public class CodeTask extends Task {
 			bos.write(new PacketContent("7C 33 31 30 32 36 30 30 30 30 30 30 30 30 30 30").toByteArray());
 			bos.write(new PacketContent("7C 41 35 2E 37 2E 32 2E 31 34 38 33 32 31").toByteArray());
 			bos.write(new PacketContent("00 00").toByteArray());
-			bos.write((short)(content.length+0x50));
+			bos.write(Converts.short2Byte((short)(content.length+0x50)));
 			bos.write(new PacketContent("02").toByteArray());
-			bos.write((short)(content.length+0x4C));
+			bos.write(Converts.short2Byte((short)(content.length+0x4C)));
 			bos.write(new PacketContent("1F 41 08 12").toByteArray());
 			bos.write(new PacketContent("00 01").toByteArray());
 			bos.write(new PacketContent("00 00 00 00").toByteArray());
