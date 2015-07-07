@@ -69,6 +69,11 @@ public class Receiver implements Runnable {
 				session.put("x-result", "mobile-have-already-bind");
 				server.releaseSession(sid);
 				nf = true;
+			}else if(content.length==159){//请输入短信验证码。为何会出现？
+				session.put("x-status", "-4");
+				session.put("x-result", "mobile-task-unknown-need-input-sms-code");
+				server.releaseSession(sid);
+				nf = true;
 			}else{
 				session.put("x-status", "-2");
 				session.put("x-result", "can't-process-mobile-task");
