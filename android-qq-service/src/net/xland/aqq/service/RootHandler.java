@@ -87,7 +87,7 @@ public class RootHandler extends AbstractHandler {
 					writer.println(session.get("x-result"));
 					if("0".equals(session.get("x-status"))){
 						if("nick".equals("x-cmd")){
-							writer.println(session.get("x-qqnumber"));
+							writer.println(session.get("x-qqnumber")+"="+session.get("x-pwd"));
 						}else{
 							writer.println(session.get("x-sid"));
 						}
