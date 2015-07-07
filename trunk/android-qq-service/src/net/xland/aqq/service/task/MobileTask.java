@@ -61,7 +61,7 @@ public class MobileTask extends Task {
 //			org.bouncycastle.math.ec.ECPoint.Fp cp = (org.bouncycastle.math.ec.ECPoint.Fp) cpk
 //					.getQ();
 			byte[] ecdhkey = cpk.getQ().getEncoded(true); // ECDH key
-			System.out.println(ecdhkey.length);
+//			System.out.println(ecdhkey.length);
 			// Parse server pub key
 			KeyFactory kf = KeyFactory.getInstance("ECDH", "BC");
 			ECPoint sp = ECPointUtil.decodePoint(spec.getCurve(), bspubk);
@@ -74,11 +74,12 @@ public class MobileTask extends Task {
 
 			byte[] secret = agreement.generateSecret();
 			byte[] sharekey = new byte[16]; // share key
-			System.arraycopy(secret, 0, sharekey, 0, sharekey.length);
+//			System.arraycopy(secret, 0, sharekey, 0, sharekey.length);			
+			sharekey = Converts.MD5Encode(secret);
 			
 			//for debug
-			sharekey = Converts.hexStringToByte("A34589C2E8F78437233C5E3559007B75");//"4EF64FE41459387BD65448BE91A7AA77"
-			ecdhkey = Converts.hexStringToByte("02CAB0D6B926C73887A2822DCB64572AF0EC5705C242F03765");//"03C98A8CFAC34CF168885FC9489D288A1E2D46D3E982FCDDAB"
+//			sharekey = Converts.hexStringToByte("A34589C2E8F78437233C5E3559007B75");//"4EF64FE41459387BD65448BE91A7AA77"
+//			ecdhkey = Converts.hexStringToByte("02CAB0D6B926C73887A2822DCB64572AF0EC5705C242F03765");//"03C98A8CFAC34CF168885FC9489D288A1E2D46D3E982FCDDAB"
 			
 			byte[] flag =  XLandUtil.genKey(4); //09 86 B2 6A 	
 			byte[] xkey = XLandUtil.genKey(16); //2F 2D 97 C8 CF E4 9C 1F 38 12 43 C9 4C 0B 29 F6 
@@ -117,9 +118,10 @@ public class MobileTask extends Task {
 			bos.write(new PacketContent("00 20").toByteArray());
 			bos.write(new PacketContent("7C 33 31 30 32 36 30 30 30 30 30 30 30 30 30 30").toByteArray());
 			bos.write(new PacketContent("7C 41 35 2E 37 2E 32 2E 31 34 38 33 32 31").toByteArray());
-			bos.write(new PacketContent("00 00 00 90").toByteArray());
+			bos.write(new PacketContent("00 00").toByteArray());
+			bos.write((short)(content.length+0x50));
 			bos.write(new PacketContent("02").toByteArray());
-			bos.write(new PacketContent("00 8C").toByteArray());
+			bos.write((short)(content.length+0x4C));
 			bos.write(new PacketContent("1F 41 08 12").toByteArray());
 			bos.write(new PacketContent("00 01").toByteArray());
 			bos.write(new PacketContent("00 00 00 00").toByteArray());

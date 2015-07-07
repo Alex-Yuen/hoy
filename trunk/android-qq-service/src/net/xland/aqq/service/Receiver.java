@@ -61,13 +61,62 @@ public class Receiver implements Runnable {
 		
 		if("mobile".equals(session.get("x-cmd"))){			
 			if(content.length==191){//不通知恢复，而是再次执行BindTask
-				server.addTask(new BindTask(this.sid, (String)session.get("x-mobile")));
+				session.put("x-status", "0");
+				session.put("x-result", "finish-mobile-task");
+				server.addTask(new BindTask(this.sid));
+			}else if(content.length==247){//对不起，您输入的手机号已经绑定过号码。
+				session.put("x-status", "-2");
+				session.put("x-result", "mobile-have-already-bind");
+				server.releaseSession(sid);
+				nf = true;
 			}else{
+				session.put("x-status", "-1");
+				session.put("x-result", "can't-process-mobile-task");
 				server.releaseSession(sid);
 				nf = true;
 			}
 		}else{
-			if("nick".equals(session.get("x-cmd"))){
+			if("bind".equals(session.get("x-cmd"))){
+				if(content.length==191){//正常的情况，获取10位的标志
+					byte[] ibody = cryptor.decrypt(XLandUtil.slice(body, 69, body.length-69-1), (byte[])session.get("x-sk"));
+					byte[] bf = XLandUtil.slice(ibody, 38, 10);//bind-flag			
+					System.out.println("bind flag:"+Converts.bytesToHexString(bf));		
+					session.put("x-bf", bf);
+					session.put("x-status", "0");
+					session.put("x-result", "finish-bind-task");
+				}else if(content.length==207){//需要发短信
+					session.put("x-status", "-2");
+					session.put("x-result", "need-send-sms");
+					server.releaseSession(sid);
+				}else {//其他情况
+					session.put("x-status", "-1");
+					session.put("x-result", "can't-process-bind-task");
+					server.releaseSession(sid);
+				}
+			}else if("code".equals(session.get("x-cmd"))){
+				if(content.length==183){//验证码正确
+					session.put("x-status", "0");
+					session.put("x-result", "finish-code-task");
+				}else{
+					session.put("x-status", "-1");
+					session.put("x-result", "can't-process-bind-task");
+					server.releaseSession(sid);
+				}
+			}else if("nick".equals(session.get("x-cmd"))){
+				if(content.length==335){
+					byte[] ibody = cryptor.decrypt(XLandUtil.slice(body, 69, body.length-69-1), (byte[])session.get("x-sk"));
+					byte qbodylength = ibody[0x12];
+					byte[] qbody = cryptor.decrypt(XLandUtil.slice(ibody, 0x13, qbodylength), (byte[])session.get("x-ck"));//QQ body
+					
+					byte[] xqq = XLandUtil.slice(qbody, 32, 4);
+					int qqnumber = Integer.parseInt(Converts.bytesToHexString(xqq), 16); 
+					session.put("x-status", "0");
+					session.put("x-result", "finish-nick-task");
+					session.put("x-qqnumber", String.valueOf(qqnumber));
+				}else{
+					session.put("x-status", "-1");
+					session.put("x-result", "can't-process-nick-task");
+				}
 				server.releaseSession(sid);
 			}
 			nf = true;

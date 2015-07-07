@@ -78,8 +78,16 @@ public class RootHandler extends AbstractHandler {
 						e.printStackTrace();
 					}
 				}
-				//TODO
 				//根据session, 打印不同的结果
+				writer.println(session.get("x-status"));
+				writer.println(session.get("x-result"));
+				if("0".equals(session.get("x-status"))){
+					if("nick".equals("x-cmd")){
+						writer.println(session.get("x-qqnumber"));
+					}else{
+						writer.println(session.get("x-sid"));
+					}
+				}
 			}else {
 				writer.println("<h1>Android QQ Service</h1>");
 				writer.println("Bad Request");
