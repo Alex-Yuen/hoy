@@ -28,6 +28,8 @@ public abstract class Task implements Runnable {
 	protected void submit(){
 //		this.content = this.bos.toByteArray();
 		bos.reset();
+		this.session.put("x-status", "1");
+		this.session.put("x-result", "ready-to-send-packet");
 		this.server.submit(this.sid, this.content);
 	}
 
