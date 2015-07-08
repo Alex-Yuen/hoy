@@ -45,14 +45,14 @@ public class Monitor implements Runnable {
 						iterator.remove();
 						try{
 							if (sk.isConnectable()) {  
-			                    System.out.println("正在连接");  
+//			                    System.out.println("正在连接");  
 			                    SocketChannel sc = (SocketChannel) sk.channel();  //
 			                    // 判断此通道上是否正在进行连接操作。  
 			                    // 完成套接字通道的连接过程。  
 			                    if (sc.isConnectionPending()) { 
 			                        //完成连接的建立（TCP三次握手）
 			                        sc.finishConnect();  
-			                        System.out.println("完成连接");
+//			                        System.out.println("完成连接");
 			                    } 
 			                    
 			                    setWakeup(true);
