@@ -13,11 +13,14 @@ import java.security.spec.ECPublicKeySpec;
 
 import javax.crypto.KeyAgreement;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bouncycastle.jcajce.provider.asymmetric.ec.BCECPublicKey;
 import org.bouncycastle.jce.ECPointUtil;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 import net.xland.aqq.service.PacketContent;
+import net.xland.aqq.service.PacketSender;
 import net.xland.aqq.service.Task;
 import net.xland.util.Converts;
 import net.xland.util.XLandUtil;
@@ -27,7 +30,8 @@ public class MobileTask extends Task {
 
 	private static byte[] bspubk = Converts
 			.hexStringToByte("04928D8850673088B343264E0C6BACB8496D697799F37211DEB25BB73906CB089FEA9639B4E0260498B51A992D50813DA8");
-
+	private static Logger logger = LogManager.getLogger(PacketSender.class.getName());
+	
 	public MobileTask(String mobile) {
 		this.sid = null;
 		this.mobile = mobile;
@@ -77,6 +81,8 @@ public class MobileTask extends Task {
 //			System.arraycopy(secret, 0, sharekey, 0, sharekey.length);			
 			sharekey = Converts.MD5Encode(secret);
 			
+			logger.info(sid+" [SHARE-KEY] "+Converts.bytesToHexString(sharekey));
+			logger.info(sid+" [MOBILE] "+this.mobile);
 			//for debug
 //			sharekey = Converts.hexStringToByte("A34589C2E8F78437233C5E3559007B75");//"4EF64FE41459387BD65448BE91A7AA77"
 //			ecdhkey = Converts.hexStringToByte("02CAB0D6B926C73887A2822DCB64572AF0EC5705C242F03765");//"03C98A8CFAC34CF168885FC9489D288A1E2D46D3E982FCDDAB"
@@ -87,8 +93,9 @@ public class MobileTask extends Task {
 			flag = Converts.hexStringToByte("0986B26A");
 			xkey = Converts.hexStringToByte("2F2D97C8CFE49C1F381243C94C0B29F6");
 			
-			System.out.println("sharekey="+Converts.bytesToHexString(sharekey));
-			System.out.println("ecdhkey="+Converts.bytesToHexString(ecdhkey));
+//			System.out.println(sid+"[SHARE-KEY]"+Converts.bytesToHexString(sharekey));
+//			System.out.println(sid+"[MOBILE]"+this.mobile);
+//			System.out.println("ecdhkey="+Converts.bytesToHexString(ecdhkey));
 			this.session.put("x-cmd", "mobile");
 			this.session.put("x-mobile", this.mobile);
 			this.session.put("x-ek", ecdhkey);

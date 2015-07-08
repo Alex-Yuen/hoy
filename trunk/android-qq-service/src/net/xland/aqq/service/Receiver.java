@@ -2,6 +2,9 @@ package net.xland.aqq.service;
 
 import java.util.Map;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import net.xland.aqq.service.task.BindTask;
 import net.xland.util.Converts;
 import net.xland.util.Cryptor;
@@ -21,6 +24,7 @@ public class Receiver implements Runnable {
 	
 	private static Cryptor cryptor = new Cryptor();
 	private static byte[] outterkey = new byte[16];
+	private static Logger logger = LogManager.getLogger(PacketSender.class.getName());
 	
 	public Receiver(QQServer server, byte[] content){
 		this.server = server;
@@ -29,11 +33,9 @@ public class Receiver implements Runnable {
 	
 	@Override
 	public void run() {
-		// TODO Auto-generated method stub
 		//mobileTask之后，自动添加BindTask
 		//NickTask之后，自动disconnect DC，removeDC
-		//getfuture
-		System.out.println(content.length);
+//		System.out.println(content.length);
 		//mobile:247 00 05 该手机号码已经与其他QQ号码绑定，并且尚未设置密码，无法使用该手机号码继续注册。
 		//mobile:191 00 01 对不起，您输入的手机号已经绑定过号码。
 		//mobile:143? wrong ECDH
@@ -45,17 +47,19 @@ public class Receiver implements Runnable {
 		sseq = Converts.bytesToHexString(xseq);
 		
 		for(Map<String, Object>ts:server.sessions()){
-			System.out.println(ts);
+//			System.out.println(ts);
 			if(sseq.equals(ts.get("x-seq"))){
 				this.session = ts;
 				sid = (String)ts.get("x-sid");
 				break;
 			}
 		}
-		System.out.println("from receiver..............");
-		System.out.println(sseq);
-		System.out.println(sid);
-		System.out.println(Converts.bytesToHexString(body));
+//		System.out.println("from receiver..............");
+//		System.out.println(sseq);
+//		System.out.println("RECV:"+sid);
+//		System.out.println(Converts.bytesToHexString(body));
+		
+		logger.info(sid+" [RECV] " + Converts.bytesToHexString(content));
 		
 		boolean nf = false;//notify flag
 		
@@ -116,7 +120,8 @@ public class Receiver implements Runnable {
 					byte[] qbody = cryptor.decrypt(XLandUtil.slice(ibody, 0x13, qbodylength), (byte[])session.get("x-ck"));//QQ body
 					
 					byte[] xqq = XLandUtil.slice(qbody, 32, 4);
-					int qqnumber = Integer.parseInt(Converts.bytesToHexString(xqq), 16); 
+					int qqnumber = Integer.parseInt(Converts.bytesToHexString(xqq), 16);
+					logger.info(sid+"[GET-QQ]"+qqnumber);
 					session.put("x-status", "0");
 					session.put("x-result", "finish-nick-task");
 					session.put("x-qqnumber", String.valueOf(qqnumber));

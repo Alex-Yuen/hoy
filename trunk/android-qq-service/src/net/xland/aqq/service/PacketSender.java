@@ -3,9 +3,16 @@ package net.xland.aqq.service;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 
+import net.xland.util.Converts;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 public class PacketSender implements Runnable {
 	private QQServer server;
 	private boolean rf = true;
+	
+	private static Logger logger = LogManager.getLogger(PacketSender.class.getName());
 	
 	public PacketSender(QQServer server){
 		this.server = server;		
@@ -20,10 +27,10 @@ public class PacketSender implements Runnable {
 		while(rf){
 			try{
 				Packet packet = server.takePacket();
-				System.out.println("packet="+packet);
-				System.out.println("packet's sid="+packet.getSid());
+				//System.out.println("packet="+packet);
+				//System.out.println("packet's sid="+packet.getSid());
 				SocketChannel sc = server.getSocketChannel(packet.getSid());
-				System.out.println("sc="+sc);
+				//System.out.println("sc="+sc);
 //				int count = 0;
 //				while(!sc.isConnected()&&count<3){
 //					Thread.sleep(1);
@@ -31,6 +38,8 @@ public class PacketSender implements Runnable {
 //				}
 				
 				if(sc.isConnected()){
+//					System.out.println("SEND:"+packet.getSid());
+					logger.info(packet.getSid()+" [SEND] " + Converts.bytesToHexString(packet.getContent()));
 					sc.write(ByteBuffer.wrap(packet.getContent()));
 				}else{
 					server.submit(packet); //放入队列的最后

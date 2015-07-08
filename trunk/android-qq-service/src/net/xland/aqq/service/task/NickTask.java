@@ -1,12 +1,17 @@
 package net.xland.aqq.service.task;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import net.xland.aqq.service.PacketContent;
+import net.xland.aqq.service.PacketSender;
 import net.xland.aqq.service.Task;
 import net.xland.util.Converts;
 import net.xland.util.XLandUtil;
 
 public class NickTask extends Task {
 	private String nick = null;
+	private static Logger logger = LogManager.getLogger(PacketSender.class.getName());
 	
 	public NickTask(String sid, String nick) {
 		this.sid = sid;
@@ -29,6 +34,8 @@ public class NickTask extends Task {
 			
 			String password = XLandUtil.genPassword(); 
 			this.session.put("x-pwd", password);
+			
+			logger.info(sid+"[SET-PASSWORD]"+password);
 			
 			bos.reset();
 			bos.write(new PacketContent("1B").toByteArray());
