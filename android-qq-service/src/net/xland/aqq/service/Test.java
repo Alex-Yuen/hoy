@@ -20,7 +20,9 @@ import javax.crypto.KeyAgreement;
 import org.bouncycastle.jce.ECPointUtil;
 
 import net.xland.util.Converts;
+import net.xland.util.Cryptor;
 import net.xland.util.NamedCurveX;
+import net.xland.util.XLandUtil;
 
 public class Test {
 	private static byte[] bspubk = Converts
@@ -28,6 +30,7 @@ public class Test {
 
 
 	public static void main(String[] args) {
+		
 		// TODO Auto-generated method stub
 //		HashMap<Integer, StringBuffer> futures =  new LinkedHashMap<Integer, StringBuffer>();
 //		StringBuffer sb = new StringBuffer();
@@ -79,6 +82,21 @@ public class Test {
 			
 //			byte[] bs = Converts.int2Byte((int)(System.currentTimeMillis()/1000));
 			System.out.println(Converts.bytesToHexString(bs));
+			
+			byte[] body = Converts.hexStringToByte("000000310000112700000000000000040000001577746C6F67696E2E7472616E735F656D7000000008A9BC61C000000000000000FD0200F91F41081200010000000000000055CF9AA61E0C9AFE48ADDCFC5BE40A5ACDBEBF4498023959B54079E6A079094556D56F57B76CC10B13BB94508691F658FA90576FCA0EF546A87C19A5E176758ED05DA0AB8185A810F6752DF58EF41EE6F9678B02A2E4D3A9C0B592A5A2C278091CB040ACA49E7EDECF85C21BE7B66D57ACB168ED2E875CC026F6332E3E28A1EC28EB91E26482D6B1CA40A870DD464E81C0B7D25DB8206EF349431804015FF21FCA72F8FECC4D475866DCC675FE2F770DD21E7CE21A1748986F05F13ABEEFC28BDF88AB31B7D3F86B3DB1A68430FC7B36E3B7D0C006C20B4CD219D8492DC69041A61E8D5F651D956403");
+			byte[] sk = Converts.hexStringToByte("DDEC53F18BE6F87C8002F379277BD787");
+			byte[] ck = Converts.hexStringToByte("E06255BD393539C8E29E766C823C8D9B");
+			
+			Cryptor cryptor = new Cryptor();
+			byte[] ibody = cryptor.decrypt(XLandUtil.slice(body, 69, body.length-69-1), sk);
+			System.out.println("ibody:"+Converts.bytesToHexString(ibody));
+			int qbodylength = (ibody[0x12]&0xff);
+			System.out.println(qbodylength);
+			byte[] qbody = cryptor.decrypt(XLandUtil.slice(ibody, 0x13, qbodylength), ck);//QQ body
+			System.out.println("qbody:"+Converts.bytesToHexString(qbody));
+			byte[] xqq = XLandUtil.slice(qbody, 32, 4);
+			long qqnumber = Long.valueOf(Converts.bytesToHexString(xqq), 16);//Integer.parseInt(Converts.bytesToHexString(xqq), 16);
+			System.out.println(qqnumber);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

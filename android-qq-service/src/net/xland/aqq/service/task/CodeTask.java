@@ -33,8 +33,8 @@ public class CodeTask extends Task {
 			byte[] codekey = Converts.MD5Encode(this.code);						
 			this.session.put("x-ck", codekey);
 			
-			logger.info(sid+"[CODE-KEY]"+Converts.bytesToHexString(codekey));
-			logger.info(sid+"[CODE]"+this.code);
+			logger.info(sid+" [CODE-KEY] "+Converts.bytesToHexString(codekey));
+			logger.info(sid+" [CODE] "+this.code);
 			
 			bos.reset();
 			bos.write(new PacketContent("1B").toByteArray());
