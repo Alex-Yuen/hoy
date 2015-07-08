@@ -114,14 +114,15 @@ public class Receiver implements Runnable {
 					server.releaseSession(sid);
 				}
 			}else if("nick".equals(session.get("x-cmd"))){
-				if(content.length==335){ //327
+				if(content.length==327){ //335
 					byte[] ibody = cryptor.decrypt(XLandUtil.slice(body, 69, body.length-69-1), (byte[])session.get("x-sk"));
-					byte qbodylength = ibody[0x12];
+					int qbodylength = ibody[0x12]&0xff;
 					byte[] qbody = cryptor.decrypt(XLandUtil.slice(ibody, 0x13, qbodylength), (byte[])session.get("x-ck"));//QQ body
 					
 					byte[] xqq = XLandUtil.slice(qbody, 32, 4);
-					int qqnumber = Integer.parseInt(Converts.bytesToHexString(xqq), 16);
-					logger.info(sid+"[GET-QQ]"+qqnumber);
+					//Long qqnumber = Long.parseLong(Converts.bytesToHexString(xqq), 16);
+					long qqnumber = Long.valueOf(Converts.bytesToHexString(xqq), 16);
+					logger.info(sid+" [GET-QQ] "+qqnumber);
 					session.put("x-status", "0");
 					session.put("x-result", "finish-nick-task");
 					session.put("x-qqnumber", String.valueOf(qqnumber));

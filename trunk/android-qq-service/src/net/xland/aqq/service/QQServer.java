@@ -141,6 +141,10 @@ public class QQServer {
 			session = sessions.get(task.getSid());
 		}
 		
+		if(session==null){//invalid sid
+			return null;
+		}
+		
 		session.put("x-seq", Converts.bytesToHexString(Converts.short2Byte(seq)));
 		
 		try{

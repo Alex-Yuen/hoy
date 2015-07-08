@@ -33,8 +33,8 @@ public class RootHandler extends AbstractHandler {
 			writer.println("<h1>Android QQ Service</h1>");
 			writer.println("Usage:<br/><br/>");
 			writer.println("第一步[提交手机号码]：<br/>&nbsp;&nbsp;http://127.0.0.1:8084/register?action=mobile&value=13682760033<br/><br/>");
-			writer.println("第二步[提交验证码]：<br/>&nbsp;&nbsp;http://127.0.0.1:8084/register?action=code&value=123456&sid=hbwg4ky9pu1ui5hc<br/><br/>");
-			writer.println("第三步[提交昵称]：<br/>&nbsp;&nbsp;http://127.0.0.1:8084/register?action=nick&value=xland&sid=hbwg4ky9pu1ui5hc<br/><br/>");
+			writer.println("第二步[提交验证码]：<br/>&nbsp;&nbsp;http://127.0.0.1:8084/register?action=code&value=123456&sid=07b1f82cb7fa631d373276866ebf5762<br/><br/>");
+			writer.println("第三步[提交昵称]：<br/>&nbsp;&nbsp;http://127.0.0.1:8084/register?action=nick&value=xland&sid=07b1f82cb7fa631d373276866ebf5762<br/><br/>");
 		}else if(context.equals("/register")){
 			//mobile, code, nick
 			boolean valid = true;

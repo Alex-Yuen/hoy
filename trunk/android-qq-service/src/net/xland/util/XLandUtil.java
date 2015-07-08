@@ -8,7 +8,7 @@ public class XLandUtil {
 	
 	private static 	Random rnd = new Random();
 	private static String ssid = "abcdefghijklmnopqrstuvwxyz1234567890";
-	private static String spwd = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+	private static String spwd = "abcdefghijklmnopqrstuvwxyz1234567890";
 	
 	public static String generateSid(){
 		StringBuffer sb = new StringBuffer();
@@ -16,12 +16,12 @@ public class XLandUtil {
 			int idx = rnd.nextInt(ssid.length());
 			sb.append(ssid.charAt(idx));
 		}
-		return sb.toString();
+		return Converts.MD5EncodeToHex(sb.toString()).toLowerCase();
 	}
 	
 	public static String genPassword(){
 		StringBuffer sb = new StringBuffer();
-		for(int i=0;i<16;i++){
+		for(int i=0;i<10;i++){
 			int idx = rnd.nextInt(spwd.length());
 			sb.append(spwd.charAt(idx));
 		}
