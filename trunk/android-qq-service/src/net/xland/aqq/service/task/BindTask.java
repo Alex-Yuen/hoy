@@ -1,11 +1,15 @@
 package net.xland.aqq.service.task;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import net.xland.aqq.service.PacketContent;
+import net.xland.aqq.service.PacketSender;
 import net.xland.aqq.service.Task;
 import net.xland.util.Converts;
 
 public class BindTask extends Task {
-	
+	private static Logger logger = LogManager.getLogger(PacketSender.class.getName());
 	public BindTask(String sid) {
 		this.sid = sid;
 	}
@@ -82,7 +86,13 @@ public class BindTask extends Task {
 			bos.write(ecdhkey);
 			bos.write(content);
 			bos.write(new PacketContent("03").toByteArray());
-			content = cryptor.encrypt(bos.toByteArray(), outterkey); //第二次加密
+			try{
+				content = cryptor.encrypt(bos.toByteArray(), outterkey); //第二次加密
+			}catch(Exception e){
+				e.printStackTrace();
+				logger.info(sid+" [BIND-ENCRYPT-A] " + Converts.bytesToHexString(bos.toByteArray()));
+				logger.info(sid+" [BIND-ENCRYPT-B] " + Converts.bytesToHexString(outterkey));
+			}
 			
 			bos.reset();
 			bos.write(new PacketContent("00 00 01 8B 00 00 00 08 02 00 00 00 04 00 00 00").toByteArray());

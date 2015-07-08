@@ -110,7 +110,13 @@ public class MobileTask extends Task {
 			bos.write(new PacketContent("0E").toByteArray());
 			bos.write(("86-"+this.mobile).getBytes());
 			bos.write(new PacketContent("00 00 00 10 03").toByteArray());			
-			content = cryptor.encrypt(bos.toByteArray(), sharekey); //第一次加密
+			try{
+				content = cryptor.encrypt(bos.toByteArray(), sharekey); //第一次加密
+			}catch(Exception e){
+				e.printStackTrace();
+				logger.info(sid+" [MOBILE-ENCRYPT-A] " + Converts.bytesToHexString(bos.toByteArray()));
+				logger.info(sid+" [MOBILE-ENCRYPT-B] " + Converts.bytesToHexString(sharekey));
+			}
 			
 			bos.reset();
 			bos.write(new PacketContent("00 00 00 74 00 00").toByteArray());
@@ -146,7 +152,13 @@ public class MobileTask extends Task {
 			bos.write(ecdhkey);
 			bos.write(content);
 			bos.write(new PacketContent("03").toByteArray());
-			content = cryptor.encrypt(bos.toByteArray(), outterkey); //第二次加密
+			try{
+				content = cryptor.encrypt(bos.toByteArray(), outterkey); //第二次加密
+			}catch(Exception e){
+				e.printStackTrace();
+				logger.info(sid+" [MOBILE-ENCRYPT-A] " + Converts.bytesToHexString(bos.toByteArray()));
+				logger.info(sid+" [MOBILE-ENCRYPT-B] " + Converts.bytesToHexString(outterkey));
+			}
 			
 			bos.reset();
 			bos.write(new PacketContent("00 00 01 23 00 00 00 08 02 00 00 00 04 00 00 00").toByteArray());
