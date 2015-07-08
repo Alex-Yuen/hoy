@@ -43,6 +43,9 @@ public class Receiver implements Runnable {
 //		this.header = XLandUtil.slice(content, 2, 2);
 //		String strHeader = Converts.bytesToHexString(this.header); 
 		this.body = cryptor.decrypt(XLandUtil.slice(content, 15, content.length-15), outterkey);
+		if(body==null){
+			logger.info(sid+" [RECV-BODY] " + Converts.bytesToHexString(content));
+		}
 		xseq = XLandUtil.slice(body, 6, 2);
 		sseq = Converts.bytesToHexString(xseq);
 		
@@ -90,8 +93,11 @@ public class Receiver implements Runnable {
 			if("bind".equals(session.get("x-cmd"))){
 				if(content.length==191){//正常的情况，获取10位的标志
 					byte[] ibody = cryptor.decrypt(XLandUtil.slice(body, 69, body.length-69-1), (byte[])session.get("x-sk"));
+					if(ibody==null){
+						logger.info(sid+" [BIND] " + Converts.bytesToHexString(content));
+					}
 					byte[] bf = XLandUtil.slice(ibody, 38, 10);//bind-flag			
-					System.out.println("bind flag:"+Converts.bytesToHexString(bf));		
+//					System.out.println("bind flag:"+Converts.bytesToHexString(bf));		
 					session.put("x-bf", bf);
 					session.put("x-status", "0");
 					session.put("x-result", "mobile-task-2(bind)-complete");

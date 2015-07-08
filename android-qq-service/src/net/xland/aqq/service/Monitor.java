@@ -1,5 +1,6 @@
 package net.xland.aqq.service;
 
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.CancelledKeyException;
 import java.nio.channels.SelectionKey;
@@ -65,7 +66,12 @@ public class Monitor implements Runnable {
 								//bf = ByteBuffer.allocate(1024);
 								try{//ClosedChannelException by 0017
 									size = sc.read(bf);
-								}catch(Exception e){								
+								}catch(IOException e){//need to remove from channels?//TODO
+									e.printStackTrace();
+									sk.cancel();
+									sc.close();
+									continue;
+								}catch(Exception e){
 									e.printStackTrace();
 									continue;
 								}
