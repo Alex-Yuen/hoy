@@ -1,11 +1,16 @@
 package net.xland.aqq.service.task;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import net.xland.aqq.service.PacketContent;
+import net.xland.aqq.service.PacketSender;
 import net.xland.aqq.service.Task;
 import net.xland.util.Converts;
 
 public class CodeTask extends Task {
 	private String code = null;
+	private static Logger logger = LogManager.getLogger(PacketSender.class.getName());
 	
 	public CodeTask(String sid, String code) {
 		this.sid = sid;
@@ -27,6 +32,9 @@ public class CodeTask extends Task {
 			
 			byte[] codekey = Converts.MD5Encode(this.code);						
 			this.session.put("x-ck", codekey);
+			
+			logger.info(sid+"[CODE-KEY]"+Converts.bytesToHexString(codekey));
+			logger.info(sid+"[CODE]"+this.code);
 			
 			bos.reset();
 			bos.write(new PacketContent("1B").toByteArray());
