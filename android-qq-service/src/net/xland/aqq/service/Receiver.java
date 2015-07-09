@@ -20,9 +20,9 @@ public class Receiver implements Runnable {
 	private String sseq;
 	private String sid;
 	
-	private Map<String, Object> session;
+	private Map<String, Object> session;	
+	private Cryptor cryptor = new Cryptor();
 	
-	private static Cryptor cryptor = new Cryptor();
 	private static byte[] outterkey = new byte[16];
 	private static Logger logger = LogManager.getLogger(PacketSender.class.getName());
 	

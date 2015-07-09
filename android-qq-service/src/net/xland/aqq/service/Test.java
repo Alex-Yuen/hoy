@@ -97,6 +97,11 @@ public class Test {
 			byte[] xqq = XLandUtil.slice(qbody, 32, 4);
 			long qqnumber = Long.valueOf(Converts.bytesToHexString(xqq), 16);//Integer.parseInt(Converts.bytesToHexString(xqq), 16);
 			System.out.println(qqnumber);
+			
+			byte[] content = Converts.hexStringToByte("000025000000000000005F000000559D3D0D020021000100070400000000010E38362D31353038353033373034320000001003");
+			byte[] key = Converts.hexStringToByte("084A6CABE0A51E12AC4CE1BB244304A2");
+			
+			System.out.println(Converts.bytesToHexString(cryptor.encrypt(content, key)));
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

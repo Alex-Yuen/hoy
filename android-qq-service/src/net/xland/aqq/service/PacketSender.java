@@ -38,14 +38,17 @@ public class PacketSender implements Runnable {
 //				}
 				
 				if(sc==null){
-					logger.info(packet.getSid()+" [SCNULL] " + Converts.bytesToHexString(packet.getContent()));
+					logger.info(packet.getSid()+" [SCNULL1] " + sc);
+					logger.info(packet.getSid()+" [SCNULL2] " + Converts.bytesToHexString(packet.getContent()));
 				}else{
 					if(sc.isConnected()){
 	//					System.out.println("SEND:"+packet.getSid());
+						logger.info(packet.getSid()+" [SCNULL3] " + sc);
 						logger.info(packet.getSid()+" [SEND] " + Converts.bytesToHexString(packet.getContent()));
 						sc.write(ByteBuffer.wrap(packet.getContent()));
 					}else{
 						//如果Monitor检查到关闭，那么这里如何处理
+						logger.info(packet.getSid()+" [SCNULL4] " + sc);
 						logger.info(packet.getSid()+" [REJOIN] " + Converts.bytesToHexString(packet.getContent()));
 						server.submit(packet); //放入队列的最后
 					}

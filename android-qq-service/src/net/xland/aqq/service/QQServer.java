@@ -19,6 +19,8 @@ import net.xland.util.Converts;
 import net.xland.util.Log4jPrintStream;
 import net.xland.util.XLandUtil;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.ContextHandler;
 
@@ -34,6 +36,8 @@ public class QQServer {
 	private static String ip = "202.55.10.141";
 	private short seq = 0x1123;
 
+	private static Logger logger = LogManager.getLogger(PacketSender.class.getName());
+	
 	public QQServer() {
 		//重定向Err
 		System.setErr(new Log4jPrintStream(System.out));
@@ -177,11 +181,43 @@ public class QQServer {
 	}
 
 	public void submit(Packet packet) {
-		try {
-			queue.put(packet);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		new Thread(new Runnable(){
+			@Override
+			public void run() {
+				try{
+					Map<String, Object> session = sessions.get(packet.getSid());
+					Object rjo = session.get("x-rejoin-time");
+					int rj = 1;
+					if(rjo!=null){
+						rj = (Integer)rjo;
+						rj++;
+					}
+					
+					if(rj<6){
+						session.put("x-rejoin-time", rj);
+						Thread.sleep(1000*rj); //延迟加入
+						queue.put(packet);
+					}else{//不超过5次
+						releaseSession(packet.getSid());
+						
+						synchronized(session){
+							try{
+								session.notify();    //恢复等待
+							}catch(Exception e){
+								e.printStackTrace();
+							}
+						}						
+					}
+				}catch(Exception e){
+					e.printStackTrace();
+				}				
+			}			
+		}).start();
+//		try {
+//			queue.put(packet);
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
 	}
 
 	public Packet takePacket() {
@@ -210,6 +246,7 @@ public class QQServer {
 			channels.get(sid).close();
 		} catch (Exception e) {
 			e.printStackTrace();
+			logger.info(sid+" [REALEASE]");
 		}
 
 		channels.remove(sid);

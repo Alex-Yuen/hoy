@@ -68,6 +68,7 @@ public class Monitor implements Runnable {
 									size = sc.read(bf);
 								}catch(IOException e){//need to remove from channels?//TODO
 									e.printStackTrace();
+									System.err.println("CLOSE-EXCEPTION-----"+sc);
 									sk.cancel();
 									sc.close();
 									continue;
