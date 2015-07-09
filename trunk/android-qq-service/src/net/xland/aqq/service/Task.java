@@ -11,10 +11,9 @@ public abstract class Task implements Runnable {
 	protected String sid;
 	protected byte[] content;
 	protected Map<String, Object> session;
+	protected Cryptor cryptor = new Cryptor();
 	
-	protected ByteArrayOutputStream bos = new ByteArrayOutputStream();
-	
-	protected static Cryptor cryptor = new Cryptor();
+	protected ByteArrayOutputStream bos = new ByteArrayOutputStream();	
 	protected static byte[] outterkey = new byte[16];
 	
 	public void setServer(QQServer server) {
