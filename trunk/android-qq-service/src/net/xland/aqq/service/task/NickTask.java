@@ -113,7 +113,7 @@ public class NickTask extends Task {
 			bos.write(content);			
 			content = bos.toByteArray();
 			
-			submit();	
+			submit();
 		}catch(Exception e){
 			e.printStackTrace();
 		}
