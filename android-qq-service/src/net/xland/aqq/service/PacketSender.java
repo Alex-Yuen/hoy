@@ -43,8 +43,8 @@ public class PacketSender implements Runnable {
 				}else{
 					if(sc.isConnected()){
 	//					System.out.println("SEND:"+packet.getSid());
-						logger.info(packet.getSid()+" [SCNULL3] " + sc);
-						logger.info(packet.getSid()+" [SEND] " + Converts.bytesToHexString(packet.getContent()));
+//						logger.info(packet.getSid()+" [SCNULL3] " + sc);
+						logger.info(packet.getSid()+" [SEND] " + Converts.bytesToHexString(packet.getContent()) + "/" + sc);
 						sc.write(ByteBuffer.wrap(packet.getContent()));
 					}else{
 						//如果Monitor检查到关闭，那么这里如何处理

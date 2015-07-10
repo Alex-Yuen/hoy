@@ -111,7 +111,7 @@ public class QQServer {
 		}
 	}
 
-	public Map<String, Object> addTask(Task task) {
+	public synchronized Map<String, Object> addTask(Task task) {
 		if (seq >= 0xFEFE) {
 			seq = 0x1123;
 		}
@@ -127,7 +127,7 @@ public class QQServer {
 			task.setSid(sid);
 			session.put("x-sid", sid);
 			sessions.put(sid, session);
-
+			logger.info(sid+" [CREATE SESSION] ");
 			try {
 				SocketAddress sa = new InetSocketAddress(ip, 14000); // 新建dc
 				SocketChannel sc = SocketChannel.open();

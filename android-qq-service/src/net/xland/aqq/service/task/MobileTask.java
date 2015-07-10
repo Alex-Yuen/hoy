@@ -41,7 +41,9 @@ public class MobileTask extends Task {
 	public void run() {
 		try {
 			this.session = this.server.getSession(this.sid);
-			
+			if(session==null){
+				logger.info(sid+" [SESSION IS NULL] "+this.mobile);
+			}
 			// 保存ECDH share key和public key
 			Security.addProvider(new BouncyCastleProvider());
 			ECGenParameterSpec ecps = new ECGenParameterSpec("secp192k1");
