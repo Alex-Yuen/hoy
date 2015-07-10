@@ -62,6 +62,7 @@ public final class NamedCurveX extends ECParameterSpec {
         DerOutputStream out = new DerOutputStream();
         out.putOID(oid);
         encoded = out.toByteArray();
+        out.close();
     }
 
     // Return a NamedCurve for the specified OID/name or null if unknown.

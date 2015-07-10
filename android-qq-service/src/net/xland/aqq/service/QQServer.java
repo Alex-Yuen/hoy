@@ -180,7 +180,7 @@ public class QQServer {
 		}
 	}
 
-	public void submit(Packet packet) {
+	public void submit(final Packet packet) {
 		new Thread(new Runnable(){
 			@Override
 			public void run() {
