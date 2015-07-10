@@ -76,8 +76,16 @@ public class Monitor implements Runnable {
 									e.printStackTrace();
 									continue;
 								}
+								
+								if(size<0){
+									System.err.println("CLOSE-EXCEPTION(-1)-----"+sc);
+									sk.cancel();
+									sc.close();
+									continue;
+								}
+								
 								bf.flip();
-	
+								
 								buffer = XLandUtil.slice(bf
 										.array(), 0, size);
 								//System.out.println("RECV:"+buffer.length);
