@@ -4,7 +4,7 @@
     <Console name="console" target="SYSTEM_OUT">  
       <PatternLayout pattern="%d{HH:mm:ss.SSS} %-5level - %msg%n"/>  
     </Console>  
-	<File name="log" fileName="android-aqq-service.log" append="true">    
+	<File name="log" fileName="android-aqq-service.log" append="false">    
       <PatternLayout pattern="%d{HH:mm:ss.SSS} %-5level - %msg%xEx%n"/>    
     </File> 
   </appenders>  
