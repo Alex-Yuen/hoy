@@ -54,7 +54,7 @@ public class Monitor implements Runnable {
 			                        //完成连接的建立（TCP三次握手）
 			                        sc.finishConnect();  
 //			                        System.out.println("完成连接");
-			                    } 
+			                    }
 			                    
 			                    setWakeup(true);
 			    				QQSelector.selector.wakeup();
