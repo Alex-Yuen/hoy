@@ -120,7 +120,7 @@ public class Receiver implements Runnable {
 					server.releaseSession(sid);
 				}
 			}else if("nick".equals(session.get("x-cmd"))){
-				if(content.length==327){ //335
+				if(content.length==327){ //335 //398?
 					byte[] ibody = cryptor.decrypt(XLandUtil.slice(body, 69, body.length-69-1), (byte[])session.get("x-sk"));
 					int qbodylength = ibody[0x12]&0xff;
 					byte[] qbody = cryptor.decrypt(XLandUtil.slice(ibody, 0x13, qbodylength), (byte[])session.get("x-ck"));//QQ body
@@ -132,7 +132,10 @@ public class Receiver implements Runnable {
 					session.put("x-status", "0");
 					session.put("x-result", "nick-task-complete");
 					session.put("x-qqnumber", String.valueOf(qqnumber));
-				}else{
+				} else if(content.length==398){ 
+					session.put("x-status", "-3");
+					session.put("x-result", "nick-task-frequent-operation");
+				} else {
 					session.put("x-status", "-2");
 					session.put("x-result", "can't-process-nick-task");
 				}
