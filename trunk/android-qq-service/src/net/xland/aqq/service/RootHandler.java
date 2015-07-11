@@ -10,14 +10,14 @@ import javax.servlet.http.HttpServletResponse;
 
 import net.xland.aqq.service.task.*;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+//import org.apache.logging.log4j.LogManager;
+//import org.apache.logging.log4j.Logger;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.handler.AbstractHandler;
 
 public class RootHandler extends AbstractHandler {
 	private QQServer server;
-	private static Logger logger = LogManager.getLogger(PacketSender.class.getName());
+//	private static Logger logger = LogManager.getLogger(PacketSender.class.getName());
 	
 	public RootHandler(QQServer server) {
 		this.server = server;
@@ -45,7 +45,7 @@ public class RootHandler extends AbstractHandler {
 			String value = request.getParameter("value");
 			String sid = request.getParameter("sid");
 			
-			logger.info("00000000000000000000000000000000"+" [REQUEST] "+action);
+//			logger.info("*"+" [REQUEST] "+action);
 			Map<String, Object> session = null; //task future
 			
 			if(action!=null){
@@ -75,20 +75,34 @@ public class RootHandler extends AbstractHandler {
 			}
 			
 			if(valid&&session!=null){
+				int wt = 6;
+				if("mobile".equals(action)){
+					wt += 4;
+				}
 				synchronized(session){
 					try{
-						session.wait(10000);    //等待TCP返回
+						session.wait(wt*1000);    //等待TCP返回
 					}catch(Exception e){
 						e.printStackTrace();
 					}
 				}
+				
+//				if("1".equals(session.get("x-nf"))){
+//					synchronized(session){
+//						try{
+//							session.wait(5000);    //等待TCP返回 BIND TASK
+//						}catch(Exception e){
+//							e.printStackTrace();
+//						}
+//					}
+//				}
 				//根据session, 打印不同的结果
-				if("-1".equals(session.get("x-status"))){
+				if("-1".equals(session.get("x-status"))||("-4".equals(session.get("x-status"))&&("mobile".equals(session.get("x-cmd"))||"bind".equals(session.get("x-cmd"))))){
 					writer.println(session.get("x-status"));
-					writer.println("send-packet-timeout");
+					writer.println("send-packet-timeout:"+session.get("x-cmd"));
 				}else{
 					writer.println(session.get("x-status"));
-					if("nick".equals("x-cmd")&&"0".equals(session.get("x-status"))){
+					if("nick".equals(session.get("x-cmd"))&&"0".equals(session.get("x-status"))){
 						writer.println(session.get("x-result")+":"+session.get("x-qqnumber")+"="+session.get("x-pwd"));
 					}else{
 						writer.println(session.get("x-result"));

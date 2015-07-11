@@ -187,15 +187,19 @@ public class QQServer {
 				try{
 					Map<String, Object> session = sessions.get(packet.getSid());
 					Object rjo = session.get("x-rejoin-time");
-					int rj = 1;
+					int rj = 0;
 					if(rjo!=null){
 						rj = (Integer)rjo;
 						rj++;
 					}
 					
-					if(rj<6){
+					if(rj<5){
 						session.put("x-rejoin-time", rj);
-						Thread.sleep(1000*rj); //延迟加入
+						if("mobile".equals(session.get("x-cmd"))&&rj==0){
+							Thread.sleep(1000*4); //首次延迟4秒
+						}else {
+							Thread.sleep(1000*rj); //延迟加入
+						}
 						queue.put(packet);
 					}else{//不超过5次
 						releaseSession(packet.getSid());

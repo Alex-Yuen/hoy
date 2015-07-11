@@ -26,6 +26,8 @@ public class BindTask extends Task {
 			byte[] xkey = (byte[])this.session.get("x-xkey");
 			String mobile = (String)session.get("x-mobile");
 			
+			logger.info(sid+" [BIND] "+ mobile);
+			
 			bos.reset();
 			bos.write(new PacketContent("00 00 90 00 00 00 00 00 00 00 5F 00 00 00").toByteArray());
 			bos.write(Converts.int2Byte((int)(System.currentTimeMillis()/1000)));
