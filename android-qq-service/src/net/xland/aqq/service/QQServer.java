@@ -196,7 +196,7 @@ public class QQServer {
 					if(rj<5){
 						session.put("x-rejoin-time", rj);
 						if("mobile".equals(session.get("x-cmd"))&&rj==0){
-							Thread.sleep(1000*4); //首次延迟4秒
+							Thread.sleep(1000*2); //首次延迟2秒
 						}else {
 							Thread.sleep(1000*rj); //延迟加入
 						}
