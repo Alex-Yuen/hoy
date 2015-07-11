@@ -68,8 +68,10 @@ public class Receiver implements Runnable {
 		
 		if("mobile".equals(session.get("x-cmd"))){			
 			if(content.length==191||content.length==159){//不通知恢复，而是再次执行BindTask
-				session.put("x-status", "0");
-				session.put("x-result", "mobile-task-1-complete");
+				session.put("x-status", "-4");
+				session.put("x-result", "mobile-task1(mobile)-complete");
+//				session.put("x-nf", "1");
+//				nf = true;
 				server.addTask(new BindTask(this.sid));
 			}else if(content.length==247){//对不起，您输入的手机号已经绑定过号码。
 				session.put("x-status", "-3");
@@ -85,7 +87,7 @@ public class Receiver implements Runnable {
 //			}
 			else{
 				session.put("x-status", "-2");
-				session.put("x-result", "can't-process-mobile-task-1");
+				session.put("x-result", "can't-process-mobile-task1(mobile)");
 				server.releaseSession(sid);
 				nf = true;
 			}
@@ -100,16 +102,17 @@ public class Receiver implements Runnable {
 //					System.out.println("bind flag:"+Converts.bytesToHexString(bf));		
 					session.put("x-bf", bf);
 					session.put("x-status", "0");
-					session.put("x-result", "mobile-task-2(bind)-complete");
+					session.put("x-result", "mobile-task2(bind)-complete");
 				}else if(content.length==207){//需要发短信
 					session.put("x-status", "-3");
 					session.put("x-result", "need-send-sms");
 					server.releaseSession(sid);
 				}else {//其他情况
 					session.put("x-status", "-2");
-					session.put("x-result", "can't-process-mobile-task-2(bind)");
+					session.put("x-result", "can't-process-mobile-task2(bind)");
 					server.releaseSession(sid);
 				}
+//				session.put("nf", "0");
 			}else if("code".equals(session.get("x-cmd"))){
 				if(content.length==183){//验证码正确
 					session.put("x-status", "0");
