@@ -108,7 +108,9 @@ public class NickTask extends Task {
 			content = cryptor.encrypt(bos.toByteArray(), outterkey); //第三次加密
 			
 			bos.reset();
-			bos.write(new PacketContent("00 00 01 8B 00 00 00 08 02 00 00 00 04 00 00 00").toByteArray());
+			bos.write(new PacketContent("00 00").toByteArray());
+			bos.write(Converts.short2Byte((short)(content.length+0x13)));
+			bos.write(new PacketContent("00 00 00 08 02 00 00 00 04 00 00 00").toByteArray());
 			bos.write(new PacketContent("00 05 30").toByteArray());
 			bos.write(content);			
 			content = bos.toByteArray();
