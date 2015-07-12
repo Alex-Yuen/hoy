@@ -92,8 +92,8 @@ public class MobileTask extends Task {
 			byte[] flag =  XLandUtil.genKey(4); //09 86 B2 6A 	
 			byte[] xkey = XLandUtil.genKey(16); //2F 2D 97 C8 CF E4 9C 1F 38 12 43 C9 4C 0B 29 F6 
 			
-			flag = Converts.hexStringToByte("0986B26A");
-			xkey = Converts.hexStringToByte("2F2D97C8CFE49C1F381243C94C0B29F6");
+			//flag = Converts.hexStringToByte("0986B26A");
+			//xkey = Converts.hexStringToByte("2F2D97C8CFE49C1F381243C94C0B29F6");
 			
 //			System.out.println(sid+"[SHARE-KEY]"+Converts.bytesToHexString(sharekey));
 //			System.out.println(sid+"[MOBILE]"+this.mobile);
