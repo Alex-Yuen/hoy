@@ -35,7 +35,8 @@ public class NickTask extends Task {
 			String password = XLandUtil.genPassword(); 
 			this.session.put("x-pwd", password);
 			
-			logger.info(sid+" [SET-PASSWORD] "+password);
+			logger.info(sid+" [NICK] "+nick);
+			logger.info(sid+" [PSWD] "+password);
 			
 			bos.reset();
 			bos.write(new PacketContent("1B").toByteArray());
