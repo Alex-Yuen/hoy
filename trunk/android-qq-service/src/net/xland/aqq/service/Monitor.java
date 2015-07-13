@@ -55,7 +55,7 @@ public class Monitor implements Runnable {
 			                        sc.finishConnect();  
 //			                        System.out.println("完成连接");
 				                    
-			                        synchronized(server){
+			                        synchronized(this){
 					                    setWakeup(true);
 					    				QQSelector.selector.wakeup();
 					    				sc.register(QQSelector.selector, SelectionKey.OP_READ);
