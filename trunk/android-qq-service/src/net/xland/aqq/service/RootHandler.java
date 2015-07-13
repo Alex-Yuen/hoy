@@ -75,9 +75,9 @@ public class RootHandler extends AbstractHandler {
 			}
 			
 			if(valid&&session!=null){
-				int wt = 6;
+				int wt = 4;
 				if("mobile".equals(action)){
-					wt += 2;
+					wt += 6 + 5;
 				}
 				synchronized(session){
 					try{
