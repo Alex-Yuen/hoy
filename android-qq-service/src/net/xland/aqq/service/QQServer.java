@@ -136,7 +136,7 @@ public class QQServer {
 				sc.configureBlocking(false);
 				// System.out.println(sc.connect(sa));
 				logger.info(sid+" [CREATE SESSION] ");
-				synchronized(this){
+				synchronized(this.monitor){
 					monitor.setWakeup(true);
 					//System.err.println(sid + " B3 " + task.getClass().getName());
 					QQSelector.selector.wakeup();
