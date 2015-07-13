@@ -32,6 +32,7 @@ public abstract class Task implements Runnable {
 		this.session.put("x-result", "ready-to-send-packet");
 		Packet packet = new Packet(this.sid, this.content);
 		packet.setSeq(this.seq);
+		packet.setType(this.getClass().getName().substring(this.getClass().getName().lastIndexOf(".")+1));
 		if(this instanceof MobileTask){
 			packet.setSlpt(1); //首次延迟2秒
 		}

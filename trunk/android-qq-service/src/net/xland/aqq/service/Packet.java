@@ -4,6 +4,7 @@ public class Packet {
 	private int slpt; //sleeptime
 	private String sid;
 	private short seq;
+	private String type;
 	private byte[] content;
 	
 	public Packet(String sid, byte[] content){
@@ -32,6 +33,14 @@ public class Packet {
 
 	public void setSeq(short seq) {
 		this.seq = seq;
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
 	}
 
 	public byte[] getContent() {

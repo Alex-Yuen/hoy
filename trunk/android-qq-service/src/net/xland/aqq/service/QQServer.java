@@ -132,7 +132,7 @@ public class QQServer {
 				SocketChannel sc = SocketChannel.open();
 				sc.configureBlocking(false);
 				// System.out.println(sc.connect(sa));
-				logger.info(sid+" [CREATE SESSION] " + sc);
+				logger.info(sid+" [CREATE SESSION] ");
 				monitor.setWakeup(true);
 				QQSelector.selector.wakeup();
 				sc.register(QQSelector.selector, SelectionKey.OP_CONNECT);
@@ -270,7 +270,7 @@ public class QQServer {
 		// 关闭socket
 		// remove channel
 		// remove session
-		logger.info(sid+" [REALEASE1] " + sessions.get(sid).get("x-seq"));
+		logger.info(sid+" [REALEASE-1] " + sessions.get(sid).get("x-seq"));
 		try {
 			channels.get(sid).close();
 		} catch (Exception e) {
