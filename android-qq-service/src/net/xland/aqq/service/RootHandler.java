@@ -46,6 +46,7 @@ public class RootHandler extends AbstractHandler {
 			String sid = request.getParameter("sid");
 			
 //			logger.info("*"+" [REQUEST] "+action);
+//			System.out.println("* [REQUEST] "+action);
 			Map<String, Object> session = null; //task future
 			
 			if(action!=null){
