@@ -118,33 +118,45 @@ public class QQServer {
 		seq++;
 		String sid = task.getSid();
 		Map<String, Object> session = null;
-
+//		System.err.println(sid + " A " + task.getClass().getName());
 		if (sid == null) {
 			while (sid == null || this.channels.containsKey(sid)) { // 生成sid
 				sid = XLandUtil.generateSid();
 			}
+//			System.err.println(sid + " B " + task.getClass().getName());
 			session = new HashMap<String, Object>();
 			task.setSid(sid);
 			session.put("x-sid", sid);
 			sessions.put(sid, session);			
 			try {
+//				System.err.println(sid + " B1 " + task.getClass().getName());
 				SocketAddress sa = new InetSocketAddress(ip, 14000); // 新建dc
 				SocketChannel sc = SocketChannel.open();
+				//System.err.println(sid + " B2 " + task.getClass().getName());
 				sc.configureBlocking(false);
 				// System.out.println(sc.connect(sa));
 				logger.info(sid+" [CREATE SESSION] ");
-				monitor.setWakeup(true);
-				QQSelector.selector.wakeup();
-				sc.register(QQSelector.selector, SelectionKey.OP_CONNECT);
-				monitor.setWakeup(false);
+				synchronized(this){
+					monitor.setWakeup(true);
+					//System.err.println(sid + " B3 " + task.getClass().getName());
+					QQSelector.selector.wakeup();
+//					System.err.println(sid + " B4 " + task.getClass().getName());
+					sc.register(QQSelector.selector, SelectionKey.OP_CONNECT);
+//					System.err.println(sid + " B5 " + task.getClass().getName());
+					monitor.setWakeup(false);
+				}
+				//System.err.println(sid + " B6 " + task.getClass().getName());
 				sc.connect(sa);
+//				System.err.println(sid + " B7 " + task.getClass().getName());
 
 				this.channels.put(sid, sc);
+				//System.err.println(sid + " B8 " + task.getClass().getName());
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		} else {
 			session = sessions.get(task.getSid());
+//			System.err.println(sid + " C " + task.getClass().getName());
 		}
 
 		if (session == null) {// invalid sid
@@ -157,6 +169,8 @@ public class QQServer {
 		try {
 			task.setServer(this);
 			task.setSequence(seq);
+//			System.err.println(sid + " D " + task.getClass().getName());
+//			System.err.println(this.pe.getCompletedTaskCount()+"/"+this.pe.getActiveCount()+"/"+this.pe.getQueue().size());
 			this.pe.execute(task);
 		} catch (Exception e) {
 			e.printStackTrace();

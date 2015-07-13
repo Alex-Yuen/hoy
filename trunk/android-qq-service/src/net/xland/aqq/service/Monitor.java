@@ -54,12 +54,14 @@ public class Monitor implements Runnable {
 			                        //完成连接的建立（TCP三次握手）
 			                        sc.finishConnect();  
 //			                        System.out.println("完成连接");
+				                    
+			                        synchronized(server){
+					                    setWakeup(true);
+					    				QQSelector.selector.wakeup();
+					    				sc.register(QQSelector.selector, SelectionKey.OP_READ);
+					    				setWakeup(false);
+			                        }
 			                    }
-			                    
-			                    setWakeup(true);
-			    				QQSelector.selector.wakeup();
-			    				sc.register(QQSelector.selector, SelectionKey.OP_READ);
-			    				setWakeup(false);
 							}else if (sk.isReadable()) {
 								SocketChannel sc = (SocketChannel) sk
 										.channel();
