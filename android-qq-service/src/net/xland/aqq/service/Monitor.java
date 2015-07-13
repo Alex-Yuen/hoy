@@ -70,7 +70,8 @@ public class Monitor implements Runnable {
 									e.printStackTrace();
 									System.err.println("CLOSE-EXCEPTION-----"+sc);
 									sk.cancel();
-									sc.close();
+									//sc.close();
+									server.releaseSession(sc);
 									continue;
 								}catch(Exception e){
 									e.printStackTrace();
@@ -80,7 +81,8 @@ public class Monitor implements Runnable {
 								if(size<0){
 									System.err.println("CLOSE-EXCEPTION(-1)-----"+sc);
 									sk.cancel();
-									sc.close();
+									//sc.close();
+									server.releaseSession(sc);
 									continue;
 								}
 								

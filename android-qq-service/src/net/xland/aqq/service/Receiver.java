@@ -62,7 +62,7 @@ public class Receiver implements Runnable {
 //		System.out.println("RECV:"+sid);
 //		System.out.println(Converts.bytesToHexString(body));
 		
-		logger.info(sid+" [RECV] " + Converts.bytesToHexString(content));
+		logger.info(sid+" [RECV] " +sseq + ":" + Converts.bytesToHexString(content));
 		
 		boolean nf = false;//notify flag
 		

@@ -270,14 +270,35 @@ public class QQServer {
 		// 关闭socket
 		// remove channel
 		// remove session
+		logger.info(sid+" [REALEASE1] " + sessions.get(sid).get("x-seq"));
 		try {
 			channels.get(sid).close();
 		} catch (Exception e) {
 			e.printStackTrace();
-			logger.info(sid+" [REALEASE]");
 		}
 
 		channels.remove(sid);
 		sessions.remove(sid);
+	}
+
+	public void releaseSession(SocketChannel sc) {
+		logger.info("*"+" [REALEASE-2A] " + sc);
+		String scsid = null;
+		for(String sid: channels.keySet()){
+			if(channels.get(sid)==sc){
+				scsid = sid;
+				break;
+			}
+		}
+		
+		logger.info(scsid+" [REALEASE-2B] " + sessions.get(scsid).get("x-seq"));
+		try {
+			channels.get(scsid).close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		channels.remove(scsid);
+		sessions.remove(scsid);
 	}
 }
