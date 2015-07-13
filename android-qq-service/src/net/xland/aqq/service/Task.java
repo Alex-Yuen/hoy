@@ -3,6 +3,7 @@ package net.xland.aqq.service;
 import java.io.ByteArrayOutputStream;
 import java.util.Map;
 
+import net.xland.aqq.service.task.MobileTask;
 import net.xland.util.Cryptor;
 
 public abstract class Task implements Runnable {
@@ -29,7 +30,11 @@ public abstract class Task implements Runnable {
 		bos.reset();
 		this.session.put("x-status", "-1");
 		this.session.put("x-result", "ready-to-send-packet");
-		this.server.submit(this.sid, this.content);
+		Packet packet = new Packet(this.sid, this.content);
+		if(this instanceof MobileTask){
+			packet.setSlpt(1); //首次延迟2秒
+		}
+		this.server.submit(packet);
 	}
 
 	public String getSid() {

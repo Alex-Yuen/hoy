@@ -126,14 +126,13 @@ public class QQServer {
 			session = new HashMap<String, Object>();
 			task.setSid(sid);
 			session.put("x-sid", sid);
-			sessions.put(sid, session);
-			logger.info(sid+" [CREATE SESSION] ");
+			sessions.put(sid, session);			
 			try {
 				SocketAddress sa = new InetSocketAddress(ip, 14000); // 新建dc
 				SocketChannel sc = SocketChannel.open();
 				sc.configureBlocking(false);
 				// System.out.println(sc.connect(sa));
-
+				logger.info(sid+" [CREATE SESSION] " + sc);
 				monitor.setWakeup(true);
 				QQSelector.selector.wakeup();
 				sc.register(QQSelector.selector, SelectionKey.OP_CONNECT);
@@ -172,56 +171,81 @@ public class QQServer {
 	}
 
 	// 提交发送任务
-	public void submit(String sid, byte[] content) {
+//	public void submit(String sid, byte[] content) {
+//		submit(new Packet(sid, content));
+////		try {
+////			queue.put(new Packet(sid, content));
+////		} catch (Exception e) {
+////			e.printStackTrace();
+////		}
+//	}
+
+	public void submit(final Packet packet) {
+//		new Thread(new Runnable(){
+//			@Override
+//			public void run() {
+//				try{
+//					Map<String, Object> session = sessions.get(packet.getSid());
+//					Object rjo = session.get("x-rejoin-time");
+//					int rj = 1;
+//					if(rjo!=null){
+//						rj = (Integer)rjo;
+//						rj++;
+//					}
+////					logger.info("A-----"+session.get("x-cmd"));
+////					logger.info("A-----"+rj);
+//					if(rj<5){
+//						session.put("x-rejoin-time", rj);
+////						if("mobile".equals(session.get("x-cmd"))&&rj==0){
+//////							logger.info("B-----"+session.get("x-cmd"));
+//////							logger.info("B-----"+rj);
+////							Thread.sleep(1000*2); //首次延迟2秒
+////						}else {
+////							Thread.sleep(1000*rj); //延迟加入
+////						}
+//						if("mobile".equals(session.get("x-cmd"))){
+//							Thread.sleep(1000*rj);
+//						}
+//						queue.put(packet);
+//					}else{//不超过5次
+//						releaseSession(packet.getSid());
+//						
+//						synchronized(session){
+//							try{
+//								session.notify();    //恢复等待
+//							}catch(Exception e){
+//								e.printStackTrace();
+//							}
+//						}						
+//					}
+//				}catch(Exception e){
+//					e.printStackTrace();
+//				}				
+//			}			
+//		}).start();
+		
 		try {
-			queue.put(new Packet(sid, content));
+			if(packet.getSlpt()>0){
+				if(packet.getSlpt()<5){//2, 3, 4
+					Thread.sleep(packet.getSlpt()*1000);
+				}else{
+					Map<String, Object> session = sessions.get(packet.getSid());
+					releaseSession(packet.getSid());
+					
+					synchronized(session){
+						try{
+							session.notify();    //恢复等待
+						}catch(Exception e){
+							e.printStackTrace();
+						}
+					}
+					return;//不再放入
+				}
+			}
+			queue.put(packet);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-	}
-
-	public void submit(final Packet packet) {
-		new Thread(new Runnable(){
-			@Override
-			public void run() {
-				try{
-					Map<String, Object> session = sessions.get(packet.getSid());
-					Object rjo = session.get("x-rejoin-time");
-					int rj = 0;
-					if(rjo!=null){
-						rj = (Integer)rjo;
-						rj++;
-					}
-					
-					if(rj<5){
-						session.put("x-rejoin-time", rj);
-						if("mobile".equals(session.get("x-cmd"))&&rj==0){
-							Thread.sleep(1000*2); //首次延迟2秒
-						}else {
-							Thread.sleep(1000*rj); //延迟加入
-						}
-						queue.put(packet);
-					}else{//不超过5次
-						releaseSession(packet.getSid());
-						
-						synchronized(session){
-							try{
-								session.notify();    //恢复等待
-							}catch(Exception e){
-								e.printStackTrace();
-							}
-						}						
-					}
-				}catch(Exception e){
-					e.printStackTrace();
-				}				
-			}			
-		}).start();
-//		try {
-//			queue.put(packet);
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		}
 	}
 
 	public Packet takePacket() {
