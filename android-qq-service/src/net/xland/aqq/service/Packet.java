@@ -3,6 +3,7 @@ package net.xland.aqq.service;
 public class Packet {
 	private int slpt; //sleeptime
 	private String sid;
+	private short seq;
 	private byte[] content;
 	
 	public Packet(String sid, byte[] content){
@@ -24,6 +25,15 @@ public class Packet {
 	public void setSid(String sid) {
 		this.sid = sid;
 	}
+	
+	public short getSeq() {
+		return seq;
+	}
+
+	public void setSeq(short seq) {
+		this.seq = seq;
+	}
+
 	public byte[] getContent() {
 		return content;
 	}
