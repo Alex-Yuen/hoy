@@ -8,6 +8,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -596,6 +597,8 @@ public class Scanner {
 			responseBody = responseBody.substring(responseBody.lastIndexOf(">")+1);
 //			System.out.println("----------------------------------------");
             System.out.println(responseBody);
+            
+            //http://qt.gtimg.cn/r=2015072023241437405887&q=r_hkHSI
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -683,9 +686,10 @@ public class Scanner {
 		}		
 	}
 	
-	private static void printCSIPEX(ResponseHandler<InputStream> responseHandler) {
+	private static void printCSIPEX(ResponseHandler<String> responseHandler, ResponseHandler<InputStream> responseHandlerX) {
 		CloseableHttpClient httpclient = HttpClients.createDefault();
 		Workbook workbook = null;   
+		DecimalFormat df  = new DecimalFormat("##.00");
 		try {			
 			HttpGet httpGet = new HttpGet(
 					"http://www.csindex.com.cn/sseportal/ps/zhs/hqjt/csi/Csi300Perf.xls");
@@ -698,14 +702,35 @@ public class Scanner {
 					"User-Agent",
 					"Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.93 Safari/537.36");
 
-			InputStream responseBody  = httpclient.execute(httpGet, responseHandler);
+			InputStream responseBody  = httpclient.execute(httpGet, responseHandlerX);
  
 			workbook = WorkbookFactory.create(responseBody);
 
 			Sheet sheet = workbook.getSheetAt(0);
 			Row row = sheet.getRow(1);
 //			    Cell cell = row.getCell(14);
-			System.out.println( row.getCell(14).getStringCellValue() + " / " + row.getCell(15).getStringCellValue());
+			System.out.print( row.getCell(14).getStringCellValue() + " / " + row.getCell(15).getStringCellValue() + " --> ");
+			
+			httpGet = new HttpGet(
+					"http://hq.sinajs.cn/list=sh000300");
+			httpGet.setHeader("Accept", "*/*");
+			httpGet.setHeader("Accept-Encoding", "gzip, deflate, sdch");
+			httpGet.setHeader("Accept-Language", "zh-CN,zh;q=0.8");
+			httpGet.setHeader("Cache-Control", "max-age=0");
+			httpGet.setHeader("Connection", "keep-alive");
+			httpGet.setHeader(
+					"User-Agent",
+					"Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.93 Safari/537.36");
+
+			String priceBody  = httpclient.execute(httpGet, responseHandler);
+			priceBody = priceBody.substring(priceBody.indexOf("\"")+1);
+			priceBody = priceBody.substring(0, priceBody.indexOf("\""));
+			String[] pbs = priceBody.split(",");
+			String percent = df.format((Double.parseDouble(pbs[3])/Double.parseDouble(pbs[2])-1)*100);
+			if(percent.startsWith(".")){
+				percent = "0"+percent;
+			}
+			System.out.println(pbs[3] + " " + percent +"%");
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
@@ -768,8 +793,87 @@ public class Scanner {
 	//封闭式基金 closed-end fund
 	//http://fund.eastmoney.com/f10/jjgg_184721_2.html
 	//http://fund.eastmoney.com/f10/F10DataApi.aspx?type=jjgg&code=184721&page=1&per=20&class=2&rt=0.7149084734264761
+	private static void printClosedEndFund(
+			ResponseHandler<String> responseHandler) {
+		String[] codes = new String[]{"150001", "161222", "169101", "184721", "184722", "184728", "500038", "500056", "500058", "505888"};
+		CloseableHttpClient httpclient = HttpClients.createDefault();
+		HttpGet httpGet = null;
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		try {
+			for(int i=0; i<codes.length; i++){
+				httpGet = new HttpGet(
+						"http://fund.eastmoney.com/f10/F10DataApi.aspx?type=jjgg&code="+codes[i]+"&page=1&per=20&class=2&rt="+Math.random());
+				httpGet.setHeader("Accept", "*/*");
+				httpGet.setHeader("Accept-Encoding", "gzip, deflate, sdch");
+				httpGet.setHeader("Accept-Language", "zh-CN,zh;q=0.8");
+				httpGet.setHeader("Cache-Control", "max-age=0");
+				httpGet.setHeader("Connection", "keep-alive");
+	//			httpGet.setHeader("Referer",
+	//					"http://www.sse.com.cn/disclosure/dealinstruc/");
+				httpGet.setHeader(
+						"User-Agent",
+						"Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.93 Safari/537.36");
 	
-	//TODO
+				String responseBody  = httpclient.execute(httpGet, responseHandler);
+				responseBody = responseBody.substring(responseBody.indexOf("</tr>"));
+				responseBody = responseBody.substring(responseBody.indexOf("<tr>"));
+				responseBody = responseBody.substring(0, responseBody.indexOf("</tbody>")).trim();
+	//			System.out.println("----------------------------------------");
+//	            System.out.println(responseBody);
+	            
+	            Pattern pattern = Pattern.compile("<tr.*?</tr>");
+				Matcher matcher = pattern.matcher(responseBody);
+				pattern = Pattern.compile("<td.*?</td>");
+				String sdate = null;
+				if (matcher.find()) {
+					String line = matcher.group();
+//					line = line.substring(4, line.length() - 5);
+//					System.out.println(line);
+					Matcher m = pattern.matcher(line);
+					int idx = 0;
+					while (m.find()) {
+						line = m.group();
+						if(idx==2){
+							sdate = line.replaceAll("<.*?>", "");
+						}
+						idx++;
+					}
+				}
+	            if(sdate!=null){
+	            	System.out.print(codes[i]+"-->"+sdate);	            	
+	            	
+	            	Calendar aCalendar = Calendar.getInstance();
+	            	//System.out.println(aCalendar.getTime());
+	            	int year1 = aCalendar.get(Calendar.YEAR);
+	                int day1 = aCalendar.get(Calendar.DAY_OF_YEAR);
+	                //System.out.println(day1);
+	                aCalendar.setTime(sdf.parse(sdate));
+	                //System.out.println(aCalendar.getTime());
+	                int day2 = aCalendar.get(Calendar.DAY_OF_YEAR);
+	                int year2 = aCalendar.get(Calendar.YEAR);
+	                //System.out.println(day2);
+	                
+	                //System.out.println(Math.abs(day2-day1));
+	                if(year1==year2&&Math.abs(day2-day1)<7){
+	                	System.out.println("    Congratulations!");
+	                }else{
+	                	System.out.println("    Sorry!");
+	                }
+	            }
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (httpclient != null) {
+					httpclient.close();
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
 	//建立股债平衡，多市场指数基金的投资组合，再平衡（动态再平衡策略）之后，尝试根据资金流的策略。
 	public static void main(String[] args) {
         ResponseHandler<String> responseHandler = new ResponseHandler<String>() {
@@ -831,11 +935,13 @@ public class Scanner {
 		System.out.print("AliPay Yields: ");
 		printAliPayRate(responseHandler);
 		System.out.print("CSI PE Ratio: ");
-		printCSIPEX(responseHandlerX);
+		printCSIPEX(responseHandler, responseHandlerX);
 		System.out.print("HSI PE Ratio: ");
 		printHSIPE(responseHandler);
 		System.out.print("SPX PE Ratio: ");
 		printSPXPE(responseHandler);
+
+		//System.out.println("------------");
 		// System.out.println("沪市停牌");
 //		printHalting("http://stock.eastmoney.com/news/chstpyl.html", title);
 		// System.out.println("深市停牌");
@@ -850,6 +956,9 @@ public class Scanner {
 			System.out.println(code);
 			printInvestors(code);
 			// break;
-		}
+		}		
+
+		System.out.println("------------");
+		printClosedEndFund(responseHandler);
 	}
 }
