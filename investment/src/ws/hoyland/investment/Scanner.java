@@ -599,6 +599,7 @@ public class Scanner {
             System.out.println(responseBody);
             
             //http://qt.gtimg.cn/r=2015072023241437405887&q=r_hkHSI
+            //http://qt.gtimg.cn/r=0.1559772426262498q=usINX
 
 		} catch (Exception e) {
 			e.printStackTrace();
