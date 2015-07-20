@@ -35,7 +35,7 @@ import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-public class TradingHalt {
+public class Scanner {
 
 	private static List<String> LIST = new ArrayList<String>();
 	private static double CSIRATIO = (17.6d/4907.06d);
@@ -764,6 +764,8 @@ public class TradingHalt {
 		}
 		
 	}
+	
+	//
 	
 	//TODO
 	//建立股债平衡，多市场指数基金的投资组合，再平衡（动态再平衡策略）之后，尝试根据资金流的策略。
