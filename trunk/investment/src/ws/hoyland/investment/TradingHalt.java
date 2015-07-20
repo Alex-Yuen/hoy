@@ -1,6 +1,8 @@
 package ws.hoyland.investment;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -25,6 +27,11 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -641,7 +648,7 @@ public class TradingHalt {
 	
 	private static void printCPI(ResponseHandler<String> responseHandler) {
 		CloseableHttpClient httpclient = HttpClients.createDefault();
-		try {
+		try {			
 			HttpGet httpGet = new HttpGet(
 					"http://data.eastmoney.com/cjsj/consumerpriceindex.aspx?p=1");
 			httpGet.setHeader("Accept", "*/*");
@@ -666,6 +673,49 @@ public class TradingHalt {
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
+			try {
+				if (httpclient != null) {
+					httpclient.close();
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}		
+	}
+	
+	private static void printCSIPEX(ResponseHandler<InputStream> responseHandler) {
+		CloseableHttpClient httpclient = HttpClients.createDefault();
+		Workbook workbook = null;   
+		try {			
+			HttpGet httpGet = new HttpGet(
+					"http://www.csindex.com.cn/sseportal/ps/zhs/hqjt/csi/Csi300Perf.xls");
+			httpGet.setHeader("Accept", "*/*");
+			httpGet.setHeader("Accept-Encoding", "gzip, deflate, sdch");
+			httpGet.setHeader("Accept-Language", "zh-CN,zh;q=0.8");
+			httpGet.setHeader("Cache-Control", "max-age=0");
+			httpGet.setHeader("Connection", "keep-alive");
+			httpGet.setHeader(
+					"User-Agent",
+					"Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.93 Safari/537.36");
+
+			InputStream responseBody  = httpclient.execute(httpGet, responseHandler);
+ 
+			workbook = WorkbookFactory.create(responseBody);
+
+			Sheet sheet = workbook.getSheetAt(0);
+			Row row = sheet.getRow(1);
+//			    Cell cell = row.getCell(14);
+			System.out.println( row.getCell(14).getStringCellValue() + " / " + row.getCell(15).getStringCellValue());
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if(workbook!=null){
+					workbook.close();
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 			try {
 				if (httpclient != null) {
 					httpclient.close();
@@ -732,6 +782,31 @@ public class TradingHalt {
             }
         };
         
+        ResponseHandler<InputStream> responseHandlerX = new ResponseHandler<InputStream>() {
+            @Override
+            public InputStream handleResponse(
+                    final HttpResponse response) throws ClientProtocolException, IOException {
+                int status = response.getStatusLine().getStatusCode();
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                ByteArrayInputStream bais = null;
+                if (status >= 200 && status < 300) {
+                    HttpEntity entity = response.getEntity();
+//                    System.out.println("XXXXXXXXXXXXXXXXX:"+entity);
+                    if(entity != null){
+	                    InputStream is = entity.getContent();
+	                    byte[] tmp = new byte[1024];
+	                    int size = 0;
+	                    while ((size = is.read(tmp)) != -1) {
+	                    	baos.write(tmp, 0, size);
+	                    }
+	                    bais = new ByteArrayInputStream(baos.toByteArray());
+                    }
+                    return bais; //EntityUtils.toString(entity)
+                } else {
+                    throw new ClientProtocolException("Unexpected response status: " + status);
+                }
+            }
+        };
 		// http://wap.eastmoney.com/NewsList.aspx?m=145&c=401 //沪市停牌
 		// http://wap.eastmoney.com/NewsList.aspx?m=145&c=402 //深市停牌
 
@@ -752,7 +827,7 @@ public class TradingHalt {
 		System.out.print("AliPay Yields: ");
 		printAliPayRate(responseHandler);
 		System.out.print("CSI PE Ratio: ");
-		printCSIPE(responseHandler);
+		printCSIPEX(responseHandlerX);
 		System.out.print("HSI PE Ratio: ");
 		printHSIPE(responseHandler);
 		System.out.print("SPX PE Ratio: ");
