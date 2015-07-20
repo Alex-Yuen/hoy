@@ -12,5 +12,7 @@
 	<classpathentry kind="lib" path="lib/httpmime-4.4.1.jar"/>
 	<classpathentry kind="lib" path="lib/jna-4.1.0.jar"/>
 	<classpathentry kind="lib" path="lib/jna-platform-4.1.0.jar"/>
+	<classpathentry kind="lib" path="lib/poi-3.12-20150511.jar"/>
+	<classpathentry kind="lib" path="lib/poi-ooxml-3.12-20150511.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
