@@ -765,7 +765,9 @@ public class Scanner {
 		
 	}
 	
-	//
+	//封闭式基金 closed-end fund
+	//http://fund.eastmoney.com/f10/jjgg_184721_2.html
+	//http://fund.eastmoney.com/f10/F10DataApi.aspx?type=jjgg&code=184721&page=1&per=20&class=2&rt=0.7149084734264761
 	
 	//TODO
 	//建立股债平衡，多市场指数基金的投资组合，再平衡（动态再平衡策略）之后，尝试根据资金流的策略。
