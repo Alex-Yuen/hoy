@@ -971,25 +971,8 @@ public class Scanner {
 					}
 				}
 				if (sdate != null) {
-					System.out.print(codes[i] + "-->" + sdate);
-
-					Calendar aCalendar = Calendar.getInstance();
-					// System.out.println(aCalendar.getTime());
-					int year1 = aCalendar.get(Calendar.YEAR);
-					int day1 = aCalendar.get(Calendar.DAY_OF_YEAR);
-					// System.out.println(day1);
-					aCalendar.setTime(sdf.parse(sdate));
-					// System.out.println(aCalendar.getTime());
-					int day2 = aCalendar.get(Calendar.DAY_OF_YEAR);
-					int year2 = aCalendar.get(Calendar.YEAR);
-					// System.out.println(day2);
-
-					// System.out.println(Math.abs(day2-day1));
-					if (year1 == year2 && Math.abs(day2 - day1) < 7) {
-						System.out.println("    Congratulations!");
-					} else {
-						System.out.println("    Sorry!");
-					}
+					System.out.print(codes[i] + "-->" + sdate + "\t");
+					System.out.println(maturity(sdate, 7));
 				}
 			}
 		} catch (Exception e) {
@@ -1009,7 +992,6 @@ public class Scanner {
 			ResponseHandler<String> responseHandler) {
 		CloseableHttpClient httpclient = HttpClients.createDefault();
 		HttpGet httpGet = null;
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		try {
 			httpGet = new HttpGet("http://www.jisilu.cn/data/cf/cf_list/?___t="
 					+ System.currentTimeMillis());
@@ -1031,28 +1013,10 @@ public class Scanner {
 				json = ja.getJSONObject(i);
 				JSONObject jsx = json.getJSONObject("cell");
 				System.out.print(json.getString("id") + "-->" + jsx.getString("maturity_dt"));
-				System.out.print("\t" + jsx.getString("discount_rt") + "\t" + jsx.getString("annualize_dscnt_rt"));
-				System.out.print("\t\t");
+				System.out.print("\t" + jsx.getString("discount_rt") + " on " + jsx.getString("annualize_dscnt_rt"));
+				System.out.print("\t\t");				
 				
-				Calendar aCalendar = Calendar.getInstance();
-				// System.out.println(aCalendar.getTime());
-				int year1 = aCalendar.get(Calendar.YEAR);
-				int day1 = aCalendar.get(Calendar.DAY_OF_YEAR);
-				// System.out.println(day1);
-				aCalendar.setTime(sdf.parse(jsx.getString("maturity_dt")));
-				// System.out.println(aCalendar.getTime());
-				int day2 = aCalendar.get(Calendar.DAY_OF_YEAR);
-				int year2 = aCalendar.get(Calendar.YEAR);
-				// System.out.println(day2);
-
-				// System.out.println(Math.abs(day2-day1));
-				if (year1 == year2 && Math.abs(day2 - day1) < 30) {
-					System.out.println("Congratulations!");
-				} else {
-					System.out.println("Sorry!");
-				}
-				
-//				System.out.println();
+				System.out.println(maturity(jsx.getString("maturity_dt"), 30));
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -1066,6 +1030,32 @@ public class Scanner {
 			}
 		}
 
+	}
+	
+	private static String maturity(String date, int interval){
+		try{
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+			Calendar aCalendar = Calendar.getInstance();
+			// System.out.println(aCalendar.getTime());
+			int year1 = aCalendar.get(Calendar.YEAR);
+			int day1 = aCalendar.get(Calendar.DAY_OF_YEAR);
+			// System.out.println(day1);
+			aCalendar.setTime(sdf.parse(date));
+			// System.out.println(aCalendar.getTime());
+			int day2 = aCalendar.get(Calendar.DAY_OF_YEAR);
+			int year2 = aCalendar.get(Calendar.YEAR);
+			// System.out.println(day2);
+	
+			// System.out.println(Math.abs(day2-day1));
+			if (year1 == year2 && Math.abs(day2 - day1) < interval) {
+				return "Congratulations!";
+			} else {
+				return "Sorry!";
+			}
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+		return "Exception!";
 	}
 
 	// 建立股债平衡，多市场指数基金的投资组合，再平衡（动态再平衡策略）之后，尝试根据资金流的策略。
