@@ -39,8 +39,9 @@ import org.json.JSONObject;
 public class Scanner {
 
 	private static List<String> LIST = new ArrayList<String>();
-	private static double CSIRATIO = (17.6d/4907.06d);
-	
+	private static double CSIRATIO = (17.6d / 4907.06d);
+	private static DecimalFormat df = new DecimalFormat("##.00");
+
 	public static String get(String url) {
 		return get(url, null);
 	}
@@ -72,7 +73,7 @@ public class Scanner {
 			}
 			result = sb.toString();
 		} catch (Exception e) {
-//			e.printStackTrace();
+			// e.printStackTrace();
 		} finally {
 			try {
 				if (br != null) {
@@ -96,7 +97,7 @@ public class Scanner {
 		String link = null;
 		try {
 			content = get(url, "GB2312");
-			if(content.indexOf(date)==-1){
+			if (content.indexOf(date) == -1) {
 				System.out.println("当日无数据");
 				return;
 			}
@@ -167,30 +168,32 @@ public class Scanner {
 					"User-Agent",
 					"Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.93 Safari/537.36");
 
-			String responseBody  = httpclient.execute(httpGet, responseHandler);
-			responseBody = responseBody.substring(responseBody.indexOf("{"), responseBody.lastIndexOf("}")+1);
-//			System.out.println("----------------------------------------");
-//            System.out.println(responseBody);
+			String responseBody = httpclient.execute(httpGet, responseHandler);
+			responseBody = responseBody.substring(responseBody.indexOf("{"),
+					responseBody.lastIndexOf("}") + 1);
+			// System.out.println("----------------------------------------");
+			// System.out.println(responseBody);
 			JSONObject json = new JSONObject(responseBody);
-			JSONArray jsonArray = json.getJSONArray("result");  
-			 for(int i=0;i<jsonArray.length();i++){ 
-			        JSONObject stock = (JSONObject) jsonArray.get(i);
-			        boolean flag = false;
-			        //||stock.getString("bulletinType").equals("1")临时停牌不做统计
-			        //||stock.getString("bulletinType").equals("2") 即将复牌的不做统计
-			        if((stock.getString("bulletinType").equals("3")&&stock.getString("stopReason").indexOf("重要事项未公告")!=-1)){
-			        	flag = true;
-			        }
-			        if(flag){
-//				        if(stock.getString("productCode").startsWith("0")||stock.getString("productCode").startsWith("3")){
-//				        	LIST.add(stock.getString("productCode")+".SZ");
-//				        }
-				        if(stock.getString("productCode").startsWith("6")){
-				        	LIST.add(stock.getString("productCode")+".SH");
-				        }
-			        }
-//			        System.out.println(stock);
-			 }
+			JSONArray jsonArray = json.getJSONArray("result");
+			for (int i = 0; i < jsonArray.length(); i++) {
+				JSONObject stock = (JSONObject) jsonArray.get(i);
+				boolean flag = false;
+				// ||stock.getString("bulletinType").equals("1")临时停牌不做统计
+				// ||stock.getString("bulletinType").equals("2") 即将复牌的不做统计
+				if ((stock.getString("bulletinType").equals("3") && stock
+						.getString("stopReason").indexOf("重要事项未公告") != -1)) {
+					flag = true;
+				}
+				if (flag) {
+					// if(stock.getString("productCode").startsWith("0")||stock.getString("productCode").startsWith("3")){
+					// LIST.add(stock.getString("productCode")+".SZ");
+					// }
+					if (stock.getString("productCode").startsWith("6")) {
+						LIST.add(stock.getString("productCode") + ".SH");
+					}
+				}
+				// System.out.println(stock);
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
@@ -211,13 +214,15 @@ public class Scanner {
 		CloseableHttpClient httpclient = HttpClients.createDefault();
 		try {
 			HttpPost httpPost = new HttpPost(
-					"http://www.szse.cn/szseWeb/FrontController.szse?randnum="+Math.random());
+					"http://www.szse.cn/szseWeb/FrontController.szse?randnum="
+							+ Math.random());
 			httpPost.setHeader("Accept", "*/*");
 			httpPost.setHeader("Accept-Encoding", "gzip, deflate");
 			httpPost.setHeader("Accept-Language", "zh-CN,zh;q=0.8");
-//			httpPost.setHeader("Cache-Control", "max-age=0");
+			// httpPost.setHeader("Cache-Control", "max-age=0");
 			httpPost.setHeader("Connection", "keep-alive");
-			httpPost.setHeader("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
+			httpPost.setHeader("Content-Type",
+					"application/x-www-form-urlencoded; charset=UTF-8");
 			httpPost.setHeader("Origin", "http://www.szse.cn");
 			httpPost.setHeader("Referer",
 					"http://www.szse.cn/main/disclosure/news/tfpts/");
@@ -225,167 +230,181 @@ public class Scanner {
 					"User-Agent",
 					"Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.93 Safari/537.36");
 
-//			List <NameValuePair> nvps = new ArrayList <NameValuePair>();
-//	        nvps.add(new BasicNameValuePair("ACTIONID", "7"));
-//	        nvps.add(new BasicNameValuePair("AJAX", "AJAX-TRUE"));
-//	        nvps.add(new BasicNameValuePair("CATALOGID", "1978"));
-//	        nvps.add(new BasicNameValuePair("txtKsrq", "2014-06-04"));
-//	        nvps.add(new BasicNameValuePair("txtZzrq", "2015-06-04"));
-//	        nvps.add(new BasicNameValuePair("TABKEY", "tab1"));
-//	        nvps.add(new BasicNameValuePair("tab1PAGECOUNT", "145"));
-//	        nvps.add(new BasicNameValuePair("tab1RECORDCOUNT", "4335"));
-//	        nvps.add(new BasicNameValuePair("REPORT_ACTION", "navigate"));
-//	        nvps.add(new BasicNameValuePair("tab1PAGENUM", "1"));
-//	        nvps.add(new BasicNameValuePair("AJAX", "AJAX-TRUE"));
-//	        httpPost.setEntity(new UrlEncodedFormEntity(nvps));//UrlEncodedFormEntity
+			// List <NameValuePair> nvps = new ArrayList <NameValuePair>();
+			// nvps.add(new BasicNameValuePair("ACTIONID", "7"));
+			// nvps.add(new BasicNameValuePair("AJAX", "AJAX-TRUE"));
+			// nvps.add(new BasicNameValuePair("CATALOGID", "1978"));
+			// nvps.add(new BasicNameValuePair("txtKsrq", "2014-06-04"));
+			// nvps.add(new BasicNameValuePair("txtZzrq", "2015-06-04"));
+			// nvps.add(new BasicNameValuePair("TABKEY", "tab1"));
+			// nvps.add(new BasicNameValuePair("tab1PAGECOUNT", "145"));
+			// nvps.add(new BasicNameValuePair("tab1RECORDCOUNT", "4335"));
+			// nvps.add(new BasicNameValuePair("REPORT_ACTION", "navigate"));
+			// nvps.add(new BasicNameValuePair("tab1PAGENUM", "1"));
+			// nvps.add(new BasicNameValuePair("AJAX", "AJAX-TRUE"));
+			// httpPost.setEntity(new
+			// UrlEncodedFormEntity(nvps));//UrlEncodedFormEntity
 			Calendar calnow = Calendar.getInstance();
-			Calendar calstart = (Calendar)calnow.clone();
+			Calendar calstart = (Calendar) calnow.clone();
 			calstart.add(Calendar.YEAR, -1);
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 			String from = sdf.format(calstart.getTime());
 			String now = sdf.format(calnow.getTime());
-//			System.out.println(from);
-//			System.out.println(now);
-			httpPost.setEntity(new StringEntity("ACTIONID=7&AJAX=AJAX-TRUE&CATALOGID=1798&TABKEY=tab1&txtDmorjc=&txtKsrq="+from+"&txtZzrq="+now+"&REPORT_ACTION=search"));
+			// System.out.println(from);
+			// System.out.println(now);
+			httpPost.setEntity(new StringEntity(
+					"ACTIONID=7&AJAX=AJAX-TRUE&CATALOGID=1798&TABKEY=tab1&txtDmorjc=&txtKsrq="
+							+ from + "&txtZzrq=" + now
+							+ "&REPORT_ACTION=search"));
 
-			String responseBody  = httpclient.execute(httpPost, responseHandler);
-//			System.out.println(responseBody);
-			String ts = responseBody.substring(responseBody.indexOf("共")+1);
+			String responseBody = httpclient.execute(httpPost, responseHandler);
+			// System.out.println(responseBody);
+			String ts = responseBody.substring(responseBody.indexOf("共") + 1);
 			ts = ts.substring(0, ts.indexOf("页"));
 			System.out.println(ts);
 			int total = Integer.parseInt(ts);
-			
-			String rc = responseBody.substring(responseBody.indexOf("tab1RECORDCOUNT="));			
-			rc = rc.substring(rc.indexOf("=")+1);
+
+			String rc = responseBody.substring(responseBody
+					.indexOf("tab1RECORDCOUNT="));
+			rc = rc.substring(rc.indexOf("=") + 1);
 			rc = rc.substring(0, rc.indexOf("&"));
 			System.out.println(rc);
 			int recordCount = Integer.parseInt(rc);
-			
-			String data = "ACTIONID=7&AJAX=AJAX-TRUE&CATALOGID=1798&txtKsrq="+from+"&txtZzrq="+now+"&TABKEY=tab1&tab1PAGECOUNT="+total+"&tab1RECORDCOUNT="+recordCount+"&REPORT_ACTION=navigate&tab1PAGENUM=";
 
-			for(int i= total;i>0;i--){
-				StringEntity entity = new StringEntity(data+i);
+			String data = "ACTIONID=7&AJAX=AJAX-TRUE&CATALOGID=1798&txtKsrq="
+					+ from + "&txtZzrq=" + now + "&TABKEY=tab1&tab1PAGECOUNT="
+					+ total + "&tab1RECORDCOUNT=" + recordCount
+					+ "&REPORT_ACTION=navigate&tab1PAGENUM=";
+
+			for (int i = total; i > 0; i--) {
+				StringEntity entity = new StringEntity(data + i);
 				httpPost = new HttpPost(
-						"http://www.szse.cn/szseWeb/FrontController.szse?randnum="+Math.random());
+						"http://www.szse.cn/szseWeb/FrontController.szse?randnum="
+								+ Math.random());
 				httpPost.setHeader("Accept", "*/*");
 				httpPost.setHeader("Accept-Encoding", "gzip, deflate");
 				httpPost.setHeader("Accept-Language", "zh-CN,zh;q=0.8");
-//				httpPost.setHeader("Cache-Control", "max-age=0");
+				// httpPost.setHeader("Cache-Control", "max-age=0");
 				httpPost.setHeader("Connection", "keep-alive");
-				httpPost.setHeader("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
+				httpPost.setHeader("Content-Type",
+						"application/x-www-form-urlencoded; charset=UTF-8");
 				httpPost.setHeader("Origin", "http://www.szse.cn");
 				httpPost.setHeader("Referer",
 						"http://www.szse.cn/main/disclosure/news/tfpts/");
 				httpPost.setHeader(
 						"User-Agent",
 						"Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.93 Safari/537.36");
-				
+
 				httpPost.setEntity(entity);
-				responseBody = httpclient.execute(httpPost, responseHandler);				
-				responseBody = responseBody.substring(responseBody.indexOf("REPORTID_tab1"));
-				responseBody = responseBody.substring(responseBody.indexOf("证券代码"));
-				responseBody = responseBody.substring(responseBody.indexOf("<tr"));
-				responseBody = responseBody.substring(0, responseBody.indexOf("</table>"));
-//				System.out.println(responseBody);
-				
+				responseBody = httpclient.execute(httpPost, responseHandler);
+				responseBody = responseBody.substring(responseBody
+						.indexOf("REPORTID_tab1"));
+				responseBody = responseBody.substring(responseBody
+						.indexOf("证券代码"));
+				responseBody = responseBody.substring(responseBody
+						.indexOf("<tr"));
+				responseBody = responseBody.substring(0,
+						responseBody.indexOf("</table>"));
+				// System.out.println(responseBody);
+
 				Pattern pattern = Pattern.compile("<tr.*?</tr>");
 				Matcher matcher = pattern.matcher(responseBody);
 				pattern = Pattern.compile("<td.*?</td>");
 				while (matcher.find()) {
 					String line = matcher.group();
-//					line = line.substring(4, line.length() - 5);
-//					System.out.println(line);
+					// line = line.substring(4, line.length() - 5);
+					// System.out.println(line);
 					Matcher m = pattern.matcher(line);
 					int x = 0;
 					String code = null;
 					String action = null;
 					String reason = null;
 					while (m.find()) {
-//						System.out.println(m.group());
+						// System.out.println(m.group());
 						if (x == 0) {
 							code = m.group();
-							code = code.substring(code.indexOf(">")+1);
+							code = code.substring(code.indexOf(">") + 1);
 							code = code.substring(0, code.indexOf("<")).trim();
-							
+
 						}
 						if (x == 4) {
 							action = m.group();
-							action = action.substring(action.indexOf(">")+1);
-							action = action.substring(0, action.indexOf("<")).trim();
+							action = action.substring(action.indexOf(">") + 1);
+							action = action.substring(0, action.indexOf("<"))
+									.trim();
 						}
 						if (x == 5) {
 							reason = m.group();
-							reason = reason.substring(reason.indexOf(">")+1);
-							reason = reason.substring(0, reason.indexOf("<")).trim();
+							reason = reason.substring(reason.indexOf(">") + 1);
+							reason = reason.substring(0, reason.indexOf("<"))
+									.trim();
 						}
 						x++;
 					}
-					stack.push(code+":"+action+":"+reason);
-//					System.out.print(code);
-//					System.out.print(action);
-//					System.out.println(reason);
+					stack.push(code + ":" + action + ":" + reason);
+					// System.out.print(code);
+					// System.out.print(action);
+					// System.out.println(reason);
 				}
-				while(stack.size()>0){
+				while (stack.size() > 0) {
 					queue.add(stack.pop());
 				}
 				System.out.println(queue.size());
-//				System.out.println(stack.size());
-//				break;
+				// System.out.println(stack.size());
+				// break;
 			}
 
-			for(String line:queue){
+			for (String line : queue) {
 				String[] ls = line.split(":");
 				String code = ls[0];
 				String action = ls[1];
 				String reason = ls[2];
-				
-				if(action.contains("取消停牌")){
-					if(tmpList.contains(code)){
+
+				if (action.contains("取消停牌")) {
+					if (tmpList.contains(code)) {
 						tmpList.remove(code);
 					}
 				}
-				
-				if(action.equals("停牌")||action.contains("1天")){
-					if(reason.contains("重大事项")){
-						if(!tmpList.contains(code)){
+
+				if (action.equals("停牌") || action.contains("1天")) {
+					if (reason.contains("重大事项")) {
+						if (!tmpList.contains(code)) {
 							tmpList.add(code);
 						}
 					}
 				}
 			}
-			
+
 			System.out.println(tmpList.size());
-			
-			for(String line:tmpList){
-		        if(line.startsWith("0")||line.startsWith("3")){
-	        		LIST.add(line+".SZ");
-	        	}
+
+			for (String line : tmpList) {
+				if (line.startsWith("0") || line.startsWith("3")) {
+					LIST.add(line + ".SZ");
+				}
 			}
-			
+
 			System.out.println(LIST.size());
 			/**
-			responseBody = responseBody.substring(responseBody.indexOf("{"), responseBody.lastIndexOf("}")+1);
-//			System.out.println("----------------------------------------");
-//            System.out.println(responseBody);
-			JSONObject json = new JSONObject(responseBody);
-			JSONArray jsonArray = json.getJSONArray("result");  
-			 for(int i=0;i<jsonArray.length();i++){ 
-			        JSONObject stock = (JSONObject) jsonArray.get(i);
-			        boolean flag = false;
-			        //||stock.getString("bulletinType").equals("1")临时停牌不做统计
-			        if((stock.getString("bulletinType").equals("3")&&stock.getString("stopReason").indexOf("重要事项未公告")!=-1)||stock.getString("bulletinType").equals("2")){
-			        	flag = true;
-			        }
-			        if(flag){
-//				        if(stock.getString("productCode").startsWith("0")||stock.getString("productCode").startsWith("3")){
-//				        	LIST.add(stock.getString("productCode")+".SZ");
-//				        }
-//				        if(stock.getString("productCode").startsWith("6")){
-				        	LIST.add(stock.getString("productCode")+".SH");
-//				        }
-			        }
-//			        System.out.println(stock);
-			 }
+			 * responseBody = responseBody.substring(responseBody.indexOf("{"),
+			 * responseBody.lastIndexOf("}")+1); //
+			 * System.out.println("----------------------------------------");
+			 * // System.out.println(responseBody); JSONObject json = new
+			 * JSONObject(responseBody); JSONArray jsonArray =
+			 * json.getJSONArray("result"); for(int
+			 * i=0;i<jsonArray.length();i++){ JSONObject stock = (JSONObject)
+			 * jsonArray.get(i); boolean flag = false;
+			 * //||stock.getString("bulletinType").equals("1")临时停牌不做统计
+			 * if((stock.getString("bulletinType").equals("3")&&stock.getString(
+			 * "stopReason"
+			 * ).indexOf("重要事项未公告")!=-1)||stock.getString("bulletinType"
+			 * ).equals("2")){ flag = true; } if(flag){ //
+			 * if(stock.getString("productCode"
+			 * ).startsWith("0")||stock.getString
+			 * ("productCode").startsWith("3")){ //
+			 * LIST.add(stock.getString("productCode")+".SZ"); // } //
+			 * if(stock.getString("productCode").startsWith("6")){
+			 * LIST.add(stock.getString("productCode")+".SH"); // } } //
+			 * System.out.println(stock); }
 			 **/
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -399,23 +418,23 @@ public class Scanner {
 			}
 		}
 	}
-	
+
 	private static void printInvestors(String code) {
 		String content = null;
-		String codex = code.substring(0, code.length()-3);
+		String codex = code.substring(0, code.length() - 3);
 		try {
 			content = get("http://www.windin.com/home/stock/stock-mh/" + code
 					+ ".shtml");
-			if(content==null){
+			if (content == null) {
 				System.err.println("ERROR CONTENT");
 				return;
 			}
 			// System.out.println(content);
-			try{
-			content = content.substring(content
-					.indexOf("<tr class=\"title3\">"));
-			}catch(Exception e){
-				System.err.println("ERR:"+code);
+			try {
+				content = content.substring(content
+						.indexOf("<tr class=\"title3\">"));
+			} catch (Exception e) {
+				System.err.println("ERR:" + code);
 			}
 			content = content.substring(0, content.indexOf("</table>"));
 			// System.out.println(content);
@@ -447,41 +466,51 @@ public class Scanner {
 					i++;
 				}
 				if (type != null && type.equals("基金")) {
-//					System.out.println("NAME:"+name);
-					if(name.indexOf("/home/fund/html/")!=-1){
+					// System.out.println("NAME:"+name);
+					if (name.indexOf("/home/fund/html/") != -1) {
 						name = name.substring(
 								name.indexOf("/home/fund/html/") + 16,
 								(name.indexOf(".shtml")));
-						
-						name = name.substring(0, name.length()-3);
-					}else{
+
+						name = name.substring(0, name.length() - 3);
+					} else {
 						name = name.replaceAll("<.*?>", "");
 						name = name.replaceAll("</.*?>", "");
 						name = name.replaceAll("&nbsp;", "");
 						name = name.replaceAll(" ", "");
-						name = "[*]"+name;
+						name = "[*]" + name;
 					}
-//					System.out.println("\t" + name + "->" + type);		
+					// System.out.println("\t" + name + "->" + type);
 					System.out.println("\t" + name);
-					if(!name.contains("*")){ //打印基金的持仓
-						content = get("http://fund.eastmoney.com/f10/FundArchivesDatas.aspx?type=jjcc&code="+name+"&year=2015&month=3&rt="+Math.random(), "GB2312");
-						if(content.indexOf("<table")!=-1){//持仓非空
-//							System.out.println("TT:"+code);
-							content = content.substring(content.indexOf("<table"));
-							content = content.substring(0, content.indexOf("</table>"));
-							if(content.contains(codex)){ //当前基金是否持有大量的停牌股票
-								content = content.substring(content.indexOf("<tbody"));
-								content = content.substring(content.indexOf("<tr>"));
-								content = content.substring(0, content.indexOf("</tbody>"));
-								
+					if (!name.contains("*")) { // 打印基金的持仓
+						content = get(
+								"http://fund.eastmoney.com/f10/FundArchivesDatas.aspx?type=jjcc&code="
+										+ name + "&year=2015&month=3&rt="
+										+ Math.random(), "GB2312");
+						if (content.indexOf("<table") != -1) {// 持仓非空
+						// System.out.println("TT:"+code);
+							content = content.substring(content
+									.indexOf("<table"));
+							content = content.substring(0,
+									content.indexOf("</table>"));
+							if (content.contains(codex)) { // 当前基金是否持有大量的停牌股票
+								content = content.substring(content
+										.indexOf("<tbody"));
+								content = content.substring(content
+										.indexOf("<tr>"));
+								content = content.substring(0,
+										content.indexOf("</tbody>"));
+
 								pattern = Pattern.compile("<tr.*?</tr>");
 								matcher = pattern.matcher(content);
 								pattern = Pattern.compile("<td.*?</td>");
 								while (matcher.find()) {
 									boolean cflag = false;
 									line = matcher.group();
-//									line = line.substring(line.indexOf("<td"), line.length() - 5);
-//									System.out.println(line);
+									// line =
+									// line.substring(line.indexOf("<td"),
+									// line.length() - 5);
+									// System.out.println(line);
 
 									m = pattern.matcher(line);
 									int x = 0;
@@ -492,33 +521,44 @@ public class Scanner {
 										// System.out.println(m.group());
 										if (x == 1) {
 											ccode = m.group();
-											ccode = ccode.substring(ccode.indexOf(">")+1);
-											ccode = ccode.substring(ccode.indexOf(">")+1);
-											ccode = ccode.substring(0, ccode.indexOf("<"));
-//											if (name.contains("机构名称")) {
-//												break;
-//											}
-											if(ccode.equals(codex)){
+											ccode = ccode.substring(ccode
+													.indexOf(">") + 1);
+											ccode = ccode.substring(ccode
+													.indexOf(">") + 1);
+											ccode = ccode.substring(0,
+													ccode.indexOf("<"));
+											// if (name.contains("机构名称")) {
+											// break;
+											// }
+											if (ccode.equals(codex)) {
 												cflag = true;
 											}
 										}
 										if (x == 2) {
 											cname = m.group();
-											cname = cname.substring(cname.indexOf(">")+1);
-											cname = cname.substring(cname.indexOf(">")+1);
-											cname = cname.substring(0, cname.indexOf("<"));
+											cname = cname.substring(cname
+													.indexOf(">") + 1);
+											cname = cname.substring(cname
+													.indexOf(">") + 1);
+											cname = cname.substring(0,
+													cname.indexOf("<"));
 										}
-//										cpercent = m.group();
-										//if (x == 6) {
-										if(m.group().contains("%")){
+										// cpercent = m.group();
+										// if (x == 6) {
+										if (m.group().contains("%")) {
 											cpercent = m.group();
-											cpercent = cpercent.substring(cpercent.indexOf(">")+1);
-											cpercent = cpercent.substring(0, cpercent.indexOf("<"));
+											cpercent = cpercent
+													.substring(cpercent
+															.indexOf(">") + 1);
+											cpercent = cpercent.substring(0,
+													cpercent.indexOf("<"));
 										}
 										x++;
 									}
-									if(cflag){
-										System.out.println("\t\t"+ccode+"\t"+cname+"->"+cpercent);
+									if (cflag) {
+										System.out.println("\t\t" + ccode
+												+ "\t" + cname + "->"
+												+ cpercent);
 										break;
 									}
 								}
@@ -549,18 +589,20 @@ public class Scanner {
 			httpGet.setHeader("Accept-Language", "zh-CN,zh;q=0.8");
 			httpGet.setHeader("Cache-Control", "max-age=0");
 			httpGet.setHeader("Connection", "keep-alive");
-//			httpGet.setHeader("Referer",
-//					"http://www.sse.com.cn/disclosure/dealinstruc/");
+			// httpGet.setHeader("Referer",
+			// "http://www.sse.com.cn/disclosure/dealinstruc/");
 			httpGet.setHeader(
 					"User-Agent",
 					"Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.93 Safari/537.36");
 
-			String responseBody  = httpclient.execute(httpGet, responseHandler);
-			responseBody = responseBody.substring(responseBody.indexOf("\"")+1);
-			responseBody = responseBody.substring(0, responseBody.lastIndexOf("\""));
+			String responseBody = httpclient.execute(httpGet, responseHandler);
+			responseBody = responseBody
+					.substring(responseBody.indexOf("\"") + 1);
+			responseBody = responseBody.substring(0,
+					responseBody.lastIndexOf("\""));
 			String[] rs = responseBody.split(",");
-//			System.out.println("----------------------------------------");
-            System.out.println(CSIRATIO*Double.parseDouble(rs[6]));
+			// System.out.println("----------------------------------------");
+			System.out.println(CSIRATIO * Double.parseDouble(rs[6]));
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -573,9 +615,9 @@ public class Scanner {
 				e.printStackTrace();
 			}
 		}
-		
+
 	}
-	
+
 	private static void printHSIPE(ResponseHandler<String> responseHandler) {
 		CloseableHttpClient httpclient = HttpClients.createDefault();
 		try {
@@ -586,20 +628,162 @@ public class Scanner {
 			httpGet.setHeader("Accept-Language", "zh-CN,zh;q=0.8");
 			httpGet.setHeader("Cache-Control", "max-age=0");
 			httpGet.setHeader("Connection", "keep-alive");
-//			httpGet.setHeader("Referer",
-//					"http://www.sse.com.cn/disclosure/dealinstruc/");
+			// httpGet.setHeader("Referer",
+			// "http://www.sse.com.cn/disclosure/dealinstruc/");
 			httpGet.setHeader(
 					"User-Agent",
 					"Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.93 Safari/537.36");
 
-			String responseBody  = httpclient.execute(httpGet, responseHandler);
-			responseBody = responseBody.substring(responseBody.indexOf("HSI Volatility Index (VHSI)"), responseBody.indexOf(" x</td>"));
-			responseBody = responseBody.substring(responseBody.lastIndexOf(">")+1);
-//			System.out.println("----------------------------------------");
-            System.out.println(responseBody);
-            
-            //http://qt.gtimg.cn/r=2015072023241437405887&q=r_hkHSI
-            //http://qt.gtimg.cn/r=0.1559772426262498q=usINX
+			String responseBody = httpclient.execute(httpGet, responseHandler);
+			responseBody = responseBody.substring(
+					responseBody.indexOf("HSI Volatility Index (VHSI)"),
+					responseBody.indexOf(" x</td>"));
+			responseBody = responseBody
+					.substring(responseBody.lastIndexOf(">") + 1);
+			// System.out.println("----------------------------------------");
+			System.out.print(responseBody + " --> ");
+
+			// http://qt.gtimg.cn/r=2015072023241437405887&q=r_hkHSI
+			httpGet = new HttpGet("http://qt.gtimg.cn/r=" + Math.random()
+					+ "&q=r_hkHSI");
+			httpGet.setHeader("Accept", "*/*");
+			httpGet.setHeader("Accept-Encoding", "gzip, deflate, sdch");
+			httpGet.setHeader("Accept-Language", "zh-CN,zh;q=0.8");
+			httpGet.setHeader("Cache-Control", "max-age=0");
+			httpGet.setHeader("Connection", "keep-alive");
+			// httpGet.setHeader("Referer",
+			// "http://www.sse.com.cn/disclosure/dealinstruc/");
+			httpGet.setHeader(
+					"User-Agent",
+					"Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.93 Safari/537.36");
+
+			responseBody = httpclient.execute(httpGet, responseHandler);
+			responseBody = responseBody
+					.substring(responseBody.indexOf("\"") + 1);
+			responseBody = responseBody
+					.substring(0, responseBody.indexOf("\""));
+
+			String[] pbs = responseBody.split("~");
+			String percent = df.format((Double.parseDouble(pbs[3])
+					/ Double.parseDouble(pbs[4]) - 1) * 100);
+			if (percent.startsWith(".")) {
+				percent = "0" + percent;
+			}
+			if (percent.startsWith("-.")) {
+				percent = "-0" + percent.substring(1);
+			}
+
+			System.out.println(pbs[3] + " " + percent + "%");
+
+			// System.out.println("----------------------------------------");
+			// System.out.println(responseBody);
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (httpclient != null) {
+					httpclient.close();
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+
+	}
+
+	private static void printSPXPE(ResponseHandler<String> responseHandler) {
+		CloseableHttpClient httpclient = HttpClients.createDefault();
+		try {
+			HttpGet httpGet = new HttpGet("http://www.multpl.com/");
+			httpGet.setHeader("Accept", "*/*");
+			httpGet.setHeader("Accept-Encoding", "gzip, deflate, sdch");
+			httpGet.setHeader("Accept-Language", "zh-CN,zh;q=0.8");
+			httpGet.setHeader("Cache-Control", "max-age=0");
+			httpGet.setHeader("Connection", "keep-alive");
+			// httpGet.setHeader("Referer",
+			// "http://www.sse.com.cn/disclosure/dealinstruc/");
+			httpGet.setHeader(
+					"User-Agent",
+					"Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.93 Safari/537.36");
+
+			String responseBody = httpclient.execute(httpGet, responseHandler);
+			responseBody = responseBody.substring(responseBody
+					.indexOf("Current S&amp;P 500 PE Ratio is ") + 32);
+			responseBody = responseBody.substring(0, responseBody.indexOf(","));
+			// System.out.println("----------------------------------------");
+			System.out.print(responseBody + " --> ");
+
+			// http://qt.gtimg.cn/r=0.1559772426262498q=usINX
+			httpGet = new HttpGet("http://qt.gtimg.cn/r=" + Math.random()
+					+ "&q=usINX");
+			httpGet.setHeader("Accept", "*/*");
+			httpGet.setHeader("Accept-Encoding", "gzip, deflate, sdch");
+			httpGet.setHeader("Accept-Language", "zh-CN,zh;q=0.8");
+			httpGet.setHeader("Cache-Control", "max-age=0");
+			httpGet.setHeader("Connection", "keep-alive");
+			// httpGet.setHeader("Referer",
+			// "http://www.sse.com.cn/disclosure/dealinstruc/");
+			httpGet.setHeader(
+					"User-Agent",
+					"Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.93 Safari/537.36");
+
+			responseBody = httpclient.execute(httpGet, responseHandler);
+			responseBody = responseBody
+					.substring(responseBody.indexOf("\"") + 1);
+			responseBody = responseBody
+					.substring(0, responseBody.indexOf("\""));
+
+			String[] pbs = responseBody.split("~");
+			String percent = df.format((Double.parseDouble(pbs[3])
+					/ Double.parseDouble(pbs[4]) - 1) * 100);
+			if (percent.startsWith(".")) {
+				percent = "0" + percent;
+			}
+			if (percent.startsWith("-.")) {
+				percent = "-0" + percent.substring(1);
+			}
+
+			System.out.println(pbs[3] + " " + percent + "%");
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (httpclient != null) {
+					httpclient.close();
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	private static void printCPI(ResponseHandler<String> responseHandler) {
+		CloseableHttpClient httpclient = HttpClients.createDefault();
+		try {
+			HttpGet httpGet = new HttpGet(
+					"http://data.eastmoney.com/cjsj/consumerpriceindex.aspx?p=1");
+			httpGet.setHeader("Accept", "*/*");
+			httpGet.setHeader("Accept-Encoding", "gzip, deflate, sdch");
+			httpGet.setHeader("Accept-Language", "zh-CN,zh;q=0.8");
+			httpGet.setHeader("Cache-Control", "max-age=0");
+			httpGet.setHeader("Connection", "keep-alive");
+			// httpGet.setHeader("Referer",
+			// "http://www.sse.com.cn/disclosure/dealinstruc/");
+			httpGet.setHeader(
+					"User-Agent",
+					"Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.93 Safari/537.36");
+
+			String responseBody = httpclient.execute(httpGet, responseHandler);
+			responseBody = responseBody.substring(responseBody
+					.indexOf("secondTr"));
+			responseBody = responseBody
+					.substring(responseBody.indexOf("<span"));
+			responseBody = responseBody
+					.substring(responseBody.indexOf(">") + 1);
+			responseBody = responseBody.substring(0,
+					responseBody.indexOf("</span>")).trim();
+			// System.out.println("----------------------------------------");
+			System.out.println(responseBody);
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -612,86 +796,13 @@ public class Scanner {
 				e.printStackTrace();
 			}
 		}
-		
 	}
-	
-	private static void printSPXPE(ResponseHandler<String> responseHandler) {
+
+	private static void printCSIPEX(ResponseHandler<String> responseHandler,
+			ResponseHandler<InputStream> responseHandlerX) {
 		CloseableHttpClient httpclient = HttpClients.createDefault();
+		Workbook workbook = null;
 		try {
-			HttpGet httpGet = new HttpGet(
-					"http://www.multpl.com/");
-			httpGet.setHeader("Accept", "*/*");
-			httpGet.setHeader("Accept-Encoding", "gzip, deflate, sdch");
-			httpGet.setHeader("Accept-Language", "zh-CN,zh;q=0.8");
-			httpGet.setHeader("Cache-Control", "max-age=0");
-			httpGet.setHeader("Connection", "keep-alive");
-//			httpGet.setHeader("Referer",
-//					"http://www.sse.com.cn/disclosure/dealinstruc/");
-			httpGet.setHeader(
-					"User-Agent",
-					"Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.93 Safari/537.36");
-
-			String responseBody  = httpclient.execute(httpGet, responseHandler);
-			responseBody = responseBody.substring(responseBody.indexOf("Current S&amp;P 500 PE Ratio is ")+32);
-			responseBody = responseBody.substring(0, responseBody.indexOf(","));
-//			System.out.println("----------------------------------------");
-            System.out.println(responseBody);
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			try {
-				if (httpclient != null) {
-					httpclient.close();
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}		
-	}
-	
-	private static void printCPI(ResponseHandler<String> responseHandler) {
-		CloseableHttpClient httpclient = HttpClients.createDefault();
-		try {			
-			HttpGet httpGet = new HttpGet(
-					"http://data.eastmoney.com/cjsj/consumerpriceindex.aspx?p=1");
-			httpGet.setHeader("Accept", "*/*");
-			httpGet.setHeader("Accept-Encoding", "gzip, deflate, sdch");
-			httpGet.setHeader("Accept-Language", "zh-CN,zh;q=0.8");
-			httpGet.setHeader("Cache-Control", "max-age=0");
-			httpGet.setHeader("Connection", "keep-alive");
-//			httpGet.setHeader("Referer",
-//					"http://www.sse.com.cn/disclosure/dealinstruc/");
-			httpGet.setHeader(
-					"User-Agent",
-					"Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.93 Safari/537.36");
-
-			String responseBody  = httpclient.execute(httpGet, responseHandler);
-			responseBody = responseBody.substring(responseBody.indexOf("secondTr"));
-			responseBody = responseBody.substring(responseBody.indexOf("<span"));
-			responseBody = responseBody.substring(responseBody.indexOf(">")+1);
-			responseBody = responseBody.substring(0, responseBody.indexOf("</span>")).trim();
-//			System.out.println("----------------------------------------");
-            System.out.println(responseBody);
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			try {
-				if (httpclient != null) {
-					httpclient.close();
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}		
-	}
-	
-	private static void printCSIPEX(ResponseHandler<String> responseHandler, ResponseHandler<InputStream> responseHandlerX) {
-		CloseableHttpClient httpclient = HttpClients.createDefault();
-		Workbook workbook = null;   
-		DecimalFormat df  = new DecimalFormat("##.00");
-		try {			
 			HttpGet httpGet = new HttpGet(
 					"http://www.csindex.com.cn/sseportal/ps/zhs/hqjt/csi/Csi300Perf.xls");
 			httpGet.setHeader("Accept", "*/*");
@@ -703,17 +814,18 @@ public class Scanner {
 					"User-Agent",
 					"Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.93 Safari/537.36");
 
-			InputStream responseBody  = httpclient.execute(httpGet, responseHandlerX);
- 
+			InputStream responseBody = httpclient.execute(httpGet,
+					responseHandlerX);
+
 			workbook = WorkbookFactory.create(responseBody);
 
 			Sheet sheet = workbook.getSheetAt(0);
 			Row row = sheet.getRow(1);
-//			    Cell cell = row.getCell(14);
-			System.out.print( row.getCell(14).getStringCellValue() + " / " + row.getCell(15).getStringCellValue() + " --> ");
-			
-			httpGet = new HttpGet(
-					"http://hq.sinajs.cn/list=sh000300");
+			// Cell cell = row.getCell(14);
+			System.out.print(row.getCell(14).getStringCellValue() + " / "
+					+ row.getCell(15).getStringCellValue() + " --> ");
+
+			httpGet = new HttpGet("http://hq.sinajs.cn/list=sh000300");
 			httpGet.setHeader("Accept", "*/*");
 			httpGet.setHeader("Accept-Encoding", "gzip, deflate, sdch");
 			httpGet.setHeader("Accept-Language", "zh-CN,zh;q=0.8");
@@ -723,20 +835,25 @@ public class Scanner {
 					"User-Agent",
 					"Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.93 Safari/537.36");
 
-			String priceBody  = httpclient.execute(httpGet, responseHandler);
-			priceBody = priceBody.substring(priceBody.indexOf("\"")+1);
+			String priceBody = httpclient.execute(httpGet, responseHandler);
+			priceBody = priceBody.substring(priceBody.indexOf("\"") + 1);
 			priceBody = priceBody.substring(0, priceBody.indexOf("\""));
 			String[] pbs = priceBody.split(",");
-			String percent = df.format((Double.parseDouble(pbs[3])/Double.parseDouble(pbs[2])-1)*100);
-			if(percent.startsWith(".")){
-				percent = "0"+percent;
+			String percent = df.format((Double.parseDouble(pbs[3])
+					/ Double.parseDouble(pbs[2]) - 1) * 100);
+			if (percent.startsWith(".")) {
+				percent = "0" + percent;
 			}
-			System.out.println(pbs[3] + " " + percent +"%");
+			if (percent.startsWith("-.")) {
+				percent = "-0" + percent.substring(1);
+			}
+
+			System.out.println(pbs[3] + " " + percent + "%");
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
 			try {
-				if(workbook!=null){
+				if (workbook != null) {
 					workbook.close();
 				}
 			} catch (Exception e) {
@@ -750,9 +867,9 @@ public class Scanner {
 				e.printStackTrace();
 			}
 		}
-		
+
 	}
-	
+
 	private static void printAliPayRate(ResponseHandler<String> responseHandler) {
 		CloseableHttpClient httpclient = HttpClients.createDefault();
 		try {
@@ -763,19 +880,23 @@ public class Scanner {
 			httpGet.setHeader("Accept-Language", "zh-CN,zh;q=0.8");
 			httpGet.setHeader("Cache-Control", "max-age=0");
 			httpGet.setHeader("Connection", "keep-alive");
-//			httpGet.setHeader("Referer",
-//					"http://www.sse.com.cn/disclosure/dealinstruc/");
+			// httpGet.setHeader("Referer",
+			// "http://www.sse.com.cn/disclosure/dealinstruc/");
 			httpGet.setHeader(
 					"User-Agent",
 					"Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.93 Safari/537.36");
 
-			String responseBody  = httpclient.execute(httpGet, responseHandler);
-			responseBody = responseBody.substring(responseBody.indexOf("<span class=\"cRed\">"));
-			responseBody = responseBody.substring(responseBody.indexOf(">")+1);
-//			responseBody = responseBody.substring(responseBody.indexOf(">")+1);
-			responseBody = responseBody.substring(0, responseBody.indexOf("</span>")).trim();
-//			System.out.println("----------------------------------------");
-            System.out.println(responseBody);
+			String responseBody = httpclient.execute(httpGet, responseHandler);
+			responseBody = responseBody.substring(responseBody
+					.indexOf("<span class=\"cRed\">"));
+			responseBody = responseBody
+					.substring(responseBody.indexOf(">") + 1);
+			// responseBody =
+			// responseBody.substring(responseBody.indexOf(">")+1);
+			responseBody = responseBody.substring(0,
+					responseBody.indexOf("</span>")).trim();
+			// System.out.println("----------------------------------------");
+			System.out.println(responseBody);
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -788,79 +909,88 @@ public class Scanner {
 				e.printStackTrace();
 			}
 		}
-		
+
 	}
-	
-	//封闭式基金 closed-end fund
-	//http://fund.eastmoney.com/f10/jjgg_184721_2.html
-	//http://fund.eastmoney.com/f10/F10DataApi.aspx?type=jjgg&code=184721&page=1&per=20&class=2&rt=0.7149084734264761
+
+	// 封闭式基金 closed-end fund
+	// http://fund.eastmoney.com/f10/jjgg_184721_2.html
+	// http://fund.eastmoney.com/f10/F10DataApi.aspx?type=jjgg&code=184721&page=1&per=20&class=2&rt=0.7149084734264761
 	private static void printClosedEndFund(
 			ResponseHandler<String> responseHandler) {
-		String[] codes = new String[]{"150001", "161222", "169101", "184721", "184722", "184728", "500038", "500056", "500058", "505888"};
+		String[] codes = new String[] { "150001", "161222", "169101", "184721",
+				"184722", "184728", "500038", "500056", "500058", "505888" };
 		CloseableHttpClient httpclient = HttpClients.createDefault();
 		HttpGet httpGet = null;
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		try {
-			for(int i=0; i<codes.length; i++){
+			for (int i = 0; i < codes.length; i++) {
 				httpGet = new HttpGet(
-						"http://fund.eastmoney.com/f10/F10DataApi.aspx?type=jjgg&code="+codes[i]+"&page=1&per=20&class=2&rt="+Math.random());
+						"http://fund.eastmoney.com/f10/F10DataApi.aspx?type=jjgg&code="
+								+ codes[i] + "&page=1&per=20&class=2&rt="
+								+ Math.random());
 				httpGet.setHeader("Accept", "*/*");
 				httpGet.setHeader("Accept-Encoding", "gzip, deflate, sdch");
 				httpGet.setHeader("Accept-Language", "zh-CN,zh;q=0.8");
 				httpGet.setHeader("Cache-Control", "max-age=0");
 				httpGet.setHeader("Connection", "keep-alive");
-	//			httpGet.setHeader("Referer",
-	//					"http://www.sse.com.cn/disclosure/dealinstruc/");
+				// httpGet.setHeader("Referer",
+				// "http://www.sse.com.cn/disclosure/dealinstruc/");
 				httpGet.setHeader(
 						"User-Agent",
 						"Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.93 Safari/537.36");
-	
-				String responseBody  = httpclient.execute(httpGet, responseHandler);
-				responseBody = responseBody.substring(responseBody.indexOf("</tr>"));
-				responseBody = responseBody.substring(responseBody.indexOf("<tr>"));
-				responseBody = responseBody.substring(0, responseBody.indexOf("</tbody>")).trim();
-	//			System.out.println("----------------------------------------");
-//	            System.out.println(responseBody);
-	            
-	            Pattern pattern = Pattern.compile("<tr.*?</tr>");
+
+				String responseBody = httpclient.execute(httpGet,
+						responseHandler);
+				responseBody = responseBody.substring(responseBody
+						.indexOf("</tr>"));
+				responseBody = responseBody.substring(responseBody
+						.indexOf("<tr>"));
+				responseBody = responseBody.substring(0,
+						responseBody.indexOf("</tbody>")).trim();
+				// System.out.println("----------------------------------------");
+				// System.out.println(responseBody);
+
+				Pattern pattern = Pattern.compile("<tr.*?</tr>");
 				Matcher matcher = pattern.matcher(responseBody);
 				pattern = Pattern.compile("<td.*?</td>");
 				String sdate = null;
 				if (matcher.find()) {
 					String line = matcher.group();
-//					line = line.substring(4, line.length() - 5);
-//					System.out.println(line);
+					// line = line.substring(4, line.length() - 5);
+//					if(i==1){
+//						System.out.println(line);
+//					}
 					Matcher m = pattern.matcher(line);
 					int idx = 0;
 					while (m.find()) {
 						line = m.group();
-						if(idx==2){
+						if (idx == 2) {
 							sdate = line.replaceAll("<.*?>", "");
 						}
 						idx++;
 					}
 				}
-	            if(sdate!=null){
-	            	System.out.print(codes[i]+"-->"+sdate);	            	
-	            	
-	            	Calendar aCalendar = Calendar.getInstance();
-	            	//System.out.println(aCalendar.getTime());
-	            	int year1 = aCalendar.get(Calendar.YEAR);
-	                int day1 = aCalendar.get(Calendar.DAY_OF_YEAR);
-	                //System.out.println(day1);
-	                aCalendar.setTime(sdf.parse(sdate));
-	                //System.out.println(aCalendar.getTime());
-	                int day2 = aCalendar.get(Calendar.DAY_OF_YEAR);
-	                int year2 = aCalendar.get(Calendar.YEAR);
-	                //System.out.println(day2);
-	                
-	                //System.out.println(Math.abs(day2-day1));
-	                if(year1==year2&&Math.abs(day2-day1)<7){
-	                	System.out.println("    Congratulations!");
-	                }else{
-	                	System.out.println("    Sorry!");
-	                }
-	            }
+				if (sdate != null) {
+					System.out.print(codes[i] + "-->" + sdate);
+
+					Calendar aCalendar = Calendar.getInstance();
+					// System.out.println(aCalendar.getTime());
+					int year1 = aCalendar.get(Calendar.YEAR);
+					int day1 = aCalendar.get(Calendar.DAY_OF_YEAR);
+					// System.out.println(day1);
+					aCalendar.setTime(sdf.parse(sdate));
+					// System.out.println(aCalendar.getTime());
+					int day2 = aCalendar.get(Calendar.DAY_OF_YEAR);
+					int year2 = aCalendar.get(Calendar.YEAR);
+					// System.out.println(day2);
+
+					// System.out.println(Math.abs(day2-day1));
+					if (year1 == year2 && Math.abs(day2 - day1) < 7) {
+						System.out.println("    Congratulations!");
+					} else {
+						System.out.println("    Sorry!");
+					}
+				}
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -874,48 +1004,113 @@ public class Scanner {
 			}
 		}
 	}
-	
-	//建立股债平衡，多市场指数基金的投资组合，再平衡（动态再平衡策略）之后，尝试根据资金流的策略。
+
+	private static void printClosedEndFundMaturity(
+			ResponseHandler<String> responseHandler) {
+		CloseableHttpClient httpclient = HttpClients.createDefault();
+		HttpGet httpGet = null;
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		try {
+			httpGet = new HttpGet("http://www.jisilu.cn/data/cf/cf_list/?___t="
+					+ System.currentTimeMillis());
+			httpGet.setHeader("Accept", "*/*");
+			httpGet.setHeader("Accept-Encoding", "gzip, deflate, sdch");
+			httpGet.setHeader("Accept-Language", "zh-CN,zh;q=0.8");
+			httpGet.setHeader("Cache-Control", "max-age=0");
+			httpGet.setHeader("Connection", "keep-alive");
+			// httpGet.setHeader("Referer",
+			// "http://www.sse.com.cn/disclosure/dealinstruc/");
+			httpGet.setHeader(
+					"User-Agent",
+					"Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.93 Safari/537.36");
+
+			String responseBody = httpclient.execute(httpGet, responseHandler);
+			JSONObject json = new JSONObject(responseBody);
+			JSONArray ja = json.getJSONArray("rows");
+			for(int i=0; i<ja.length();i++){
+				json = ja.getJSONObject(i);
+				JSONObject jsx = json.getJSONObject("cell");
+				System.out.print(json.getString("id") + "-->" + jsx.getString("maturity_dt"));
+				System.out.print("\t" + jsx.getString("discount_rt") + "\t" + jsx.getString("annualize_dscnt_rt"));
+				System.out.print("\t\t");
+				
+				Calendar aCalendar = Calendar.getInstance();
+				// System.out.println(aCalendar.getTime());
+				int year1 = aCalendar.get(Calendar.YEAR);
+				int day1 = aCalendar.get(Calendar.DAY_OF_YEAR);
+				// System.out.println(day1);
+				aCalendar.setTime(sdf.parse(jsx.getString("maturity_dt")));
+				// System.out.println(aCalendar.getTime());
+				int day2 = aCalendar.get(Calendar.DAY_OF_YEAR);
+				int year2 = aCalendar.get(Calendar.YEAR);
+				// System.out.println(day2);
+
+				// System.out.println(Math.abs(day2-day1));
+				if (year1 == year2 && Math.abs(day2 - day1) < 30) {
+					System.out.println("Congratulations!");
+				} else {
+					System.out.println("Sorry!");
+				}
+				
+//				System.out.println();
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (httpclient != null) {
+					httpclient.close();
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+
+	}
+
+	// 建立股债平衡，多市场指数基金的投资组合，再平衡（动态再平衡策略）之后，尝试根据资金流的策略。
 	public static void main(String[] args) {
-        ResponseHandler<String> responseHandler = new ResponseHandler<String>() {
-            @Override
-            public String handleResponse(
-                    final HttpResponse response) throws ClientProtocolException, IOException {
-                int status = response.getStatusLine().getStatusCode();
-                if (status >= 200 && status < 300) {
-                    HttpEntity entity = response.getEntity();
-                    return entity != null ? EntityUtils.toString(entity) : null;
-                } else {
-                    throw new ClientProtocolException("Unexpected response status: " + status);
-                }
-            }
-        };
-        
-        ResponseHandler<InputStream> responseHandlerX = new ResponseHandler<InputStream>() {
-            @Override
-            public InputStream handleResponse(
-                    final HttpResponse response) throws ClientProtocolException, IOException {
-                int status = response.getStatusLine().getStatusCode();
-                ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                ByteArrayInputStream bais = null;
-                if (status >= 200 && status < 300) {
-                    HttpEntity entity = response.getEntity();
-//                    System.out.println("XXXXXXXXXXXXXXXXX:"+entity);
-                    if(entity != null){
-	                    InputStream is = entity.getContent();
-	                    byte[] tmp = new byte[1024];
-	                    int size = 0;
-	                    while ((size = is.read(tmp)) != -1) {
-	                    	baos.write(tmp, 0, size);
-	                    }
-	                    bais = new ByteArrayInputStream(baos.toByteArray());
-                    }
-                    return bais; //EntityUtils.toString(entity)
-                } else {
-                    throw new ClientProtocolException("Unexpected response status: " + status);
-                }
-            }
-        };
+		ResponseHandler<String> responseHandler = new ResponseHandler<String>() {
+			@Override
+			public String handleResponse(final HttpResponse response)
+					throws ClientProtocolException, IOException {
+				int status = response.getStatusLine().getStatusCode();
+				if (status >= 200 && status < 300) {
+					HttpEntity entity = response.getEntity();
+					return entity != null ? EntityUtils.toString(entity) : null;
+				} else {
+					throw new ClientProtocolException(
+							"Unexpected response status: " + status);
+				}
+			}
+		};
+
+		ResponseHandler<InputStream> responseHandlerX = new ResponseHandler<InputStream>() {
+			@Override
+			public InputStream handleResponse(final HttpResponse response)
+					throws ClientProtocolException, IOException {
+				int status = response.getStatusLine().getStatusCode();
+				ByteArrayOutputStream baos = new ByteArrayOutputStream();
+				ByteArrayInputStream bais = null;
+				if (status >= 200 && status < 300) {
+					HttpEntity entity = response.getEntity();
+					// System.out.println("XXXXXXXXXXXXXXXXX:"+entity);
+					if (entity != null) {
+						InputStream is = entity.getContent();
+						byte[] tmp = new byte[1024];
+						int size = 0;
+						while ((size = is.read(tmp)) != -1) {
+							baos.write(tmp, 0, size);
+						}
+						bais = new ByteArrayInputStream(baos.toByteArray());
+					}
+					return bais; // EntityUtils.toString(entity)
+				} else {
+					throw new ClientProtocolException(
+							"Unexpected response status: " + status);
+				}
+			}
+		};
 		// http://wap.eastmoney.com/NewsList.aspx?m=145&c=401 //沪市停牌
 		// http://wap.eastmoney.com/NewsList.aspx?m=145&c=402 //深市停牌
 
@@ -929,8 +1124,8 @@ public class Scanner {
 		SimpleDateFormat sdf = new SimpleDateFormat("M月d日");
 		Date date = new Date();
 		String title = sdf.format(date);
-		System.out.println(title);
-		System.out.println("==============");
+		System.out.println(title + "市场总览");
+		System.out.println("----------------");
 		System.out.print("CPI: ");
 		printCPI(responseHandler);
 		System.out.print("AliPay Yields: ");
@@ -942,24 +1137,31 @@ public class Scanner {
 		System.out.print("SPX PE Ratio: ");
 		printSPXPE(responseHandler);
 
-		//System.out.println("------------");
+		// System.out.println("------------");
 		// System.out.println("沪市停牌");
-//		printHalting("http://stock.eastmoney.com/news/chstpyl.html", title);
+		// printHalting("http://stock.eastmoney.com/news/chstpyl.html", title);
 		// System.out.println("深市停牌");
-//		printHalting("http://stock.eastmoney.com/news/csstpyl.html", title);
+		// printHalting("http://stock.eastmoney.com/news/csstpyl.html", title);
 
 		// http://query.sse.com.cn/infodisplay/querySpecialTipsInfoByPage.do?jsonCallBack=jsonpCallback71393&isPagination=true&searchDate=&bgFlag=1&searchDo=1&pageHelp.pageSize=100&_=1433417470230
 		// http://www.szse.cn/szseWeb/FrontController.szse?randnum=0.9035767468158156
-//		printHaltingSSE(responseHandler);
-//		printHaltingSZSE(responseHandler);
+		// printHaltingSSE(responseHandler);
+		// printHaltingSZSE(responseHandler);
 
 		for (String code : LIST) {
 			System.out.println(code);
 			printInvestors(code);
 			// break;
-		}		
+		}
 
-		System.out.println("------------");
+		System.out.println();
+		System.out.println("封基分红送配");
+		System.out.println("----------------");
 		printClosedEndFund(responseHandler);
+		System.out.println();
+		System.out.println("封基到期");
+		System.out.println("----------------");
+		printClosedEndFundMaturity(responseHandler);
 	}
+
 }
