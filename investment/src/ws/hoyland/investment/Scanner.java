@@ -12,8 +12,13 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Stack;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -1029,7 +1034,6 @@ public class Scanner {
 				e.printStackTrace();
 			}
 		}
-
 	}
 	
 	private static String maturity(String date, int interval){
@@ -1048,14 +1052,82 @@ public class Scanner {
 	
 			// System.out.println(Math.abs(day2-day1));
 			if (year1 == year2 && Math.abs(day2 - day1) < interval) {
-				return "Congratulations!";
+				return "Notification!!!";
 			} else {
-				return "Sorry!";
+				return "NotFound";
 			}
 		}catch(Exception e){
 			e.printStackTrace();
 		}
 		return "Exception!";
+	}
+	
+	private static void printLowerRecaculateOfClassificationFund(
+			ResponseHandler<String> responseHandler) {
+		CloseableHttpClient httpclient = HttpClients.createDefault();
+		HttpGet httpGet = null;
+		try {
+			httpGet = new HttpGet("http://www.jisilu.cn/data/sfnew/funda_list/?___t="
+					+ System.currentTimeMillis());
+			httpGet.setHeader("Accept", "*/*");
+			httpGet.setHeader("Accept-Encoding", "gzip, deflate, sdch");
+			httpGet.setHeader("Accept-Language", "zh-CN,zh;q=0.8");
+			httpGet.setHeader("Cache-Control", "max-age=0");
+			httpGet.setHeader("Connection", "keep-alive");
+			// httpGet.setHeader("Referer",
+			// "http://www.sse.com.cn/disclosure/dealinstruc/");
+			httpGet.setHeader(
+					"User-Agent",
+					"Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.93 Safari/537.36");
+
+			Map<String, String> map = new HashMap<String, String>();  
+			
+			String responseBody = httpclient.execute(httpGet, responseHandler);
+			JSONObject json = new JSONObject(responseBody);
+			JSONArray ja = json.getJSONArray("rows");
+			for(int i=0; i<ja.length();i++){
+				json = ja.getJSONObject(i);
+				JSONObject jsx = json.getJSONObject("cell"); //lower_recalc_profit_rt
+				String lr = jsx.getString("funda_lower_recalc_rt");
+				float ilr = Float.parseFloat(lr.substring(0, lr.length()-2));
+				if(ilr<10){
+					if(ilr<4){
+						map.put(json.getString("id"), jsx.getString("funda_lower_recalc_rt")+"\t\t"+jsx.getString("lower_recalc_profit_rt")+"\tNotification!!!");
+					}else{
+						map.put(json.getString("id"), jsx.getString("funda_lower_recalc_rt")+"\t\t"+jsx.getString("lower_recalc_profit_rt")+"\tNotFound");
+					}
+				}
+//				System.out.print(json.getString("id") + "-->" + jsx.getString("funda_lower_recalc_rt"));
+//				System.out.print("\t" + jsx.getString("lower_recalc_profit_rt"));
+			}
+
+			List<Map.Entry<String, String>> set = new ArrayList<Map.Entry<String, String>>(map.entrySet()); 
+			Collections.sort(set, new Comparator<Map.Entry<String, String>>() {  
+			    public int compare(Map.Entry<String, String> fst,  
+			            Map.Entry<String, String> sec) {  
+			    	String sfst = fst.getValue().split("\t\t")[0];
+			    	String ssec = sec.getValue().split("\t\t")[0];
+			    	float ifst = Float.parseFloat(sfst.substring(0, sfst.length()-2));
+			    	float isec = Float.parseFloat(ssec.substring(0, ssec.length()-2));			    	
+			        return (int)(ifst-isec);
+			    }  
+			});
+			
+			for (int i = 0; i < set.size(); i++) {  
+			    Entry<String, String> ent = set.get(i);  
+			    System.out.println(ent.getKey()+"-->"+ent.getValue());			      
+			}  
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (httpclient != null) {
+					httpclient.close();
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}		
 	}
 
 	// 建立股债平衡，多市场指数基金的投资组合，再平衡（动态再平衡策略）之后，尝试根据资金流的策略。
@@ -1145,13 +1217,23 @@ public class Scanner {
 		}
 
 		System.out.println();
+		System.out.println("封基到期");
+		System.out.println("----------------");
+		printClosedEndFundMaturity(responseHandler);
+		System.out.println();
 		System.out.println("封基分红送配");
 		System.out.println("----------------");
 		printClosedEndFund(responseHandler);
 		System.out.println();
-		System.out.println("封基到期");
+		System.out.println("分级基金下折");
 		System.out.println("----------------");
-		printClosedEndFundMaturity(responseHandler);
+		printLowerRecaculateOfClassificationFund(responseHandler);
+		System.out.println();
+		System.out.println("分级基金定折");
+		System.out.println("----------------");
+		System.out.println();
+		System.out.println("分级基金合并折价");
+		System.out.println("----------------");
 	}
 
 }
