@@ -1200,7 +1200,7 @@ public class Scanner {
 				JSONObject jsx = json.getJSONObject("cell"); //lower_recalc_profit_rt
 				String lr = jsx.getString("est_dis_rt");
 				float ilr = Float.parseFloat(lr.substring(0, lr.length()-1));
-				if(ilr<-1.4){
+				if(ilr<-1.2){
 //					System.out.println("ilr:"+lr.substring(0, lr.length()-1));
 					String sira = jsx.getString("increase_rtA");
 					String sirb = jsx.getString("increase_rtB");
@@ -1208,9 +1208,9 @@ public class Scanner {
 			    	float firb = Float.parseFloat(sirb.substring(0, sirb.length()-1));
 //			    	System.out.println(fira+"/"+firb);
 					if(ilr<-1.5&&fira<9.9f&&firb<9.9f){
-						map.put(json.getString("id"), jsx.getString("est_dis_rt")+"\t\t"+jsx.getString("fundA_id")+ "=" + sira + "\t" + jsx.getString("fundB_id") + "=" + sirb + "\t" + jsx.getString("idx_incr_rt") + "\tNotification!!!");
+						map.put(json.getString("id"), jsx.getString("est_dis_rt")+"\t\t"+jsx.getString("fundA_id")+ "=" + sira + "["+jsx.getString("sell1A")+"]\t" + jsx.getString("fundB_id") + "=" + sirb + "["+jsx.getString("sell1B")+"]\t" + jsx.getString("idx_incr_rt") + "\tNotification!!!");
 					}else{
-						map.put(json.getString("id"), jsx.getString("est_dis_rt")+"\t\t"+jsx.getString("fundA_id")+ "=" + sira + "\t" + jsx.getString("fundB_id") + "=" + sirb + "\t" + jsx.getString("idx_incr_rt") + "\tNotFound");
+						map.put(json.getString("id"), jsx.getString("est_dis_rt")+"\t\t"+jsx.getString("fundA_id")+ "=" + sira + "["+jsx.getString("sell1A")+"]\t" + jsx.getString("fundB_id") + "=" + sirb + "["+jsx.getString("sell1B")+"]\t" + jsx.getString("idx_incr_rt") + "\tNotFound");
 					}
 				}
 //				System.out.print(json.getString("id") + "-->" + jsx.getString("funda_lower_recalc_rt"));
