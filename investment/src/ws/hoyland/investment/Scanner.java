@@ -28,6 +28,7 @@ import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.CookieStore;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.entity.DecompressingEntity;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
@@ -1094,7 +1095,7 @@ public class Scanner {
 				json = ja.getJSONObject(i);
 				JSONObject jsx = json.getJSONObject("cell"); //lower_recalc_profit_rt
 				String lr = jsx.getString("funda_lower_recalc_rt");
-				float ilr = Float.parseFloat(lr.substring(0, lr.length()-2));
+				float ilr = Float.parseFloat(lr.substring(0, lr.length()-1));
 				if(ilr<10){
 					if(ilr<4){
 						map.put(json.getString("id"), jsx.getString("funda_lower_recalc_rt")+"\t\t"+jsx.getString("lower_recalc_profit_rt")+"\tNotification!!!");
@@ -1112,9 +1113,11 @@ public class Scanner {
 			            Map.Entry<String, String> sec) {  
 			    	String sfst = fst.getValue().split("\t\t")[0];
 			    	String ssec = sec.getValue().split("\t\t")[0];
-			    	float ifst = Float.parseFloat(sfst.substring(0, sfst.length()-2));
-			    	float isec = Float.parseFloat(ssec.substring(0, ssec.length()-2));			    	
-			        return (int)(ifst-isec);
+			    	float ifst = Float.parseFloat(sfst.substring(0, sfst.length()-1));
+			    	float isec = Float.parseFloat(ssec.substring(0, ssec.length()-1));		    	
+			    	if(ifst>isec) return 1;
+			    	if(ifst<isec) return -1;
+			    	return 0;
 			    }  
 			});
 			
@@ -1142,17 +1145,20 @@ public class Scanner {
 		try {
 			httpPost = new HttpPost("http://www.jisilu.cn/data/sfnew/arbitrage_vip_list/?___t="
 					+ System.currentTimeMillis());
-			httpPost.setHeader("Accept", "*/*");
-			httpPost.setHeader("Accept-Encoding", "gzip, deflate, sdch");
+			httpPost.setHeader("Accept", "application/json, text/javascript, */*; q=0.01");
+			httpPost.setHeader("Accept-Encoding", "gzip,deflate");
 			httpPost.setHeader("Accept-Language", "zh-CN,zh;q=0.8");
-			httpPost.setHeader("Cache-Control", "max-age=0");
+			//httpPost.setHeader("Cache-Control", "max-age=0");
 			httpPost.setHeader("Connection", "keep-alive");
-			// httpGet.setHeader("Referer",
-			// "http://www.sse.com.cn/disclosure/dealinstruc/");
+			httpPost.setHeader("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
+			httpPost.setHeader("Origin", "http://www.jisilu.cn");
+			httpPost.setHeader("Referer", "http://www.jisilu.cn/data/sfnew/");
+			httpPost.setHeader("X-Requested-With", "XMLHttpRequest");				
 			httpPost.setHeader(
 					"User-Agent",
 					"Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.93 Safari/537.36");
-
+			httpPost.setHeader("Cookie", "kbz_r_uname=hoyzhang; kbz__user_login=1ubd08_P1ebax9aX39Hv29vZz9eCr6blyuzf7tHoxdHVjNSV1dzYmrKdrcipxtmxlqnH1dysyqzSqZWrxKiqmaPClbSi3uLQ1b-hk6mvkqiCr6bKqtfJoq_l29zkzdGQqaeliaHD4NDa0Orrgb61lK-jmrSMzrHNl6ehgbHR5OXawN7OwsvqkKirmJ6UqpmdtMHAxK6igd_hzNWBu97Y1OiVl6Xe0-Llxp-UrKell6udqZekkqSpgcPC2trn0qihqpmklKk.; kbz_newcookie=1; kbz__Session=2gv4cu4f4gv89eunlo42cvi8b5; Hm_lvt_164fe01b1433a19b507595a43bf58262=1437447566,1437531090,1437619814,1437620170; Hm_lpvt_164fe01b1433a19b507595a43bf58262=1437620172");
+					
 			List<NameValuePair> nvps = new ArrayList<NameValuePair>();
 	        nvps.add(new BasicNameValuePair("is_search", "1"));
 	        nvps.add(new BasicNameValuePair("avolume", ""));
@@ -1166,19 +1172,25 @@ public class Scanner {
 			Map<String, String> map = new HashMap<String, String>();  
 			
 			String responseBody = httpclient.execute(httpPost, responseHandler);
-			System.out.println(">>>"+responseBody);;
+//			System.out.println(">>>"+responseBody);;
 			JSONObject json = new JSONObject(responseBody);
 			JSONArray ja = json.getJSONArray("rows");
 			for(int i=0; i<ja.length();i++){
 				json = ja.getJSONObject(i);
 				JSONObject jsx = json.getJSONObject("cell"); //lower_recalc_profit_rt
-				String lr = jsx.getString("funda_lower_recalc_rt");
-				float ilr = Float.parseFloat(lr.substring(0, lr.length()-2));
-				if(ilr<10){
-					if(ilr<4){
-						map.put(json.getString("id"), jsx.getString("funda_lower_recalc_rt")+"\t\t"+jsx.getString("lower_recalc_profit_rt")+"\tNotification!!!");
+				String lr = jsx.getString("est_dis_rt");
+				float ilr = Float.parseFloat(lr.substring(0, lr.length()-1));
+				if(ilr<-1.4){
+//					System.out.println("ilr:"+lr.substring(0, lr.length()-1));
+					String sira = jsx.getString("increase_rtA");
+					String sirb = jsx.getString("increase_rtB");
+					float fira = Float.parseFloat(sira.substring(0, sira.length()-1));
+			    	float firb = Float.parseFloat(sirb.substring(0, sirb.length()-1));
+			    	
+					if(ilr<-1.5&&fira<9.9f&&firb<9.9f){
+						map.put(json.getString("id"), jsx.getString("est_dis_rt")+"\t\t"+jsx.getString("fundA_id")+ "=" + sira + "\t" + jsx.getString("fundB_id") + "=" + sirb + "\tNotification!!!");
 					}else{
-						map.put(json.getString("id"), jsx.getString("funda_lower_recalc_rt")+"\t\t"+jsx.getString("lower_recalc_profit_rt")+"\tNotFound");
+						map.put(json.getString("id"), jsx.getString("est_dis_rt")+"\t\t"+jsx.getString("fundA_id")+ "=" + sira + "\t" + jsx.getString("fundB_id") + "=" + sirb + "\tNotFound");
 					}
 				}
 //				System.out.print(json.getString("id") + "-->" + jsx.getString("funda_lower_recalc_rt"));
@@ -1191,9 +1203,11 @@ public class Scanner {
 			            Map.Entry<String, String> sec) {  
 			    	String sfst = fst.getValue().split("\t\t")[0];
 			    	String ssec = sec.getValue().split("\t\t")[0];
-			    	float ifst = Float.parseFloat(sfst.substring(0, sfst.length()-2));
-			    	float isec = Float.parseFloat(ssec.substring(0, ssec.length()-2));			    	
-			        return (int)(ifst-isec);
+			    	float ifst = Float.parseFloat(sfst.substring(0, sfst.length()-1));
+			    	float isec = Float.parseFloat(ssec.substring(0, ssec.length()-1));
+			    	if(ifst>isec) return 1;
+			    	if(ifst<isec) return -1;
+			    	return 0;
 			    }  
 			});
 			
@@ -1223,10 +1237,10 @@ public class Scanner {
 				int status = response.getStatusLine().getStatusCode();
 				if (status >= 200 && status < 300) {
 					HttpEntity entity = response.getEntity();
-					for(Header header:response.getAllHeaders()){
-						System.out.println((header.getValue()));
-					}
-					System.out.println(entity.getContentEncoding());
+//					for(Header header:response.getAllHeaders()){
+//						System.out.println((header.getName())+"="+header.getValue());
+//					}
+//					System.out.println(entity.getContentEncoding());
 					//new GzipDecompressingEntity(
 					return entity != null ? EntityUtils.toString(entity) : null;
 				} else {
@@ -1317,7 +1331,7 @@ public class Scanner {
 		System.out.println("分级基金下折");
 		System.out.println("----------------");
 		printLowerRecaculateOfClassificationFund(responseHandler);
-//		System.out.println();
+		System.out.println();
 		System.out.println("分级基金定折");
 		System.out.println("----------------");   //很难抛出，不做. 净值>1
 		System.out.println();
