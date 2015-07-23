@@ -19,27 +19,21 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Stack;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.CookieStore;
 import org.apache.http.client.ResponseHandler;
-import org.apache.http.client.entity.DecompressingEntity;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
-import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -50,7 +44,7 @@ import org.json.JSONObject;
 public class Scanner {
 
 	private static List<String> LIST = new ArrayList<String>();
-	private static double CSIRATIO = (17.6d / 4907.06d);
+//	private static double CSIRATIO = (17.6d / 4907.06d);
 	private static DecimalFormat df = new DecimalFormat("##.00");
 
 	public static String get(String url) {
@@ -162,13 +156,14 @@ public class Scanner {
 		}
 	}
 
+	/**
 	private static void printHaltingSSE(ResponseHandler<String> responseHandler) {
 		CloseableHttpClient httpclient = HttpClients.createDefault();
 		try {
 			HttpGet httpGet = new HttpGet(
 					"http://query.sse.com.cn/infodisplay/querySpecialTipsInfoByPage.do?jsonCallBack=jsonpCallback71393&isPagination=true&searchDate=&bgFlag=1&searchDo=1&pageHelp.pageSize=100&_="
 							+ System.currentTimeMillis());
-			httpGet.setHeader("Accept", "*/*");
+			httpGet.setHeader("Accept", "* /*");
 			httpGet.setHeader("Accept-Encoding", "gzip, deflate, sdch");
 			httpGet.setHeader("Accept-Language", "zh-CN,zh;q=0.8");
 			httpGet.setHeader("Cache-Control", "max-age=0");
@@ -217,7 +212,9 @@ public class Scanner {
 			}
 		}
 	}
+	**/
 
+	/**
 	private static void printHaltingSZSE(ResponseHandler<String> responseHandler) {
 		List<String> tmpList = new ArrayList<String>();
 		Stack<String> stack = new Stack<String>();
@@ -227,7 +224,7 @@ public class Scanner {
 			HttpPost httpPost = new HttpPost(
 					"http://www.szse.cn/szseWeb/FrontController.szse?randnum="
 							+ Math.random());
-			httpPost.setHeader("Accept", "*/*");
+			httpPost.setHeader("Accept", "* /*");
 			httpPost.setHeader("Accept-Encoding", "gzip, deflate");
 			httpPost.setHeader("Accept-Language", "zh-CN,zh;q=0.8");
 			// httpPost.setHeader("Cache-Control", "max-age=0");
@@ -292,7 +289,7 @@ public class Scanner {
 				httpPost = new HttpPost(
 						"http://www.szse.cn/szseWeb/FrontController.szse?randnum="
 								+ Math.random());
-				httpPost.setHeader("Accept", "*/*");
+				httpPost.setHeader("Accept", "* /*");
 				httpPost.setHeader("Accept-Encoding", "gzip, deflate");
 				httpPost.setHeader("Accept-Language", "zh-CN,zh;q=0.8");
 				// httpPost.setHeader("Cache-Control", "max-age=0");
@@ -395,28 +392,6 @@ public class Scanner {
 			}
 
 			System.out.println(LIST.size());
-			/**
-			 * responseBody = responseBody.substring(responseBody.indexOf("{"),
-			 * responseBody.lastIndexOf("}")+1); //
-			 * System.out.println("----------------------------------------");
-			 * // System.out.println(responseBody); JSONObject json = new
-			 * JSONObject(responseBody); JSONArray jsonArray =
-			 * json.getJSONArray("result"); for(int
-			 * i=0;i<jsonArray.length();i++){ JSONObject stock = (JSONObject)
-			 * jsonArray.get(i); boolean flag = false;
-			 * //||stock.getString("bulletinType").equals("1")临时停牌不做统计
-			 * if((stock.getString("bulletinType").equals("3")&&stock.getString(
-			 * "stopReason"
-			 * ).indexOf("重要事项未公告")!=-1)||stock.getString("bulletinType"
-			 * ).equals("2")){ flag = true; } if(flag){ //
-			 * if(stock.getString("productCode"
-			 * ).startsWith("0")||stock.getString
-			 * ("productCode").startsWith("3")){ //
-			 * LIST.add(stock.getString("productCode")+".SZ"); // } //
-			 * if(stock.getString("productCode").startsWith("6")){
-			 * LIST.add(stock.getString("productCode")+".SH"); // } } //
-			 * System.out.println(stock); }
-			 **/
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
@@ -429,6 +404,7 @@ public class Scanner {
 			}
 		}
 	}
+	**/
 
 	private static void printInvestors(String code) {
 		String content = null;
@@ -590,12 +566,13 @@ public class Scanner {
 		}
 	}
 
+	/**
 	private static void printCSIPE(ResponseHandler<String> responseHandler) {
 		CloseableHttpClient httpclient = HttpClients.createDefault();
 		try {
 			HttpGet httpGet = new HttpGet(
 					"http://hq.sinajs.cn/?_=1434525165656&list=rt_hkCSI300");
-			httpGet.setHeader("Accept", "*/*");
+			httpGet.setHeader("Accept", "* /*");
 			httpGet.setHeader("Accept-Encoding", "gzip, deflate, sdch");
 			httpGet.setHeader("Accept-Language", "zh-CN,zh;q=0.8");
 			httpGet.setHeader("Cache-Control", "max-age=0");
@@ -629,6 +606,7 @@ public class Scanner {
 
 	}
 
+	**/
 	private static void printHSIPE(ResponseHandler<String> responseHandler) {
 		CloseableHttpClient httpclient = HttpClients.createDefault();
 		try {
@@ -1071,11 +1049,11 @@ public class Scanner {
 		return "Exception!";
 	}
 	
-	private static void printLowerRecaculateOfClassificationFund(
+	private static void printRecaculateOfClassificationFund(
 			ResponseHandler<String> responseHandler) {
 		CloseableHttpClient httpclient = HttpClients.createDefault();
 		HttpGet httpGet = null;
-		try {
+		try {//
 			httpGet = new HttpGet("http://www.jisilu.cn/data/sfnew/funda_list/?___t="
 					+ System.currentTimeMillis());
 			httpGet.setHeader("Accept", "*/*");
@@ -1089,7 +1067,8 @@ public class Scanner {
 					"User-Agent",
 					"Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.93 Safari/537.36");
 
-			Map<String, String> map = new HashMap<String, String>();  
+			Map<String, String> mapl = new HashMap<String, String>(); 
+			Map<String, String> mapx = new HashMap<String, String>();
 			
 			String responseBody = httpclient.execute(httpGet, responseHandler);
 			JSONObject json = new JSONObject(responseBody);
@@ -1101,16 +1080,27 @@ public class Scanner {
 				float ilr = Float.parseFloat(lr.substring(0, lr.length()-1));
 				if(ilr<10){
 					if(ilr<4){
-						map.put(json.getString("id"), jsx.getString("funda_lower_recalc_rt")+"\t\t"+jsx.getString("lower_recalc_profit_rt")+"\tNotification!!!");
+						mapl.put(json.getString("id"), jsx.getString("funda_lower_recalc_rt")+"\t\t"+ jsx.getString("funda_current_price") + "\t" + jsx.getString("lower_recalc_profit_rt")+"\tNotification!!!");
 					}else{
-						map.put(json.getString("id"), jsx.getString("funda_lower_recalc_rt")+"\t\t"+jsx.getString("lower_recalc_profit_rt")+"\tNotFound");
+						mapl.put(json.getString("id"), jsx.getString("funda_lower_recalc_rt")+"\t\t"+ jsx.getString("funda_current_price") + "\t" + jsx.getString("lower_recalc_profit_rt")+"\tNotFound");
+					}
+				}
+				
+				float fv = Float.parseFloat(jsx.getString("funda_value"));
+				String snrd = jsx.getString("next_recalc_dt");
+				snrd = snrd.replaceAll("<.*?>", "").substring(0, 10);
+				if(maturity(snrd, 30).contains("!")){
+					if(fv>1.05f){
+						mapx.put(json.getString("id"), snrd+"\t\t"+jsx.getString("funda_value")+"\tNotification!!!");
+					}else{
+						mapx.put(json.getString("id"), snrd+"\t\t"+jsx.getString("funda_value")+"\tNotFound");
 					}
 				}
 //				System.out.print(json.getString("id") + "-->" + jsx.getString("funda_lower_recalc_rt"));
 //				System.out.print("\t" + jsx.getString("lower_recalc_profit_rt"));
 			}
 
-			List<Map.Entry<String, String>> set = new ArrayList<Map.Entry<String, String>>(map.entrySet()); 
+			List<Map.Entry<String, String>> set = new ArrayList<Map.Entry<String, String>>(mapl.entrySet()); 
 			Collections.sort(set, new Comparator<Map.Entry<String, String>>() {  
 			    public int compare(Map.Entry<String, String> fst,  
 			            Map.Entry<String, String> sec) {  
@@ -1123,11 +1113,35 @@ public class Scanner {
 			    	return 0;
 			    }  
 			});
-			
+
+			System.out.println("分级基金下折");
+			System.out.println("----------------");
 			for (int i = 0; i < set.size(); i++) {  
 			    Entry<String, String> ent = set.get(i);  
 			    System.out.println(ent.getKey()+"-->"+ent.getValue());			      
 			}  
+			System.out.println();
+			
+			set = new ArrayList<Map.Entry<String, String>>(mapx.entrySet()); 
+			Collections.sort(set, new Comparator<Map.Entry<String, String>>() {  
+			    public int compare(Map.Entry<String, String> fst,  
+			            Map.Entry<String, String> sec) {  
+			    	String sfst = fst.getValue().split("\t\t")[0];
+			    	String ssec = sec.getValue().split("\t\t")[0];
+//			    	float ifst = Float.parseFloat(sfst.substring(0, sfst.length()-1));
+//			    	float isec = Float.parseFloat(ssec.substring(0, ssec.length()-1));		    	
+//			    	if(ifst>isec) return 1;
+//			    	if(ifst<isec) return -1;
+			    	return sfst.compareTo(ssec);
+			    }  
+			});
+			System.out.println("分级基金定折");
+			System.out.println("----------------");
+			for (int i = 0; i < set.size(); i++) {  
+			    Entry<String, String> ent = set.get(i);  
+			    System.out.println(ent.getKey()+"-->"+ent.getValue());			      
+			}  
+			System.out.println();
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
@@ -1146,6 +1160,7 @@ public class Scanner {
 		CloseableHttpClient httpclient = HttpClients.createDefault();
 		HttpPost httpPost = null;
 		try {
+			long t1 = System.currentTimeMillis();
 			httpPost = new HttpPost("http://www.jisilu.cn/data/sfnew/arbitrage_vip_list/?___t="
 					+ System.currentTimeMillis());
 			httpPost.setHeader("Accept", "application/json, text/javascript, */*; q=0.01");
@@ -1160,8 +1175,10 @@ public class Scanner {
 			httpPost.setHeader(
 					"User-Agent",
 					"Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.93 Safari/537.36");
-			httpPost.setHeader("Cookie", "kbz_r_uname=hoyzhang; kbz__user_login=1ubd08_P1ebax9aX39Hv29vZz9eCr6blyuzf7tHoxdHVjNSV1dzYmrKdrcipxtmxlqnH1dysyqzSqZWrxKiqmaPClbSi3uLQ1b-hk6mvkqiCr6bKqtfJoq_l29zkzdGQqaeliaHD4NDa0Orrgb61lK-jmrSMzrHNl6ehgbHR5OXawN7OwsvqkKirmJ6UqpmdtMHAxK6igd_hzNWBu97Y1OiVl6Xe0-Llxp-UrKell6udqZekkqSpgcPC2trn0qihqpmklKk.; kbz_newcookie=1; kbz__Session=2gv4cu4f4gv89eunlo42cvi8b5; Hm_lvt_164fe01b1433a19b507595a43bf58262=1437447566,1437531090,1437619814,1437620170; Hm_lpvt_164fe01b1433a19b507595a43bf58262=1437620172");
-					
+//			httpPost.setHeader("Cookie", "kbz_r_uname=hoyzhang; kbz__user_login=1ubd08_P1ebax9aX39Hv29vZz9eCr6blyuzf7tHoxdHVjNSV1dzYmrKdrcipxtmxlqnH1dysyqzSqZWrxKiqmaPClbSi3uLQ1b-hk6mvkqiCr6bKqtfJoq_l29zkzdGQqaeliaHD4NDa0Orrgb61lK-jmrSMzrHNl6ehgbHR5OXawN7OwsvqkKirmJ6UqpmdtMHAxK6igd_hzNWBu97Y1OiVl6Xe0-Llxp-UrKell6udqZekkqSpgcPC2trn0qihqpmklKk.; kbz_newcookie=1; kbz__Session=2gv4cu4f4gv89eunlo42cvi8b5; Hm_lvt_164fe01b1433a19b507595a43bf58262=1437447566,1437531090,1437619814,1437620170; Hm_lpvt_164fe01b1433a19b507595a43bf58262=1437620172");
+//			httpPost.setHeader("Cookie", "kbz_r_uname=hoyzhang; kbz__user_login=1ubd08_P1ebax9aX39Hv29vZz9eCr6blyuzf7tHoxdHVjNSV1dzYmrKdrcipxtmxlqnH1dysyqzSqZWrxKiqmaPClbSi3uLQ1b-hk6mvkqiCr6bKqtfJoq_l29zkzdGQqaeliaHD4NDa0Orrgb61lK-jmrSMzrHNl6ehgbHR5OXawN7OwsvqkKirmJ6UqpmdtMHAxK6igd_hzNWBu97Y1OiVl6Xe0-Llxp-UrKell6udqZekkqSpgcPC2trn0qihqpmklKk.; kbz_newcookie=1; kbz__Session=ptmuorudhkjt5pp7n684lu81k2; Hm_lvt_164fe01b1433a19b507595a43bf58262=1437531090,1437619814,1437620170,1437627768; Hm_lpvt_164fe01b1433a19b507595a43bf58262=1437627772");
+			httpPost.setHeader("Cookie", "kbz_r_uname=hoyzhang; kbz__user_login=1ubd08_P1ebax9aX39Hv29vZz9eCr6blyuzf7tHoxdHVjNSV1dzYmrKdrcipxtmxlqnH1dysyqzSqZWrxKiqmaPClbSi3uLQ1b-hk6mvkqiCr6bKqtfJoq_l29zkzdGQqaeliaHD4NDa0Orrgb61lK-jmrSMzrHNl6ehgbHR5OXawN7OwsvqkKirmJ6UqpmdtMHAxK6igd_hzNWBu97Y1OiVl6Xe0-Llxp-UrKell6udqZekkqSpgcPC2trn0qihqpmklKk.; kbz_newcookie=1; kbz__Session=ptmuorudhkjt5pp7n684lu81k2; Hm_lvt_164fe01b1433a19b507595a43bf58262=1437531090,1437619814,1437620170,1437627768; Hm_lpvt_164fe01b1433a19b507595a43bf58262="+t1/1000);
+			
 			List<NameValuePair> nvps = new ArrayList<NameValuePair>();
 	        nvps.add(new BasicNameValuePair("is_search", "1"));
 	        nvps.add(new BasicNameValuePair("avolume", ""));
@@ -1189,11 +1206,11 @@ public class Scanner {
 					String sirb = jsx.getString("increase_rtB");
 					float fira = Float.parseFloat(sira.substring(0, sira.length()-1));
 			    	float firb = Float.parseFloat(sirb.substring(0, sirb.length()-1));
-			    	
+//			    	System.out.println(fira+"/"+firb);
 					if(ilr<-1.5&&fira<9.9f&&firb<9.9f){
-						map.put(json.getString("id"), jsx.getString("est_dis_rt")+"\t\t"+jsx.getString("fundA_id")+ "=" + sira + "\t" + jsx.getString("fundB_id") + "=" + sirb + "\tNotification!!!");
+						map.put(json.getString("id"), jsx.getString("est_dis_rt")+"\t\t"+jsx.getString("fundA_id")+ "=" + sira + "\t" + jsx.getString("fundB_id") + "=" + sirb + "\t" + jsx.getString("idx_incr_rt") + "\tNotification!!!");
 					}else{
-						map.put(json.getString("id"), jsx.getString("est_dis_rt")+"\t\t"+jsx.getString("fundA_id")+ "=" + sira + "\t" + jsx.getString("fundB_id") + "=" + sirb + "\tNotFound");
+						map.put(json.getString("id"), jsx.getString("est_dis_rt")+"\t\t"+jsx.getString("fundA_id")+ "=" + sira + "\t" + jsx.getString("fundB_id") + "=" + sirb + "\t" + jsx.getString("idx_incr_rt") + "\tNotFound");
 					}
 				}
 //				System.out.print(json.getString("id") + "-->" + jsx.getString("funda_lower_recalc_rt"));
@@ -1329,15 +1346,11 @@ public class Scanner {
 		System.out.println();
 		System.out.println("封基分红送配");
 		System.out.println("----------------");
-		printClosedEndFund(responseHandler);
+//		printClosedEndFund(responseHandler);
 		System.out.println();
-		System.out.println("分级基金下折");
-		System.out.println("----------------");
-		printLowerRecaculateOfClassificationFund(responseHandler);
-		System.out.println();
-		System.out.println("分级基金定折");
-		System.out.println("----------------");   //很难抛出，不做. 净值>1
-		System.out.println();
+		//分级基金下折和定折
+		printRecaculateOfClassificationFund(responseHandler);
+//		System.out.println();
 		System.out.println("分级基金合并折价");
 		System.out.println("----------------");
 		printMergeOfClassificationFund(responseHandler);

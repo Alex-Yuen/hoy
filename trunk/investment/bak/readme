@@ -1,0 +1,23 @@
+
+			/**
+			 * responseBody = responseBody.substring(responseBody.indexOf("{"),
+			 * responseBody.lastIndexOf("}")+1); //
+			 * System.out.println("----------------------------------------");
+			 * // System.out.println(responseBody); JSONObject json = new
+			 * JSONObject(responseBody); JSONArray jsonArray =
+			 * json.getJSONArray("result"); for(int
+			 * i=0;i<jsonArray.length();i++){ JSONObject stock = (JSONObject)
+			 * jsonArray.get(i); boolean flag = false;
+			 * //||stock.getString("bulletinType").equals("1")临时停牌不做统计
+			 * if((stock.getString("bulletinType").equals("3")&&stock.getString(
+			 * "stopReason"
+			 * ).indexOf("重要事项未公告")!=-1)||stock.getString("bulletinType"
+			 * ).equals("2")){ flag = true; } if(flag){ //
+			 * if(stock.getString("productCode"
+			 * ).startsWith("0")||stock.getString
+			 * ("productCode").startsWith("3")){ //
+			 * LIST.add(stock.getString("productCode")+".SZ"); // } //
+			 * if(stock.getString("productCode").startsWith("6")){
+			 * LIST.add(stock.getString("productCode")+".SH"); // } } //
+			 * System.out.println(stock); }
+			 **/
