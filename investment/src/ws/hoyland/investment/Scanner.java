@@ -1187,7 +1187,7 @@ public class Scanner {
 					"User-Agent",
 					"Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.93 Safari/537.36");
 
-			httpclient.execute(httpGet, responseHandler);
+//			httpclient.execute(httpGet, responseHandler);
 //			Thread.sleep(5000);
 			
 			t = t.substring(t.indexOf(",")+1);
@@ -1206,7 +1206,7 @@ public class Scanner {
 
 			httpGet.setHeader("Cookie", "kbz_r_uname=hoyzhang; kbz__user_login=1ubd08_P1ebax9aX39Hv29vZz9eCr6blyuzf7tHoxdHVjNSV1dzYmrKdrcipxtmxlqnH1dysyqzSqZWrxKiqmaPClbSi3uLQ1b-hk6mvkqiCr6bKqtfJoq_l29zkzdGQqaeliaHD4NDa0Orrgb61lK-jmrSMzrHNl6ehgbHR5OXawN7OwsvqkKirmJ6UqpmdtMHAxK6igd_hzNWBu97Y1OiVl6Xe0-Llxp-UrKell6udqZekkqSpgcPC2trn0qihqpmklKk.; kbz_newcookie=1; Hm_lvt_164fe01b1433a19b507595a43bf58262="+t+"; Hm_lpvt_164fe01b1433a19b507595a43bf58262="+System.currentTimeMillis()/1000);
 	
-			httpclient.execute(httpGet, responseHandler);
+//			httpclient.execute(httpGet, responseHandler);
 			
 			prop.setProperty("t", t);
 			prop.store(new FileOutputStream("cookie"), "Copyright (c) xland.net 2015");
@@ -1245,7 +1245,7 @@ Cookie: kbz_r_uname=hoyzhang; kbz__user_login=1ubd08_P1ebax9aX39Hv29vZz9eCr6blyu
 					"Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.93 Safari/537.36");
 //			httpPost.setHeader("Cookie", "kbz_r_uname=hoyzhang; kbz__user_login=1ubd08_P1ebax9aX39Hv29vZz9eCr6blyuzf7tHoxdHVjNSV1dzYmrKdrcipxtmxlqnH1dysyqzSqZWrxKiqmaPClbSi3uLQ1b-hk6mvkqiCr6bKqtfJoq_l29zkzdGQqaeliaHD4NDa0Orrgb61lK-jmrSMzrHNl6ehgbHR5OXawN7OwsvqkKirmJ6UqpmdtMHAxK6igd_hzNWBu97Y1OiVl6Xe0-Llxp-UrKell6udqZekkqSpgcPC2trn0qihqpmklKk.; kbz_newcookie=1; kbz__Session=2gv4cu4f4gv89eunlo42cvi8b5; Hm_lvt_164fe01b1433a19b507595a43bf58262=1437447566,1437531090,1437619814,1437620170; Hm_lpvt_164fe01b1433a19b507595a43bf58262=1437620172");
 //			httpPost.setHeader("Cookie", "kbz_r_uname=hoyzhang; kbz__user_login=1ubd08_P1ebax9aX39Hv29vZz9eCr6blyuzf7tHoxdHVjNSV1dzYmrKdrcipxtmxlqnH1dysyqzSqZWrxKiqmaPClbSi3uLQ1b-hk6mvkqiCr6bKqtfJoq_l29zkzdGQqaeliaHD4NDa0Orrgb61lK-jmrSMzrHNl6ehgbHR5OXawN7OwsvqkKirmJ6UqpmdtMHAxK6igd_hzNWBu97Y1OiVl6Xe0-Llxp-UrKell6udqZekkqSpgcPC2trn0qihqpmklKk.; kbz_newcookie=1; kbz__Session=ptmuorudhkjt5pp7n684lu81k2; Hm_lvt_164fe01b1433a19b507595a43bf58262=1437531090,1437619814,1437620170,1437627768; Hm_lpvt_164fe01b1433a19b507595a43bf58262=1437627772");
-			httpPost.setHeader("Cookie", "kbz_r_uname=hoyzhang; kbz__user_login=1ubd08_P1ebax9aX39Hv29vZz9eCr6blyuzf7tHoxdHVjNSV1dzYmrKdrcipxtmxlqnH1dysyqzSqZWrxKiqmaPClbSi3uLQ1b-hk6mvkqiCr6bKqtfJoq_l29zkzdGQqaeliaHD4NDa0Orrgb61lK-jmrSMzrHNl6ehgbHR5OXawN7OwsvqkKirmJ6UqpmdtMHAxK6igd_hzNWBu97Y1OiVl6Xe0-Llxp-UrKell6udqZekkqSpgcPC2trn0qihqpmklKk.; kbz_newcookie=1;");// kbz__Session="+kzsession+";"); //kbz__Session=8juveau4ltr3be9dvjiua0i9i6; //Hm_lvt_164fe01b1433a19b507595a43bf58262="+t+"; Hm_lpvt_164fe01b1433a19b507595a43bf58262="+System.currentTimeMillis()/1000
+			httpPost.setHeader("Cookie", "kbz_r_uname=hoyzhang; kbz__user_login=1ubd08_P1ebax9aX39Hv29vZz9eCr6blyuzf7tHoxdHVjNSV1dzYmrKdrcipxtmxlqnH1dysyqzSqZWrxKiqmaPClbSi3uLQ1b-hk6mvkqiCr6bKqtfJoq_l29zkzdGQqaeliaHD4NDa0Orrgb61lK-jmrSMzrHNl6ehgbHR5OXawN7OwsvqkKirmJ6UqpmdtMHAxK6igd_hzNWBu97Y1OiVl6Xe0-Llxp-UrKell6udqZekkqSpgcPC2trn0qihqpmklKk.; kbz_newcookie=1; kbz__Session=qepclh5uprfri7u8leppjah2f6;");// kbz__Session="+kzsession+";"); //kbz__Session=8juveau4ltr3be9dvjiua0i9i6; //Hm_lvt_164fe01b1433a19b507595a43bf58262="+t+"; Hm_lpvt_164fe01b1433a19b507595a43bf58262="+System.currentTimeMillis()/1000
 //			httpPost.setHeader("Cookie", "kbz_r_uname=hoyzhang; kbz__user_login=1ubd08_P1ebax9aX39Hv29vZz9eCr6blyuzf7tHoxdHVjNSV1dzYmrKdrcipxtmxlqnH1dysyqzSqZWrxKiqmaPClbSi3uLQ1b-hk6mvkqiCr6bKqtfJoq_l29zkzdGQqaeliaHD4NDa0Orrgb61lK-jmrSMzrHNl6ehgbHR5OXawN7OwsvqkKirmJ6UqpmdtMHAxK6igd_hzNWBu97Y1OiVl6Xe0-Llxp-UrKell6udqZekkqSpgcPC2trn0qihqpmklKk.; kbz_newcookie=1; kbz__Session=8juveau4ltr3be9dvjiua0i9i6; Hm_lvt_164fe01b1433a19b507595a43bf58262=1437619814,1437620170,1437627768,1437631995; Hm_lpvt_164fe01b1433a19b507595a43bf58262=1437627772");
 			
 			List<NameValuePair> nvps = new ArrayList<NameValuePair>();
@@ -1391,7 +1391,7 @@ Cookie: kbz_r_uname=hoyzhang; kbz__user_login=1ubd08_P1ebax9aX39Hv29vZz9eCr6blyu
 		System.out.print("AliPay Yields: ");
 		printAliPayRate(responseHandler);
 		System.out.print("CSI PE Ratio: ");
-//		printCSIPEX(responseHandler, responseHandlerX);
+		printCSIPEX(responseHandler, responseHandlerX);
 		System.out.print("HSI PE Ratio: ");
 		printHSIPE(responseHandler);
 		System.out.print("SPX PE Ratio: ");
