@@ -23,15 +23,20 @@ import java.util.Stack;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.ResponseHandler;
+import org.apache.http.client.entity.DecompressingEntity;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
@@ -1130,6 +1135,85 @@ public class Scanner {
 		}		
 	}
 
+	private static void printMergeOfClassificationFund(
+			ResponseHandler<String> responseHandler) {
+		CloseableHttpClient httpclient = HttpClients.createDefault();
+		HttpPost httpPost = null;
+		try {
+			httpPost = new HttpPost("http://www.jisilu.cn/data/sfnew/arbitrage_vip_list/?___t="
+					+ System.currentTimeMillis());
+			httpPost.setHeader("Accept", "*/*");
+			httpPost.setHeader("Accept-Encoding", "gzip, deflate, sdch");
+			httpPost.setHeader("Accept-Language", "zh-CN,zh;q=0.8");
+			httpPost.setHeader("Cache-Control", "max-age=0");
+			httpPost.setHeader("Connection", "keep-alive");
+			// httpGet.setHeader("Referer",
+			// "http://www.sse.com.cn/disclosure/dealinstruc/");
+			httpPost.setHeader(
+					"User-Agent",
+					"Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.93 Safari/537.36");
+
+			List<NameValuePair> nvps = new ArrayList<NameValuePair>();
+	        nvps.add(new BasicNameValuePair("is_search", "1"));
+	        nvps.add(new BasicNameValuePair("avolume", ""));
+	        nvps.add(new BasicNameValuePair("bvolume", ""));
+	        nvps.add(new BasicNameValuePair("market[]", "sh"));
+	        nvps.add(new BasicNameValuePair("market[]", "sz"));
+	        nvps.add(new BasicNameValuePair("ptype", "sell"));
+	        nvps.add(new BasicNameValuePair("rp", "50"));
+	        httpPost.setEntity(new UrlEncodedFormEntity(nvps));
+			
+			Map<String, String> map = new HashMap<String, String>();  
+			
+			String responseBody = httpclient.execute(httpPost, responseHandler);
+			System.out.println(">>>"+responseBody);;
+			JSONObject json = new JSONObject(responseBody);
+			JSONArray ja = json.getJSONArray("rows");
+			for(int i=0; i<ja.length();i++){
+				json = ja.getJSONObject(i);
+				JSONObject jsx = json.getJSONObject("cell"); //lower_recalc_profit_rt
+				String lr = jsx.getString("funda_lower_recalc_rt");
+				float ilr = Float.parseFloat(lr.substring(0, lr.length()-2));
+				if(ilr<10){
+					if(ilr<4){
+						map.put(json.getString("id"), jsx.getString("funda_lower_recalc_rt")+"\t\t"+jsx.getString("lower_recalc_profit_rt")+"\tNotification!!!");
+					}else{
+						map.put(json.getString("id"), jsx.getString("funda_lower_recalc_rt")+"\t\t"+jsx.getString("lower_recalc_profit_rt")+"\tNotFound");
+					}
+				}
+//				System.out.print(json.getString("id") + "-->" + jsx.getString("funda_lower_recalc_rt"));
+//				System.out.print("\t" + jsx.getString("lower_recalc_profit_rt"));
+			}
+
+			List<Map.Entry<String, String>> set = new ArrayList<Map.Entry<String, String>>(map.entrySet()); 
+			Collections.sort(set, new Comparator<Map.Entry<String, String>>() {  
+			    public int compare(Map.Entry<String, String> fst,  
+			            Map.Entry<String, String> sec) {  
+			    	String sfst = fst.getValue().split("\t\t")[0];
+			    	String ssec = sec.getValue().split("\t\t")[0];
+			    	float ifst = Float.parseFloat(sfst.substring(0, sfst.length()-2));
+			    	float isec = Float.parseFloat(ssec.substring(0, ssec.length()-2));			    	
+			        return (int)(ifst-isec);
+			    }  
+			});
+			
+			for (int i = 0; i < set.size(); i++) {  
+			    Entry<String, String> ent = set.get(i);  
+			    System.out.println(ent.getKey()+"-->"+ent.getValue());			      
+			}  
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (httpclient != null) {
+					httpclient.close();
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}		
+	}
+	
 	// 建立股债平衡，多市场指数基金的投资组合，再平衡（动态再平衡策略）之后，尝试根据资金流的策略。
 	public static void main(String[] args) {
 		ResponseHandler<String> responseHandler = new ResponseHandler<String>() {
@@ -1139,6 +1223,11 @@ public class Scanner {
 				int status = response.getStatusLine().getStatusCode();
 				if (status >= 200 && status < 300) {
 					HttpEntity entity = response.getEntity();
+					for(Header header:response.getAllHeaders()){
+						System.out.println((header.getValue()));
+					}
+					System.out.println(entity.getContentEncoding());
+					//new GzipDecompressingEntity(
 					return entity != null ? EntityUtils.toString(entity) : null;
 				} else {
 					throw new ClientProtocolException(
@@ -1223,17 +1312,17 @@ public class Scanner {
 		System.out.println();
 		System.out.println("封基分红送配");
 		System.out.println("----------------");
-		printClosedEndFund(responseHandler);
+//		printClosedEndFund(responseHandler);
 		System.out.println();
 		System.out.println("分级基金下折");
 		System.out.println("----------------");
 		printLowerRecaculateOfClassificationFund(responseHandler);
-		System.out.println();
+//		System.out.println();
 		System.out.println("分级基金定折");
-		System.out.println("----------------");
+		System.out.println("----------------");   //很难抛出，不做. 净值>1
 		System.out.println();
 		System.out.println("分级基金合并折价");
 		System.out.println("----------------");
+		printMergeOfClassificationFund(responseHandler);
 	}
-
 }
