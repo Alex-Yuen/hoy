@@ -1421,7 +1421,7 @@ Cookie: kbz_r_uname=hoyzhang; kbz__user_login=1ubd08_P1ebax9aX39Hv29vZz9eCr6blyu
 		System.out.println();
 		System.out.println("封基分红送配");
 		System.out.println("----------------");
-//		printClosedEndFund(responseHandler);
+		printClosedEndFund(responseHandler);
 		System.out.println();
 		//分级基金下折和定折
 		printRecaculateOfClassificationFund(responseHandler);
