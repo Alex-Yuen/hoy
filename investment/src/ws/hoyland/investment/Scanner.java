@@ -932,7 +932,7 @@ public class Scanner {
 				"184722", "184728", "500038", "500056", "500058", "505888" };
 		CloseableHttpClient httpclient = HttpClients.createDefault();
 		HttpGet httpGet = null;
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+//		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		try {
 			for (int i = 0; i < codes.length; i++) {
 				httpGet = new HttpGet(
@@ -950,6 +950,9 @@ public class Scanner {
 						"User-Agent",
 						"Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.93 Safari/537.36");
 
+//				System.out.println("http://fund.eastmoney.com/f10/F10DataApi.aspx?type=jjgg&code="
+//								+ codes[i] + "&page=1&per=20&class=2&rt="
+//								+ Math.random());
 				String responseBody = httpclient.execute(httpGet,
 						responseHandler);
 				responseBody = responseBody.substring(responseBody
@@ -1326,7 +1329,7 @@ public class Scanner {
 		System.out.println();
 		System.out.println("封基分红送配");
 		System.out.println("----------------");
-//		printClosedEndFund(responseHandler);
+		printClosedEndFund(responseHandler);
 		System.out.println();
 		System.out.println("分级基金下折");
 		System.out.println("----------------");
