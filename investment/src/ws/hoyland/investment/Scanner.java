@@ -1222,7 +1222,7 @@ public class Scanner {
 //			}
 			if(responseBody.indexOf("errno")!=-1){
 				prop.setProperty("t", t);
-				prop.store(new FileOutputStream("cookie"), "Copyright (c) xland.net 2015");
+//				prop.store(new FileOutputStream("cookie"), "Copyright (c) xland.net 2015");
 			}else{
 				return;
 			}
@@ -1284,9 +1284,9 @@ public class Scanner {
 				    	float firb = Float.parseFloat(sirb.substring(0, sirb.length()-1));
 	//			    	System.out.println(fira+"/"+firb);
 						if(ilr<-1.5&&fira<9.9f&&firb<9.9f){
-							map.put(json.getString("id"), jsx.getString("est_dis_rt")+"\t\t"+jsx.getString("fundA_id")+ "=" + sira + "["+jsx.getString("sell1A")+"]\t" + jsx.getString("fundB_id") + "=" + sirb + "["+jsx.getString("sell1B")+"]\t" + jsx.getString("idx_incr_rt") + "\tNotification!!!");
+							map.put(json.getString("id"), jsx.getString("est_dis_rt")+"\t\t"+jsx.getString("fundA_id")+ "=" + sira + "["+jsx.getString("sell1A")+"]\t" + jsx.getString("fundB_id") + "=" + sirb + "["+jsx.getString("sell1B")+"]\t" + jsx.getString("idx_incr_rt") + "\t" + jsx.getString("abrate") + "\tNotification!!!");
 						}else{
-							map.put(json.getString("id"), jsx.getString("est_dis_rt")+"\t\t"+jsx.getString("fundA_id")+ "=" + sira + "["+jsx.getString("sell1A")+"]\t" + jsx.getString("fundB_id") + "=" + sirb + "["+jsx.getString("sell1B")+"]\t" + jsx.getString("idx_incr_rt") + "\tNotFound");
+							map.put(json.getString("id"), jsx.getString("est_dis_rt")+"\t\t"+jsx.getString("fundA_id")+ "=" + sira + "["+jsx.getString("sell1A")+"]\t" + jsx.getString("fundB_id") + "=" + sirb + "["+jsx.getString("sell1B")+"]\t" + jsx.getString("idx_incr_rt") + "\t" + jsx.getString("abrate") + "\tNotFound");
 						}
 					}
 				}
