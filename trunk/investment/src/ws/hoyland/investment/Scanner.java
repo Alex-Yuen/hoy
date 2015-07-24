@@ -52,6 +52,7 @@ public class Scanner {
 //	private static double CSIRATIO = (17.6d / 4907.06d);
 	private static DecimalFormat df = new DecimalFormat("##.00");
 	private static String kzsession = "";
+	private static String UAG = "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/43.0.2357.130 Safari/537.36";
 	
 	public static String get(String url) {
 		return get(url, null);
@@ -178,7 +179,7 @@ public class Scanner {
 					"http://www.sse.com.cn/disclosure/dealinstruc/");
 			httpGet.setHeader(
 					"User-Agent",
-					"Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.93 Safari/537.36");
+					UAG);
 
 			String responseBody = httpclient.execute(httpGet, responseHandler);
 			responseBody = responseBody.substring(responseBody.indexOf("{"),
@@ -242,7 +243,7 @@ public class Scanner {
 					"http://www.szse.cn/main/disclosure/news/tfpts/");
 			httpPost.setHeader(
 					"User-Agent",
-					"Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.93 Safari/537.36");
+					UAG);
 
 			// List <NameValuePair> nvps = new ArrayList <NameValuePair>();
 			// nvps.add(new BasicNameValuePair("ACTIONID", "7"));
@@ -307,7 +308,7 @@ public class Scanner {
 						"http://www.szse.cn/main/disclosure/news/tfpts/");
 				httpPost.setHeader(
 						"User-Agent",
-						"Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.93 Safari/537.36");
+						UAG);
 
 				httpPost.setEntity(entity);
 				responseBody = httpclient.execute(httpPost, responseHandler);
@@ -587,7 +588,7 @@ public class Scanner {
 			// "http://www.sse.com.cn/disclosure/dealinstruc/");
 			httpGet.setHeader(
 					"User-Agent",
-					"Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.93 Safari/537.36");
+					UAG);
 
 			String responseBody = httpclient.execute(httpGet, responseHandler);
 			responseBody = responseBody
@@ -627,7 +628,7 @@ public class Scanner {
 			// "http://www.sse.com.cn/disclosure/dealinstruc/");
 			httpGet.setHeader(
 					"User-Agent",
-					"Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.93 Safari/537.36");
+					UAG);
 
 			String responseBody = httpclient.execute(httpGet, responseHandler);
 			responseBody = responseBody.substring(
@@ -650,7 +651,7 @@ public class Scanner {
 			// "http://www.sse.com.cn/disclosure/dealinstruc/");
 			httpGet.setHeader(
 					"User-Agent",
-					"Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.93 Safari/537.36");
+					UAG);
 
 			responseBody = httpclient.execute(httpGet, responseHandler);
 			responseBody = responseBody
@@ -699,7 +700,7 @@ public class Scanner {
 			// "http://www.sse.com.cn/disclosure/dealinstruc/");
 			httpGet.setHeader(
 					"User-Agent",
-					"Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.93 Safari/537.36");
+					UAG);
 
 			String responseBody = httpclient.execute(httpGet, responseHandler);
 			responseBody = responseBody.substring(responseBody
@@ -720,7 +721,7 @@ public class Scanner {
 			// "http://www.sse.com.cn/disclosure/dealinstruc/");
 			httpGet.setHeader(
 					"User-Agent",
-					"Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.93 Safari/537.36");
+					UAG);
 
 			responseBody = httpclient.execute(httpGet, responseHandler);
 			responseBody = responseBody
@@ -766,7 +767,7 @@ public class Scanner {
 			// "http://www.sse.com.cn/disclosure/dealinstruc/");
 			httpGet.setHeader(
 					"User-Agent",
-					"Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.93 Safari/537.36");
+					UAG);
 
 			String responseBody = httpclient.execute(httpGet, responseHandler);
 			responseBody = responseBody.substring(responseBody
@@ -807,7 +808,7 @@ public class Scanner {
 			httpGet.setHeader("Connection", "keep-alive");
 			httpGet.setHeader(
 					"User-Agent",
-					"Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.93 Safari/537.36");
+					UAG);
 
 			InputStream responseBody = httpclient.execute(httpGet,
 					responseHandlerX);
@@ -828,7 +829,7 @@ public class Scanner {
 			httpGet.setHeader("Connection", "keep-alive");
 			httpGet.setHeader(
 					"User-Agent",
-					"Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.93 Safari/537.36");
+					UAG);
 
 			String priceBody = httpclient.execute(httpGet, responseHandler);
 			priceBody = priceBody.substring(priceBody.indexOf("\"") + 1);
@@ -879,7 +880,7 @@ public class Scanner {
 			// "http://www.sse.com.cn/disclosure/dealinstruc/");
 			httpGet.setHeader(
 					"User-Agent",
-					"Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.93 Safari/537.36");
+					UAG);
 
 			String responseBody = httpclient.execute(httpGet, responseHandler);
 			responseBody = responseBody.substring(responseBody
@@ -932,7 +933,7 @@ public class Scanner {
 				// "http://www.sse.com.cn/disclosure/dealinstruc/");
 				httpGet.setHeader(
 						"User-Agent",
-						"Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.93 Safari/537.36");
+						UAG);
 
 //				System.out.println("http://fund.eastmoney.com/f10/F10DataApi.aspx?type=jjgg&code="
 //								+ codes[i] + "&page=1&per=20&class=2&rt="
@@ -1002,7 +1003,7 @@ public class Scanner {
 			// "http://www.sse.com.cn/disclosure/dealinstruc/");
 			httpGet.setHeader(
 					"User-Agent",
-					"Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.93 Safari/537.36");
+					UAG);
 
 			String responseBody = httpclient.execute(httpGet, responseHandler);
 			JSONObject json = new JSONObject(responseBody);
@@ -1071,7 +1072,7 @@ public class Scanner {
 			// "http://www.sse.com.cn/disclosure/dealinstruc/");
 			httpGet.setHeader(
 					"User-Agent",
-					"Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.93 Safari/537.36");
+					UAG);
 
 			Map<String, String> mapl = new HashMap<String, String>(); 
 			Map<String, String> mapx = new HashMap<String, String>();
@@ -1175,60 +1176,64 @@ public class Scanner {
 			Properties prop = new Properties();
 			prop.load(new FileInputStream("cookie"));
 			String t = prop.getProperty("t");
-			System.out.println(t);
+			//System.out.println(t);
 			
 			httpGet = new HttpGet("http://www.jisilu.cn/");
-			httpGet.setHeader("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,* /*;q=0.8");
-			httpGet.setHeader("Accept-Encoding", "gzip,deflate,sdch");
+			httpGet.setHeader("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8");
+			httpGet.setHeader("Accept-Encoding", "gzip, deflate, sdch");
 			httpGet.setHeader("Accept-Language", "zh-CN,zh;q=0.8");
 			httpGet.setHeader("Connection", "keep-alive");
-			httpGet.setHeader("Cookie", "kbz_r_uname=hoyzhang; kbz__user_login=1ubd08_P1ebax9aX39Hv29vZz9eCr6blyuzf7tHoxdHVjNSV1dzYmrKdrcipxtmxlqnH1dysyqzSqZWrxKiqmaPClbSi3uLQ1b-hk6mvkqiCr6bKqtfJoq_l29zkzdGQqaeliaHD4NDa0Orrgb61lK-jmrSMzrHNl6ehgbHR5OXawN7OwsvqkKirmJ6UqpmdtMHAxK6igd_hzNWBu97Y1OiVl6Xe0-Llxp-UrKell6udqZekkqSpgcPC2trn0qihqpmklKk.; kbz_newcookie=1; Hm_lvt_164fe01b1433a19b507595a43bf58262="+t);
+			httpGet.setHeader("Cookie", "kbz_r_uname=hoyzhang; kbz__user_login=1ubd08_P1ebax9aX39Hv29vZz9eCr6blyuzf7tHoxdHVjNSV1dzYmrKdrcipxtmxlqnH1dysyqzSqZWrxKiqmaPClbSi3uLQ1b-hk6mvkqiCr6bKqtfJoq_l29zkzdGQqaeliaHD4NDa0Orrgb61lK-jmrSMzrHNl6ehgbHR5OXawN7OwsvqkKirmJ6UqpmdtMHAxK6igd_hzNWBu97Y1OiVl6Xe0-Llxp-Vp6ell6ufrJmkkqaogcPC2trn0qihqpmklKk.; kbz_newcookie=1; Hm_lvt_164fe01b1433a19b507595a43bf58262="+t);
 			httpGet.setHeader(
 					"User-Agent",
-					"Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.93 Safari/537.36");
+					UAG);
 
-//			httpclient.execute(httpGet, responseHandler);
+			httpclient.execute(httpGet, responseHandler);
+			httpclient.close();
+			httpclient = HttpClients.createDefault();
 //			Thread.sleep(5000);
 			
 			t = t.substring(t.indexOf(",")+1);
 			t = t + "," + System.currentTimeMillis()/1000;
-			System.out.println(t);			
+			//System.out.println(t);			
 			
 			httpGet = new HttpGet("http://www.jisilu.cn/home/ajax/notifications/");
 			httpGet.setHeader("Accept", "application/json, text/javascript, */*; q=0.01");
-			httpGet.setHeader("Accept-Encoding", "gzip,deflate,sdch");
+			httpGet.setHeader("Accept-Encoding", "gzip, deflate, sdch");
 			httpGet.setHeader("Accept-Language", "zh-CN,zh;q=0.8");
 			httpGet.setHeader("Referer", "http://www.jisilu.cn/");
 			httpGet.setHeader("X-Requested-With", "XMLHttpRequest");
 			httpGet.setHeader("Connection", "keep-alive");		httpGet.setHeader(
 					"User-Agent",
-					"Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.93 Safari/537.36");
+					UAG);
+//			httpGet.setHeader("If-Modified-Since", "Thu, 23 Jul 2015 14:41:17 GMT");
+			//Thu, 23 Jul 2015 14:28:36 GMT
 
-			httpGet.setHeader("Cookie", "kbz_r_uname=hoyzhang; kbz__user_login=1ubd08_P1ebax9aX39Hv29vZz9eCr6blyuzf7tHoxdHVjNSV1dzYmrKdrcipxtmxlqnH1dysyqzSqZWrxKiqmaPClbSi3uLQ1b-hk6mvkqiCr6bKqtfJoq_l29zkzdGQqaeliaHD4NDa0Orrgb61lK-jmrSMzrHNl6ehgbHR5OXawN7OwsvqkKirmJ6UqpmdtMHAxK6igd_hzNWBu97Y1OiVl6Xe0-Llxp-UrKell6udqZekkqSpgcPC2trn0qihqpmklKk.; kbz_newcookie=1; Hm_lvt_164fe01b1433a19b507595a43bf58262="+t+"; Hm_lpvt_164fe01b1433a19b507595a43bf58262="+System.currentTimeMillis()/1000);
+			//Thu, 23 Jul 2015 14:41:13 GMT
+			//Thu, 23 Jul 2015 14:41:17 GMT
+
+//			httpGet.setHeader("Cookie", "kbz_r_uname=hoyzhang; kbz__user_login=1ubd08_P1ebax9aX39Hv29vZz9eCr6blyuzf7tHoxdHVjNSV1dzYmrKdrcipxtmxlqnH1dysyqzSqZWrxKiqmaPClbSi3uLQ1b-hk6mvkqiCr6bKqtfJoq_l29zkzdGQqaeliaHD4NDa0Orrgb61lK-jmrSMzrHNl6ehgbHR5OXawN7OwsvqkKirmJ6UqpmdtMHAxK6igd_hzNWBu97Y1OiVl6Xe0-Llxp-UrKell6udqZekkqSpgcPC2trn0qihqpmklKk.; kbz_newcookie=1; Hm_lvt_164fe01b1433a19b507595a43bf58262="+t+"; Hm_lpvt_164fe01b1433a19b507595a43bf58262="+System.currentTimeMillis()/1000);
+			httpGet.setHeader("Cookie", "kbz_r_uname=hoyzhang; kbz__user_login=1ubd08_P1ebax9aX39Hv29vZz9eCr6blyuzf7tHoxdHVjNSV1dzYmrKdrcipxtmxlqnH1dysyqzSqZWrxKiqmaPClbSi3uLQ1b-hk6mvkqiCr6bKqtfJoq_l29zkzdGQqaeliaHD4NDa0Orrgb61lK-jmrSMzrHNl6ehgbHR5OXawN7OwsvqkKirmJ6UqpmdtMHAxK6igd_hzNWBu97Y1OiVl6Xe0-Llxp-Vp6ell6ufrJmkkqaogcPC2trn0qihqpmklKk.; kbz_newcookie=1; kbz__Session="+kzsession);
 	
-//			httpclient.execute(httpGet, responseHandler);
+			String responseBody = httpclient.execute(httpGet, responseHandler);
 			
-			prop.setProperty("t", t);
-			prop.store(new FileOutputStream("cookie"), "Copyright (c) xland.net 2015");
-			/**
-			 * 
-GET http://www.jisilu.cn/home/ajax/notifications/ HTTP/1.1
-Host: www.jisilu.cn
-Connection: keep-alive
-Accept: application/json, text/javascript, * /*; q=0.01
-X-Requested-With: XMLHttpRequest
-User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/38.0.2125.111 Safari/537.36
-Referer: http://www.jisilu.cn/
-Accept-Encoding: gzip,deflate,sdch
-Accept-Language: zh-CN,zh;q=0.8
-Cookie: kbz_r_uname=hoyzhang; kbz__user_login=1ubd08_P1ebax9aX39Hv29vZz9eCr6blyuzf7tHoxdHVjNSV1dzYmrKdrcipxtmxlqnH1dysyqzSqZWrxKiqmaPClbSi3uLQ1b-hk6mvkqiCr6bKqtfJoq_l29zkzdGQqaeliaHD4NDa0Orrgb61lK-jmrSMzrHNl6ehgbHR5OXawN7OwsvqkKirmJ6UqpmdtMHAxK6igd_hzNWBu97Y1OiVl6Xe0-Llxp-UrKell6udqZekkqSpgcPC2trn0qihqpmklKk.; kbz_newcookie=1; kbz__Session=c1sk1fbjfcrmlneajne1h2mf17; Hm_lvt_164fe01b1433a19b507595a43bf58262=1437644992,1437645160,1437645239,1437645284; Hm_lpvt_164fe01b1433a19b507595a43bf58262=1437645284
-
-
-			 */
+//			if(true){
+//				return;
+//			}
+			if(responseBody.indexOf("errno")!=-1){
+				prop.setProperty("t", t);
+				prop.store(new FileOutputStream("cookie"), "Copyright (c) xland.net 2015");
+			}else{
+				return;
+			}
+			
 //			kzsession = "c1sk1fbjfcrmlneajne1h2mf17";
 //			String t = "1437636765,1437639565,1437640455,1437641171";
 			
 //			long t5 = System.currentTimeMillis()/1000;
+			httpclient.close();
+			httpclient = HttpClients.createDefault();
+			
 			httpPost = new HttpPost("http://www.jisilu.cn/data/sfnew/arbitrage_vip_list/?___t="
 					+ System.currentTimeMillis());
 			httpPost.setHeader("Accept", "application/json, text/javascript, */*; q=0.01");
@@ -1242,10 +1247,10 @@ Cookie: kbz_r_uname=hoyzhang; kbz__user_login=1ubd08_P1ebax9aX39Hv29vZz9eCr6blyu
 			httpPost.setHeader("X-Requested-With", "XMLHttpRequest");				
 			httpPost.setHeader(
 					"User-Agent",
-					"Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.93 Safari/537.36");
+					UAG);
 //			httpPost.setHeader("Cookie", "kbz_r_uname=hoyzhang; kbz__user_login=1ubd08_P1ebax9aX39Hv29vZz9eCr6blyuzf7tHoxdHVjNSV1dzYmrKdrcipxtmxlqnH1dysyqzSqZWrxKiqmaPClbSi3uLQ1b-hk6mvkqiCr6bKqtfJoq_l29zkzdGQqaeliaHD4NDa0Orrgb61lK-jmrSMzrHNl6ehgbHR5OXawN7OwsvqkKirmJ6UqpmdtMHAxK6igd_hzNWBu97Y1OiVl6Xe0-Llxp-UrKell6udqZekkqSpgcPC2trn0qihqpmklKk.; kbz_newcookie=1; kbz__Session=2gv4cu4f4gv89eunlo42cvi8b5; Hm_lvt_164fe01b1433a19b507595a43bf58262=1437447566,1437531090,1437619814,1437620170; Hm_lpvt_164fe01b1433a19b507595a43bf58262=1437620172");
 //			httpPost.setHeader("Cookie", "kbz_r_uname=hoyzhang; kbz__user_login=1ubd08_P1ebax9aX39Hv29vZz9eCr6blyuzf7tHoxdHVjNSV1dzYmrKdrcipxtmxlqnH1dysyqzSqZWrxKiqmaPClbSi3uLQ1b-hk6mvkqiCr6bKqtfJoq_l29zkzdGQqaeliaHD4NDa0Orrgb61lK-jmrSMzrHNl6ehgbHR5OXawN7OwsvqkKirmJ6UqpmdtMHAxK6igd_hzNWBu97Y1OiVl6Xe0-Llxp-UrKell6udqZekkqSpgcPC2trn0qihqpmklKk.; kbz_newcookie=1; kbz__Session=ptmuorudhkjt5pp7n684lu81k2; Hm_lvt_164fe01b1433a19b507595a43bf58262=1437531090,1437619814,1437620170,1437627768; Hm_lpvt_164fe01b1433a19b507595a43bf58262=1437627772");
-			httpPost.setHeader("Cookie", "kbz_r_uname=hoyzhang; kbz__user_login=1ubd08_P1ebax9aX39Hv29vZz9eCr6blyuzf7tHoxdHVjNSV1dzYmrKdrcipxtmxlqnH1dysyqzSqZWrxKiqmaPClbSi3uLQ1b-hk6mvkqiCr6bKqtfJoq_l29zkzdGQqaeliaHD4NDa0Orrgb61lK-jmrSMzrHNl6ehgbHR5OXawN7OwsvqkKirmJ6UqpmdtMHAxK6igd_hzNWBu97Y1OiVl6Xe0-Llxp-UrKell6udqZekkqSpgcPC2trn0qihqpmklKk.; kbz_newcookie=1; kbz__Session=qepclh5uprfri7u8leppjah2f6;");// kbz__Session="+kzsession+";"); //kbz__Session=8juveau4ltr3be9dvjiua0i9i6; //Hm_lvt_164fe01b1433a19b507595a43bf58262="+t+"; Hm_lpvt_164fe01b1433a19b507595a43bf58262="+System.currentTimeMillis()/1000
+			httpPost.setHeader("Cookie", "kbz_r_uname=hoyzhang; kbz__user_login=1ubd08_P1ebax9aX39Hv29vZz9eCr6blyuzf7tHoxdHVjNSV1dzYmrKdrcipxtmxlqnH1dysyqzSqZWrxKiqmaPClbSi3uLQ1b-hk6mvkqiCr6bKqtfJoq_l29zkzdGQqaeliaHD4NDa0Orrgb61lK-jmrSMzrHNl6ehgbHR5OXawN7OwsvqkKirmJ6UqpmdtMHAxK6igd_hzNWBu97Y1OiVl6Xe0-Llxp-Vp6ell6ufrJmkkqaogcPC2trn0qihqpmklKk.; kbz_newcookie=1; kbz__Session="+kzsession);// kbz__Session="+kzsession+";"); //kbz__Session=8juveau4ltr3be9dvjiua0i9i6; //Hm_lvt_164fe01b1433a19b507595a43bf58262="+t+"; Hm_lpvt_164fe01b1433a19b507595a43bf58262="+System.currentTimeMillis()/1000
 //			httpPost.setHeader("Cookie", "kbz_r_uname=hoyzhang; kbz__user_login=1ubd08_P1ebax9aX39Hv29vZz9eCr6blyuzf7tHoxdHVjNSV1dzYmrKdrcipxtmxlqnH1dysyqzSqZWrxKiqmaPClbSi3uLQ1b-hk6mvkqiCr6bKqtfJoq_l29zkzdGQqaeliaHD4NDa0Orrgb61lK-jmrSMzrHNl6ehgbHR5OXawN7OwsvqkKirmJ6UqpmdtMHAxK6igd_hzNWBu97Y1OiVl6Xe0-Llxp-UrKell6udqZekkqSpgcPC2trn0qihqpmklKk.; kbz_newcookie=1; kbz__Session=8juveau4ltr3be9dvjiua0i9i6; Hm_lvt_164fe01b1433a19b507595a43bf58262=1437619814,1437620170,1437627768,1437631995; Hm_lpvt_164fe01b1433a19b507595a43bf58262=1437627772");
 			
 			List<NameValuePair> nvps = new ArrayList<NameValuePair>();
@@ -1260,26 +1265,29 @@ Cookie: kbz_r_uname=hoyzhang; kbz__user_login=1ubd08_P1ebax9aX39Hv29vZz9eCr6blyu
 			
 			Map<String, String> map = new HashMap<String, String>();  
 			
-			String responseBody = httpclient.execute(httpPost, responseHandler);
+			responseBody = httpclient.execute(httpPost, responseHandler);
 //			System.out.println(">>>"+responseBody);;
 			JSONObject json = new JSONObject(responseBody);
 			JSONArray ja = json.getJSONArray("rows");
 			for(int i=0; i<ja.length();i++){
 				json = ja.getJSONObject(i);
 				JSONObject jsx = json.getJSONObject("cell"); //lower_recalc_profit_rt
+//				System.out.println(jsx);
 				String lr = jsx.getString("est_dis_rt");
-				float ilr = Float.parseFloat(lr.substring(0, lr.length()-1));
-				if(ilr<-1.2){
-//					System.out.println("ilr:"+lr.substring(0, lr.length()-1));
-					String sira = jsx.getString("increase_rtA");
-					String sirb = jsx.getString("increase_rtB");
-					float fira = Float.parseFloat(sira.substring(0, sira.length()-1));
-			    	float firb = Float.parseFloat(sirb.substring(0, sirb.length()-1));
-//			    	System.out.println(fira+"/"+firb);
-					if(ilr<-1.5&&fira<9.9f&&firb<9.9f){
-						map.put(json.getString("id"), jsx.getString("est_dis_rt")+"\t\t"+jsx.getString("fundA_id")+ "=" + sira + "["+jsx.getString("sell1A")+"]\t" + jsx.getString("fundB_id") + "=" + sirb + "["+jsx.getString("sell1B")+"]\t" + jsx.getString("idx_incr_rt") + "\tNotification!!!");
-					}else{
-						map.put(json.getString("id"), jsx.getString("est_dis_rt")+"\t\t"+jsx.getString("fundA_id")+ "=" + sira + "["+jsx.getString("sell1A")+"]\t" + jsx.getString("fundB_id") + "=" + sirb + "["+jsx.getString("sell1B")+"]\t" + jsx.getString("idx_incr_rt") + "\tNotFound");
+				if(!lr.equals("-")){
+					float ilr = Float.parseFloat(lr.substring(0, lr.length()-1));
+					if(ilr<-1.2){
+	//					System.out.println("ilr:"+lr.substring(0, lr.length()-1));
+						String sira = jsx.getString("increase_rtA");
+						String sirb = jsx.getString("increase_rtB");
+						float fira = Float.parseFloat(sira.substring(0, sira.length()-1));
+				    	float firb = Float.parseFloat(sirb.substring(0, sirb.length()-1));
+	//			    	System.out.println(fira+"/"+firb);
+						if(ilr<-1.5&&fira<9.9f&&firb<9.9f){
+							map.put(json.getString("id"), jsx.getString("est_dis_rt")+"\t\t"+jsx.getString("fundA_id")+ "=" + sira + "["+jsx.getString("sell1A")+"]\t" + jsx.getString("fundB_id") + "=" + sirb + "["+jsx.getString("sell1B")+"]\t" + jsx.getString("idx_incr_rt") + "\tNotification!!!");
+						}else{
+							map.put(json.getString("id"), jsx.getString("est_dis_rt")+"\t\t"+jsx.getString("fundA_id")+ "=" + sira + "["+jsx.getString("sell1A")+"]\t" + jsx.getString("fundB_id") + "=" + sirb + "["+jsx.getString("sell1B")+"]\t" + jsx.getString("idx_incr_rt") + "\tNotFound");
+						}
 					}
 				}
 //				System.out.print(json.getString("id") + "-->" + jsx.getString("funda_lower_recalc_rt"));
@@ -1326,15 +1334,15 @@ Cookie: kbz_r_uname=hoyzhang; kbz__user_login=1ubd08_P1ebax9aX39Hv29vZz9eCr6blyu
 				int status = response.getStatusLine().getStatusCode();
 				if (status >= 200 && status < 300) {
 					HttpEntity entity = response.getEntity();
-					/**
+					
 					for(Header header:response.getAllHeaders()){
 						if(header.getValue().startsWith("kbz__Session")){
 							kzsession = header.getValue();
 							kzsession = kzsession.substring(kzsession.indexOf("=")+1, kzsession.indexOf(";"));
-							System.out.println(kzsession);
+//							System.out.println(kzsession);
 //							System.out.println((header.getName())+"="+header.getValue());	
 						}
-					}**/
+					}
 //					System.out.println(entity.getContentEncoding());
 					//new GzipDecompressingEntity(
 					return entity != null ? EntityUtils.toString(entity) : null;
@@ -1421,7 +1429,7 @@ Cookie: kbz_r_uname=hoyzhang; kbz__user_login=1ubd08_P1ebax9aX39Hv29vZz9eCr6blyu
 		System.out.println();
 		System.out.println("封基分红送配");
 		System.out.println("----------------");
-		printClosedEndFund(responseHandler);
+//		printClosedEndFund(responseHandler);
 		System.out.println();
 		//分级基金下折和定折
 		printRecaculateOfClassificationFund(responseHandler);
