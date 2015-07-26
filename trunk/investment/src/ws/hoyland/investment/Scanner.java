@@ -1391,11 +1391,11 @@ public class Scanner {
 //						float fira = Float.parseFloat(sira.substring(0, sira.length()-1));
 //				    	float firb = Float.parseFloat(sirb.substring(0, sirb.length()-1));
 	//			    	System.out.println(fira+"/"+firb);
-//						if(ilr<-1.5&&fira<9.9f&&firb<9.9f){
+						if(ilr>0.5f){
 							map.put(json.getString("id"), jsx.getString("sest_dis_rt")+"\t\t"+jsx.getString("fundA_id")+ "=" + sira + "["+jsx.getString("sell1A")+"]\t" + jsx.getString("fundB_id") + "=" + sirb + "["+jsx.getString("sell1B")+"]\t" + json.getString("id")+"="+jsx.getString("increase_rtM") +"["+jsx.getString("priceM")+"]" + "\t" + jsx.getString("abrate") + "\tNotification!!!");
-//						}else{
-//							map.put(json.getString("id"), jsx.getString("sest_dis_rt")+"\t\t"+jsx.getString("fundA_id")+ "=" + sira + "["+jsx.getString("sell1A")+"]\t" + jsx.getString("fundB_id") + "=" + sirb + "["+jsx.getString("sell1B")+"]\t" + jsx.getString("idx_incr_rt") + "\t" + jsx.getString("abrate") + "\tNotFound");
-//						}
+						}else{
+							map.put(json.getString("id"), jsx.getString("sest_dis_rt")+"\t\t"+jsx.getString("fundA_id")+ "=" + sira + "["+jsx.getString("sell1A")+"]\t" + jsx.getString("fundB_id") + "=" + sirb + "["+jsx.getString("sell1B")+"]\t" + json.getString("id")+"="+jsx.getString("increase_rtM") +"["+jsx.getString("priceM")+"]" + "\t" + jsx.getString("abrate") + "\tNotFound");
+						}
 					}
 				}
 //				System.out.print(json.getString("id") + "-->" + jsx.getString("funda_lower_recalc_rt"));
@@ -1492,11 +1492,11 @@ public class Scanner {
 //						float fira = Float.parseFloat(sira.substring(0, sira.length()-1));
 //				    	float firb = Float.parseFloat(sirb.substring(0, sirb.length()-1));
 	//			    	System.out.println(fira+"/"+firb);
-//						if(ilr<-1.5&&fira<9.9f&&firb<9.9f){
+						if(ilr<-0.5f){
 							map.put(json.getString("id"), jsx.getString("sest_dis_rt")+"\t\t"+jsx.getString("fundA_id")+ "=" + sira + "["+jsx.getString("buy1A")+"]\t" + jsx.getString("fundB_id") + "=" + sirb + "["+jsx.getString("buy1B")+"]\t" + json.getString("id")+"="+jsx.getString("increase_rtM") +"["+jsx.getString("priceM")+"]" + "\t" + jsx.getString("abrate") + "\tNotification!!!");
-//						}else{
-//							map.put(json.getString("id"), jsx.getString("sest_dis_rt")+"\t\t"+jsx.getString("fundA_id")+ "=" + sira + "["+jsx.getString("sell1A")+"]\t" + jsx.getString("fundB_id") + "=" + sirb + "["+jsx.getString("sell1B")+"]\t" + jsx.getString("idx_incr_rt") + "\t" + jsx.getString("abrate") + "\tNotFound");
-//						}
+						}else{
+							map.put(json.getString("id"), jsx.getString("sest_dis_rt")+"\t\t"+jsx.getString("fundA_id")+ "=" + sira + "["+jsx.getString("buy1A")+"]\t" + jsx.getString("fundB_id") + "=" + sirb + "["+jsx.getString("buy1B")+"]\t" + json.getString("id")+"="+jsx.getString("increase_rtM") +"["+jsx.getString("priceM")+"]" + "\t" + jsx.getString("abrate") + "\tNotFound");
+						}
 					}
 				}
 //				System.out.print(json.getString("id") + "-->" + jsx.getString("funda_lower_recalc_rt"));
