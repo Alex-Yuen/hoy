@@ -1385,6 +1385,7 @@ public class Scanner {
 					float ilr = Float.parseFloat(lr.substring(0, lr.length()-1));
 					//System.out.println(">>>>>"+ilr);
 					if(ilr>0){ //TODO
+//						System.out.println(json);
 	//					System.out.println("ilr:"+lr.substring(0, lr.length()-1));
 						String sira = jsx.getString("increase_rtA");
 						String sirb = jsx.getString("increase_rtB");
@@ -1392,9 +1393,9 @@ public class Scanner {
 //				    	float firb = Float.parseFloat(sirb.substring(0, sirb.length()-1));
 	//			    	System.out.println(fira+"/"+firb);
 						if(ilr>0.5f){
-							map.put(json.getString("id"), jsx.getString("sest_dis_rt")+"\t\t"+jsx.getString("fundA_id")+ "=" + sira + "["+jsx.getString("sell1A")+"]\t" + jsx.getString("fundB_id") + "=" + sirb + "["+jsx.getString("sell1B")+"]\t" + json.getString("id")+"="+jsx.getString("increase_rtM") +"["+jsx.getString("priceM")+"]" + "\t" + jsx.getString("abrate") + "\tNotification!!!");
+							map.put(json.getString("id"), jsx.getString("sest_dis_rt")+"\t\t"+jsx.getString("fundA_id")+ "=" + sira + "["+jsx.getString("sell1A")+"]\t" + jsx.getString("fundB_id") + "=" + sirb + "["+jsx.getString("sell1B")+"]\t" + json.getString("id")+"="+jsx.getString("increase_rtM") +"["+jsx.getString("buy1M")+"]" + "\t" + jsx.getString("abrate") + "\tNotification!!!");
 						}else{
-							map.put(json.getString("id"), jsx.getString("sest_dis_rt")+"\t\t"+jsx.getString("fundA_id")+ "=" + sira + "["+jsx.getString("sell1A")+"]\t" + jsx.getString("fundB_id") + "=" + sirb + "["+jsx.getString("sell1B")+"]\t" + json.getString("id")+"="+jsx.getString("increase_rtM") +"["+jsx.getString("priceM")+"]" + "\t" + jsx.getString("abrate") + "\tNotFound");
+							map.put(json.getString("id"), jsx.getString("sest_dis_rt")+"\t\t"+jsx.getString("fundA_id")+ "=" + sira + "["+jsx.getString("sell1A")+"]\t" + jsx.getString("fundB_id") + "=" + sirb + "["+jsx.getString("sell1B")+"]\t" + json.getString("id")+"="+jsx.getString("increase_rtM") +"["+jsx.getString("buy1M")+"]" + "\t" + jsx.getString("abrate") + "\tNotFound");
 						}
 					}
 				}
@@ -1410,8 +1411,8 @@ public class Scanner {
 			    	String ssec = sec.getValue().split("\t\t")[0];
 			    	float ifst = Float.parseFloat(sfst.substring(0, sfst.length()-1));
 			    	float isec = Float.parseFloat(ssec.substring(0, ssec.length()-1));
-			    	if(ifst>isec) return 1;
-			    	if(ifst<isec) return -1;
+			    	if(ifst>isec) return -1;
+			    	if(ifst<isec) return 1;
 			    	return 0;
 			    }  
 			});
@@ -1493,9 +1494,9 @@ public class Scanner {
 //				    	float firb = Float.parseFloat(sirb.substring(0, sirb.length()-1));
 	//			    	System.out.println(fira+"/"+firb);
 						if(ilr<-0.5f){
-							map.put(json.getString("id"), jsx.getString("sest_dis_rt")+"\t\t"+jsx.getString("fundA_id")+ "=" + sira + "["+jsx.getString("buy1A")+"]\t" + jsx.getString("fundB_id") + "=" + sirb + "["+jsx.getString("buy1B")+"]\t" + json.getString("id")+"="+jsx.getString("increase_rtM") +"["+jsx.getString("priceM")+"]" + "\t" + jsx.getString("abrate") + "\tNotification!!!");
+							map.put(json.getString("id"), jsx.getString("sest_dis_rt")+"\t\t"+jsx.getString("fundA_id")+ "=" + sira + "["+jsx.getString("buy1A")+"]\t" + jsx.getString("fundB_id") + "=" + sirb + "["+jsx.getString("buy1B")+"]\t" + json.getString("id")+"="+jsx.getString("increase_rtM") +"["+jsx.getString("sell1M")+"]" + "\t" + jsx.getString("abrate") + "\tNotification!!!");
 						}else{
-							map.put(json.getString("id"), jsx.getString("sest_dis_rt")+"\t\t"+jsx.getString("fundA_id")+ "=" + sira + "["+jsx.getString("buy1A")+"]\t" + jsx.getString("fundB_id") + "=" + sirb + "["+jsx.getString("buy1B")+"]\t" + json.getString("id")+"="+jsx.getString("increase_rtM") +"["+jsx.getString("priceM")+"]" + "\t" + jsx.getString("abrate") + "\tNotFound");
+							map.put(json.getString("id"), jsx.getString("sest_dis_rt")+"\t\t"+jsx.getString("fundA_id")+ "=" + sira + "["+jsx.getString("buy1A")+"]\t" + jsx.getString("fundB_id") + "=" + sirb + "["+jsx.getString("buy1B")+"]\t" + json.getString("id")+"="+jsx.getString("increase_rtM") +"["+jsx.getString("sell1M")+"]" + "\t" + jsx.getString("abrate") + "\tNotFound");
 						}
 					}
 				}
