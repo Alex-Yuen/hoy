@@ -52,8 +52,8 @@ public class Scanner {
 	private static DecimalFormat df = new DecimalFormat("##.00");
 	private static String kzsession = "";
 	private static String UAG = "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/43.0.2357.130 Safari/537.36";
-	private static boolean PF_OF_SUMARIZE = false;
-	private static boolean PF_OF_CEF = false; 
+	private static boolean PF_OF_SUMARIZE = true;
+	private static boolean PF_OF_CEF = true; 
 	
 	public static String get(String url) {
 		return get(url, null);
@@ -1651,17 +1651,17 @@ public class Scanner {
 		//分级基金下折和定折
 		printRecaculateOfClassificationFund(responseHandler);
 //		System.out.println();
-		System.out.println("分级基金合并折价");
-		System.out.println("----------------");
-		printMergeOfClassificationFund(responseHandler);
-		System.out.println();
-		System.out.println("可交易T+0合并折价");
-		System.out.println("----------------");
-		printListedMergeOfClassificationFund(responseHandler);
-		System.out.println();
-		System.out.println("可交易T+0分拆溢价");
-		System.out.println("----------------");		
-		printListedSplitOfClassificationFund(responseHandler);
-		System.out.println();
+//		System.out.println("分级基金合并折价");
+//		System.out.println("----------------");
+//		printMergeOfClassificationFund(responseHandler);
+//		System.out.println();
+//		System.out.println("可交易T+0合并折价");
+//		System.out.println("----------------");
+//		printListedMergeOfClassificationFund(responseHandler);
+//		System.out.println();
+//		System.out.println("可交易T+0分拆溢价");
+//		System.out.println("----------------");		
+//		printListedSplitOfClassificationFund(responseHandler);
+//		System.out.println();
 	}
 }
