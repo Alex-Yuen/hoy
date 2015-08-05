@@ -1000,6 +1000,7 @@ public class Scanner {
 			httpGet.setHeader("Accept-Language", "zh-CN,zh;q=0.8");
 			httpGet.setHeader("Cache-Control", "max-age=0");
 			httpGet.setHeader("Connection", "keep-alive");
+//			httpGet.setHeader("rp", "25");
 			// httpGet.setHeader("Referer",
 			// "http://www.sse.com.cn/disclosure/dealinstruc/");
 			httpGet.setHeader(
@@ -1012,10 +1013,13 @@ public class Scanner {
 			for(int i=0; i<ja.length();i++){
 				json = ja.getJSONObject(i);
 				JSONObject jsx = json.getJSONObject("cell");
+				String rev = jsx.getString("realtime_estimate_value");
+				String price = jsx.getString("price");
+								
 				System.out.print(json.getString("id") + "-->" + jsx.getString("maturity_dt"));
+				System.out.print("\t" + (Float.parseFloat(rev)/Float.parseFloat(price) - 1)*100 + "%");
 				System.out.print("\t" + jsx.getString("discount_rt") + " on " + jsx.getString("annualize_dscnt_rt"));
-				System.out.print("\t\t");				
-				
+				System.out.print("\t\t");
 				System.out.println(maturity(jsx.getString("maturity_dt"), 30));
 			}
 		} catch (Exception e) {
@@ -1075,6 +1079,7 @@ public class Scanner {
 					"User-Agent",
 					UAG);
 
+			Map<String, String> maplowest = new HashMap<String, String>(); 
 			Map<String, String> mapl = new HashMap<String, String>(); 
 			Map<String, String> mapx = new HashMap<String, String>();
 			
@@ -1084,6 +1089,19 @@ public class Scanner {
 			for(int i=0; i<ja.length();i++){
 				json = ja.getJSONObject(i);
 				JSONObject jsx = json.getJSONObject("cell"); //lower_recalc_profit_rt
+				
+				String lowdist = jsx.getString("funda_discount_rt");
+				float ild = Float.parseFloat(lowdist.substring(0, lowdist.length()-1));
+				String nrd = jsx.getString("next_recalc_dt");
+				
+				if(ild>15&&nrd.indexOf("无下折")==-1){
+					if(ild>=20){
+						maplowest.put(json.getString("id"), jsx.getString("funda_discount_rt")+"\t\t"+ jsx.getString("funda_current_price") + "\t" + jsx.getString("funda_profit_rt_next")+"\tNotification!!!");
+					}else{
+						maplowest.put(json.getString("id"), jsx.getString("funda_discount_rt")+"\t\t"+ jsx.getString("funda_current_price") + "\t" + jsx.getString("funda_profit_rt_next")+"\tNotFound");
+					}
+				}
+				
 				String lr = jsx.getString("funda_lower_recalc_rt");
 				float ilr = Float.parseFloat(lr.substring(0, lr.length()-1));
 				if(ilr<10){
@@ -1108,7 +1126,29 @@ public class Scanner {
 //				System.out.print("\t" + jsx.getString("lower_recalc_profit_rt"));
 			}
 
-			List<Map.Entry<String, String>> set = new ArrayList<Map.Entry<String, String>>(mapl.entrySet()); 
+			List<Map.Entry<String, String>> set = new ArrayList<Map.Entry<String, String>>(maplowest.entrySet());
+			Collections.sort(set, new Comparator<Map.Entry<String, String>>() {  
+			    public int compare(Map.Entry<String, String> fst,  
+			            Map.Entry<String, String> sec) {  
+			    	String sfst = fst.getValue().split("\t\t")[0];
+			    	String ssec = sec.getValue().split("\t\t")[0];
+			    	float ifst = Float.parseFloat(sfst.substring(0, sfst.length()-1));
+			    	float isec = Float.parseFloat(ssec.substring(0, ssec.length()-1));		    	
+			    	if(ifst>isec) return -1;
+			    	if(ifst<isec) return 1;
+			    	return 0;
+			    }  
+			});
+
+			System.out.println("分级A最低折价率");//(有下折)
+			System.out.println("----------------");
+			for (int i = 0; i < set.size(); i++) {  
+			    Entry<String, String> ent = set.get(i);  
+			    System.out.println(ent.getKey()+"-->"+ent.getValue());			      
+			}  
+			System.out.println();
+			
+			set = new ArrayList<Map.Entry<String, String>>(mapl.entrySet()); 
 			Collections.sort(set, new Comparator<Map.Entry<String, String>>() {  
 			    public int compare(Map.Entry<String, String> fst,  
 			            Map.Entry<String, String> sec) {  
@@ -1327,6 +1367,76 @@ public class Scanner {
 					httpclient.close();
 				}
 			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}		
+	}
+	
+	//定增已审核未实施
+	//http://www.csrc.gov.cn/pub/zjhpublic/
+	private static void printSpecExtend(ResponseHandler<String> responseHandler) {
+		CloseableHttpClient httpclient = HttpClients.createDefault();
+		HttpGet httpGet = null;
+		
+//		http://www.csrc.gov.cn/pub/zjhpublic/832/3236/3239/3564/index_7401.htm
+		try{
+			httpGet = new HttpGet("http://www.csrc.gov.cn/pub/zjhpublic/832/3236/3239/3564/index_7401.htm");httpGet.setHeader("Accept", "*/*");
+			httpGet.setHeader("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8");
+			httpGet.setHeader("Referer", "http://www.csrc.gov.cn/pub/zjhpublic/");
+			httpGet.setHeader("X-DevTools-Emulate-Network-Conditions-Client-Id", "EFC8A2F8-7033-46ED-8244-47068E535CCF");
+			httpGet.setHeader(
+					"User-Agent",
+					UAG);
+			String result = httpclient.execute(httpGet, responseHandler);
+			result = result.substring(result.lastIndexOf("documentContainer"));
+			result = result.substring(result.indexOf("title")+7);
+			result = result.substring(0, result.indexOf("\"")-1);
+			result = result.replaceAll("[^\\w]", "-");			
+			System.out.println("Last Exam Date: "+result+"\t\t"+maturity(result, 7));
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+		
+		Map<String, String> set = new HashMap<String, String>();
+		set.put("sz002084", "5.76\t2015-05-26"); //2015年05月26日
+		set.put("sh600054", "12.43\t2015-05-26"); //2015年05月26日
+		
+		for(String id:set.keySet()){
+			try{
+				httpGet = new HttpGet("http://hq.sinajs.cn/list="+id);
+				httpGet.setHeader("Accept", "*/*");
+				httpGet.setHeader("Accept-Encoding", "gzip, deflate, sdch");
+				httpGet.setHeader("Accept-Language", "zh-CN,zh;q=0.8");
+				httpGet.setHeader("Cache-Control", "max-age=0");
+				httpGet.setHeader("Connection", "keep-alive");
+				httpGet.setHeader(
+						"User-Agent",
+						UAG);
+	
+				String result = httpclient.execute(httpGet, responseHandler);
+//				System.out.println(result);
+				result = result.substring(result.indexOf("\"") + 1);
+				result = result.substring(0, result.indexOf("\""));
+				String[] pbs = result.split(",");
+				System.out.print(id.substring(2) + "\t"+pbs[3] + "\t"+set.get(id));
+				float cv = Float.parseFloat(pbs[3]);
+				float rv =  Float.parseFloat(set.get(id).split("\t")[0]);
+				if(cv<rv){
+					System.out.println("\tNotification!!!");
+				}else{
+					System.out.println("\tNotfound");
+				}
+//				String percent = df.format((Double.parseDouble(pbs[3])
+//						/ Double.parseDouble(pbs[2]) - 1) * 100);
+//				if (percent.startsWith(".")) {
+//					percent = "0" + percent;
+//				}
+//				if (percent.startsWith("-.")) {
+//					percent = "-0" + percent.substring(1);
+//				}
+//	
+//				System.out.println(pbs[3] + " " + percent + "%");
+			}catch(Exception e){
 				e.printStackTrace();
 			}
 		}		
@@ -1564,6 +1674,22 @@ public class Scanner {
 			}
 		};
 
+		ResponseHandler<String> responseHandlerUTF8 = new ResponseHandler<String>() {
+			@Override
+			public String handleResponse(final HttpResponse response)
+					throws ClientProtocolException, IOException {
+				int status = response.getStatusLine().getStatusCode();
+				if (status >= 200 && status < 300) {
+					HttpEntity entity = response.getEntity();
+
+					return entity != null ? EntityUtils.toString(entity, "UTF-8") : null;
+				} else {
+					throw new ClientProtocolException(
+							"Unexpected response status: " + status);
+				}
+			}
+		};
+		
 		ResponseHandler<InputStream> responseHandlerX = new ResponseHandler<InputStream>() {
 			@Override
 			public InputStream handleResponse(final HttpResponse response)
@@ -1616,9 +1742,14 @@ public class Scanner {
 			printHSIPE(responseHandler);
 			System.out.print("SPX PE Ratio: ");
 			printSPXPE(responseHandler);
+			//要对大盘进行估值
+			System.out.println();
 		}
 
+		// System.out.println("停牌股套利");   //需要牛市
 		// System.out.println("------------");
+		
+		// 废弃
 		// System.out.println("沪市停牌");
 		// printHalting("http://stock.eastmoney.com/news/chstpyl.html", title);
 		// System.out.println("深市停牌");
@@ -1629,13 +1760,15 @@ public class Scanner {
 		// printHaltingSSE(responseHandler);
 		// printHaltingSZSE(responseHandler);
 
+		/**
 		for (String code : LIST) {
 			System.out.println(code);
 			printInvestors(code);
 			// break;
 		}
-
-		System.out.println();
+		**/
+		//System.out.println("");
+		
 		System.out.println("封基到期");
 		System.out.println("----------------");
 		if(PF_OF_CEF){
@@ -1648,14 +1781,19 @@ public class Scanner {
 			printClosedEndFund(responseHandler);
 		}
 		System.out.println();
-		//分级基金下折和定折
+		//分级A最低折价率, 分级基金下折, 分级基金定折
 		printRecaculateOfClassificationFund(responseHandler);
 //		System.out.println();
-//		System.out.println("分级基金合并折价");
-//		System.out.println("----------------");
-//		printMergeOfClassificationFund(responseHandler);
-//		System.out.println();
-//		System.out.println("可交易T+0合并折价");
+		Calendar cal = Calendar.getInstance();
+		if(cal.get(Calendar.HOUR_OF_DAY)>=14&&cal.get(Calendar.MINUTE)>=45)
+		//下午2点45过后
+		{
+			System.out.println("分级基金合并折价");	//下跌市不要做，2点45分再来看
+			System.out.println("----------------");
+			printMergeOfClassificationFund(responseHandler);
+			System.out.println();
+		}
+//		System.out.println("可交易T+0合并折价");		//沪市要5W以上资金，暂不做监测
 //		System.out.println("----------------");
 //		printListedMergeOfClassificationFund(responseHandler);
 //		System.out.println();
@@ -1663,5 +1801,19 @@ public class Scanner {
 //		System.out.println("----------------");		
 //		printListedSplitOfClassificationFund(responseHandler);
 //		System.out.println();
+				
+		//定增已审核未实施
+		System.out.println("定增已审核未实施");
+		System.out.println("----------------");		
+		printSpecExtend(responseHandlerUTF8);
+		System.out.println();
+		
+		//可转债套利
+
+		//打新债券基金的套利(等待重启IPO)
+		//LOF, ETF套利暂不入列(大资金)
+		//ETF和期货轮换(大资金)
+		//A轮动?加入只有15%，暂时不考虑.
+		//债券轮动
 	}
 }
