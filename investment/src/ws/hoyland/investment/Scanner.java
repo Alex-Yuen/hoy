@@ -52,7 +52,7 @@ public class Scanner {
 	private static DecimalFormat df = new DecimalFormat("##.00");
 	private static String kzsession = "";
 	private static String UAG = "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/43.0.2357.130 Safari/537.36";
-	private static boolean PF_OF_SUMARIZE = true;
+	private static boolean PF_OF_SUMARIZE = false;
 	private static boolean PF_OF_CEF = true; 
 	
 	public static String get(String url) {
@@ -1090,15 +1090,20 @@ public class Scanner {
 				json = ja.getJSONObject(i);
 				JSONObject jsx = json.getJSONObject("cell"); //lower_recalc_profit_rt
 				
-				String lowdist = jsx.getString("funda_discount_rt");
-				float ild = Float.parseFloat(lowdist.substring(0, lowdist.length()-1));
+//				System.out.println(jsx);
+//				String lowdist = jsx.getString("funda_discount_rt");
+//				float ild = Float.parseFloat(lowdist.substring(0, lowdist.length()-1));
 				String nrd = jsx.getString("next_recalc_dt");
+				String profit = jsx.getString("funda_profit_rt_next");
+				float fp = Float.parseFloat(profit.substring(0, profit.length()-1));
 				
-				if(ild>15&&nrd.indexOf("无下折")==-1){
-					if(ild>=20){
-						maplowest.put(json.getString("id"), jsx.getString("funda_discount_rt")+"\t\t"+ jsx.getString("funda_current_price") + "\t" + jsx.getString("funda_profit_rt_next")+"\tNotification!!!");
+//				if(ild>15&&nrd.indexOf("无下折")==-1){
+//					if(ild>=20){
+				if(fp>=6.0f&&nrd.indexOf("无下折")==-1&&jsx.getString("funda_left_year").indexOf("永续")!=-1){
+					if(fp>=6.5f){
+						maplowest.put(json.getString("id"), jsx.getString("funda_profit_rt_next")+"\t\t"+ jsx.getString("funda_discount_rt") + "\t" + jsx.getString("funda_current_price")+"\tNotification!!!");
 					}else{
-						maplowest.put(json.getString("id"), jsx.getString("funda_discount_rt")+"\t\t"+ jsx.getString("funda_current_price") + "\t" + jsx.getString("funda_profit_rt_next")+"\tNotFound");
+						maplowest.put(json.getString("id"), jsx.getString("funda_profit_rt_next")+"\t\t"+ jsx.getString("funda_discount_rt") + "\t" + jsx.getString("funda_current_price")+"\tNotFound");
 					}
 				}
 				
@@ -1140,11 +1145,12 @@ public class Scanner {
 			    }  
 			});
 
-			System.out.println("分级A最低折价率");//(有下折)
+			System.out.println("分级A最高收益率");//(有下折)
 			System.out.println("----------------");
 			for (int i = 0; i < set.size(); i++) {  
 			    Entry<String, String> ent = set.get(i);  
-			    System.out.println(ent.getKey()+"-->"+ent.getValue());			      
+			    System.out.println(ent.getKey()+"-->"+ent.getValue());
+			    if(i==9)break;
 			}  
 			System.out.println();
 			
@@ -1781,7 +1787,7 @@ public class Scanner {
 			printClosedEndFund(responseHandler);
 		}
 		System.out.println();
-		//分级A最低折价率, 分级基金下折, 分级基金定折
+		//分级A最高收益率, 分级基金下折, 分级基金定折
 		printRecaculateOfClassificationFund(responseHandler);
 //		System.out.println();
 		Calendar cal = Calendar.getInstance();
