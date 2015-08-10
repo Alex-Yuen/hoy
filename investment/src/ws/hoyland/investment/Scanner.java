@@ -1813,12 +1813,12 @@ public class Scanner {
 		System.out.println("----------------");		
 		printSpecExtend(responseHandlerUTF8);
 		System.out.println();
-		
-		//可转债套利
 
-		//打新债券基金的套利(等待重启IPO)
 		//LOF, ETF套利暂不入列(大资金)
 		//ETF和期货轮换(大资金)
+		
+		//可转债套利
+		//打新债券基金的套利(等待重启IPO)
 		//A类和债券的轮动?加入只有15%，暂时不考虑.
 	}
 }
