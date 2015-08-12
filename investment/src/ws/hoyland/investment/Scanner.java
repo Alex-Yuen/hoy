@@ -52,7 +52,7 @@ public class Scanner {
 	private static DecimalFormat df = new DecimalFormat("##.00");
 	private static String kzsession = "";
 	private static String UAG = "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/43.0.2357.130 Safari/537.36";
-	private static boolean PF_OF_SUMARIZE = false;
+	private static boolean PF_OF_SUMARIZE = true;
 	private static boolean PF_OF_CEF = true; 
 	
 	public static String get(String url) {
@@ -1079,8 +1079,9 @@ public class Scanner {
 					"User-Agent",
 					UAG);
 
-			Map<String, String> maplowest = new HashMap<String, String>(); 
+			Map<String, String> maphp = new HashMap<String, String>(); 
 			Map<String, String> mapl = new HashMap<String, String>(); 
+			Map<String, String> maph = new HashMap<String, String>(); 
 			Map<String, String> mapx = new HashMap<String, String>();
 			
 			String responseBody = httpclient.execute(httpGet, responseHandler);
@@ -1101,9 +1102,9 @@ public class Scanner {
 //					if(ild>=20){
 				if(fp>=6.0f&&nrd.indexOf("无下折")==-1&&jsx.getString("funda_left_year").indexOf("永续")!=-1){
 					if(fp>=6.5f){
-						maplowest.put(json.getString("id"), jsx.getString("funda_profit_rt_next")+"\t\t"+ jsx.getString("funda_discount_rt") + "\t" + jsx.getString("funda_current_price")+"\tNotification!!!");
+						maphp.put(json.getString("id"), jsx.getString("funda_profit_rt_next")+"\t\t"+ jsx.getString("funda_discount_rt") + "\t" + jsx.getString("funda_current_price")+"\tNotification!!!");
 					}else{
-						maplowest.put(json.getString("id"), jsx.getString("funda_profit_rt_next")+"\t\t"+ jsx.getString("funda_discount_rt") + "\t" + jsx.getString("funda_current_price")+"\tNotFound");
+						maphp.put(json.getString("id"), jsx.getString("funda_profit_rt_next")+"\t\t"+ jsx.getString("funda_discount_rt") + "\t" + jsx.getString("funda_current_price")+"\tNotFound");
 					}
 				}
 				
@@ -1114,6 +1115,19 @@ public class Scanner {
 						mapl.put(json.getString("id"), jsx.getString("funda_lower_recalc_rt")+"\t\t"+ jsx.getString("funda_current_price") + "\t" + jsx.getString("lower_recalc_profit_rt")+"\tNotification!!!");
 					}else{
 						mapl.put(json.getString("id"), jsx.getString("funda_lower_recalc_rt")+"\t\t"+ jsx.getString("funda_current_price") + "\t" + jsx.getString("lower_recalc_profit_rt")+"\tNotFound");
+					}
+				}
+				
+				String hr = jsx.getString("fundb_upper_recalc_rt");
+				if(hr!=null&&!"-".equals(hr)){
+//					System.out.println(hr);
+					float ihr = Float.parseFloat(hr.substring(0, hr.length()-1));
+					if(ihr<10){
+						if(ihr<4){
+							maph.put(json.getString("id"), jsx.getString("fundb_upper_recalc_rt")+"\t\t"+ jsx.getString("funda_current_price") + "\tNotification!!!");
+						}else{
+							maph.put(json.getString("id"), jsx.getString("fundb_upper_recalc_rt")+"\t\t"+ jsx.getString("funda_current_price") + "\tNotFound");
+						}
 					}
 				}
 				
@@ -1131,7 +1145,7 @@ public class Scanner {
 //				System.out.print("\t" + jsx.getString("lower_recalc_profit_rt"));
 			}
 
-			List<Map.Entry<String, String>> set = new ArrayList<Map.Entry<String, String>>(maplowest.entrySet());
+			List<Map.Entry<String, String>> set = new ArrayList<Map.Entry<String, String>>(maphp.entrySet());
 			Collections.sort(set, new Comparator<Map.Entry<String, String>>() {  
 			    public int compare(Map.Entry<String, String> fst,  
 			            Map.Entry<String, String> sec) {  
@@ -1176,6 +1190,28 @@ public class Scanner {
 			}  
 			System.out.println();
 			
+			set = new ArrayList<Map.Entry<String, String>>(maph.entrySet()); 
+			Collections.sort(set, new Comparator<Map.Entry<String, String>>() {  
+			    public int compare(Map.Entry<String, String> fst,  
+			            Map.Entry<String, String> sec) {  
+			    	String sfst = fst.getValue().split("\t\t")[0];
+			    	String ssec = sec.getValue().split("\t\t")[0];
+			    	float ifst = Float.parseFloat(sfst.substring(0, sfst.length()-1));
+			    	float isec = Float.parseFloat(ssec.substring(0, ssec.length()-1));		    	
+			    	if(ifst>isec) return 1;
+			    	if(ifst<isec) return -1;
+			    	return 0;
+			    }  
+			});
+
+			System.out.println("分级基金上折");
+			System.out.println("----------------");
+			for (int i = 0; i < set.size(); i++) {  
+			    Entry<String, String> ent = set.get(i);  
+			    System.out.println(ent.getKey()+"-->"+ent.getValue());			      
+			}  
+			System.out.println();
+			
 			set = new ArrayList<Map.Entry<String, String>>(mapx.entrySet()); 
 			Collections.sort(set, new Comparator<Map.Entry<String, String>>() {  
 			    public int compare(Map.Entry<String, String> fst,  
@@ -1209,6 +1245,83 @@ public class Scanner {
 		}		
 	}
 
+	private static void printConvertibleBond(
+			ResponseHandler<String> responseHandler) {
+		CloseableHttpClient httpclient = HttpClients.createDefault();
+		HttpGet httpGet = null;
+		try {//
+			httpGet = new HttpGet("http://www.jisilu.cn/data/cbnew/cb_list/?___t="
+					+ System.currentTimeMillis());
+			httpGet.setHeader("Accept", "*/*");
+			httpGet.setHeader("Accept-Encoding", "gzip, deflate, sdch");
+			httpGet.setHeader("Accept-Language", "zh-CN,zh;q=0.8");
+			httpGet.setHeader("Cache-Control", "max-age=0");
+			httpGet.setHeader("Connection", "keep-alive");
+			// httpGet.setHeader("Referer",
+			// "http://www.sse.com.cn/disclosure/dealinstruc/");
+			httpGet.setHeader(
+					"User-Agent",
+					UAG);
+
+			Map<String, String> map = new HashMap<String, String>();
+			
+			String responseBody = httpclient.execute(httpGet, responseHandler);
+			JSONObject json = new JSONObject(responseBody);
+			JSONArray ja = json.getJSONArray("rows");
+			for(int i=0; i<ja.length();i++){
+				json = ja.getJSONObject(i);
+				JSONObject jsx = json.getJSONObject("cell"); //lower_recalc_profit_rt
+				
+//				System.out.println(jsx);
+//				String lowdist = jsx.getString("funda_discount_rt");
+//				float ild = Float.parseFloat(lowdist.substring(0, lowdist.length()-1));
+				String preminum = jsx.getString("premium_rt");
+//				String price = jsx.getString("price");
+				float fp = Float.parseFloat(preminum.substring(0, preminum.length()-1));
+				
+//				if(ild>15&&nrd.indexOf("无下折")==-1){
+//					if(ild>=20){
+				//if(fp>=6.0f&&nrd.indexOf("无下折")==-1&&jsx.getString("funda_left_year").indexOf("永续")!=-1){
+					if(fp<=0){
+						map.put(json.getString("id"), jsx.getString("premium_rt")+"\t\t"+ jsx.getString("price") +"\tNotification!!!");
+					}else{
+						map.put(json.getString("id"), jsx.getString("premium_rt")+"\t\t"+ jsx.getString("price") +"\tNotFound");
+					}
+				//}
+			}
+
+			List<Map.Entry<String, String>> set = new ArrayList<Map.Entry<String, String>>(map.entrySet());
+			Collections.sort(set, new Comparator<Map.Entry<String, String>>() {  
+			    public int compare(Map.Entry<String, String> fst,  
+			            Map.Entry<String, String> sec) {  
+			    	String sfst = fst.getValue().split("\t\t")[0];
+			    	String ssec = sec.getValue().split("\t\t")[0];
+			    	float ifst = Float.parseFloat(sfst.substring(0, sfst.length()-1));
+			    	float isec = Float.parseFloat(ssec.substring(0, ssec.length()-1));		    	
+			    	if(ifst>isec) return 1;
+			    	if(ifst<isec) return -1;
+			    	return 0;
+			    }
+			});
+
+			for (int i = 0; i < set.size(); i++) {  
+			    Entry<String, String> ent = set.get(i);  
+			    System.out.println(ent.getKey()+"-->"+ent.getValue());
+//			    if(i==9)break;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (httpclient != null) {
+					httpclient.close();
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}		
+	}
+	
 	private static void printMergeOfClassificationFund(
 			ResponseHandler<String> responseHandler) {
 		CloseableHttpClient httpclient = HttpClients.createDefault();
@@ -1787,11 +1900,12 @@ public class Scanner {
 			printClosedEndFund(responseHandler);
 		}
 		System.out.println();
-		//分级A最高收益率, 分级基金下折, 分级基金定折
+		//分级A最高收益率, 分级基金上折, 下折, 定折
 		printRecaculateOfClassificationFund(responseHandler);
 //		System.out.println();
 		Calendar cal = Calendar.getInstance();
-		if((cal.get(Calendar.HOUR_OF_DAY)>=14&&cal.get(Calendar.MINUTE)>=45)||cal.get(Calendar.HOUR_OF_DAY)>=15)
+//		if((cal.get(Calendar.HOUR_OF_DAY)>=14&&cal.get(Calendar.MINUTE)>=45)||cal.get(Calendar.HOUR_OF_DAY)>=15)
+		if(cal.get(Calendar.HOUR_OF_DAY)>=13)
 		//下午2点45过后
 		{
 			System.out.println("分级基金合并折价");	//下跌市不要做，2点45分再来看
@@ -1816,9 +1930,14 @@ public class Scanner {
 
 		//LOF, ETF套利暂不入列(大资金)
 		//ETF和期货轮换(大资金)
+		//A类和债券的轮动?加入只有15%，暂时不考虑.
 		
 		//可转债套利
+		System.out.println("可转债溢价率");
+		System.out.println("----------------");		
+		printConvertibleBond(responseHandler);
+		System.out.println();
+		
 		//打新债券基金的套利(等待重启IPO)
-		//A类和债券的轮动?加入只有15%，暂时不考虑.
 	}
 }
