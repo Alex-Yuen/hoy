@@ -1905,7 +1905,7 @@ public class Scanner {
 //		System.out.println();
 		Calendar cal = Calendar.getInstance();
 //		if((cal.get(Calendar.HOUR_OF_DAY)>=14&&cal.get(Calendar.MINUTE)>=45)||cal.get(Calendar.HOUR_OF_DAY)>=15)
-		if(cal.get(Calendar.HOUR_OF_DAY)>=13)
+//		if(cal.get(Calendar.HOUR_OF_DAY)>=13)
 		//下午2点45过后
 		{
 			System.out.println("分级基金合并折价");	//下跌市不要做，2点45分再来看
