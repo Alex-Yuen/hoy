@@ -1079,6 +1079,7 @@ public class Scanner {
 					"User-Agent",
 					UAG);
 
+			Map<String, String> mapp = new HashMap<String, String>(); 
 			Map<String, String> maphp = new HashMap<String, String>(); 
 			Map<String, String> mapl = new HashMap<String, String>(); 
 			Map<String, String> maph = new HashMap<String, String>(); 
@@ -1090,11 +1091,21 @@ public class Scanner {
 			for(int i=0; i<ja.length();i++){
 				json = ja.getJSONObject(i);
 				JSONObject jsx = json.getJSONObject("cell"); //lower_recalc_profit_rt
-				
+
+				String nrd = jsx.getString("next_recalc_dt");
+				String cp = jsx.getString("funda_current_price");
+				float fcp = Float.parseFloat(cp);
+				if(nrd.indexOf("无下折")==-1&&jsx.getString("funda_left_year").indexOf("永续")!=-1){
+					if(fcp<0.90f){
+						mapp.put(json.getString("id"), jsx.getString("funda_current_price")+"\t\t"+ jsx.getString("funda_discount_rt") + "\t" + jsx.getString("funda_profit_rt_next")+"\tNotification!!!");
+					}else{
+						mapp.put(json.getString("id"), jsx.getString("funda_current_price")+"\t\t"+ jsx.getString("funda_discount_rt") + "\t" + jsx.getString("funda_profit_rt_next")+"\tNotFound");
+					}
+				}
+								
 //				System.out.println(jsx);
 //				String lowdist = jsx.getString("funda_discount_rt");
 //				float ild = Float.parseFloat(lowdist.substring(0, lowdist.length()-1));
-				String nrd = jsx.getString("next_recalc_dt");
 				String profit = jsx.getString("funda_profit_rt_next");
 				float fp = Float.parseFloat(profit.substring(0, profit.length()-1));
 				
@@ -1145,7 +1156,30 @@ public class Scanner {
 //				System.out.print("\t" + jsx.getString("lower_recalc_profit_rt"));
 			}
 
-			List<Map.Entry<String, String>> set = new ArrayList<Map.Entry<String, String>>(maphp.entrySet());
+			List<Map.Entry<String, String>> set = new ArrayList<Map.Entry<String, String>>(mapp.entrySet());
+			Collections.sort(set, new Comparator<Map.Entry<String, String>>() {  
+			    public int compare(Map.Entry<String, String> fst,  
+			            Map.Entry<String, String> sec) {  
+			    	String sfst = fst.getValue().split("\t\t")[0];
+			    	String ssec = sec.getValue().split("\t\t")[0];
+			    	float ifst = Float.parseFloat(sfst);//.substring(0, sfst.length()-1));
+			    	float isec = Float.parseFloat(ssec);//.substring(0, ssec.length()-1));		    	
+			    	if(ifst>isec) return 1;
+			    	if(ifst<isec) return -1;
+			    	return 0;
+			    }  
+			});
+
+			System.out.println("分级A价格");//(有下折)
+			System.out.println("----------------");
+			for (int i = 0; i < set.size(); i++) {  
+			    Entry<String, String> ent = set.get(i);  
+			    System.out.println(ent.getKey()+"-->"+ent.getValue());
+			    if(i==9)break;
+			}
+			System.out.println();
+			
+			set = new ArrayList<Map.Entry<String, String>>(maphp.entrySet());
 			Collections.sort(set, new Comparator<Map.Entry<String, String>>() {  
 			    public int compare(Map.Entry<String, String> fst,  
 			            Map.Entry<String, String> sec) {  
@@ -1165,7 +1199,7 @@ public class Scanner {
 			    Entry<String, String> ent = set.get(i);  
 			    System.out.println(ent.getKey()+"-->"+ent.getValue());
 			    if(i==9)break;
-			}  
+			}
 			System.out.println();
 			
 			set = new ArrayList<Map.Entry<String, String>>(mapl.entrySet()); 
